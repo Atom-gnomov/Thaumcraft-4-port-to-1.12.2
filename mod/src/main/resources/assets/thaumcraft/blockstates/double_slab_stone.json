@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "variant=0": { "model": "thaumcraft:double_slab_stone_0" },
+        "variant=1": { "model": "thaumcraft:double_slab_stone_1" }
+    }
+}

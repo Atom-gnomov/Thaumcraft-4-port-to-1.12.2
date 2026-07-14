@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:magicallog_0" },
+        "meta=1": { "model": "thaumcraft:magicallog_1" },
+        "meta=2": { "model": "thaumcraft:magicallog_2" }
+    }
+}

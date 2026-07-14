@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:jar_0" },
+        "meta=1": { "model": "thaumcraft:jar_1" },
+        "meta=2": { "model": "thaumcraft:jar_0" },
+        "meta=3": { "model": "thaumcraft:jar_3" },
+        "meta=4": { "model": "thaumcraft:jar_0" },
+        "meta=5": { "model": "thaumcraft:jar_0" },
+        "meta=6": { "model": "thaumcraft:jar_0" },
+        "meta=7": { "model": "thaumcraft:jar_0" },
+        "meta=8": { "model": "thaumcraft:jar_0" },
+        "meta=9": { "model": "thaumcraft:jar_0" },
+        "meta=10": { "model": "thaumcraft:jar_0" },
+        "meta=11": { "model": "thaumcraft:jar_0" },
+        "meta=12": { "model": "thaumcraft:jar_0" },
+        "meta=13": { "model": "thaumcraft:jar_0" },
+        "meta=14": { "model": "thaumcraft:jar_0" },
+        "meta=15": { "model": "thaumcraft:jar_0" }
+    }
+}

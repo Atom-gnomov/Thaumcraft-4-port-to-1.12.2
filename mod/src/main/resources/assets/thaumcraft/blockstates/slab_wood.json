@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "half=bottom,variant=0": { "model": "thaumcraft:slab_wood_bottom_0" },
+        "half=top,variant=0":    { "model": "thaumcraft:slab_wood_top_0" },
+        "half=bottom,variant=1": { "model": "thaumcraft:slab_wood_bottom_1" },
+        "half=top,variant=1":    { "model": "thaumcraft:slab_wood_top_1" }
+    }
+}

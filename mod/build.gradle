@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+version = '4.2.3.5-1.12.2'
+group = 'thaumcraft'
+archivesBaseName = 'Thaumcraft'
+
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = '1.12.2-14.23.5.2847'
+    runDir = 'run'
+    mappings = 'snapshot_20171003'
+    // accessTransformer applied for protected/private MC members that TC needs
+    // makeObfSourceJar = false
+}
+
+repositories {
+    maven { // Baubles / JEI (CurseMaven-style) - add when integrations are ported
+        url 'https://maven.blamejared.com'
+    }
+    flatDir { dirs 'libs' } // local deobf jars (Baubles 1.12.2, etc.)
+}
+
+dependencies {
+    // Baubles 1.12.2 dependency will be added here once the jar is placed in libs/
+    // deobfCompile 'baubles:Baubles:1.12-1.5.2'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}

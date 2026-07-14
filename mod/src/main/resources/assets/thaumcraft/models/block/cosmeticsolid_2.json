@@ -1,0 +1,4 @@
+{
+    "parent": "block/cube_all",
+    "textures": { "all": "thaumcraft:blocks/paving_stone_travel" }
+}

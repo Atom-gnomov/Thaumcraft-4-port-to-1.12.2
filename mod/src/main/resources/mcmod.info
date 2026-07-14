@@ -1,0 +1,15 @@
+[
+  {
+    "modid": "thaumcraft",
+    "name": "Thaumcraft",
+    "description": "Thaumcraft 4 mechanics ported to Minecraft 1.12.2.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "authorList": ["Azanor (original)"],
+    "credits": "Original mod by Azanor. 1.12.2 port.",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": ["baubles"]
+  }
+]

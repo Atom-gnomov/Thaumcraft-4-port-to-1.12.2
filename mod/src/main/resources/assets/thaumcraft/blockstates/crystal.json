@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:crystal" },
+        "meta=1": { "model": "thaumcraft:crystal" },
+        "meta=2": { "model": "thaumcraft:crystal" },
+        "meta=3": { "model": "thaumcraft:crystal" },
+        "meta=4": { "model": "thaumcraft:crystal" },
+        "meta=5": { "model": "thaumcraft:crystal" },
+        "meta=6": { "model": "thaumcraft:crystal" }
+    }
+}

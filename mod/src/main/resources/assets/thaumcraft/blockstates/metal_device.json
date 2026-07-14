@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:metal_device_0" },
+        "meta=1": { "model": "thaumcraft:metal_device_1" },
+        "meta=2": { "model": "thaumcraft:metal_device_2" },
+        "meta=3": { "model": "thaumcraft:metal_device_3" },
+        "meta=4": { "model": "thaumcraft:metal_device_0" },
+        "meta=5": { "model": "thaumcraft:metal_device_5" },
+        "meta=6": { "model": "thaumcraft:metal_device_0" },
+        "meta=7": { "model": "thaumcraft:metal_device_7" },
+        "meta=8": { "model": "thaumcraft:metal_device_8" },
+        "meta=9": { "model": "thaumcraft:metal_device_9" },
+        "meta=10": { "model": "thaumcraft:metal_device_0" },
+        "meta=11": { "model": "thaumcraft:metal_device_0" },
+        "meta=12": { "model": "thaumcraft:metal_device_12" },
+        "meta=13": { "model": "thaumcraft:metal_device_13" },
+        "meta=14": { "model": "thaumcraft:metal_device_14" },
+        "meta=15": { "model": "thaumcraft:metal_device_0" }
+    }
+}

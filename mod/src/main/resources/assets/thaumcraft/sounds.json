@@ -1,0 +1,14 @@
+{
+  "crystal": {
+    "category": "block",
+    "sounds": [ { "name": "thaumcraft:crystal", "stream": false } ]
+  },
+  "gore": {
+    "category": "block",
+    "sounds": [ "thaumcraft:gore1", "thaumcraft:gore2" ]
+  },
+  "urnbreak": {
+    "category": "block",
+    "sounds": [ { "name": "thaumcraft:urnbreak", "stream": false } ]
+  }
+}

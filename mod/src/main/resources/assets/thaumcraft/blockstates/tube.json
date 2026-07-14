@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:tube_0" },
+        "meta=1": { "model": "thaumcraft:tube_1" },
+        "meta=2": { "model": "thaumcraft:tube_2" },
+        "meta=3": { "model": "thaumcraft:tube_3" },
+        "meta=4": { "model": "thaumcraft:tube_4" },
+        "meta=5": { "model": "thaumcraft:tube_5" },
+        "meta=6": { "model": "thaumcraft:tube_6" },
+        "meta=7": { "model": "thaumcraft:tube_7" },
+        "meta=8": { "model": "thaumcraft:tube_0" },
+        "meta=9": { "model": "thaumcraft:tube_0" },
+        "meta=10": { "model": "thaumcraft:tube_0" },
+        "meta=11": { "model": "thaumcraft:tube_0" },
+        "meta=12": { "model": "thaumcraft:tube_0" },
+        "meta=13": { "model": "thaumcraft:tube_0" },
+        "meta=14": { "model": "thaumcraft:tube_0" },
+        "meta=15": { "model": "thaumcraft:tube_0" }
+    }
+}

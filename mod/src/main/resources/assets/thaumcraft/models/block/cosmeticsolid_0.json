@@ -1,0 +1,4 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": { "top": "thaumcraft:blocks/obsidiantile", "bottom": "thaumcraft:blocks/obsidiantile", "side": "thaumcraft:blocks/obsidiantotembase" }
+}

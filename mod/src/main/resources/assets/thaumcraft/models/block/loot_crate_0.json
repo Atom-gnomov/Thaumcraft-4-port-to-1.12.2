@@ -1,0 +1,19 @@
+{
+    "parent": "block/block",
+    "ambientocclusion": false,
+    "textures": {
+        "top": "thaumcraft:blocks/crate_top",
+        "side": "thaumcraft:blocks/crate_side_0",
+        "particle": "thaumcraft:blocks/crate_side_0"
+    },
+    "elements": [
+        { "from": [1, 0, 1], "to": [15, 14, 15], "faces": {
+            "down":  { "texture": "#top", "cullface": "down" },
+            "up":    { "texture": "#top" },
+            "north": { "texture": "#side" },
+            "south": { "texture": "#side" },
+            "west":  { "texture": "#side" },
+            "east":  { "texture": "#side" }
+        }}
+    ]
+}

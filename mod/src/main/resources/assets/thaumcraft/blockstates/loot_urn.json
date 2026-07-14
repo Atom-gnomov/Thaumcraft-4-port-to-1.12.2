@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:loot_urn_0" },
+        "meta=1": { "model": "thaumcraft:loot_urn_1" },
+        "meta=2": { "model": "thaumcraft:loot_urn_2" }
+    }
+}

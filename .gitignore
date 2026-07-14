@@ -1,0 +1,38 @@
+# ─── Reference material (decompiled TC4 + extracted original assets) ───
+# Not part of the port's own source — kept locally for reference only,
+# and excluded because it is the original mod's copyrighted content.
+/decompiled/
+/assets/
+/mappings/
+/src/
+/decompiled_errors.log
+
+# ─── Downloaded tooling & SDKs (large binaries, re-downloadable) ───
+/tools/
+/forge-mdk.zip
+
+# ─── Third-party dependency jars (not currently wired into the build;
+#     restore Baubles into mod/libs/ + uncomment deobfCompile when integrating) ───
+mod/libs/*.jar
+
+# ─── Gradle / build artifacts ───
+build/
+.gradle/
+out/
+bin/
+run/
+
+# ─── IDE ───
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+eclipse/
+*.launch
+.metadata/
+
+# ─── Misc ───
+*.log

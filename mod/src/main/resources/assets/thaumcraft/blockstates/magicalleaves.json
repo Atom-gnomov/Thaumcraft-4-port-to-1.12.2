@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:magicalleaves_0" },
+        "meta=1": { "model": "thaumcraft:magicalleaves_1" }
+    }
+}

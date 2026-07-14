@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:cosmeticopaque_0" },
+        "meta=1": { "model": "thaumcraft:cosmeticopaque_1" },
+        "meta=2": { "model": "thaumcraft:cosmeticopaque_2" }
+    }
+}

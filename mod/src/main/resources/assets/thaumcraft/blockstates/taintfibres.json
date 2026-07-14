@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "meta=0": { "model": "thaumcraft:taintfibres_0" },
+        "meta=1": { "model": "thaumcraft:taintfibres_1" },
+        "meta=2": { "model": "thaumcraft:taintfibres_2" },
+        "meta=3": { "model": "thaumcraft:taintfibres_3" }
+    }
+}

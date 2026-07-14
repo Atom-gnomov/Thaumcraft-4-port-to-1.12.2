@@ -5,8 +5,6 @@ Minecraft 1.7.10) to **Minecraft 1.12.2 / Forge**.
 
 ## Credits & lineage
 
-This repository is **based on the [`0FL01/Thaumcraft-4.2-FOREVA`](https://github.com/0FL01/Thaumcraft-4.2-FOREVA)**
-port, used under its MIT license, and continues its work.
 
 - **Original mod:** Thaumcraft 4.2.3.5 © 2013–2015 **Azanor**
 - **This repo:** further porting / bug-fixing / refinement, under the same MIT license.

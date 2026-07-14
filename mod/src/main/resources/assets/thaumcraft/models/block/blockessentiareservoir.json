@@ -1,0 +1,21 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "#reservoir",
+    "reservoir": "thaumcraft:blocks/essentiareservoir"
+  },
+  "elements": [
+    {
+      "from": [2, 2, 2],
+      "to": [14, 14, 14],
+      "faces": {
+        "down": { "texture": "#reservoir" },
+        "up": { "texture": "#reservoir" },
+        "north": { "texture": "#reservoir" },
+        "south": { "texture": "#reservoir" },
+        "west": { "texture": "#reservoir" },
+        "east": { "texture": "#reservoir" }
+      }
+    }
+  ]
+}

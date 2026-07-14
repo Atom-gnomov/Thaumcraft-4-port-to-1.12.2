@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "variant=0": { "model": "thaumcraft:double_slab_wood_0" },
-        "variant=1": { "model": "thaumcraft:double_slab_wood_1" }
-    }
-}

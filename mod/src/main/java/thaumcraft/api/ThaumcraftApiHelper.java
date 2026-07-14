@@ -1,33 +1,16 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.block.Block
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.Item
- *  net.minecraft.item.ItemStack
- *  net.minecraft.tileentity.TileEntity
- *  net.minecraft.util.MathHelper
- *  net.minecraft.util.MovingObjectPosition
- *  net.minecraft.util.Vec3
- *  net.minecraft.world.IBlockAccess
- *  net.minecraft.world.World
- *  net.minecraftforge.common.util.ForgeDirection
- */
 package thaumcraft.api;
 
 import java.util.HashMap;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.util.EnumFacing;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -153,7 +136,7 @@ public class ThaumcraftApiHelper {
     }
 
     public static TileEntity getConnectableTile(World world, int x, int y, int z, EnumFacing face) {
-        TileEntity te = world.getTileEntity(new BlockPos(x + face.getFrontOffsetX(), y + face.getFrontOffsetY(), z + face.getFrontOffsetZ()));
+        TileEntity te = world.getTileEntity(new BlockPos(x + face.getXOffset(), y + face.getYOffset(), z + face.getZOffset()));
         if (te instanceof IEssentiaTransport && ((IEssentiaTransport)te).isConnectable(face.getOpposite())) {
             return te;
         }
@@ -161,7 +144,7 @@ public class ThaumcraftApiHelper {
     }
 
     public static TileEntity getConnectableTile(IBlockAccess world, int x, int y, int z, EnumFacing face) {
-        TileEntity te = world.getTileEntity(new BlockPos(x + face.getFrontOffsetX(), y + face.getFrontOffsetY(), z + face.getFrontOffsetZ()));
+        TileEntity te = world.getTileEntity(new BlockPos(x + face.getXOffset(), y + face.getYOffset(), z + face.getZOffset()));
         if (te instanceof IEssentiaTransport && ((IEssentiaTransport)te).isConnectable(face.getOpposite())) {
             return te;
         }
@@ -211,8 +194,10 @@ public class ThaumcraftApiHelper {
     }
 
     public static RayTraceResult rayTraceIgnoringSource(World world, Vec3d v1, Vec3d v2, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
-        if (Double.isNaN(v1.x) || Double.isNaN(v1.y) || Double.isNaN(v1.z)) return null;
-        if (Double.isNaN(v2.x) || Double.isNaN(v2.y) || Double.isNaN(v2.z)) return null;
+        if (Double.isNaN(v1.x) || Double.isNaN(v1.y) || Double.isNaN(v1.z) ||
+            Double.isNaN(v2.x) || Double.isNaN(v2.y) || Double.isNaN(v2.z)) {
+            return null;
+        }
         return world.rayTraceBlocks(v1, v2, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
     }
 }

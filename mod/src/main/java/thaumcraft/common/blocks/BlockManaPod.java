@@ -1,83 +1,77 @@
 package thaumcraft.common.blocks;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigBlocks;
-import thaumcraft.common.lib.block.BlockTC;
+import thaumcraft.common.config.ConfigItems;
+import thaumcraft.common.items.ItemManaBean;
+import thaumcraft.common.tiles.TileManaPod;
 
-// Phase 1 port: mana pod — the "mana bean" crop that grows hanging under greatwood/silverwood in magical
-// biomes. Worldgen-only: no creative entry and no ItemBlock (breaking it yields Mana Beans in Phase 3).
-//
-// Faithful reproduction of the original per the user's gen-block checklist:
-//   * FORM    — render type 1 (cross/X billboard) via block/cross; collision box hangs from the top (y=1) and
-//               reaches further down as the pod matures (meta 0 = y 0.75-1.0 … meta 7 = y 0.125-1.0), x/z 0.25-0.75.
-//   * TEXTURE — meta 0 = manapod_stem_0, meta 1 = manapod_stem_1, meta 2..7 = manapod_stem_2 (func_149691_a).
-//   * COLOUR  — no tint (original registers no colour handler).
-//   * LIGHT   — light level == growth stage (getLightValue returns meta: 0 → 0 … 7 → 7).
-//   * SOUND   — inherits Block's default STONE step sound: TC4's BlockManaPod never calls setStepSound, so it is
-//               NOT a plant sound. Left unset here to match 1:1 (do not "fix" to PLANT).
-// Hardness scales with age: 0.5 / (8 - meta) → tougher when riper (meta 0 ≈ 0.0625 … meta 7 = 0.5).
-//
-// TODO Phase 3: TileManaPod (aspect storage + checkGrowth), Mana Bean drops (meta ≥ 2, meta 7 doubles ~66%),
-//   ItemManaBean pick-block (func_149694_d), aspect inheritance from adjacent pods.
-public class BlockManaPod extends BlockTC {
+public class BlockManaPod extends Block {
 
-    // Collision/selection box per growth stage — anchored at the top (maxY = 1.0), growing downward. From
-    // func_149719_a: minY = W12,W10,W8,W6,W5,W4,W3,W2 (i.e. 12/16 … 2/16) for meta 0..7.
-    private static final AxisAlignedBB[] POD_AABB = new AxisAlignedBB[8];
-    static {
-        final double[] minY16 = { 12.0, 10.0, 8.0, 6.0, 5.0, 4.0, 3.0, 2.0 };
-        for (int i = 0; i < 8; i++) {
-            POD_AABB[i] = new AxisAlignedBB(0.25, minY16[i] / 16.0, 0.25, 0.75, 1.0, 0.75);
-        }
-    }
+    public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 7);
+    private static final Map<String, Aspect> ASPECT_DROP_CACHE = new HashMap<>();
 
     public BlockManaPod() {
         super(Material.PLANTS);
-        this.setHardness(0.5f);       // base; scaled per-meta in getBlockHardness
         this.setTickRandomly(true);
-        // No setSoundType (→ Block default STONE) and no setCreativeTab, matching the original 1:1.
-    }
-
-    private static int stage(IBlockState state) {
-        int meta = state.getValue(META);
-        return meta < 0 ? 0 : (meta > 7 ? 7 : meta);
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return POD_AABB[stage(state)];
+        this.setHardness(0.5F);
+        this.setSoundType(net.minecraft.block.SoundType.PLANT);
+        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, 0));
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-        // Original func_149668_a returns the (non-null) per-stage bounds as the collision box.
-        return POD_AABB[stage(state)];
+    public int damageDropped(IBlockState state) {
+        return this.getMetaFromState(state);
     }
 
     @Override
     public int getLightValue(IBlockState state) {
-        // Light level equals the growth stage (meta 0..7).
-        return state.getValue(META);
+        return this.getMetaFromState(state);
     }
 
     @Override
-    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
-        // 0.5 / (8 - meta): riper pods are tougher.
-        return 0.5f / (8 - stage(state));
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return this.getMetaFromState(state);
+    }
+
+    @Override
+    public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
+        float divisor = Math.max(1.0F, 8.0F - this.getMetaFromState(blockState));
+        return super.getBlockHardness(blockState, worldIn, pos) / divisor;
+    }
+
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
@@ -91,48 +85,130 @@ public class BlockManaPod extends BlockTC {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
-        // Cross billboard uses a texture with transparency.
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    // --- Placement / support: must hang below a magical log (vanilla oak/spruce or greatwood/silverwood) in a
-    //     MAGICAL biome, exactly like the original func_149718_j / func_149707_d. ---
-
-    private boolean canBlockStay(World world, BlockPos pos) {
-        Biome biome = world.getBiome(pos);
-        boolean magical = biome != null && BiomeDictionary.hasType(biome, BiomeDictionary.Type.MAGICAL);
-        Block above = world.getBlockState(pos.up()).getBlock();
-        boolean log = above == Blocks.LOG || above == Blocks.LOG2 || above == ConfigBlocks.blockMagicalLog;
-        return magical && log;
+    public boolean hasTileEntity(IBlockState state) {
+        return true;
     }
 
     @Override
-    public boolean canPlaceBlockAt(World world, BlockPos pos) {
-        return super.canPlaceBlockAt(world, pos) && canBlockStay(world, pos);
-    }
-
-    @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
-        if (!world.isRemote && !canBlockStay(world, pos)) {
-            world.setBlockToAir(pos);
-        }
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return new TileManaPod();
     }
 
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
-        if (world.isRemote) {
-            return;
-        }
+        super.updateTick(world, pos, state, rand);
         if (!canBlockStay(world, pos)) {
+            this.dropBlockAsItem(world, pos, state, 0);
             world.setBlockToAir(pos);
+        } else if (rand.nextInt(30) == 0) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile instanceof TileManaPod) {
+                ((TileManaPod) tile).checkGrowth();
+            }
+            ASPECT_DROP_CACHE.remove(cacheKey(world, pos));
         }
-        // TODO Phase 3: TileManaPod.checkGrowth() (1-in-30 chance) to advance meta / set aspect.
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+        if (!canBlockStay(worldIn, pos)) {
+            this.dropBlockAsItem(worldIn, pos, state, 0);
+            worldIn.setBlockToAir(pos);
+        }
+    }
+
+    @Override
+    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side) {
+        return side == EnumFacing.DOWN && canBlockStay(worldIn, pos);
+    }
+
+    @Override
+    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileManaPod && ((TileManaPod) tile).aspect != null) {
+            ASPECT_DROP_CACHE.put(cacheKey(world, pos), ((TileManaPod) tile).aspect);
+        }
+        super.breakBlock(world, pos, state);
     }
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        // Phase 1: drops nothing (original drops air here; Mana Beans come from getDrops in Phase 3).
         return Items.AIR;
+    }
+
+    @Override
+    public int quantityDropped(Random random) {
+        return 0;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        List<ItemStack> drops = new ArrayList<>();
+        int metadata = this.getMetaFromState(state);
+        if (metadata < 2 || ConfigItems.itemManaBean == null) {
+            return drops;
+        }
+
+        Random random = world instanceof World ? ((World) world).rand : new Random();
+        int count = metadata == 7 && random.nextFloat() > 0.33F ? 2 : 1;
+        Aspect aspect = getDropAspect(world, pos);
+        for (int i = 0; i < count; i++) {
+            ItemStack bean = new ItemStack(ConfigItems.itemManaBean);
+            ((ItemManaBean) bean.getItem()).setAspects(bean, new AspectList().add(aspect, 1));
+            drops.add(bean);
+        }
+        if (world instanceof World) {
+            ASPECT_DROP_CACHE.remove(cacheKey((World) world, pos));
+        }
+        return drops;
+    }
+
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+        return ConfigItems.itemManaBean == null ? ItemStack.EMPTY : new ItemStack(ConfigItems.itemManaBean);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, TYPE);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 7));
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(TYPE);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 7));
+    }
+
+    private boolean canBlockStay(World world, BlockPos pos) {
+        if (!BiomeDictionary.hasType(world.getBiome(pos), BiomeDictionary.Type.MAGICAL)) return false;
+        Block support = world.getBlockState(pos.up()).getBlock();
+        return support == Blocks.LOG || support == Blocks.LOG2 || support == ConfigBlocks.blockMagicalLog;
+    }
+
+    private Aspect getDropAspect(IBlockAccess world, BlockPos pos) {
+        if (world instanceof World) {
+            Aspect cached = ASPECT_DROP_CACHE.get(cacheKey((World) world, pos));
+            if (cached != null) return cached;
+        }
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileManaPod && ((TileManaPod) tile).aspect != null) {
+            return ((TileManaPod) tile).aspect;
+        }
+        return Aspect.PLANT;
+    }
+
+    private static String cacheKey(World world, BlockPos pos) {
+        int dimension = world.provider == null ? 0 : world.provider.getDimension();
+        return dimension + ":" + pos.toLong();
     }
 }

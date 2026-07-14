@@ -1,332 +1,576 @@
 package thaumcraft.common.config;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSlab;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemDoor;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.registries.IForgeRegistry;
-import thaumcraft.common.Thaumcraft;
-import thaumcraft.common.blocks.BlockArcaneDoor;
-import thaumcraft.common.blocks.BlockCandle;
-import thaumcraft.common.blocks.BlockCosmeticOpaque;
-import thaumcraft.common.blocks.BlockCosmeticSlab;
-import thaumcraft.common.blocks.BlockCosmeticSolid;
-import thaumcraft.common.blocks.BlockCrystal;
-import thaumcraft.common.blocks.BlockCustomOre;
-import thaumcraft.common.blocks.BlockCustomPlant;
-import thaumcraft.common.blocks.BlockDeviceStub;
-import thaumcraft.common.blocks.BlockEldritch;
-import thaumcraft.common.blocks.BlockFluidDeath;
-import thaumcraft.common.blocks.BlockFluidPure;
-import thaumcraft.common.blocks.BlockFluxGas;
-import thaumcraft.common.blocks.BlockFluxGoo;
-import thaumcraft.common.blocks.BlockInvisibleTC;
-import thaumcraft.common.blocks.BlockLoot;
-import thaumcraft.common.blocks.BlockMagicalLeaves;
-import thaumcraft.common.blocks.BlockMagicalLog;
-import thaumcraft.common.blocks.BlockManaPod;
-import thaumcraft.common.blocks.BlockStairsTC;
-import thaumcraft.common.blocks.BlockTaint;
-import thaumcraft.common.blocks.BlockTaintFibres;
-import thaumcraft.common.lib.block.ItemBlockTC;
-import thaumcraft.common.lib.block.ItemSlabTC;
+import thaumcraft.common.blocks.*;
+import thaumcraft.common.blocks.ItemBlocks.*;
+import thaumcraft.common.compat.ThaumcraftSixCompatibility;
+import thaumcraft.common.tiles.*;
 
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID)
+import java.util.Locale;
+
 public class ConfigBlocks {
-    public static Block blockCustomOre;
-    public static Block blockCosmeticSolid;
-    public static Block blockCosmeticOpaque;
-    public static Block blockMagicalLog;
-    public static Block blockMagicalLeaves;
-    public static Block blockCustomPlant;
-    public static Block blockCrystal;
-    public static Block blockTaint;
-    public static Block blockTaintFibres;
-    public static Block blockStairsArcaneStone;
-    public static Block blockStairsEldritch;
-    public static Block blockStairsGreatwood;
-    public static Block blockStairsSilverwood;
-    public static Block blockSlabWood;
-    public static Block blockDoubleSlabWood;
-    public static Block blockSlabStone;
-    public static Block blockDoubleSlabStone;
-    public static Block blockCandle;
-    public static Block blockLootUrn;
-    public static Block blockLootCrate;
-    public static Block blockEldritch;
-    public static Block blockManaPod;
-    // B2 devices (Phase 1 inert stubs)
-    public static Block blockMetalDevice;
-    public static Block blockWoodenDevice;
-    public static Block blockStoneDevice;
-    public static Block blockTable;
-    public static Block blockJar;
-    public static Block blockTube;
-    public static Block blockMirror;
-    public static Block blockArcaneFurnace;
-    public static Block blockAlchemyFurnace;
-    public static Block blockChestHungry;
-    public static Block blockLifter;
-    public static Block blockMagicBox;
-    public static Block blockEssentiaReservoir;
-    public static Block blockAiry;
-    public static Block blockWarded;
-    // B3 special blocks (Phase 1)
-    public static Block blockArcaneDoor;
-    public static Block blockHole;
-    public static Block blockEldritchNothing;
-    public static Block blockEldritchPortal;
-    /** Door item (vanilla {@link ItemDoor}); referenced by {@link BlockArcaneDoor} for drops/pick-block. */
-    public static Item itemArcaneDoor;
 
-    // B4 fluids. The Fluid objects carry the physical props (luminosity/density/viscosity/rarity);
-    // still + flowing both point at the single animated TC texture, matching TC4 (iconStill==iconFlow).
-    public static final Fluid FLUXGOO = new Fluid("fluxGoo",
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluxgoo"),
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluxgoo"))
-            .setGaseous(false).setLuminosity(7).setDensity(8).setViscosity(6000);
-    public static final Fluid FLUXGAS = new Fluid("fluxGas",
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluxgas"),
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluxgas"))
-            .setGaseous(true).setLuminosity(7).setDensity(-4).setViscosity(2500);
-    public static final Fluid FLUIDPURE = new Fluid("fluidPure",
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluidpure"),
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluidpure"))
-            .setGaseous(false).setLuminosity(10).setViscosity(1000).setRarity(EnumRarity.RARE);
-    public static final Fluid FLUIDDEATH = new Fluid("fluidDeath",
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluiddeath"),
-            new ResourceLocation(Thaumcraft.MODID, "blocks/fluiddeath"))
-            .setGaseous(false).setLuminosity(8).setViscosity(1500).setRarity(EnumRarity.RARE);
-    public static Block blockFluxGoo;
-    public static Block blockFluxGas;
-    public static Block blockFluidPure;
-    public static Block blockFluidDeath;
+    // Fluid instances
+    public static Fluid FLUIDPURE;
+    public static Fluid FLUIDDEATH;
+    public static Fluid FLUXGOO;
+    public static Fluid FLUXGAS;
 
-    private static final String[] SLAB_WOOD_NAMES = { "greatwood", "silverwood" };
-    private static final String[] SLAB_STONE_NAMES = { "arcane", "eldritch" };
+    // Block instances
+    public static BlockJar blockJar;
+    public static BlockCrystal blockCrystal;
+    public static BlockTable blockTable;
+    public static BlockStoneDevice blockStoneDevice;
+    public static BlockWoodenDevice blockWoodenDevice;
+    public static BlockMetalDevice blockMetalDevice;
+    public static BlockTube blockTube;
+    public static BlockMirror blockMirror;
+    public static BlockEssentiaReservoir blockEssentiaReservoir;
+    public static BlockArcaneFurnace blockArcaneFurnace;
+    public static BlockAlchemyFurnace blockAlchemyFurnace;
+    public static BlockMagicalLog blockMagicalLog;
+    public static BlockMagicalLeaves blockMagicalLeaves;
+    public static BlockCustomOre blockCustomOre;
+    public static BlockCustomPlant blockCustomPlant;
+    public static BlockCosmeticSolid blockCosmeticSolid;
+    public static BlockCosmeticOpaque blockCosmeticOpaque;
+    public static BlockTaint blockTaint;
+    public static BlockTaintFibres blockTaintFibres;
+    public static BlockAiry blockAiry;
+    public static BlockFluxGoo blockFluxGoo;
+    public static BlockFluxGas blockFluxGas;
+    public static BlockFluidPure blockFluidPure;
+    public static BlockFluidDeath blockFluidDeath;
+    public static BlockManaPod blockManaPod;
+    public static BlockEldritch blockEldritch;
+    public static BlockEldritchNothing blockEldritchNothing;
+    public static BlockEldritchPortal blockEldritchPortal;
+    public static BlockStairsArcaneStone blockStairsArcaneStone;
+    public static BlockStairsGreatwood blockStairsGreatwood;
+    public static BlockStairsSilverwood blockStairsSilverwood;
+    public static BlockStairsEldritch blockStairsEldritch;
+    public static BlockCosmeticWoodSlab blockSlabWood;
+    public static BlockCosmeticWoodSlab blockDoubleSlabWood;
+    public static BlockCosmeticStoneSlab blockSlabStone;
+    public static BlockCosmeticStoneSlab blockDoubleSlabStone;
+    public static BlockLoot blockLootUrn;
+    public static BlockLoot blockLootCrate;
+    public static BlockChestHungry blockChestHungry;
+    public static BlockArcaneDoor blockArcaneDoor;
+    public static BlockLifter blockLifter;
+    public static BlockHole blockHole;
+    public static BlockWarded blockWarded;
+    public static BlockCandle blockCandle;
 
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        IForgeRegistry<Block> reg = event.getRegistry();
-        reg.register(blockCustomOre = register(new BlockCustomOre(), "blockCustomOre", "customore"));
-        reg.register(blockCosmeticSolid = register(new BlockCosmeticSolid(), "blockCosmeticSolid", "cosmeticsolid"));
-        reg.register(blockCosmeticOpaque = register(new BlockCosmeticOpaque(), "blockCosmeticOpaque", "cosmeticopaque"));
-        reg.register(blockMagicalLog = register(new BlockMagicalLog(), "blockMagicalLog", "magicallog"));
-        reg.register(blockMagicalLeaves = register(new BlockMagicalLeaves(), "blockMagicalLeaves", "magicalleaves"));
-        reg.register(blockCustomPlant = register(new BlockCustomPlant(), "blockCustomPlant", "customplant"));
-        reg.register(blockCrystal = register(new BlockCrystal(), "blockCrystal", "crystal"));
-        reg.register(blockTaint = register(new BlockTaint(), "blockTaint", "taint"));
-        reg.register(blockTaintFibres = register(new BlockTaintFibres(), "blockTaintFibres", "taintfibres"));
-        reg.register(blockCandle = register(new BlockCandle(), "blockCandle", "candle"));
-        reg.register(blockLootUrn = register(
-                new BlockLoot(Material.CLAY, true, ConfigSounds.SOUND_URNBREAK), "blockLootUrn", "loot_urn"));
-        reg.register(blockLootCrate = register(
-                new BlockLoot(Material.WOOD, false, SoundType.WOOD), "blockLootCrate", "loot_crate"));
-        reg.register(blockEldritch = register(new BlockEldritch(), "blockEldritch", "eldritch"));
-        // Mana pod is worldgen-only (grows hanging under magical logs) — registered as a block with no item/creative entry.
-        reg.register(blockManaPod = register(new BlockManaPod(), "blockManaPod", "mana_pod"));
+    // ItemBlock instances
+    public static BlockMagicalLeavesItem blockMagicalLeavesItem;
+    public static BlockCustomOreItem blockCustomOreItem;
+    public static BlockCustomPlantItem blockCustomPlantItem;
+    public static BlockCosmeticSolidItem blockCosmeticSolidItem;
+    public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
+    public static BlockTaintItem blockTaintItem;
+    public static BlockTaintFibresItem blockTaintFibresItem;
+    public static BlockAiryItem blockAiryItem;
+    public static BlockFluxGooItem blockFluxGooItem;
+    public static BlockFluxGasItem blockFluxGasItem;
+    public static BlockCrystalItem blockCrystalItem;
 
-        // ---- B2 devices: Phase 1 inert stubs. Correct material/sound/hardness/resistance/light/creative
-        //      metas + a representative cube texture per meta. TileEntity/TESR/GUI mechanics = TODO Phase 3.
-        //      Args: (material, sound, hardness, resistance, light, creativeMetas, hasTab, transparent, noCollision)
-        reg.register(blockMetalDevice = register(new BlockDeviceStub(Material.IRON, SoundType.METAL, 3.0f, 17.0f, 0f,
-                new int[] { 0, 1, 2, 3, 5, 7, 8, 9, 12, 13, 14 }, true, false, false), "blockMetalDevice", "metal_device"));
-        reg.register(blockWoodenDevice = register(new BlockDeviceStub(Material.WOOD, SoundType.WOOD, 2.5f, 10.0f, 0f,
-                new int[] { 0, 1, 2, 4, 5, 6, 7, 8 }, true, false, false), "blockWoodenDevice", "wooden_device"));
-        reg.register(blockStoneDevice = register(new BlockDeviceStub(Material.ROCK, SoundType.STONE, 3.0f, 25.0f, 0f,
-                new int[] { 0, 1, 2, 5, 8, 9, 10, 11, 12, 13, 14 }, true, false, false), "blockStoneDevice", "stone_device"));
-        reg.register(blockTable = register(new BlockDeviceStub(Material.WOOD, SoundType.WOOD, 2.5f, 0f, 0f,
-                new int[] { 0, 14, 15 }, true, false, false), "blockTable", "table"));
-        reg.register(blockJar = register(new BlockDeviceStub(Material.GLASS, SoundType.GLASS, 0.3f, 0f, 0.66f,
-                new int[] { 0, 1, 3 }, true, true, false), "blockJar", "jar"));
-        reg.register(blockTube = register(new BlockDeviceStub(Material.IRON, SoundType.METAL, 0.5f, 5.0f, 0f,
-                new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, true, true, false), "blockTube", "tube"));
-        reg.register(blockMirror = register(new BlockDeviceStub(Material.GLASS, SoundType.GLASS, 1.0f, 10.0f, 0f,
-                new int[] { 0, 6 }, true, true, false), "blockMirror", "mirror"));
-        // Furnaces have no creative tab in TC4 (built/obtained through gameplay) — item exists for /give only.
-        reg.register(blockArcaneFurnace = register(new BlockDeviceStub(Material.ROCK, SoundType.STONE, 10.0f, 500.0f, 0.2f,
-                new int[] { 0 }, false, false, false), "blockArcaneFurnace", "arcane_furnace"));
-        reg.register(blockAlchemyFurnace = register(new BlockDeviceStub(Material.IRON, SoundType.METAL, 3.0f, 17.0f, 0f,
-                new int[] { 0 }, false, false, false), "blockAlchemyFurnace", "alchemy_furnace"));
-        reg.register(blockChestHungry = register(new BlockDeviceStub(Material.WOOD, SoundType.WOOD, 2.5f, 0f, 0f,
-                new int[] { 0 }, true, false, false), "blockChestHungry", "chest_hungry"));
-        reg.register(blockLifter = register(new BlockDeviceStub(Material.WOOD, SoundType.WOOD, 2.5f, 15.0f, 0f,
-                new int[] { 0 }, true, false, false), "blockLifter", "lifter"));
-        // Magic box: has a tab but an empty creative list in TC4 (obtained via gameplay), so it never shows in creative.
-        reg.register(blockMagicBox = register(new BlockDeviceStub(Material.WOOD, SoundType.WOOD, 2.5f, 0f, 0f,
-                new int[] {}, true, false, false), "blockMagicBox", "magic_box"));
-        reg.register(blockEssentiaReservoir = register(new BlockDeviceStub(Material.IRON, SoundType.METAL, 2.0f, 17.0f, 0f,
-                new int[] { 0 }, true, false, false), "blockEssentiaReservoir", "essentia_reservoir"));
-        // Airy: invisible aura-node holder (MaterialAiry, blank texture, no collision, cloth step sound).
-        reg.register(blockAiry = register(new BlockDeviceStub(new MaterialAiry(MapColor.AIR), SoundType.CLOTH, 0f, 0f, 0f,
-                new int[] { 0 }, true, true, true), "blockAiry", "airy"));
-        // Warded: unbreakable, no creative item (placed by the Warding focus, masks another block — Phase 3).
-        reg.register(blockWarded = register(new BlockDeviceStub(Material.ROCK, SoundType.STONE, -1.0f, 999.0f, 0f,
-                new int[] {}, false, false, false), "blockWarded", "warded"));
+    public static void init() {
+        initFluids();
 
-        // ---- B3 special blocks. arcane_door is a real working door; the three below are invisible,
-        //      unbreakable, worldgen/mechanic-only blocks (no item, no creative) whose active behaviour
-        //      (owner gate / entity damage / teleport TileEntity) is TODO Phase 3.
-        reg.register(blockArcaneDoor = register(new BlockArcaneDoor(), "blockArcaneDoor", "arcane_door"));
-        // Hole: the temporary passage the Portable Hole focus phases through walls. Blank cutout cube,
-        // no collision, softly lit (0.7); unbreakable so it can't be mined while active.
-        reg.register(blockHole = register(new BlockDeviceStub(Material.ROCK, SoundType.GLASS, -1.0f, 6000000.0f, 0.7f,
-                new int[] {}, false, true, true), "blockHole", "hole"));
-        // Eldritch Nothingness: invisible void cube with a centred 0.75 collision core you bump into,
-        // faint glow (0.2), cloth step sound.
-        reg.register(blockEldritchNothing = register(new BlockInvisibleTC(Material.ROCK, SoundType.CLOTH, 0.2f, 6000000.0f,
-                new AxisAlignedBB(0.125, 0.125, 0.125, 0.875, 0.875, 0.875)), "blockEldritchNothing", "eldritch_nothing"));
-        // Eldritch Portal: invisible, intangible, full-bright (15) gateway sandwiched between two
-        // eldritch blocks; airy material, no collision.
-        reg.register(blockEldritchPortal = register(new BlockInvisibleTC(new MaterialAiry(MapColor.AIR), SoundType.STONE,
-                1.0f, 200000.0f, null), "blockEldritchPortal", "eldritch_portal"));
+        blockJar = (BlockJar) new BlockJar()
+                .setRegistryName("thaumcraft", legacyPath("blockJar"))
+                .setTranslationKey("thaumcraft.jar");
 
-        // ---- B4 fluids. Register the Fluid objects first, then their blocks (BlockFluidClassic/Finite
-        //      base handles flow/quanta + rendering via the forge:fluid model). Active effects
-        //      (dissolve damage / warp-removal / slime & taint spread), MaterialTaint and buckets
-        //      are TODO Phase 3.
-        registerFluid(FLUXGOO);
-        registerFluid(FLUXGAS);
-        registerFluid(FLUIDPURE);
-        registerFluid(FLUIDDEATH);
-        reg.register(blockFluxGoo = register(new BlockFluxGoo(FLUXGOO), "blockFluxGoo", "fluxgoo"));
-        reg.register(blockFluxGas = register(new BlockFluxGas(FLUXGAS), "blockFluxGas", "fluxgas"));
-        reg.register(blockFluidPure = register(new BlockFluidPure(FLUIDPURE), "blockFluidPure", "fluidpure"));
-        reg.register(blockFluidDeath = register(new BlockFluidDeath(FLUIDDEATH), "blockFluidDeath", "fluiddeath"));
+        blockCrystal = (BlockCrystal) new BlockCrystal()
+                .setRegistryName("thaumcraft", legacyPath("blockCrystal"))
+                .setTranslationKey("thaumcraft.crystal");
 
-        // Stairs — BlockStairs copies hardness/resistance/sound from the model state's block.
-        reg.register(blockStairsArcaneStone = register(
-                new BlockStairsTC(blockCosmeticSolid.getStateFromMeta(7)), "blockStairsArcaneStone", "stairs_arcane"));
-        reg.register(blockStairsEldritch = register(
-                new BlockStairsTC(blockCosmeticSolid.getStateFromMeta(11)), "blockStairsEldritch", "stairs_eldritch"));
-        reg.register(blockStairsGreatwood = register(
-                new BlockStairsTC(Blocks.PLANKS.getDefaultState()), "blockStairsGreatwood", "stairs_greatwood"));
-        reg.register(blockStairsSilverwood = register(
-                new BlockStairsTC(Blocks.PLANKS.getDefaultState()), "blockStairsSilverwood", "stairs_silverwood"));
+        blockTable = (BlockTable) new BlockTable()
+                .setRegistryName("thaumcraft", legacyPath("blockTable"))
+                .setTranslationKey("thaumcraft.table");
 
-        // Slabs — half slab + paired double slab per material family (wood: greatwood/silverwood, stone: arcane/eldritch).
-        blockSlabWood = new BlockCosmeticSlab(Material.WOOD, false, SLAB_WOOD_NAMES, null, SoundType.WOOD);
-        blockDoubleSlabWood = new BlockCosmeticSlab(Material.WOOD, true, SLAB_WOOD_NAMES, blockSlabWood, SoundType.WOOD);
-        blockSlabStone = new BlockCosmeticSlab(Material.ROCK, false, SLAB_STONE_NAMES, null, SoundType.STONE);
-        blockDoubleSlabStone = new BlockCosmeticSlab(Material.ROCK, true, SLAB_STONE_NAMES, blockSlabStone, SoundType.STONE);
-        reg.register(registerSlab(blockSlabWood, "blockCosmeticSlabWood", "slab_wood", 2.0f, 5.0f));
-        reg.register(registerSlab(blockDoubleSlabWood, "blockCosmeticSlabWood", "double_slab_wood", 2.0f, 5.0f));
-        reg.register(registerSlab(blockSlabStone, "blockCosmeticSlabStone", "slab_stone", 2.0f, 10.0f));
-        reg.register(registerSlab(blockDoubleSlabStone, "blockCosmeticSlabStone", "double_slab_stone", 2.0f, 10.0f));
+        blockStoneDevice = (BlockStoneDevice) new BlockStoneDevice()
+                .setRegistryName("thaumcraft", legacyPath("blockStoneDevice"))
+                .setTranslationKey("thaumcraft.stone_device");
+
+        blockWoodenDevice = (BlockWoodenDevice) new BlockWoodenDevice()
+                .setRegistryName("thaumcraft", legacyPath("blockWoodenDevice"))
+                .setTranslationKey("thaumcraft.wooden_device");
+
+        blockMetalDevice = (BlockMetalDevice) new BlockMetalDevice()
+                .setRegistryName("thaumcraft", legacyPath("blockMetalDevice"))
+                .setTranslationKey("thaumcraft.metal_device");
+
+        blockTube = (BlockTube) new BlockTube()
+                .setRegistryName("thaumcraft", legacyPath("blockTube"))
+                .setTranslationKey("thaumcraft.tube");
+
+        blockMirror = (BlockMirror) new BlockMirror()
+                .setRegistryName("thaumcraft", legacyPath("blockMirror"))
+                .setTranslationKey("thaumcraft.mirror");
+
+        blockEssentiaReservoir = (BlockEssentiaReservoir) new BlockEssentiaReservoir()
+                .setRegistryName("thaumcraft", legacyPath("blockEssentiaReservoir"))
+                .setTranslationKey("thaumcraft.essentia_reservoir");
+
+        blockArcaneFurnace = (BlockArcaneFurnace) new BlockArcaneFurnace()
+                .setRegistryName("thaumcraft", legacyPath("blockArcaneFurnace"))
+                .setTranslationKey("thaumcraft.arcane_furnace");
+
+        blockAlchemyFurnace = (BlockAlchemyFurnace) new BlockAlchemyFurnace()
+                .setRegistryName("thaumcraft", legacyPath("blockAlchemyFurnace"))
+                .setTranslationKey("thaumcraft.alchemy_furnace_advanced");
+
+        blockMagicalLog = (BlockMagicalLog) new BlockMagicalLog()
+                .setRegistryName("thaumcraft", legacyPath("blockMagicalLog"))
+                .setTranslationKey("thaumcraft.magical_log");
+
+        blockMagicalLeaves = (BlockMagicalLeaves) new BlockMagicalLeaves()
+                .setRegistryName("thaumcraft", legacyPath("blockMagicalLeaves"))
+                .setTranslationKey("thaumcraft.magical_leaves");
+
+        blockCustomOre = (BlockCustomOre) new BlockCustomOre()
+                .setRegistryName("thaumcraft", legacyPath("blockCustomOre"))
+                .setTranslationKey("thaumcraft.custom_ore");
+
+        blockCustomPlant = (BlockCustomPlant) new BlockCustomPlant()
+                .setRegistryName("thaumcraft", legacyPath("blockCustomPlant"))
+                .setTranslationKey("thaumcraft.custom_plant");
+
+        blockCosmeticSolid = (BlockCosmeticSolid) new BlockCosmeticSolid()
+                .setRegistryName("thaumcraft", legacyPath("blockCosmeticSolid"))
+                .setTranslationKey("thaumcraft.cosmetic_solid");
+
+        blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
+                .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
+                .setTranslationKey("thaumcraft.cosmetic_opaque");
+
+        blockTaint = (BlockTaint) new BlockTaint()
+                .setRegistryName("thaumcraft", legacyPath("blockTaint"))
+                .setTranslationKey("thaumcraft.taint");
+
+        blockTaintFibres = (BlockTaintFibres) new BlockTaintFibres()
+                .setRegistryName("thaumcraft", legacyPath("blockTaintFibres"))
+                .setTranslationKey("thaumcraft.taint_fibres");
+
+        blockAiry = (BlockAiry) new BlockAiry()
+                .setRegistryName("thaumcraft", legacyPath("blockAiry"))
+                .setTranslationKey("thaumcraft.airy");
+
+        blockFluxGoo = (BlockFluxGoo) new BlockFluxGoo()
+                .setRegistryName("thaumcraft", legacyPath("blockFluxGoo"))
+                .setTranslationKey("thaumcraft.flux_goo");
+
+        blockFluxGas = (BlockFluxGas) new BlockFluxGas()
+                .setRegistryName("thaumcraft", legacyPath("blockFluxGas"))
+                .setTranslationKey("thaumcraft.flux_gas");
+
+        blockFluidPure = (BlockFluidPure) new BlockFluidPure()
+                .setRegistryName("thaumcraft", legacyPath("blockFluidPure"))
+                .setTranslationKey("thaumcraft.fluid_pure");
+
+        blockFluidDeath = (BlockFluidDeath) new BlockFluidDeath()
+                .setRegistryName("thaumcraft", legacyPath("blockFluidDeath"))
+                .setTranslationKey("thaumcraft.fluid_death");
+
+        blockManaPod = (BlockManaPod) new BlockManaPod()
+                .setRegistryName("thaumcraft", legacyPath("blockManaPod"))
+                .setTranslationKey("thaumcraft.mana_pod");
+
+        blockEldritch = (BlockEldritch) new BlockEldritch()
+                .setRegistryName("thaumcraft", legacyPath("blockEldritch"))
+                .setTranslationKey("thaumcraft.eldritch");
+
+        blockEldritchNothing = (BlockEldritchNothing) new BlockEldritchNothing()
+                .setRegistryName("thaumcraft", legacyPath("blockEldritchNothing"))
+                .setTranslationKey("thaumcraft.eldritch_nothing");
+
+        blockEldritchPortal = (BlockEldritchPortal) new BlockEldritchPortal()
+                .setRegistryName("thaumcraft", legacyPath("blockPortalEldritch"))
+                .setTranslationKey("thaumcraft.eldritch_portal");
+
+        blockStairsArcaneStone = (BlockStairsArcaneStone) new BlockStairsArcaneStone()
+                .setRegistryName("thaumcraft", legacyPath("blockStairsArcaneStone"))
+                .setTranslationKey("thaumcraft.stairs_arcane");
+
+        blockStairsGreatwood = (BlockStairsGreatwood) new BlockStairsGreatwood()
+                .setRegistryName("thaumcraft", legacyPath("blockStairsGreatwood"))
+                .setTranslationKey("thaumcraft.stairs_greatwood");
+
+        blockStairsSilverwood = (BlockStairsSilverwood) new BlockStairsSilverwood()
+                .setRegistryName("thaumcraft", legacyPath("blockStairsSilverwood"))
+                .setTranslationKey("thaumcraft.stairs_silverwood");
+
+        blockStairsEldritch = (BlockStairsEldritch) new BlockStairsEldritch()
+                .setRegistryName("thaumcraft", legacyPath("blockStairsEldritch"))
+                .setTranslationKey("thaumcraft.stairs_eldritch");
+
+        blockSlabWood = (BlockCosmeticWoodSlab) new BlockCosmeticWoodSlab.Half()
+                .setRegistryName("thaumcraft", legacyPath("blockCosmeticSlabWood"))
+                .setTranslationKey("blockCosmeticSlabWood");
+
+        blockDoubleSlabWood = (BlockCosmeticWoodSlab) new BlockCosmeticWoodSlab.Double()
+                .setRegistryName("thaumcraft", legacyPath("blockCosmeticDoubleSlabWood"))
+                .setTranslationKey("blockCosmeticSlabWood");
+
+        blockSlabStone = (BlockCosmeticStoneSlab) new BlockCosmeticStoneSlab.Half()
+                .setRegistryName("thaumcraft", legacyPath("blockCosmeticSlabStone"))
+                .setTranslationKey("blockCosmeticSlabStone");
+
+        blockDoubleSlabStone = (BlockCosmeticStoneSlab) new BlockCosmeticStoneSlab.Double()
+                .setRegistryName("thaumcraft", legacyPath("blockCosmeticDoubleSlabStone"))
+                .setTranslationKey("blockCosmeticSlabStone");
+
+        blockLootUrn = (BlockLoot) new BlockLoot(net.minecraft.block.material.Material.CIRCUITS, 1)
+                .setRegistryName("thaumcraft", legacyPath("blockLootUrn"))
+                .setTranslationKey("thaumcraft.loot_urn");
+
+        blockLootCrate = (BlockLoot) new BlockLoot(net.minecraft.block.material.Material.WOOD, 2)
+                .setRegistryName("thaumcraft", legacyPath("blockLootCrate"))
+                .setTranslationKey("thaumcraft.loot_crate");
+
+        blockChestHungry = (BlockChestHungry) new BlockChestHungry()
+                .setRegistryName("thaumcraft", legacyPath("blockChestHungry"))
+                .setTranslationKey("thaumcraft.hungry_chest");
+
+        blockArcaneDoor = (BlockArcaneDoor) new BlockArcaneDoor()
+                .setRegistryName("thaumcraft", legacyPath("blockArcaneDoor"))
+                .setTranslationKey("thaumcraft.arcane_door");
+
+        blockLifter = (BlockLifter) new BlockLifter()
+                .setRegistryName("thaumcraft", legacyPath("blockLifter"))
+                .setTranslationKey("thaumcraft.lifter");
+
+        blockHole = (BlockHole) new BlockHole()
+                .setRegistryName("thaumcraft", legacyPath("blockHole"))
+                .setTranslationKey("thaumcraft.hole");
+
+        blockWarded = (BlockWarded) new BlockWarded()
+                .setRegistryName("thaumcraft", legacyPath("blockWarded"))
+                .setTranslationKey("thaumcraft.warded");
+
+        blockCandle = (BlockCandle) new BlockCandle()
+                .setRegistryName("thaumcraft", legacyPath("blockCandle"))
+                .setTranslationKey("blockCandle");
+
+        // ItemBlock instances (cast needed because setRegistryName returns Item)
+        blockMagicalLeavesItem = (BlockMagicalLeavesItem) new BlockMagicalLeavesItem(blockMagicalLeaves)
+                .setRegistryName(blockMagicalLeaves.getRegistryName());
+
+        blockCustomOreItem = (BlockCustomOreItem) new BlockCustomOreItem(blockCustomOre)
+                .setRegistryName(blockCustomOre.getRegistryName());
+
+        blockCustomPlantItem = (BlockCustomPlantItem) new BlockCustomPlantItem(blockCustomPlant)
+                .setRegistryName(blockCustomPlant.getRegistryName());
+
+        blockCosmeticSolidItem = (BlockCosmeticSolidItem) new BlockCosmeticSolidItem(blockCosmeticSolid)
+                .setRegistryName(blockCosmeticSolid.getRegistryName());
+
+        blockCosmeticOpaqueItem = (BlockCosmeticOpaqueItem) new BlockCosmeticOpaqueItem(blockCosmeticOpaque)
+                .setRegistryName(blockCosmeticOpaque.getRegistryName());
+
+        blockTaintItem = (BlockTaintItem) new BlockTaintItem(blockTaint)
+                .setRegistryName(blockTaint.getRegistryName());
+
+        blockTaintFibresItem = (BlockTaintFibresItem) new BlockTaintFibresItem(blockTaintFibres)
+                .setRegistryName(blockTaintFibres.getRegistryName());
+
+        blockAiryItem = (BlockAiryItem) new BlockAiryItem(blockAiry)
+                .setRegistryName(blockAiry.getRegistryName());
+
+        blockFluxGooItem = (BlockFluxGooItem) new BlockFluxGooItem(blockFluxGoo)
+                .setRegistryName(blockFluxGoo.getRegistryName());
+
+        blockFluxGasItem = (BlockFluxGasItem) new BlockFluxGasItem(blockFluxGas)
+                .setRegistryName(blockFluxGas.getRegistryName());
+
+        blockCrystalItem = (BlockCrystalItem) new BlockCrystalItem(blockCrystal)
+                .setRegistryName(blockCrystal.getRegistryName());
+
+        ThaumcraftSixCompatibility.initBlockAliases();
     }
 
-    @SubscribeEvent
-    public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
-        IForgeRegistry<Item> reg = event.getRegistry();
-        reg.register(makeItemBlock(blockCustomOre));
-        reg.register(makeItemBlock(blockCosmeticSolid));
-        reg.register(makeItemBlock(blockCosmeticOpaque));
-        reg.register(makeItemBlock(blockMagicalLog));
-        reg.register(makeItemBlock(blockMagicalLeaves));
-        reg.register(makeItemBlock(blockCustomPlant));
-        reg.register(makeItemBlock(blockCrystal));
-        reg.register(makeItemBlock(blockTaint));
-        reg.register(makeItemBlock(blockTaintFibres));
-        reg.register(makeItemBlock(blockCandle));
-        reg.register(makeItemBlock(blockLootUrn));
-        reg.register(makeItemBlock(blockLootCrate));
-        reg.register(makeItemBlock(blockEldritch));
-        // blockManaPod: no ItemBlock — it only exists via worldgen and drops Mana Beans (Phase 3), never itself.
-
-        // B2 devices. Furnaces/magic box keep an ItemBlock (for /give + recipes) even though they never appear
-        // in the creative tab; blockWarded has no item at all (created by the Warding focus).
-        reg.register(makeItemBlock(blockMetalDevice));
-        reg.register(makeItemBlock(blockWoodenDevice));
-        reg.register(makeItemBlock(blockStoneDevice));
-        reg.register(makeItemBlock(blockTable));
-        reg.register(makeItemBlock(blockJar));
-        reg.register(makeItemBlock(blockTube));
-        reg.register(makeItemBlock(blockMirror));
-        reg.register(makeItemBlock(blockArcaneFurnace));
-        reg.register(makeItemBlock(blockAlchemyFurnace));
-        reg.register(makeItemBlock(blockChestHungry));
-        reg.register(makeItemBlock(blockLifter));
-        reg.register(makeItemBlock(blockMagicBox));
-        reg.register(makeItemBlock(blockEssentiaReservoir));
-        reg.register(makeItemBlock(blockAiry));
-        // blockWarded: no ItemBlock (cannot be picked up).
-
-        // B3: the Arcane Door is placed by a vanilla ItemDoor (handles the two-halves placement).
-        // hole / eldritch_nothing / eldritch_portal have no item — they only exist via mechanics/worldgen.
-        ItemDoor doorItem = new ItemDoor(blockArcaneDoor);
-        doorItem.setRegistryName(blockArcaneDoor.getRegistryName());
-        // Reuses the original TC4 lang key item.ItemArcaneDoor.name (already present in en_us.lang).
-        doorItem.setUnlocalizedName("ItemArcaneDoor");
-        doorItem.setCreativeTab(Thaumcraft.tabTC);
-        itemArcaneDoor = doorItem;
-        reg.register(doorItem);
-
-        // B4 fluids: plain ItemBlocks so all four show in the creative tab and can be placed as
-        // source blocks for testing; custom flux goo/gas item behaviour + buckets are TODO Phase 3.
-        reg.register(makePlainItemBlock(blockFluxGoo));
-        reg.register(makePlainItemBlock(blockFluxGas));
-        reg.register(makePlainItemBlock(blockFluidPure));
-        reg.register(makePlainItemBlock(blockFluidDeath));
-
-        reg.register(makePlainItemBlock(blockStairsArcaneStone));
-        reg.register(makePlainItemBlock(blockStairsEldritch));
-        reg.register(makePlainItemBlock(blockStairsGreatwood));
-        reg.register(makePlainItemBlock(blockStairsSilverwood));
-        // Only the half slabs get an item (ItemSlab handles placing/combining into the double); doubles have no item.
-        reg.register(makeItemSlab(blockSlabWood, blockDoubleSlabWood));
-        reg.register(makeItemSlab(blockSlabStone, blockDoubleSlabStone));
+    public static Block[] getAllBlocks() {
+        return new Block[]{
+                blockJar,
+                blockCrystal,
+                blockTable,
+                blockStoneDevice,
+                blockWoodenDevice,
+                blockMetalDevice,
+                blockTube,
+                blockMirror,
+                blockEssentiaReservoir,
+                blockArcaneFurnace,
+                blockAlchemyFurnace,
+                blockMagicalLog,
+                blockMagicalLeaves,
+                blockCustomOre,
+                blockCustomPlant,
+                blockCosmeticSolid,
+                blockCosmeticOpaque,
+                blockTaint,
+                blockTaintFibres,
+                blockAiry,
+                blockFluxGoo,
+                blockFluxGas,
+                blockFluidPure,
+                blockFluidDeath,
+                blockManaPod,
+                blockEldritch,
+                blockEldritchNothing,
+                blockEldritchPortal,
+                blockStairsArcaneStone,
+                blockStairsGreatwood,
+                blockStairsSilverwood,
+                blockStairsEldritch,
+                blockSlabWood,
+                blockDoubleSlabWood,
+                blockSlabStone,
+                blockDoubleSlabStone,
+                blockLootUrn,
+                blockLootCrate,
+                blockChestHungry,
+                blockArcaneDoor,
+                blockLifter,
+                blockHole,
+                blockWarded,
+                blockCandle
+        };
     }
 
-    /** Registers a Fluid unless another mod already claimed the name (then that one wins). */
-    private static void registerFluid(Fluid fluid) {
-        if (!FluidRegistry.isFluidRegistered(fluid.getName())) {
-            FluidRegistry.registerFluid(fluid);
+    public static void registerItemBlocks(net.minecraftforge.registries.IForgeRegistry<net.minecraft.item.Item> registry) {
+        registry.registerAll(
+            blockMagicalLeavesItem,
+            blockCustomOreItem,
+            blockCustomPlantItem,
+            blockCosmeticSolidItem,
+            blockCosmeticOpaqueItem,
+            blockTaintItem,
+            blockTaintFibresItem,
+            blockAiryItem,
+            blockFluxGooItem,
+            blockFluxGasItem,
+            blockCrystalItem
+        );
+        registry.register(new BlockMetadataItem(blockTable)
+                .setRegistryName(blockTable.getRegistryName()));
+        registry.register(new BlockMetadataItem(blockStoneDevice)
+                .setRegistryName(blockStoneDevice.getRegistryName()));
+        registry.register(new BlockWoodenDeviceItem(blockWoodenDevice)
+                .setRegistryName(blockWoodenDevice.getRegistryName()));
+        registry.register(new BlockMetadataItem(blockMetalDevice)
+                .setRegistryName(blockMetalDevice.getRegistryName()));
+        registry.register(new BlockTubeItem(blockTube)
+                .setRegistryName(blockTube.getRegistryName()));
+        registry.register(new BlockMirrorItem(blockMirror)
+                .setRegistryName(blockMirror.getRegistryName()));
+        registry.register(new BlockEssentiaReservoirItem(blockEssentiaReservoir)
+                .setRegistryName(blockEssentiaReservoir.getRegistryName()));
+        registry.register(new BlockArcaneFurnaceItem(blockArcaneFurnace)
+                .setRegistryName(blockArcaneFurnace.getRegistryName()));
+        registry.register(new BlockMetadataItem(blockMagicalLog)
+                .setRegistryName(blockMagicalLog.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockManaPod)
+                .setRegistryName(blockManaPod.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockHole)
+                .setRegistryName(blockHole.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockWarded)
+                .setRegistryName(blockWarded.getRegistryName()));
+        registry.register(new BlockMetadataItem(blockCandle)
+                .setRegistryName(blockCandle.getRegistryName()));
+        registry.register(new BlockEldritchItem(blockEldritch)
+                .setRegistryName(blockEldritch.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockEldritchNothing)
+                .setRegistryName(blockEldritchNothing.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockEldritchPortal)
+                .setRegistryName(blockEldritchPortal.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockStairsArcaneStone)
+                .setRegistryName(blockStairsArcaneStone.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockStairsGreatwood)
+                .setRegistryName(blockStairsGreatwood.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockStairsSilverwood)
+                .setRegistryName(blockStairsSilverwood.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockStairsEldritch)
+                .setRegistryName(blockStairsEldritch.getRegistryName()));
+        registry.register(new BlockCosmeticWoodSlabItem(blockSlabWood)
+                .setRegistryName(blockSlabWood.getRegistryName()));
+        registry.register(new BlockCosmeticStoneSlabItem(blockSlabStone)
+                .setRegistryName(blockSlabStone.getRegistryName()));
+        registry.register(new BlockLootItem(blockLootUrn)
+                .setRegistryName(blockLootUrn.getRegistryName()));
+        registry.register(new BlockLootItem(blockLootCrate)
+                .setRegistryName(blockLootCrate.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockChestHungry)
+                .setRegistryName(blockChestHungry.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockLifter)
+                .setRegistryName(blockLifter.getRegistryName()));
+    }
+
+    public static void registerTileEntities() {
+        for (TileRegistration entry : TILE_REGISTRATIONS) {
+            GameRegistry.registerTileEntity(entry.tileClass, legacyLocation(entry.legacyToken));
         }
     }
 
-    private static Block register(Block block, String translationKey, String registryName) {
-        block.setUnlocalizedName(translationKey);
-        block.setRegistryName(new ResourceLocation(Thaumcraft.MODID, registryName));
-        return block;
+    public static String legacyPath(String legacyToken) {
+        return legacyToken.toLowerCase(Locale.ROOT);
     }
 
-    private static Block registerSlab(Block block, String translationKey, String registryName,
-                                      float hardness, float resistance) {
-        block.setUnlocalizedName(translationKey);
-        block.setRegistryName(new ResourceLocation(Thaumcraft.MODID, registryName));
-        block.setHardness(hardness);
-        block.setResistance(resistance);
-        return block;
+    private static void initFluids() {
+        Fluid existingPure = FluidRegistry.getFluid("fluidPure");
+        if (existingPure != null) {
+            FLUIDPURE = existingPure;
+        } else {
+            FLUIDPURE = new Fluid("fluidPure",
+                    new ResourceLocation("thaumcraft", "blocks/fluidpure"),
+                    new ResourceLocation("thaumcraft", "blocks/fluidpure"))
+                    .setGaseous(false)
+                    .setLuminosity(8)
+                    .setViscosity(1500)
+                    .setRarity(EnumRarity.RARE);
+            FluidRegistry.registerFluid(FLUIDPURE);
+        }
+
+        Fluid existingDeath = FluidRegistry.getFluid("fluidDeath");
+        if (existingDeath != null) {
+            FLUIDDEATH = existingDeath;
+        } else {
+            FLUIDDEATH = new Fluid("fluidDeath",
+                    new ResourceLocation("thaumcraft", "blocks/fluiddeath"),
+                    new ResourceLocation("thaumcraft", "blocks/fluiddeath"))
+                    .setGaseous(false)
+                    .setLuminosity(8)
+                    .setViscosity(1500)
+                    .setRarity(EnumRarity.RARE);
+            FluidRegistry.registerFluid(FLUIDDEATH);
+        }
+
+        Fluid existingFluxGoo = FluidRegistry.getFluid("fluxgoo");
+        if (existingFluxGoo != null) {
+            FLUXGOO = existingFluxGoo;
+        } else {
+            FLUXGOO = new Fluid("fluxgoo",
+                    new ResourceLocation("thaumcraft", "blocks/fluxgoo"),
+                    new ResourceLocation("thaumcraft", "blocks/fluxgoo"))
+                    .setGaseous(false)
+                    .setLuminosity(7)
+                    .setDensity(8)
+                    .setViscosity(6000)
+                    .setRarity(EnumRarity.RARE);
+            FluidRegistry.registerFluid(FLUXGOO);
+        }
+
+        Fluid existingFluxGas = FluidRegistry.getFluid("fluxgas");
+        if (existingFluxGas != null) {
+            FLUXGAS = existingFluxGas;
+        } else {
+            FLUXGAS = new Fluid("fluxgas",
+                    new ResourceLocation("thaumcraft", "blocks/fluxgas"),
+                    new ResourceLocation("thaumcraft", "blocks/fluxgas"))
+                    .setGaseous(true)
+                    .setLuminosity(7)
+                    .setDensity(-4)
+                    .setViscosity(2500)
+                    .setRarity(EnumRarity.RARE);
+            FluidRegistry.registerFluid(FLUXGAS);
+        }
     }
 
-    private static Item makeItemBlock(Block block) {
-        ItemBlock ib = new ItemBlockTC(block);
-        ib.setRegistryName(block.getRegistryName());
-        return ib;
+    private static ResourceLocation legacyLocation(String legacyToken) {
+        return new ResourceLocation("thaumcraft", legacyPath(legacyToken));
     }
 
-    private static Item makePlainItemBlock(Block block) {
-        ItemBlock ib = new ItemBlock(block);
-        ib.setRegistryName(block.getRegistryName());
-        return ib;
-    }
+    private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
+            new TileRegistration(TileJarFillable.class, "TileJar"),
+            new TileRegistration(TileJarBrain.class, "TileJarBrain"),
+            new TileRegistration(TileJarNode.class, "TileJarNode"),
+            new TileRegistration(TileJarFillableVoid.class, "TileJarVoid"),
+            new TileRegistration(TileCrystal.class, "TileCrystal"),
+            new TileRegistration(TileEldritchCrystal.class, "TileEldritchCrystal"),
+            new TileRegistration(TileNode.class, "TileNode"),
+            new TileRegistration(TileTable.class, "TileTable"),
+            new TileRegistration(TileMagicWorkbench.class, "TileMagicWorkbench"),
+            new TileRegistration(TileArcaneWorkbench.class, "TileArcaneWorkbench"),
+            new TileRegistration(TileDeconstructionTable.class, "TileDeconstructionTable"),
+            new TileRegistration(TileResearchTable.class, "TileResearchTable"),
+            new TileRegistration(TilePedestal.class, "TilePedestal"),
+            new TileRegistration(TileWandPedestal.class, "TileWandPedestal"),
+            new TileRegistration(TileAlchemyFurnace.class, "TileAlchemyFurnace"),
+            new TileRegistration(TileAlchemyFurnaceAdvanced.class, "TileAlchemyFurnaceAdvanced"),
+            new TileRegistration(TileAlchemyFurnaceAdvancedNozzle.class, "TileAlchemyFurnaceAdvancedNozzle"),
+            new TileRegistration(TileInfusionMatrix.class, "TileInfusionStone"),
+            new TileRegistration(TileInfusionPillar.class, "TileInfusionPillar"),
+            new TileRegistration(TileNodeStabilizer.class, "TileNodeStabilizer"),
+            new TileRegistration(TileNodeConverter.class, "TileNodeConverter"),
+            new TileRegistration(TileSpa.class, "TileSpa"),
+            new TileRegistration(TileFocalManipulator.class, "TileFocalManipulator"),
+            new TileRegistration(TileFluxScrubber.class, "TileFluxScrubber"),
+            new TileRegistration(TileCrucible.class, "TileCrucible"),
+            new TileRegistration(TileManaPod.class, "TileManaPod"),
+            new TileRegistration(TileArcaneBore.class, "TileArcaneBore"),
+            new TileRegistration(TileArcaneBoreBase.class, "TileArcaneBoreBase"),
+            new TileRegistration(TileArcaneFurnace.class, "TileArcaneFurnace"),
+            new TileRegistration(TileArcaneFurnaceNozzle.class, "TileArcaneFurnaceNozzle"),
+            new TileRegistration(TileBellows.class, "TileBellows"),
+            new TileRegistration(TileTube.class, "TileTube"),
+            new TileRegistration(TileTubeValve.class, "TileTubeValve"),
+            new TileRegistration(TileTubeFilter.class, "TileTubeFilter"),
+            new TileRegistration(TileTubeBuffer.class, "TileTubeBuffer"),
+            new TileRegistration(TileTubeRestrict.class, "TileTubeRestrict"),
+            new TileRegistration(TileTubeOneway.class, "TileTubeOneway"),
+            new TileRegistration(TileEssentiaCrystalizer.class, "TileEssentiaCrystalizer"),
+            new TileRegistration(TileCentrifuge.class, "TileCentrifuge"),
+            new TileRegistration(TileEssentiaReservoir.class, "TileEssentiaReservoir"),
+            new TileRegistration(TileMirror.class, "TileMirror"),
+            new TileRegistration(TileMirrorEssentia.class, "TileMirrorEssentia"),
+            new TileRegistration(TileVisRelay.class, "TileVisRelay"),
+            new TileRegistration(TileMagicWorkbenchCharger.class, "TileMagicWorkbenchCharger"),
+            new TileRegistration(TileOwned.class, "TileOwned"),
+            new TileRegistration(TileArcanePressurePlate.class, "TileArcanePressurePlate"),
+            new TileRegistration(TileBanner.class, "TileBanner"),
+            new TileRegistration(TileSensor.class, "TileSensor"),
+            new TileRegistration(TileLifter.class, "TileLifter"),
+            new TileRegistration(TileHole.class, "TileHole"),
+            new TileRegistration(TileWarded.class, "TileWarded"),
+            new TileRegistration(TileGrate.class, "TileGrate"),
+            new TileRegistration(TileAlembic.class, "TileSiphon"),
+            new TileRegistration(TileArcaneLamp.class, "TileArcaneLamp"),
+            new TileRegistration(TileArcaneLampGrowth.class, "TileArcaneLampGrowth"),
+            new TileRegistration(TileArcaneLampFertility.class, "TileArcaneLampFertility"),
+            new TileRegistration(TileBrainbox.class, "TileBrainbox"),
+            new TileRegistration(TileThaumatorium.class, "TileThaumatorium"),
+            new TileRegistration(TileThaumatoriumTop.class, "TileThaumatoriumTop"),
+            new TileRegistration(TileEtherealBloom.class, "TilePurifyTotem"),
+            new TileRegistration(TileNodeEnergized.class, "TileNodeEnergized"),
+            new TileRegistration(TileWardingStone.class, "TileWardingStone"),
+            new TileRegistration(TileWardingStoneFence.class, "TileWardingStoneFence"),
+            new TileRegistration(TileNitor.class, "TileNitor"),
+            new TileRegistration(TileEldritchPortal.class, "TileEldritchPortal"),
+            new TileRegistration(TileEldritchNothing.class, "TileEldritchNothing"),
+            new TileRegistration(TileEldritchLock.class, "TileEldritchLock"),
+            new TileRegistration(TileEldritchCrabSpawner.class, "TileEldritchCrabSpawner"),
+            new TileRegistration(TileEldritchAltar.class, "TileEldritchAltar"),
+            new TileRegistration(TileEldritchCap.class, "TileEldritchCap"),
+            new TileRegistration(TileEldritchObelisk.class, "TileEldritchObelisk"),
+            new TileRegistration(TileEldritchTrap.class, "TileEldritchTrap"),
+            new TileRegistration(TileChestHungry.class, "TileChestHungry")
+    };
 
-    private static Item makeItemSlab(Block half, Block dbl) {
-        ItemSlabTC ib = new ItemSlabTC(half, (BlockSlab) half, (BlockSlab) dbl);
-        ib.setRegistryName(half.getRegistryName());
-        return ib;
+    private static final class TileRegistration {
+        private final Class<? extends TileEntity> tileClass;
+        private final String legacyToken;
+
+        private TileRegistration(Class<? extends TileEntity> tileClass, String legacyToken) {
+            this.tileClass = tileClass;
+            this.legacyToken = legacyToken;
+        }
     }
 }

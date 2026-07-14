@@ -1,10 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.nbt.NBTTagCompound
- *  net.minecraft.tileentity.TileEntity
- */
 package thaumcraft.api;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,10 +24,10 @@ implements Comparable {
         this.z = tile.getPos().getZ();
     }
 
-    public BlockCoordinates(BlockCoordinates par1ChunkCoordinates) {
-        this.x = par1ChunkCoordinates.x;
-        this.y = par1ChunkCoordinates.y;
-        this.z = par1ChunkCoordinates.z;
+    public BlockCoordinates(BlockCoordinates par1BlockPos) {
+        this.x = par1BlockPos.x;
+        this.y = par1BlockPos.y;
+        this.z = par1BlockPos.z;
     }
 
     public boolean equals(Object par1Obj) {
@@ -66,8 +59,8 @@ implements Comparable {
         return f * f + f1 * f1 + f2 * f2;
     }
 
-    public float getDistanceSquaredToWorldCoordinates(BlockCoordinates par1ChunkCoordinates) {
-        return this.getDistanceSquared(par1ChunkCoordinates.x, par1ChunkCoordinates.y, par1ChunkCoordinates.z);
+    public float getDistanceSquaredToWorldCoordinates(BlockCoordinates par1BlockPos) {
+        return this.getDistanceSquared(par1BlockPos.x, par1BlockPos.y, par1BlockPos.z);
     }
 
     public int compareTo(Object par1Obj) {

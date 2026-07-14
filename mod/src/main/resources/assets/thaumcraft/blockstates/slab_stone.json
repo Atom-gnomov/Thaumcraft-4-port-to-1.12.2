@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "half=bottom,variant=0": { "model": "thaumcraft:slab_stone_bottom_0" },
-        "half=top,variant=0":    { "model": "thaumcraft:slab_stone_top_0" },
-        "half=bottom,variant=1": { "model": "thaumcraft:slab_stone_bottom_1" },
-        "half=top,variant=1":    { "model": "thaumcraft:slab_stone_top_1" }
-    }
-}

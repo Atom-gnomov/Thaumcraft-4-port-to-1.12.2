@@ -1,4 +1,0 @@
-{
-    "parent": "block/cube_column",
-    "textures": { "end": "thaumcraft:blocks/tallowblock_top", "side": "thaumcraft:blocks/tallowblock" }
-}

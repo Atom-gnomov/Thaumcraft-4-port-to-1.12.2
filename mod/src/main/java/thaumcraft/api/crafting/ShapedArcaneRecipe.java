@@ -1,19 +1,7 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.block.Block
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.inventory.IInventory
- *  net.minecraft.item.Item
- *  net.minecraft.item.ItemStack
- *  net.minecraft.world.World
- *  net.minecraftforge.oredict.OreDictionary
- */
 package thaumcraft.api.crafting;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -157,15 +145,15 @@ implements IArcaneRecipe {
                     if (this.checkItemEquals((ItemStack)target, slot)) continue;
                     return false;
                 }
-                if (target instanceof ArrayList) {
+                if (target instanceof List) {
                     boolean matched = false;
-                    for (ItemStack item : (ArrayList<ItemStack>)target) {
+                    for (ItemStack item : (List<ItemStack>)target) {
                         matched = matched || this.checkItemEquals(item, slot);
                     }
                     if (matched) continue;
                     return false;
                 }
-                if (target != null || slot == null) continue;
+                if (target == null && (slot == null || slot.isEmpty())) continue;
                 return false;
             }
         }
@@ -173,7 +161,9 @@ implements IArcaneRecipe {
     }
 
     private boolean checkItemEquals(ItemStack target, ItemStack input) {
-        if (input == null && target != null || input != null && target == null) {
+        boolean inputEmpty = input == null || input.isEmpty();
+        boolean targetEmpty = target == null || target.isEmpty();
+        if (inputEmpty || targetEmpty) {
             return false;
         }
         return !(target.getItem() != input.getItem() || target.hasTagCompound() && !ThaumcraftApiHelper.areItemStackTagsEqualForCrafting(input, target) || target.getMetadata() != Short.MAX_VALUE && target.getMetadata() != input.getMetadata());
@@ -203,4 +193,3 @@ implements IArcaneRecipe {
         return this.research;
     }
 }
-

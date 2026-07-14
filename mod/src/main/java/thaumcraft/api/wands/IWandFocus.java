@@ -1,18 +1,8 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.ItemStack
- *  net.minecraft.util.IIcon
- *  net.minecraft.util.MovingObjectPosition
- *  net.minecraft.world.World
- */
 package thaumcraft.api.wands;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.AspectList;
@@ -20,9 +10,9 @@ import thaumcraft.api.aspects.AspectList;
 public interface IWandFocus {
     public int getFocusColor();
 
-    public ResourceLocation getFocusDepthLayerIcon();
+    public TextureAtlasSprite getFocusDepthLayerIcon();
 
-    public ResourceLocation getOrnament();
+    public TextureAtlasSprite getOrnament();
 
     public WandFocusAnimation getAnimation();
 

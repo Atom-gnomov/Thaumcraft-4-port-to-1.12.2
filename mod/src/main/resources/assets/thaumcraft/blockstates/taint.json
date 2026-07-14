@@ -1,7 +1,0 @@
-{
-    "variants": {
-        "meta=0": { "model": "thaumcraft:taint_0" },
-        "meta=1": { "model": "thaumcraft:taint_1" },
-        "meta=2": { "model": "thaumcraft:taint_2" }
-    }
-}

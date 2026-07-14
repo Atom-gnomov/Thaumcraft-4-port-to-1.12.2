@@ -1,10 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.item.ItemStack
- *  net.minecraftforge.oredict.OreDictionary
- */
 package thaumcraft.api.crafting;
 
 import java.util.ArrayList;
@@ -35,7 +28,7 @@ public class CrucibleRecipe {
         }
         if (cat instanceof ItemStack) {
             hc = hc + ((ItemStack)cat).toString();
-        } else if (cat instanceof ArrayList && ((ArrayList)this.catalyst).size() > 0) {
+        } else if (cat instanceof ArrayList && ((ArrayList<ItemStack>)this.catalyst).size() > 0) {
             for (ItemStack is : (ArrayList<ItemStack>)this.catalyst) {
                 hc = hc + is.toString();
             }
@@ -48,7 +41,7 @@ public class CrucibleRecipe {
         if (this.catalyst instanceof ItemStack && !ThaumcraftApiHelper.itemMatches((ItemStack)this.catalyst, cat, false)) {
             return false;
         }
-        if (this.catalyst instanceof ArrayList && ((ArrayList)this.catalyst).size() > 0 && !ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{cat}, ores = ((ArrayList<ItemStack>)this.catalyst).toArray(new ItemStack[0]))) {
+        if (this.catalyst instanceof ArrayList && ((ArrayList<ItemStack>)this.catalyst).size() > 0 && !ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{cat}, ores = ((ArrayList<ItemStack>)this.catalyst).toArray(new ItemStack[0]))) {
             return false;
         }
         if (itags == null) {
@@ -66,7 +59,7 @@ public class CrucibleRecipe {
         if (this.catalyst instanceof ItemStack && ThaumcraftApiHelper.itemMatches((ItemStack)this.catalyst, cat, false)) {
             return true;
         }
-        return this.catalyst instanceof ArrayList && ((ArrayList)this.catalyst).size() > 0 && ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{cat}, ores = ((ArrayList<ItemStack>)this.catalyst).toArray(new ItemStack[0]));
+        return this.catalyst instanceof ArrayList && ((ArrayList<ItemStack>)this.catalyst).size() > 0 && ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{cat}, ores = ((ArrayList<ItemStack>)this.catalyst).toArray(new ItemStack[0]));
     }
 
     public AspectList removeMatching(AspectList itags) {

@@ -1,7 +1,14 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net/"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -10,44 +17,88 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = '4.2.3.5-1.12.2'
-group = 'thaumcraft'
-archivesBaseName = 'Thaumcraft'
+version = "1.0.0"
+ext.advertisedModVersion = "6.1.BETA26"
+group = "thaumcraft"
+archivesBaseName = "Thaumcraft"
 
 sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
 
 minecraft {
-    version = '1.12.2-14.23.5.2847'
-    runDir = 'run'
-    mappings = 'snapshot_20171003'
-    // accessTransformer applied for protected/private MC members that TC needs
-    // makeObfSourceJar = false
+    version = "1.12.2-14.23.5.2847"
+    runDir = "run"
+    mappings = "stable_39"
+
+    replace '@VERSION@', project.ext.advertisedModVersion
+    replaceIn 'Thaumcraft.java'
 }
 
 repositories {
-    maven { // Baubles / JEI (CurseMaven-style) - add when integrations are ported
-        url 'https://maven.blamejared.com'
+    maven {
+        name = "curse"
+        url = "https://www.cursemaven.com"
     }
-    flatDir { dirs 'libs' } // local deobf jars (Baubles 1.12.2, etc.)
 }
 
 dependencies {
-    // Baubles 1.12.2 dependency will be added here once the jar is placed in libs/
-    // deobfCompile 'baubles:Baubles:1.12-1.5.2'
+    compile 'curse.maven:baubles-227083:2518667'
+    testCompile 'junit:junit:4.12'
 }
 
 processResources {
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
+    inputs.property 'advertisedModVersion', project.ext.advertisedModVersion
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version': project.version, 'mcversion': project.minecraft.version
+        expand version: project.ext.advertisedModVersion
     }
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'assets/thaumcraft/lang/en_us.lang'
+        rename { fileName -> fileName == 'en_us.lang' ? 'en_US.lang' : fileName }
+    }
 }
+
+jar {
+    classifier = 'universal'
+    from sourceSets.main.output
+}
+
+// API jar: packages thaumcraft.api.* for addon mods
+task apiJar(type: Jar) {
+    classifier = 'api'
+    from(sourceSets.main.output) {
+        include 'thaumcraft/api/**'
+    }
+}
+
+// Dev jar: all classes + sources for IDE debugging
+task devJar(type: Jar) {
+    classifier = 'dev'
+    from sourceSets.main.output
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives apiJar
+    archives devJar
+}
+
+// Re-obfuscation: production main jar only. Keep API/dev jars readable.
+reobf {
+    jar { }
+}
+
+// CI test configuration: exclude client-only tests when running in CI
+// (client tests require display/GL context unavailable in headless CI)
+test {
+    if (System.getenv('CI') == 'true' || project.hasProperty('ci')) {
+        exclude 'thaumcraft/client/**'
+    }
+}
+
+idea { module { inheritOutputDirs = true } }

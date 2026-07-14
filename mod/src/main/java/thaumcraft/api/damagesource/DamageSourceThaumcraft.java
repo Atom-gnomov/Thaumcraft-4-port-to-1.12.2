@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.Entity
- *  net.minecraft.entity.EntityLivingBase
- *  net.minecraft.util.DamageSource
- *  net.minecraft.util.EntityDamageSource
- */
 package thaumcraft.api.damagesource;
 
 import net.minecraft.entity.Entity;
@@ -41,4 +32,3 @@ extends DamageSource {
         return new EntityDamageSource("tentacle", (Entity)par0EntityLiving);
     }
 }
-

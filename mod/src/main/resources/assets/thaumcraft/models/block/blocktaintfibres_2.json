@@ -1,0 +1,6 @@
+{
+  "parent": "thaumcraft:block/cross_tinted",
+  "textures": {
+    "cross": "thaumcraft:blocks/taintgrass2"
+  }
+}

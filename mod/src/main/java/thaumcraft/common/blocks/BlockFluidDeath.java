@@ -1,21 +1,45 @@
 package thaumcraft.common.blocks;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.BlockFluidFinite;
-import net.minecraftforge.fluids.Fluid;
+import thaumcraft.api.damagesource.DamageSourceThaumcraft;
 import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.config.ConfigBlocks;
 
-/**
- * Liquid Death — a finite ({@link BlockFluidFinite}) pool that dissolves living things. Luminosity 8,
- * rare, 4 quanta per block. Phase-1 port: correct fluid base + material + creative tab.
- *
- * <p><b>TODO Phase 3:</b> deals {@code DamageSourceThaumcraft.dissolve} (amount scales with level) to
- * living entities inside it; red slimy-bubble particles + occasional lavapop sfx.
- */
 public class BlockFluidDeath extends BlockFluidFinite {
-    public BlockFluidDeath(Fluid fluid) {
-        super(fluid, Material.WATER);
+
+    /** Non-null zero-size AABB.  Block.NULL_AABB is null in 1.12.2; callers like
+     *  WalkNodeProcessor.getSafePoint do not null-check, so we must never return null. */
+    private static final AxisAlignedBB ZERO_AABB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+
+    public static final int FULL_LEVEL = 3;
+
+    public BlockFluidDeath() {
+        super(ConfigBlocks.FLUIDDEATH, Material.WATER);
         this.setCreativeTab(Thaumcraft.tabTC);
         this.setQuantaPerBlock(4);
+    }
+
+    /** Override required: BlockFluidBase.getBoundingBox returns null (Block.NULL_AABB),
+     *  which causes NPE in vanilla WalkNodeProcessor.getSafePoint. */
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return ZERO_AABB;
+    }
+
+    @Override
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+        if (!world.isRemote && entity instanceof EntityLivingBase) {
+            int level = state.getValue(BlockFluidBase.LEVEL);
+            entity.attackEntityFrom(DamageSourceThaumcraft.dissolve, (float) level + 1.0F);
+        }
     }
 }

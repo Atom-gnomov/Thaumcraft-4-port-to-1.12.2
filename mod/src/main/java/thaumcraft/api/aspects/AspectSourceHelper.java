@@ -1,11 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraftforge.fml.common.FMLLog
- *  net.minecraft.tileentity.TileEntity
- *  net.minecraftforge.common.util.EnumFacing
- */
 package thaumcraft.api.aspects;
 
 import net.minecraftforge.fml.common.FMLLog;

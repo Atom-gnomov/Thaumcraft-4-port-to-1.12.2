@@ -1,11 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.util.ResourceLocation
- *  net.minecraft.util.StatCollector
- *  org.apache.commons.lang3.text.WordUtils
- */
 package thaumcraft.api.aspects;
 
 import java.util.ArrayList;
@@ -22,7 +14,7 @@ public class Aspect {
     private String chatcolor;
     ResourceLocation image;
     int blend;
-    public static LinkedHashMap<String, Aspect> aspects = new LinkedHashMap();
+    public static LinkedHashMap<String, Aspect> aspects = new AspectRegistryMap();
     public static final Aspect AIR = new Aspect("aer", 0xFFFF7E, "e", 1);
     public static final Aspect EARTH = new Aspect("terra", 5685248, "2", 1);
     public static final Aspect FIRE = new Aspect("ignis", 16734721, "c", 1);
@@ -50,6 +42,7 @@ public class Aspect {
     public static final Aspect MAGIC = new Aspect("praecantatio", 9896128, new Aspect[]{VOID, ENERGY});
     public static final Aspect AURA = new Aspect("auram", 0xFFC0FF, new Aspect[]{MAGIC, AIR});
     public static final Aspect TAINT = new Aspect("vitium", 0x800080, new Aspect[]{MAGIC, ENTROPY});
+    public static final Aspect FLUX = TAINT;
     public static final Aspect SLIME = new Aspect("limus", 129024, new Aspect[]{LIFE, WATER});
     public static final Aspect PLANT = new Aspect("herba", 109568, new Aspect[]{LIFE, EARTH});
     public static final Aspect TREE = new Aspect("arbor", 8873265, new Aspect[]{AIR, PLANT});
@@ -71,6 +64,18 @@ public class Aspect {
     public static final Aspect CLOTH = new Aspect("pannus", 15395522, new Aspect[]{TOOL, BEAST});
     public static final Aspect MECHANISM = new Aspect("machina", 0x8080A0, new Aspect[]{MOTION, TOOL});
     public static final Aspect TRAP = new Aspect("vinculum", 10125440, new Aspect[]{MOTION, ENTROPY});
+
+    // TC6 compatibility: 1.12 addons may link these newer aspect constants
+    // directly. Keep the gameplay registry strictly TC4.2, but expose TC6
+    // names as aliases so optional bridges do not fail with NoSuchFieldError.
+    @Deprecated
+    public static final Aspect ALCHEMY = MAGIC;
+    @Deprecated
+    public static final Aspect AVERSION = WEAPON;
+    @Deprecated
+    public static final Aspect PROTECT = ARMOR;
+    @Deprecated
+    public static final Aspect DESIRE = GREED;
 
     public Aspect(String tag, int color, Aspect[] components, ResourceLocation image, int blend) {
         if (aspects.containsKey(tag)) {
@@ -106,7 +111,15 @@ public class Aspect {
     }
 
     public String getLocalizedDescription() {
-        return I18n.translateToLocal((String)("tc.aspect." + this.tag));
+        String description = I18n.translateToLocal((String)("tc.aspect." + this.tag));
+        if (description.equals("tc.aspect." + this.tag)) {
+            // The 1.12 asset corpus keeps the human-readable aspect descriptions under tc.aspect.help.*.
+            String helpDescription = I18n.translateToLocal((String)("tc.aspect.help." + this.tag));
+            if (!helpDescription.equals("tc.aspect.help." + this.tag)) {
+                description = helpDescription;
+            }
+        }
+        return description;
     }
 
     public String getTag() {
@@ -130,7 +143,39 @@ public class Aspect {
     }
 
     public static Aspect getAspect(String tag) {
-        return aspects.get(tag);
+        Aspect aspect = aspects.get(tag);
+        return aspect != null ? aspect : getLegacyAspect(tag);
+    }
+
+    private static Aspect getLegacyAspect(Object tag) {
+        if (!(tag instanceof String)) {
+            return null;
+        }
+        switch ((String) tag) {
+            case "alkimia":
+                return MAGIC;
+            case "aversio":
+                return WEAPON;
+            case "praemunio":
+                return ARMOR;
+            case "desiderium":
+                return GREED;
+            default:
+                return null;
+        }
+    }
+
+    private static final class AspectRegistryMap extends LinkedHashMap<String, Aspect> {
+        @Override
+        public Aspect get(Object key) {
+            Aspect aspect = super.get(key);
+            return aspect != null ? aspect : getLegacyAspect(key);
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return super.containsKey(key) || getLegacyAspect(key) != null;
+        }
     }
 
     public int getBlend() {
@@ -173,4 +218,3 @@ public class Aspect {
         this.chatcolor = chatcolor;
     }
 }
-

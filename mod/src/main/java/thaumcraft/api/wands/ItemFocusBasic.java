@@ -1,23 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraftforge.fml.relauncher.Side
- *  net.minecraftforge.fml.relauncher.SideOnly
- *  net.minecraft.entity.Entity
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.EnumRarity
- *  net.minecraft.item.Item
- *  net.minecraft.item.ItemStack
- *  net.minecraft.nbt.NBTBase
- *  net.minecraft.nbt.NBTTagCompound
- *  net.minecraft.nbt.NBTTagList
- *  net.minecraft.util.TextFormatting
- *  net.minecraft.util.IIcon
- *  net.minecraft.util.MovingObjectPosition
- *  net.minecraft.util.StatCollector
- *  net.minecraft.world.World
- */
 package thaumcraft.api.wands;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +5,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
@@ -34,7 +15,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
@@ -44,17 +25,25 @@ import thaumcraft.api.wands.FocusUpgradeType;
 
 public class ItemFocusBasic
 extends Item {
+    public TextureAtlasSprite icon;
+
     public ItemFocusBasic() {
         this.maxStackSize = 1;
         this.canRepair = false;
         this.setMaxDamage(0);
     }
 
-    public boolean isDamageable() {
+    @SideOnly(value=Side.CLIENT)
+    public TextureAtlasSprite getSpriteNumber() {
+        return this.icon;
+    }
+
+    public boolean isRepairable() {
         return false;
     }
 
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, World worldIn, List<String> list, ITooltipFlag flagIn) {
         AspectList al = this.getVisCost(stack);
         if (al != null && al.size() > 0) {
             list.add(I18n.translateToLocal((String)(this.isVisCostPerTick(stack) ? "item.Focus.cost2" : "item.Focus.cost1")));
@@ -64,10 +53,11 @@ extends Item {
                 list.add(" \u00a7" + aspect.getChatcolor() + aspect.getName() + "\u00a7r x " + amount);
             }
         }
-        this.addFocusInformation(stack, player, list, par4);
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+        this.addFocusInformation(stack, mc.player, list, flagIn.isAdvanced());
     }
 
-    public void addFocusInformation(ItemStack focusstack, EntityPlayer player, List list, boolean par4) {
+    public void addFocusInformation(ItemStack focusstack, EntityPlayer player, List<String> list, boolean advanced) {
         LinkedHashMap<Short, Integer> map = new LinkedHashMap<Short, Integer>();
         for (short id : this.getAppliedUpgrades(focusstack)) {
             if (id < 0) continue;
@@ -94,11 +84,11 @@ extends Item {
         return 0;
     }
 
-    public ResourceLocation getOrnament(ItemStack focusstack) {
+    public TextureAtlasSprite getOrnament(ItemStack focusstack) {
         return null;
     }
 
-    public ResourceLocation getFocusDepthLayerIcon(ItemStack focusstack) {
+    public TextureAtlasSprite getFocusDepthLayerIcon(ItemStack focusstack) {
         return null;
     }
 
@@ -202,11 +192,15 @@ extends Item {
         }
     }
 
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public boolean acceptsEnchant(int id) {
+        return true;
+    }
+
+    public void onUpdate(ItemStack stack, World world, Entity entity, int p_77663_4_, boolean p_77663_5_) {
         if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("ench")) {
             stack.getTagCompound().removeTag("ench");
         }
-        super.onUpdate(stack, world, entity, itemSlot, isSelected);
+        super.onUpdate(stack, world, entity, p_77663_4_, p_77663_5_);
     }
 
     public static enum WandFocusAnimation {
@@ -215,4 +209,3 @@ extends Item {
 
     }
 }
-

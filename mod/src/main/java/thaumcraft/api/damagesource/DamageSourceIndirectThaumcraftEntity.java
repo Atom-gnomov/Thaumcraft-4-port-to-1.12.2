@@ -1,11 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.Entity
- *  net.minecraft.util.DamageSource
- *  net.minecraft.util.EntityDamageSourceIndirect
- */
 package thaumcraft.api.damagesource;
 
 import net.minecraft.entity.Entity;
@@ -22,12 +14,12 @@ extends EntityDamageSourceIndirect {
         super(par1Str, par2Entity, par3Entity);
     }
 
-    public DamageSource setFireDamage() {
+    public DamageSource func_76361_j() {
         this.fireDamage = true;
         return this;
     }
 
-    public DamageSource setDamageBypassesArmor() {
+    public DamageSource func_76348_h() {
         this.isUnblockable = true;
         this.hungerDamage = 0.0f;
         return this;

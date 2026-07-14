@@ -1,10 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.EntityLivingBase
- *  net.minecraft.item.ItemStack
- */
 package thaumcraft.api.nodes;
 
 import net.minecraft.entity.EntityLivingBase;

@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.inventory.IInventory
- *  net.minecraft.item.ItemStack
- *  net.minecraft.world.World
- */
 package thaumcraft.api.crafting;
 
 import net.minecraft.entity.player.EntityPlayer;

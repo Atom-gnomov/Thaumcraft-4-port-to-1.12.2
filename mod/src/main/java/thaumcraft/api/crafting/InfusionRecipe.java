@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.ItemStack
- *  net.minecraft.world.World
- *  net.minecraftforge.oredict.OreDictionary
- */
 package thaumcraft.api.crafting;
 
 import java.util.ArrayList;
@@ -73,7 +64,6 @@ public class InfusionRecipe {
     public static boolean areItemStacksEqual(ItemStack stack0, ItemStack stack1, boolean fuzzy) {
         boolean damage;
         ItemStack[] ores;
-        Integer od;
         if (stack0 == null && stack1 != null) {
             return false;
         }
@@ -88,10 +78,9 @@ public class InfusionRecipe {
             return false;
         }
         if (fuzzy) {
-            for (int oid : OreDictionary.getOreIDs(stack0)) {
-                if (ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{stack1}, OreDictionary.getOres(OreDictionary.getOreName(oid)).toArray(new ItemStack[0]))) {
-                    return true;
-                }
+            int[] oreIDs = OreDictionary.getOreIDs(stack0);
+            if (oreIDs.length > 0 && ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{stack1}, ores = OreDictionary.getOres(OreDictionary.getOreName(oreIDs[0])).toArray(new ItemStack[0]))) {
+                return true;
             }
         }
         boolean bl = damage = stack0.getMetadata() == stack1.getMetadata() || stack1.getMetadata() == Short.MAX_VALUE;

@@ -1,9 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.util.ResourceLocation
- */
 package thaumcraft.api.research;
 
 import java.util.HashMap;

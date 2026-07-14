@@ -1,63 +1,54 @@
-# Thaumcraft 4 — 1.12.2 Port (WIP)
+# Thaumcraft 4 — 1.12.2 Port
 
-An unofficial, work-in-progress port of **Thaumcraft 4** (originally by **Azanor**, for
+A continuation/refinement of the community port of **Thaumcraft 4.2.3.5** (originally by **Azanor**,
 Minecraft 1.7.10) to **Minecraft 1.12.2 / Forge**.
 
-> This is a fan/learning port. All original Thaumcraft concepts, textures and design are the work of
-> **Azanor**. This repository contains only the ported source and derived assets needed to run the
-> port; it is not affiliated with or endorsed by the original author.
+## Credits & lineage
+
+This repository is **based on the [`0FL01/Thaumcraft-4.2-FOREVA`](https://github.com/0FL01/Thaumcraft-4.2-FOREVA)**
+port, used under its MIT license, and continues its work.
+
+- **Original mod:** Thaumcraft 4.2.3.5 © 2013–2015 **Azanor**.
+- **1.12.2 port base:** Thaumcraft-4.2-FOREVA © 2026 **Andrey Bash and contributors** (MIT).
+- **This repo:** further porting / bug-fixing / refinement, under the same MIT license.
+
+See [`mod/LICENSE`](mod/LICENSE) and [`LICENSE`](LICENSE) for the full MIT text and copyright notices.
+This is an unofficial community project, not affiliated with or endorsed by the original author.
 
 ## Status
 
-**Phase 1 — "blocks as items" — COMPLETE.** All **45** Thaumcraft blocks are registered on the
-1.12.2 `IForgeRegistry`, each with its texture(s), block/item models, blockstates, creative-tab
-entry (where the original had one) and language keys. Behaviour is being ported incrementally in
-later phases; blocks that are not yet mechanically active are faithful visual/identity stubs marked
-with `TODO Phase N` in the source.
-
-Port phases:
-
-1. **Blocks as items** — register every block/item with textures + ItemBlock + stubs. ✅ done
-2. **Properties** — metadata/blockstate properties, shapes, rendering. 🔵 in progress
-3. **Mechanics** — TileEntities, essentia/vis, GUIs, active behaviours. ⬜ planned
-4. **Interactions** — worldgen, research, cross-block systems. ⬜ planned
-
-Batches completed in Phase 1:
-
-| Batch | Contents |
-|---|---|
-| B1 | Decorative static blocks — candle, eldritch, loot urn/crate, mana pod |
-| B2 | Device blocks as inert stubs — metal/wooden/stone device, table, jar, tube, mirror, furnaces, chest, lifter, magic box, essentia reservoir, airy, warded |
-| B3 | Special blocks — arcane door, portable hole, eldritch nothing, eldritch portal |
-| B4 | Fluids — flux goo, flux gas, purifying fluid, liquid death |
-
-See [`PORT_SPEC.md`](PORT_SPEC.md) for a reverse-engineered card per block (form, texture, colour,
-light, sound, mechanics-to-do).
+Full 1.12.2 port with core systems operational — alchemy, infusion, golems, the research system and
+the Thaumonomicon (recipe pages, focus visuals, particle rendering) all work. Remaining work is
+item-specific logic, runtime parity testing, and visual/rendering polish, which we address
+incrementally.
 
 ## Building
 
-Requires JDK 8. From the repository root:
+Requires a **JDK 8** (not just a JRE — ForgeGradle needs `tools.jar`).
 
 ```bash
 cd mod
-./gradlew build        # produces the mod jar in mod/build/libs
+./gradlew build        # builds the mod jar into mod/build/libs
 ./gradlew runClient    # launch a dev client
 ```
 
-The workspace uses ForgeGradle 2.3.4, Forge `14.23.5.2847`, mappings `snapshot_20171003`.
+`mod/gradle.properties` pins `org.gradle.java.home` to a local JDK 8 path. If you clone this on
+another machine, point that property at your own JDK 8 install.
+
+Toolchain: ForgeGradle 2.3, Gradle 4.10.3, Forge `1.12.2-14.23.5.2847`, mappings `stable_39`.
 
 ## Dependencies
 
-**Baubles 1.12.2** is planned for later phases (amulet/ring/belt slots). It is **not** wired into
-the current build. To integrate it, drop `Baubles-1.12.2-1.5.2.jar` into `mod/libs/` and uncomment
-the `deobfCompile` line in `mod/build.gradle`.
+**Baubles** (amulet/ring/belt slots) is resolved automatically from CurseMaven — see the
+`dependencies` block in `mod/build.gradle`.
 
 ## Repository layout
 
 ```
-mod/           the Forge mod (source + resources)   ← the actual port
-PORT_SPEC.md   per-block/-item port specification
+mod/           the Forge mod (source + resources) — the actual port
+mod/LICENSE    MIT license (FOREVA base + our continuation)
+PORT_SPEC.md   per-block/-item port notes
 ```
 
-Reference material (the decompiled original, extracted original assets, MCP mappings, tooling/JDK)
-is kept locally but excluded from the repository via `.gitignore`.
+Reference material (the decompiled original, extracted original assets, MCP mappings, tooling/JDK,
+the upstream FOREVA clone) is kept locally but excluded from the repository via `.gitignore`.

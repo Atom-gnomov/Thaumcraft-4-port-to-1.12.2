@@ -1,11 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.util.ResourceLocation
- *  net.minecraft.util.StatCollector
- *  org.apache.logging.log4j.LogManager
- */
 package thaumcraft.api.wands;
 
 import net.minecraft.util.ResourceLocation;

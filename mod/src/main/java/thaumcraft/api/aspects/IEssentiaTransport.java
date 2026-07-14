@@ -1,9 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraftforge.common.util.EnumFacing
- */
 package thaumcraft.api.aspects;
 
 import net.minecraft.util.EnumFacing;

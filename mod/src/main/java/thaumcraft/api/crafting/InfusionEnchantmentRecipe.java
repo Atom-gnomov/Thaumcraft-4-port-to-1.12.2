@@ -1,18 +1,6 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.enchantment.Enchantment
- *  net.minecraft.enchantment.EnchantmentHelper
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.ItemStack
- *  net.minecraft.world.World
- *  net.minecraftforge.oredict.OreDictionary
- */
 package thaumcraft.api.crafting;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -44,15 +32,17 @@ public class InfusionEnchantmentRecipe {
         if (this.research.length() > 0 && !ThaumcraftApiHelper.isResearchComplete(player.getName(), this.research)) {
             return false;
         }
-        if (!this.enchantment.canApply(central) || !central.isItemStackDamageable()) {
+        if (!this.enchantment.canApply(central) || !central.getItem().isEnchantable(central)) {
             return false;
         }
         Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(central);
-        for (Enchantment ench : map1.keySet()) {
-            if (ench == this.enchantment && EnchantmentHelper.getEnchantmentLevel(ench, central) >= ench.getMaxLevel()) {
+        for (Map.Entry<Enchantment, Integer> entry : map1.entrySet()) {
+            Enchantment ench = entry.getKey();
+            int level = entry.getValue();
+            if (ench == this.enchantment && level >= this.enchantment.getMaxLevel()) {
                 return false;
             }
-            if (this.enchantment == ench || this.enchantment.isCompatibleWith(ench)) continue;
+            if (ench == this.enchantment || (this.enchantment.isCompatibleWith(ench) && ench.isCompatibleWith(this.enchantment))) continue;
             return false;
         }
         ItemStack i2 = null;
@@ -80,7 +70,6 @@ public class InfusionEnchantmentRecipe {
 
     protected boolean areItemStacksEqual(ItemStack stack0, ItemStack stack1, boolean fuzzy) {
         ItemStack[] ores;
-        Integer od;
         if (stack0 == null && stack1 != null) {
             return false;
         }
@@ -95,10 +84,9 @@ public class InfusionEnchantmentRecipe {
             return false;
         }
         if (fuzzy) {
-            for (int oid : OreDictionary.getOreIDs(stack0)) {
-                if (ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{stack1}, OreDictionary.getOres(OreDictionary.getOreName(oid)).toArray(new ItemStack[0]))) {
-                    return true;
-                }
+            int[] oreIDs = OreDictionary.getOreIDs(stack0);
+            if (oreIDs.length > 0 && ThaumcraftApiHelper.containsMatch(false, new ItemStack[]{stack1}, ores = OreDictionary.getOres(OreDictionary.getOreName(oreIDs[0])).toArray(new ItemStack[0]))) {
+                return true;
             }
         }
         return stack0.getItem() != stack1.getItem() ? false : (stack0.getMetadata() != stack1.getMetadata() ? false : stack0.getCount() <= stack0.getMaxStackSize());
@@ -119,8 +107,8 @@ public class InfusionEnchantmentRecipe {
     public int calcInstability(ItemStack recipeInput) {
         int i = 0;
         Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(recipeInput);
-        for (Enchantment ench : map1.keySet()) {
-            i += EnchantmentHelper.getEnchantmentLevel(ench, recipeInput);
+        for (int level : map1.values()) {
+            i += level;
         }
         return i / 2 + this.instability;
     }
@@ -132,9 +120,9 @@ public class InfusionEnchantmentRecipe {
     public float getEssentiaMod(ItemStack recipeInput) {
         float mod = EnchantmentHelper.getEnchantmentLevel(this.enchantment, recipeInput);
         Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(recipeInput);
-        for (Enchantment ench : map1.keySet()) {
-            if (ench == this.enchantment) continue;
-            mod += (float)EnchantmentHelper.getEnchantmentLevel(ench, recipeInput) * 0.1f;
+        for (Map.Entry<Enchantment, Integer> entry : map1.entrySet()) {
+            if (entry.getKey() == this.enchantment) continue;
+            mod += (float)entry.getValue() * 0.1f;
         }
         return mod;
     }

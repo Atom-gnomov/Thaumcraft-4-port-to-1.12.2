@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraftforge.fml.common.FMLLog
- *  net.minecraft.util.ResourceLocation
- *  net.minecraft.util.StatCollector
- *  org.apache.logging.log4j.Level
- */
 package thaumcraft.api.research;
 
 import net.minecraftforge.fml.common.FMLLog;

@@ -1,13 +1,7 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.item.ItemStack
- *  net.minecraft.util.ResourceLocation
- *  net.minecraft.util.StatCollector
- */
 package thaumcraft.api.research;
 
+import java.util.function.BiConsumer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
@@ -41,6 +35,12 @@ public class ResearchItem {
     private String[] entityTriggers;
     private Aspect[] aspectTriggers;
     private ResearchPage[] pages = null;
+
+    /**
+     * Callback fired when this research is completed by a player.
+     * Parameters: (EntityPlayer player, String researchKey)
+     */
+    public BiConsumer<EntityPlayer, String> onResearchComplete = null;
 
     public ResearchItem(String key, String category) {
         this.key = key;

@@ -21,6 +21,9 @@ build/
 out/
 bin/
 run/
+logs/
+*.class
+.decompile_out/
 
 # ─── IDE ───
 .idea/

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "thaumcraft:blocks/al_furnace_side",
+    "down": "thaumcraft:blocks/al_furnace_top",
+    "up": "thaumcraft:blocks/al_furnace_top",
+    "north": "thaumcraft:blocks/al_furnace_front_off",
+    "south": "thaumcraft:blocks/al_furnace_front_off",
+    "west": "thaumcraft:blocks/al_furnace_front_off",
+    "east": "thaumcraft:blocks/al_furnace_front_off"
+  }
+}

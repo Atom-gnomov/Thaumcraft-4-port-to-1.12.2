@@ -1,10 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.item.ItemStack
- *  net.minecraft.util.WeightedRandom$Item
- */
 package thaumcraft.api.internal;
 
 import java.util.ArrayList;

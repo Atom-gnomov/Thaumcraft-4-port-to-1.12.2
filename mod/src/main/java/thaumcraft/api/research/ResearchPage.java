@@ -1,13 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.item.ItemStack
- *  net.minecraft.item.crafting.FurnaceRecipes
- *  net.minecraft.item.crafting.IRecipe
- *  net.minecraft.util.ResourceLocation
- *  net.minecraft.util.StatCollector
- */
 package thaumcraft.api.research;
 
 import java.util.List;
@@ -136,4 +126,3 @@ public class ResearchPage {
 
     }
 }
-

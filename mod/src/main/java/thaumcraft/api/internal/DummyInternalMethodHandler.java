@@ -1,11 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.Item
- *  net.minecraft.item.ItemStack
- */
 package thaumcraft.api.internal;
 
 import net.minecraft.entity.player.EntityPlayer;

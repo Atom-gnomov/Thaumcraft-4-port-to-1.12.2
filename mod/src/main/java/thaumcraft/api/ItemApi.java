@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraftforge.fml.common.FMLLog
- *  net.minecraft.block.Block
- *  net.minecraft.item.Item
- *  net.minecraft.item.ItemStack
- */
 package thaumcraft.api;
 
 import net.minecraftforge.fml.common.FMLLog;

@@ -1,17 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.block.Block
- *  net.minecraft.enchantment.Enchantment
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.item.Item
- *  net.minecraft.item.Item$ToolMaterial
- *  net.minecraft.item.ItemArmor$ArmorMaterial
- *  net.minecraft.item.ItemStack
- *  net.minecraftforge.common.util.EnumHelper
- *  net.minecraftforge.oredict.OreDictionary
- */
 package thaumcraft.api;
 
 import java.util.ArrayList;
@@ -25,7 +11,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import thaumcraft.api.ThaumcraftApiHelper;
@@ -44,16 +31,17 @@ import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategoryList;
 import thaumcraft.api.research.ResearchItem;
 import thaumcraft.api.research.ResearchPage;
+import thaumcraft.common.lib.utils.CropUtils;
 
 public class ThaumcraftApi {
     public static Item.ToolMaterial toolMatThaumium = EnumHelper.addToolMaterial((String)"THAUMIUM", (int)3, (int)400, (float)7.0f, (float)2.0f, (int)22);
     public static Item.ToolMaterial toolMatVoid = EnumHelper.addToolMaterial((String)"VOID", (int)4, (int)150, (float)8.0f, (float)3.0f, (int)10);
     public static Item.ToolMaterial toolMatElemental = EnumHelper.addToolMaterial((String)"THAUMIUM_ELEMENTAL", (int)3, (int)1500, (float)10.0f, (float)3.0f, (int)18);
-    public static ItemArmor.ArmorMaterial armorMatThaumium = EnumHelper.addArmorMaterial("THAUMIUM", "thaumcraft:thaumium", 25, new int[]{2, 6, 5, 2}, 25, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0f);
-    public static ItemArmor.ArmorMaterial armorMatSpecial = EnumHelper.addArmorMaterial("SPECIAL", "thaumcraft:special", 25, new int[]{1, 3, 2, 1}, 25, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0f);
-    public static ItemArmor.ArmorMaterial armorMatThaumiumFortress = EnumHelper.addArmorMaterial("FORTRESS", "thaumcraft:fortress", 40, new int[]{3, 7, 6, 3}, 25, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0f);
-    public static ItemArmor.ArmorMaterial armorMatVoid = EnumHelper.addArmorMaterial("VOID", "thaumcraft:void", 10, new int[]{3, 7, 6, 3}, 10, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0f);
-    public static ItemArmor.ArmorMaterial armorMatVoidFortress = EnumHelper.addArmorMaterial("VOIDFORTRESS", "thaumcraft:voidfortress", 18, new int[]{4, 8, 7, 4}, 10, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0f);
+    public static ItemArmor.ArmorMaterial armorMatThaumium = EnumHelper.addArmorMaterial("THAUMIUM", "thaumcraft:thaumium", 25, new int[]{2, 6, 5, 2}, 25, (SoundEvent)null, 0.0f);
+    public static ItemArmor.ArmorMaterial armorMatSpecial = EnumHelper.addArmorMaterial("SPECIAL", "thaumcraft:special", 25, new int[]{1, 3, 2, 1}, 25, (SoundEvent)null, 0.0f);
+    public static ItemArmor.ArmorMaterial armorMatThaumiumFortress = EnumHelper.addArmorMaterial("FORTRESS", "thaumcraft:fortress", 40, new int[]{3, 7, 6, 3}, 25, (SoundEvent)null, 0.0f);
+    public static ItemArmor.ArmorMaterial armorMatVoid = EnumHelper.addArmorMaterial("VOID", "thaumcraft:void", 10, new int[]{3, 7, 6, 3}, 10, (SoundEvent)null, 0.0f);
+    public static ItemArmor.ArmorMaterial armorMatVoidFortress = EnumHelper.addArmorMaterial("VOIDFORTRESS", "thaumcraft:voidfortress", 18, new int[]{4, 8, 7, 4}, 10, (SoundEvent)null, 0.0f);
     public static int enchantFrugal;
     public static int enchantPotency;
     public static int enchantWandFortune;
@@ -69,6 +57,8 @@ public class ThaumcraftApi {
     public static ConcurrentHashMap<List, AspectList> objectTags;
     public static ConcurrentHashMap<List, int[]> groupedObjectTags;
     private static HashMap<Object, Integer> warpMap;
+    private static HashMap<String, ItemStack> seedList;
+    public static ArrayList<ResourceLocation> researchLocations;
 
     public static void registerScanEventhandler(IScanEventHandler scanEventHandler) {
         scanEventhandlers.add(scanEventHandler);
@@ -89,12 +79,13 @@ public class ThaumcraftApi {
     public static ItemStack getSmeltingBonus(ItemStack in) {
         ItemStack out = smeltingBonus.get(Arrays.asList(in.getItem(), in.getMetadata()));
         if (out == null) {
-            out = smeltingBonus.get(Arrays.asList(in.getItem(), Short.MAX_VALUE));
+            out = smeltingBonus.get(Arrays.asList(in.getItem(), (int)Short.MAX_VALUE));
         }
         if (out == null) {
-            for (int id : OreDictionary.getOreIDs(in)) {
-                out = smeltingBonus.get(OreDictionary.getOreName(id));
-                if (out != null) break;
+            int[] oreIDs = OreDictionary.getOreIDs(in);
+            if (oreIDs.length > 0) {
+                String od = OreDictionary.getOreName(oreIDs[0]);
+                out = smeltingBonus.get(od);
             }
         }
         return out;
@@ -162,7 +153,7 @@ public class ThaumcraftApi {
     }
 
     public static Object[] getCraftingRecipeKey(EntityPlayer player, ItemStack stack) {
-        int[] key = new int[]{Item.getIdFromItem((Item)stack.getItem()), stack.getMetadata()};
+        int[] key = new int[]{Item.getIdFromItem(stack.getItem()), stack.getMetadata()};
         if (keyCache.containsKey(key)) {
             if (keyCache.get(key) == null) {
                 return null;
@@ -203,11 +194,23 @@ public class ThaumcraftApi {
     public static boolean exists(Item item, int meta) {
         AspectList tmp = objectTags.get(Arrays.asList(item, meta));
         if (tmp == null) {
-            tmp = objectTags.get(Arrays.asList(item, Short.MAX_VALUE));
+            int[] group = groupedObjectTags.get(Arrays.asList(item, meta));
+            if (group != null && group.length > 0) {
+                tmp = objectTags.get(Arrays.asList(item, group[0]));
+            }
+        }
+        if (tmp == null) {
+            tmp = objectTags.get(Arrays.asList(item, (int)Short.MAX_VALUE));
             if (meta == Short.MAX_VALUE && tmp == null) {
                 int index = 0;
                 do {
                     tmp = objectTags.get(Arrays.asList(item, index));
+                    if (tmp == null) {
+                        int[] group = groupedObjectTags.get(Arrays.asList(item, index));
+                        if (group != null && group.length > 0) {
+                            tmp = objectTags.get(Arrays.asList(item, group[0]));
+                        }
+                    }
                 } while (++index < 16 && tmp == null);
             }
             if (tmp == null) {
@@ -245,17 +248,24 @@ public class ThaumcraftApi {
     }
 
     public static void registerObjectTag(String oreDict, AspectList aspects) {
-        List<ItemStack> ores;
         if (aspects == null) {
             aspects = new AspectList();
         }
-        if ((ores = OreDictionary.getOres((String)oreDict)) != null && ores.size() > 0) {
-            for (ItemStack ore : ores) {
-                try {
-                    objectTags.put(Arrays.asList(ore.getItem(), ore.getMetadata()), aspects);
-                }
-                catch (Exception e) {}
-            }
+        for (ItemStack ore : OreDictionary.getOres(oreDict)) {
+            try {
+                objectTags.put(Arrays.asList(ore.getItem(), ore.getMetadata()), aspects);
+            } catch (Exception e) {}
+        }
+    }
+
+    public static void registerComplexObjectTag(String oreDict, AspectList aspects) {
+        if (aspects == null) {
+            aspects = new AspectList();
+        }
+        for (ItemStack ore : OreDictionary.getOres(oreDict)) {
+            try {
+                ThaumcraftApi.registerComplexObjectTag(ore, aspects.copy());
+            } catch (Exception e) {}
         }
     }
 
@@ -320,6 +330,32 @@ public class ThaumcraftApi {
         }
     }
 
+    public static void registerSeed(Block crop, ItemStack seed) {
+        if (crop == null || seed == null) {
+            return;
+        }
+
+        // TC6 addons call registerSeed(cropBlock, seedStack). Store the TC6
+        // seed lookup and also register the crop block with this
+        // port's growth-lamp crop registry, which originally only accepted a
+        // seed ItemStack and inferred the block from it.
+        seedList.put(crop.getTranslationKey(), seed);
+        CropUtils.addStandardCrop(crop, Short.MAX_VALUE);
+    }
+
+    public static ItemStack getSeed(Block crop) {
+        if (crop == null) {
+            return null;
+        }
+        return seedList.get(crop.getTranslationKey());
+    }
+
+    public static void registerResearchLocation(ResourceLocation location) {
+        if (location != null && !researchLocations.contains(location)) {
+            researchLocations.add(location);
+        }
+    }
+
     static {
         portableHoleBlackList = new ArrayList();
         internalMethods = new DummyInternalMethodHandler();
@@ -331,6 +367,8 @@ public class ThaumcraftApi {
         objectTags = new ConcurrentHashMap();
         groupedObjectTags = new ConcurrentHashMap();
         warpMap = new HashMap();
+        seedList = new HashMap();
+        researchLocations = new ArrayList();
     }
 
     public static class EntityTags {
@@ -355,4 +393,3 @@ public class ThaumcraftApi {
         }
     }
 }
-

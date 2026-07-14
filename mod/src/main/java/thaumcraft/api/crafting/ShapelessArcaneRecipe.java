@@ -1,19 +1,8 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.block.Block
- *  net.minecraft.entity.player.EntityPlayer
- *  net.minecraft.inventory.IInventory
- *  net.minecraft.item.Item
- *  net.minecraft.item.ItemStack
- *  net.minecraft.world.World
- *  net.minecraftforge.oredict.OreDictionary
- */
 package thaumcraft.api.crafting;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -93,7 +82,7 @@ implements IArcaneRecipe {
         ArrayList required = new ArrayList(this.input);
         for (int x = 0; x < 9; ++x) {
             ItemStack slot = var1.getStackInSlot(x);
-            if (slot == null) continue;
+            if (slot == null || slot.isEmpty()) continue;
             boolean inRecipe = false;
             Iterator req = required.iterator();
             while (req.hasNext()) {
@@ -101,14 +90,14 @@ implements IArcaneRecipe {
                 Object next = req.next();
                 if (next instanceof ItemStack) {
                     match = this.checkItemEquals((ItemStack)next, slot);
-                } else if (next instanceof ArrayList) {
-                    for (ItemStack item : (ArrayList<ItemStack>)next) {
+                } else if (next instanceof List) {
+                    for (ItemStack item : (List<ItemStack>)next) {
                         match = match || this.checkItemEquals(item, slot);
                     }
                 }
                 if (!match) continue;
                 inRecipe = true;
-                required.remove(next);
+                req.remove();
                 break;
             }
             if (inRecipe) continue;
@@ -118,7 +107,12 @@ implements IArcaneRecipe {
     }
 
     private boolean checkItemEquals(ItemStack target, ItemStack input) {
-        if (input == null && target != null || input != null && target == null) {
+        boolean inputEmpty = input == null || input.isEmpty();
+        boolean targetEmpty = target == null || target.isEmpty();
+        if (inputEmpty && targetEmpty) {
+            return true;
+        }
+        if (inputEmpty || targetEmpty) {
             return false;
         }
         return !(target.getItem() != input.getItem() || target.hasTagCompound() && !ThaumcraftApiHelper.areItemStackTagsEqualForCrafting(input, target) || target.getMetadata() != Short.MAX_VALUE && target.getMetadata() != input.getMetadata());
@@ -143,4 +137,3 @@ implements IArcaneRecipe {
         return this.research;
     }
 }
-

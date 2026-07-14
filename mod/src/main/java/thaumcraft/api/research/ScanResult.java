@@ -1,9 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.entity.Entity
- */
 package thaumcraft.api.research;
 
 import net.minecraft.entity.Entity;

@@ -18,30 +18,34 @@ extends TileEntity {
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
-        this.writeCustomNBT(nbttagcompound);
-        return nbttagcompound;
+        NBTTagCompound ret = super.writeToNBT(nbttagcompound);
+        this.writeCustomNBT(ret);
+        return ret;
     }
 
     public void writeCustomNBT(NBTTagCompound nbttagcompound) {
     }
 
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeCustomNBT(nbttagcompound);
-        return new SPacketUpdateTileEntity(this.pos, -999, nbttagcompound);
+    public NBTTagCompound getUpdateTag() {
+        return this.writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
-        NBTTagCompound nbttagcompound = super.getUpdateTag();
+    public void handleUpdateTag(NBTTagCompound tag) {
+        this.readFromNBT(tag);
+    }
+
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
         this.writeCustomNBT(nbttagcompound);
-        return nbttagcompound;
+        return new SPacketUpdateTileEntity(this.getPos(), -999, nbttagcompound);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
         this.readCustomNBT(pkt.getNbtCompound());
     }
 }

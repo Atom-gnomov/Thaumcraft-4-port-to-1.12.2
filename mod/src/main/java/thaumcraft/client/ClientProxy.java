@@ -777,6 +777,17 @@ public class ClientProxy extends CommonProxy {
                     ConfigBlocks.blockCandle
             );
         }
+        // Thaumaturge robe armor (chest/legs/boots): dyeable like leather.
+        // layer0 = greyscale base tinted by dye color; layer1 = full-colour overlay (untinted).
+        net.minecraft.client.renderer.color.IItemColor robeColor =
+                (stack, tintIndex) -> tintIndex > 0
+                        ? -1
+                        : ((thaumcraft.common.items.armor.ItemRobeArmor) stack.getItem()).getColor(stack);
+        for (Item robe : new Item[]{ConfigItems.itemChestRobe, ConfigItems.itemLegsRobe, ConfigItems.itemBootsRobe}) {
+            if (robe != null) {
+                minecraft.getItemColors().registerItemColorHandler(robeColor, robe);
+            }
+        }
         setupTileLinkedItemRenderers();
     }
 

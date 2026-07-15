@@ -1,12 +1,7 @@
 {
-  "parent": "block/cube",
+  "parent": "thaumcraft:block/loot_crate",
   "textures": {
-    "particle": "thaumcraft:blocks/crate_side_1",
-    "down": "thaumcraft:blocks/crate_top",
-    "up": "thaumcraft:blocks/crate_top",
-    "north": "thaumcraft:blocks/crate_side_1",
-    "south": "thaumcraft:blocks/crate_side_1",
-    "west": "thaumcraft:blocks/crate_side_1",
-    "east": "thaumcraft:blocks/crate_side_1"
+    "side": "thaumcraft:blocks/crate_side_1",
+    "top": "thaumcraft:blocks/crate_top"
   }
 }

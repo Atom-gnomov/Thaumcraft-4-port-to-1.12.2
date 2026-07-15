@@ -1,12 +1,7 @@
 {
-  "parent": "block/cube",
+  "parent": "thaumcraft:block/loot_urn",
   "textures": {
-    "particle": "thaumcraft:blocks/urn_side_0",
-    "down": "thaumcraft:blocks/urn_top",
-    "up": "thaumcraft:blocks/urn_top",
-    "north": "thaumcraft:blocks/urn_side_0",
-    "south": "thaumcraft:blocks/urn_side_0",
-    "west": "thaumcraft:blocks/urn_side_0",
-    "east": "thaumcraft:blocks/urn_side_0"
+    "side": "thaumcraft:blocks/urn_side_0",
+    "top": "thaumcraft:blocks/urn_top"
   }
 }

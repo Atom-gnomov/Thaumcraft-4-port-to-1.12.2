@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.0"
+version = "1.0.1"
 ext.advertisedModVersion = "6.1.BETA26"
 group = "thaumcraft"
 archivesBaseName = "Thaumcraft"
@@ -55,11 +55,6 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'assets/thaumcraft/lang/en_us.lang'
-        rename { fileName -> fileName == 'en_us.lang' ? 'en_US.lang' : fileName }
     }
 }
 

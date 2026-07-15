@@ -283,16 +283,20 @@ public class BlockArcaneFurnace extends BlockContainer {
     }
 
     private EnumFacing getNozzleFacing(IBlockAccess world, BlockPos pos) {
+        // The maw sits on the outer wall directly adjacent to the lava core.
+        // Return the OUTWARD facing (away from the core) — that is the direction
+        // the grate/evil-face opening points, which is what both the renderer
+        // (nozzleRotation) and the collision AABB (getNozzleBounds) expect.
         if (world.getBlockState(pos.west()).getBlock() == this && this.getMetaFromState(world.getBlockState(pos.west())) == 0) {
-            return EnumFacing.WEST;
-        }
-        if (world.getBlockState(pos.east()).getBlock() == this && this.getMetaFromState(world.getBlockState(pos.east())) == 0) {
             return EnumFacing.EAST;
         }
-        if (world.getBlockState(pos.north()).getBlock() == this && this.getMetaFromState(world.getBlockState(pos.north())) == 0) {
-            return EnumFacing.NORTH;
+        if (world.getBlockState(pos.east()).getBlock() == this && this.getMetaFromState(world.getBlockState(pos.east())) == 0) {
+            return EnumFacing.WEST;
         }
-        return EnumFacing.SOUTH;
+        if (world.getBlockState(pos.north()).getBlock() == this && this.getMetaFromState(world.getBlockState(pos.north())) == 0) {
+            return EnumFacing.SOUTH;
+        }
+        return EnumFacing.NORTH;
     }
 
     private AxisAlignedBB getNozzleBounds(EnumFacing facing) {

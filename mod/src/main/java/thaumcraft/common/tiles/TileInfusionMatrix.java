@@ -191,12 +191,15 @@ public class TileInfusionMatrix extends TileThaumcraft implements ITickable, IWa
 
     @Override
     public int onWandRightClick(World world, ItemStack wandstack, EntityPlayer player, int x, int y, int z, int side, int md) {
-        if (world.isRemote) return 0;
-        if (this.active && !this.crafting) {
+        // Byte-faithful to TC4: only intercept the click server-side. On the client this
+        // MUST return -1 so ItemWandCasting.onItemUseFirst falls through to the wand-trigger
+        // registry (event 3 → createInfusionAltar). Returning 0 on the client short-circuited
+        // that path, so the altar could never be assembled/activated.
+        if (!world.isRemote && this.active && !this.crafting) {
             this.craftingStart(player);
             return 0;
         }
-        if (!this.active && this.validLocation()) {
+        if (!world.isRemote && !this.active && this.validLocation()) {
             this.active = true;
             this.startUp = 1.0F;
             this.markDirtyAndSync();

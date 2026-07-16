@@ -365,6 +365,31 @@ public class ConfigAspects {
                     new AspectList().add(Aspect.VOID, 5).add(Aspect.EXCHANGE, 2).add(Aspect.ELDRITCH, 3));
         }
 
+        // --- Mob heads (Items.SKULL, meta 0-5): absent from the original TC4 entirely —
+        // skulls saw no crafting use in 1.7.10-era Thaumcraft and the Dragon Head didn't
+        // exist until 1.9 — so nothing here is being "corrected", it's new coverage.
+        // Without any registered aspects the thaumometer's scan-target search silently
+        // rejects these blocks (zero-aspect candidates are discarded), which is why
+        // placed skulls couldn't be scanned at all. Tiered by real obtain difficulty.
+        // Skeleton: common ~2.5% mob drop.
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SKULL, 1, 0),
+                new AspectList().add(Aspect.DEATH, 2).add(Aspect.UNDEAD, 2));
+        // Wither Skeleton: Nether Fortress only, dangerous mob — rarer drop.
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SKULL, 1, 1),
+                new AspectList().add(Aspect.DEATH, 3).add(Aspect.UNDEAD, 3).add(Aspect.FIRE, 1));
+        // Zombie: only drops from a charged-creeper-explosion kill — very rare in normal play.
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SKULL, 1, 2),
+                new AspectList().add(Aspect.DEATH, 2).add(Aspect.UNDEAD, 2).add(Aspect.FLESH, 1));
+        // Player: not obtainable in normal survival (commands/trading only).
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SKULL, 1, 3),
+                new AspectList().add(Aspect.MAN, 3).add(Aspect.DEATH, 2).add(Aspect.MIND, 1));
+        // Creeper: same charged-creeper mechanic as the zombie head — rarest legitimately farmable head.
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SKULL, 1, 4),
+                new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.ENERGY, 2).add(Aspect.DEATH, 2));
+        // Dragon: unique Ender Dragon boss-defeat reward — top-tier endgame trophy.
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SKULL, 1, 5),
+                new AspectList().add(Aspect.ELDRITCH, 4).add(Aspect.DEATH, 3).add(Aspect.MIND, 2));
+
         // --- 1.12 World of Color: concrete, concrete powder, glazed terracotta (all cheap crafts) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CONCRETE, 1, OreDictionary.WILDCARD_VALUE),
                 new AspectList().add(Aspect.EARTH, 2).add(Aspect.SENSES, 1));

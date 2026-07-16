@@ -517,6 +517,14 @@ public class GuiResearchRecipe extends GuiScreen {
                 continue;
             }
             int rowY = y + count * 50;
+
+            // Ring highlight around the aspect icon while it's hovered, so it's clear
+            // which aspect is currently being pointed at (icon is 32x32 on screen \u2014
+            // drawAspectTag draws 16x16 under the 2x GL scale applied below).
+            if (mouseX >= x + start && mouseY >= rowY && mouseX < x + start + 128 && mouseY < rowY + 40) {
+                this.drawHoverRing(x + start + 16, rowY + 16, 17.0F, 21.0F, 0x70FFCC33);
+            }
+
             GlStateManager.pushMatrix();
             GlStateManager.scale(2.0F, 2.0F, 1.0F);
             this.drawAspectTag((x + start) / 2, rowY / 2, aspect, aspects.getAmount(aspect));
@@ -678,6 +686,37 @@ public class GuiResearchRecipe extends GuiScreen {
             this.addAspectTooltip(tag, mouseX, mouseY, tx, ty, 16, 16, amountMultiplier);
             ++total;
         }
+    }
+
+    /**
+     * Draws a soft ring (annulus) centered on ({@code centerX}, {@code centerY}), used to
+     * highlight the aspect icon currently under the mouse cursor on the Thaumonomicon
+     * "Aspects" page (see {@link #drawAspectPage}).
+     */
+    private void drawHoverRing(float centerX, float centerY, float innerRadius, float outerRadius, int color) {
+        float a = (color >>> 24) / 255.0F;
+        float r = (color >> 16 & 255) / 255.0F;
+        float g = (color >> 8 & 255) / 255.0F;
+        float b = (color & 255) / 255.0F;
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(r, g, b, a);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
+        int segments = 32;
+        for (int i = 0; i <= segments; ++i) {
+            double angle = 2.0D * Math.PI * i / segments;
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            buffer.pos(centerX + cos * outerRadius, centerY + sin * outerRadius, this.zLevel).endVertex();
+            buffer.pos(centerX + cos * innerRadius, centerY + sin * innerRadius, this.zLevel).endVertex();
+        }
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private void drawAspectTag(int x, int y, Aspect aspect, int amount) {

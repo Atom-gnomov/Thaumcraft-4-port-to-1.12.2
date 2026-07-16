@@ -12,6 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import thaumcraft.client.gui.GuiResearchRecipe;
+import thaumcraft.client.gui.MappingThread;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.Config;
 import thaumcraft.common.lib.events.EssentiaHandler;
@@ -31,6 +33,7 @@ public class ClientTickEventsFML {
             new ResourceLocation("shaders/post/sunscorned.json")
     };
     private int tickCount = 0;
+    private boolean startedMappingThread = false;
 
     @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
@@ -41,6 +44,16 @@ public class ClientTickEventsFML {
         EntityPlayer player = mc.player;
         if (player == null || event.player == null || event.player.getEntityId() != player.getEntityId()) {
             return;
+        }
+
+        // Lazily populate the item-hash reverse-lookup cache used by the Thaumonomicon
+        // "known items for this aspect" hover feature (see GuiResearchRecipe). Runs once,
+        // off-thread, mirroring the original TC4 MappingThread bootstrap.
+        if (!this.startedMappingThread && GuiResearchRecipe.cache.isEmpty()) {
+            this.startedMappingThread = true;
+            Thread mappingThread = new Thread(new MappingThread(), "Thaumcraft-ItemHashMapping");
+            mappingThread.setDaemon(true);
+            mappingThread.start();
         }
 
         this.checkShaders(player, mc);

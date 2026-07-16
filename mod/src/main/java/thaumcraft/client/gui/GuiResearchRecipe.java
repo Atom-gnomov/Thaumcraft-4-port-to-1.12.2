@@ -518,11 +518,11 @@ public class GuiResearchRecipe extends GuiScreen {
             }
             int rowY = y + count * 50;
 
-            // Darken the whole tile row while it's hovered, so it's clear which aspect
-            // is currently being pointed at (matches the item-grid hover trigger area below).
+            // Ring highlight around the aspect icon while it's hovered, so it's clear
+            // which aspect is currently being pointed at (icon is 32x32 on screen \u2014
+            // drawAspectTag draws 16x16 under the 2x GL scale applied below).
             if (mouseX >= x + start && mouseY >= rowY && mouseX < x + start + 128 && mouseY < rowY + 40) {
-                GlStateManager.disableLighting();
-                this.drawRect(x + start, rowY, x + start + 128, rowY + 40, 0x30000000);
+                this.drawHoverRing(x + start + 16, rowY + 16, 17.0F, 21.0F, 0x70FFCC33);
             }
 
             GlStateManager.pushMatrix();
@@ -537,6 +537,8 @@ public class GuiResearchRecipe extends GuiScreen {
                 this.fontRenderer.drawString("+", x + start + 83, rowY + 12, 0x999999);
                 this.drawCenteredScaledString("\u00a7o" + aspect.getComponents()[0].getName(), x + start + 62, rowY + 30, 70, 0x505050);
                 this.drawCenteredScaledString("\u00a7o" + aspect.getComponents()[1].getName(), x + start + 104, rowY + 30, 70, 0x505050);
+            } else {
+                this.fontRenderer.drawString(I18n.format("tc.aspect.primal"), x + start + 48, rowY + 12, 0x444444);
             }
             this.addAspectTooltip(aspect, mouseX, mouseY, x + start, rowY, 40, 40, 1);
             ++count;
@@ -684,6 +686,37 @@ public class GuiResearchRecipe extends GuiScreen {
             this.addAspectTooltip(tag, mouseX, mouseY, tx, ty, 16, 16, amountMultiplier);
             ++total;
         }
+    }
+
+    /**
+     * Draws a soft ring (annulus) centered on ({@code centerX}, {@code centerY}), used to
+     * highlight the aspect icon currently under the mouse cursor on the Thaumonomicon
+     * "Aspects" page (see {@link #drawAspectPage}).
+     */
+    private void drawHoverRing(float centerX, float centerY, float innerRadius, float outerRadius, int color) {
+        float a = (color >>> 24) / 255.0F;
+        float r = (color >> 16 & 255) / 255.0F;
+        float g = (color >> 8 & 255) / 255.0F;
+        float b = (color & 255) / 255.0F;
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(r, g, b, a);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
+        int segments = 32;
+        for (int i = 0; i <= segments; ++i) {
+            double angle = 2.0D * Math.PI * i / segments;
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            buffer.pos(centerX + cos * outerRadius, centerY + sin * outerRadius, this.zLevel).endVertex();
+            buffer.pos(centerX + cos * innerRadius, centerY + sin * innerRadius, this.zLevel).endVertex();
+        }
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private void drawAspectTag(int x, int y, Aspect aspect, int amount) {

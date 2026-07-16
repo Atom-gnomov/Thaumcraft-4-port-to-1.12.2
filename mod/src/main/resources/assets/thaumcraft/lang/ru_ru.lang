@@ -793,6 +793,7 @@ tc.taint_item_poison=Пары от %s заразили Вас Порчей
 tc.lootbag=Откройте ПКМ или сохраните для торговли
 tc.visdiscount=Уменьшение затрат Вис
 tc.aspect.unknown=Неизвестный Аспект
+tc.aspect.primal=Первичный аспект
 tc.primalcharm.0=Кажется, протекает
 tc.primalcharm.1=Вам кажется шепот
 tc.primalcharm.2=Сильно вибрирует

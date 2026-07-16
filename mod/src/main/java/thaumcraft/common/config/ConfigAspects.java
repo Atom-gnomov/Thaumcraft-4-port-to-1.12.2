@@ -1,7 +1,9 @@
 package thaumcraft.common.config;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import thaumcraft.api.ThaumcraftApi;
@@ -19,109 +21,128 @@ public class ConfigAspects {
     public static void init() {
         registerVanillaBlocks();
         registerVanillaItems();
+        registerModernVanilla();
         registerVanillaUtilityAndMechanismTags();
         registerOreDictionary();
         registerThaumcraftAlchemyBaseline();
         registerEntityAspects();
     }
 
+    /**
+     * Vanilla block aspect tags. Values verified byte-for-byte against the
+     * decompiled/deobfuscated TC4 4.2.3.5 original ({@code ConfigAspects_deobf.java},
+     * source-of-truth for anything that existed in 1.7.10). Items covered by an
+     * oreDict tag registered in {@link #registerOreDictionary()} are intentionally
+     * NOT duplicated here — the oreDict entry is the single source for those.
+     * Blocks added to vanilla after 1.7.10 (granite/diorite/andesite variants,
+     * podzol handling aside) have no original reference and are approximated.
+     */
     private static void registerVanillaBlocks() {
-        // Stone and earth
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE), new AspectList().add(Aspect.EARTH, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COBBLESTONE), new AspectList().add(Aspect.EARTH, 2));
+        // Earth / dirt family (base "stone"/"cobblestone" come from oreDict "stone"/"cobblestone")
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIRT, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIRT, 1, 2), new AspectList().add(Aspect.EARTH, 1).add(Aspect.PLANT, 1)); // podzol
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRASS), new AspectList().add(Aspect.EARTH, 1).add(Aspect.PLANT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIRT), new AspectList().add(Aspect.EARTH, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SAND), new AspectList().add(Aspect.EARTH, 1).add(Aspect.AIR, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MYCELIUM), new AspectList().add(Aspect.EARTH, 1).add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FARMLAND, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.HARVEST, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SAND, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ENTROPY, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRAVEL), new AspectList().add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_STONE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.DARKNESS, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BEDROCK), new AspectList().add(Aspect.VOID, 16).add(Aspect.ENTROPY, 16).add(Aspect.EARTH, 16).add(Aspect.DARKNESS, 16));
 
-        // Stone variants (metadata variants of stone block in 1.12.2)
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE, 1, 1), new AspectList().add(Aspect.EARTH, 3).add(Aspect.CRYSTAL, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE, 1, 3), new AspectList().add(Aspect.EARTH, 3).add(Aspect.CRYSTAL, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE, 1, 5), new AspectList().add(Aspect.EARTH, 3));
+        // Stone-family decorative blocks (no original reference, post-1.7.10 metadata split)
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE, 1, 1), new AspectList().add(Aspect.EARTH, 2).add(Aspect.CRYSTAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE, 1, 3), new AspectList().add(Aspect.EARTH, 2).add(Aspect.CRYSTAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONE, 1, 5), new AspectList().add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MOSSY_COBBLESTONE, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.PLANT, 1).add(Aspect.MAGIC, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MONSTER_EGG, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.BEAST, 1).add(Aspect.TRAP, 1));
+        // Stonebrick: base EARTH2; mossy = -EARTH1+PLANT1; cracked = -EARTH1+ENTROPY1; chiseled = -EARTH1+ORDER1
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONEBRICK, 1, 0), new AspectList().add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONEBRICK, 1, 1), new AspectList().add(Aspect.EARTH, 1).add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONEBRICK, 1, 2), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STONEBRICK, 1, 3), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ORDER, 1));
+        // Sandstone: base = sand-derived (EARTH1+ENTROPY1); chiseled +MAGIC1; smooth +ORDER1
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SANDSTONE, 1, 0), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SANDSTONE, 1, 1), new AspectList().add(Aspect.MAGIC, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SANDSTONE, 1, 2), new AspectList().add(Aspect.ORDER, 1));
 
         // Wood and plants
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LOG), new AspectList().add(Aspect.TREE, 4));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LOG2), new AspectList().add(Aspect.TREE, 4));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PLANKS), new AspectList().add(Aspect.TREE, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LEAVES), new AspectList().add(Aspect.PLANT, 2).add(Aspect.AIR, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LEAVES2), new AspectList().add(Aspect.PLANT, 2).add(Aspect.AIR, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SAPLING), new AspectList().add(Aspect.PLANT, 2).add(Aspect.TREE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LEAVES, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LEAVES2, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.PLANT, 1));
 
-        // Ores
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.IRON_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.METAL, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GOLD_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.METAL, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIAMOND_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.CRYSTAL, 6));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.REDSTONE_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.ENERGY, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COAL_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.ENERGY, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LAPIS_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.CRYSTAL, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.EMERALD_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.CRYSTAL, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.QUARTZ_ORE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.CRYSTAL, 3));
+        // Ores (EARTH from "ore*" oreDict is separate; these are the plain block-form tags)
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COAL_ORE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ENERGY, 2).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.REDSTONE_ORE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ENERGY, 2).add(Aspect.MECHANISM, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LIT_REDSTONE_ORE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ENERGY, 3).add(Aspect.MECHANISM, 2));
 
         // Special blocks
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.OBSIDIAN), new AspectList().add(Aspect.EARTH, 4).add(Aspect.FIRE, 2).add(Aspect.DARKNESS, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GLOWSTONE), new AspectList().add(Aspect.LIGHT, 4).add(Aspect.CRYSTAL, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.ICE), new AspectList().add(Aspect.WATER, 2).add(Aspect.COLD, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SNOW), new AspectList().add(Aspect.WATER, 1).add(Aspect.COLD, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CLAY), new AspectList().add(Aspect.EARTH, 1).add(Aspect.WATER, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.OBSIDIAN, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.FIRE, 2).add(Aspect.DARKNESS, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.ICE, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.COLD, 4));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PACKED_ICE, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.COLD, 3).add(Aspect.EARTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CLAY, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 3).add(Aspect.WATER, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.HARDENED_CLAY, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 4).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STAINED_HARDENED_CLAY, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 3).add(Aspect.FIRE, 1).add(Aspect.SENSES, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GLASS, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.CRYSTAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.STAINED_GLASS, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.CRYSTAL, 1));
 
         // Water/Lava
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WATER), new AspectList().add(Aspect.WATER, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FLOWING_WATER), new AspectList().add(Aspect.WATER, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WATER, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.WATER, 4));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FLOWING_WATER, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.WATER, 4));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LAVA), new AspectList().add(Aspect.FIRE, 3).add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FLOWING_LAVA), new AspectList().add(Aspect.FIRE, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FLOWING_LAVA), new AspectList().add(Aspect.FIRE, 3).add(Aspect.EARTH, 1));
 
         // Organic
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WOOL), new AspectList().add(Aspect.PLANT, 1).add(Aspect.TOOL, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CACTUS), new AspectList().add(Aspect.PLANT, 2).add(Aspect.WATER, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PUMPKIN), new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MELON_BLOCK), new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.VINE), new AspectList().add(Aspect.PLANT, 2).add(Aspect.MOTION, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WATERLILY), new AspectList().add(Aspect.PLANT, 2).add(Aspect.WATER, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WOOL, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.CLOTH, 4).add(Aspect.CRAFT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CACTUS), new AspectList().add(Aspect.PLANT, 3).add(Aspect.WATER, 1).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PUMPKIN, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.CROP, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MELON_BLOCK, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.CROP, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.VINE, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WATERLILY, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.PLANT, 2).add(Aspect.WATER, 1));
 
         // Nether
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHERRACK), new AspectList().add(Aspect.EARTH, 1).add(Aspect.FIRE, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SOUL_SAND), new AspectList().add(Aspect.EARTH, 1).add(Aspect.SOUL, 2).add(Aspect.DEATH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHERRACK, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 2).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SOUL_SAND, 1, OreDictionary.WILDCARD_VALUE), new AspectList().add(Aspect.EARTH, 1).add(Aspect.TRAP, 1).add(Aspect.SOUL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHER_BRICK), new AspectList().add(Aspect.EARTH, 2).add(Aspect.FIRE, 1));
 
-        // Tall grass / fern (meta 0=dead shrub is handled by DEADBUSH; tags only for 1=grass, 2=fern)
+        // Tall grass / fern (meta 0=dead shrub handled by DEADBUSH separately)
         ThaumcraftApi.registerObjectTag(
                 new ItemStack(Blocks.TALLGRASS, 1, 1),
                 new int[] { 1, 2 },
-                new AspectList().add(Aspect.PLANT, 1).add(Aspect.EARTH, 1));
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.AIR, 1));
 
         // Flowers
         ThaumcraftApi.registerObjectTag(
-                new ItemStack(Blocks.YELLOW_FLOWER, 1, 0),
-                new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
+                new ItemStack(Blocks.YELLOW_FLOWER, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.LIFE, 1).add(Aspect.SENSES, 1));
 
         ThaumcraftApi.registerObjectTag(
                 new ItemStack(Blocks.RED_FLOWER, 1, OreDictionary.WILDCARD_VALUE),
-                new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.LIFE, 1).add(Aspect.SENSES, 1));
 
         // Small mushrooms
         ThaumcraftApi.registerObjectTag(
                 new ItemStack(Blocks.BROWN_MUSHROOM),
-                new AspectList().add(Aspect.PLANT, 1).add(Aspect.DARKNESS, 1));
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.DARKNESS, 1).add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(
                 new ItemStack(Blocks.RED_MUSHROOM),
-                new AspectList().add(Aspect.PLANT, 1).add(Aspect.POISON, 1));
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.DARKNESS, 1).add(Aspect.FIRE, 1));
 
         // Mushroom blocks
         ThaumcraftApi.registerObjectTag(
-                new ItemStack(Blocks.BROWN_MUSHROOM_BLOCK),
-                new AspectList().add(Aspect.PLANT, 3).add(Aspect.DARKNESS, 2));
+                new ItemStack(Blocks.BROWN_MUSHROOM_BLOCK, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.PLANT, 2).add(Aspect.DARKNESS, 1).add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(
-                new ItemStack(Blocks.RED_MUSHROOM_BLOCK),
-                new AspectList().add(Aspect.PLANT, 3).add(Aspect.POISON, 2));
+                new ItemStack(Blocks.RED_MUSHROOM_BLOCK, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.PLANT, 2).add(Aspect.DARKNESS, 1).add(Aspect.FIRE, 1));
 
         // Dead bush
         ThaumcraftApi.registerObjectTag(
-                new ItemStack(Blocks.DEADBUSH),
-                new AspectList().add(Aspect.PLANT, 1).add(Aspect.DEATH, 1));
+                new ItemStack(Blocks.DEADBUSH, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.ENTROPY, 1));
 
         // Double plants (sunflower, lilac, tall grass, fern, rose, peony)
         ThaumcraftApi.registerObjectTag(
                 new ItemStack(Blocks.DOUBLE_PLANT, 1, OreDictionary.WILDCARD_VALUE),
-                new AspectList().add(Aspect.PLANT, 3).add(Aspect.LIFE, 1));
+                new AspectList().add(Aspect.PLANT, 1).add(Aspect.AIR, 1));
     }
 
     private static void registerVanillaItems() {
@@ -156,48 +177,60 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.WOODEN_SHOVEL), new AspectList().add(Aspect.TOOL, 1).add(Aspect.TREE, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.WOODEN_HOE), new AspectList().add(Aspect.TOOL, 1).add(Aspect.TREE, 2).add(Aspect.HARVEST, 1));
 
-        // Food
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.APPLE), new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
+        // Food (byte-faithful against decompiled original: cooked meats are
+        // CRAFT (cooking) + FLESH + HUNGER, not BEAST/LIFE)
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.APPLE), new AspectList().add(Aspect.CROP, 2).add(Aspect.HUNGER, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BREAD), new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_BEEF), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_PORKCHOP), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_CHICKEN), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 2).add(Aspect.FLIGHT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_FISH), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 2).add(Aspect.WATER, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_BEEF), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLESH, 4).add(Aspect.HUNGER, 4));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_PORKCHOP), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLESH, 3).add(Aspect.HUNGER, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_CHICKEN), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLESH, 4).add(Aspect.HUNGER, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_FISH), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLESH, 4).add(Aspect.HUNGER, 3));
 
-        // Materials
+        // Materials (values byte-faithful against decompiled TC4 4.2.3.5 original)
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.IRON_INGOT), new AspectList().add(Aspect.METAL, 4));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GOLD_INGOT), new AspectList().add(Aspect.METAL, 6));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DIAMOND), new AspectList().add(Aspect.CRYSTAL, 8));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.EMERALD), new AspectList().add(Aspect.CRYSTAL, 6).add(Aspect.EXCHANGE, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.REDSTONE), new AspectList().add(Aspect.ENERGY, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COAL), new AspectList().add(Aspect.ENERGY, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GOLD_INGOT), new AspectList().add(Aspect.METAL, 3).add(Aspect.GREED, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DIAMOND), new AspectList().add(Aspect.CRYSTAL, 4).add(Aspect.GREED, 4));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.EMERALD), new AspectList().add(Aspect.CRYSTAL, 4).add(Aspect.GREED, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.REDSTONE), new AspectList().add(Aspect.ENERGY, 2).add(Aspect.MECHANISM, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COAL), new AspectList().add(Aspect.ENERGY, 2).add(Aspect.FIRE, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.STICK), new AspectList().add(Aspect.TREE, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.STRING), new AspectList().add(Aspect.BEAST, 1).add(Aspect.TOOL, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.FEATHER), new AspectList().add(Aspect.BEAST, 1).add(Aspect.FLIGHT, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.LEATHER), new AspectList().add(Aspect.BEAST, 2).add(Aspect.FLESH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BONE), new AspectList().add(Aspect.UNDEAD, 2).add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GUNPOWDER), new AspectList().add(Aspect.FIRE, 2).add(Aspect.ENERGY, 2).add(Aspect.ENTROPY, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ENDER_PEARL), new AspectList().add(Aspect.VOID, 4).add(Aspect.TRAVEL, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.STRING), new AspectList().add(Aspect.BEAST, 1).add(Aspect.CLOTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.FEATHER), new AspectList().add(Aspect.FLIGHT, 2).add(Aspect.AIR, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.LEATHER), new AspectList().add(Aspect.CLOTH, 2).add(Aspect.BEAST, 1).add(Aspect.ARMOR, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BONE), new AspectList().add(Aspect.DEATH, 2).add(Aspect.FLESH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GUNPOWDER), new AspectList().add(Aspect.FIRE, 4).add(Aspect.ENTROPY, 4));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ENDER_PEARL), new AspectList().add(Aspect.ELDRITCH, 4).add(Aspect.MAGIC, 2).add(Aspect.TRAVEL, 4));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GOLD_NUGGET), new AspectList().add(Aspect.METAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.QUARTZ), new AspectList().add(Aspect.CRYSTAL, 1).add(Aspect.ENERGY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BRICK), new AspectList().add(Aspect.EARTH, 1).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.NETHERBRICK), new AspectList().add(Aspect.FIRE, 1));
 
         // Mob drops
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ROTTEN_FLESH), new AspectList().add(Aspect.UNDEAD, 2).add(Aspect.FLESH, 2).add(Aspect.DEATH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SPIDER_EYE), new AspectList().add(Aspect.BEAST, 2).add(Aspect.POISON, 3).add(Aspect.SENSES, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BLAZE_ROD), new AspectList().add(Aspect.FIRE, 4).add(Aspect.ENERGY, 2).add(Aspect.MAGIC, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GHAST_TEAR), new AspectList().add(Aspect.SOUL, 4).add(Aspect.FIRE, 2).add(Aspect.SENSES, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ROTTEN_FLESH), new AspectList().add(Aspect.MAN, 1).add(Aspect.FLESH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SPIDER_EYE), new AspectList().add(Aspect.SENSES, 2).add(Aspect.BEAST, 2).add(Aspect.POISON, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BLAZE_ROD), new AspectList().add(Aspect.FIRE, 4).add(Aspect.MAGIC, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GHAST_TEAR), new AspectList().add(Aspect.WATER, 1).add(Aspect.UNDEAD, 4).add(Aspect.SOUL, 4));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MAGMA_CREAM), new AspectList().add(Aspect.FIRE, 3).add(Aspect.SLIME, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SLIME_BALL), new AspectList().add(Aspect.SLIME, 3).add(Aspect.LIFE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SLIME_BALL), new AspectList().add(Aspect.SLIME, 2));
 
         // Potions and brewing
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GLASS_BOTTLE), new AspectList().add(Aspect.CRYSTAL, 1).add(Aspect.VOID, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.NETHER_WART), new AspectList().add(Aspect.PLANT, 2).add(Aspect.MAGIC, 2).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.GLASS_BOTTLE), new AspectList().add(Aspect.VOID, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.NETHER_WART), new AspectList().add(Aspect.PLANT, 1).add(Aspect.MAGIC, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.GOLDEN_CARROT), new AspectList().add(Aspect.PLANT, 2).add(Aspect.METAL, 4).add(Aspect.SENSES, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.SPECKLED_MELON), new AspectList().add(Aspect.PLANT, 2).add(Aspect.METAL, 4).add(Aspect.HEAL, 2));
 
         // Misc
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BOOK), new AspectList().add(Aspect.TREE, 2).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PAPER), new AspectList().add(Aspect.TREE, 1).add(Aspect.MIND, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.BOOK), new AspectList().add(Aspect.MIND, 3));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.PAPER), new AspectList().add(Aspect.MIND, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.FLINT), new AspectList().add(Aspect.EARTH, 1).add(Aspect.TOOL, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BUCKET), new AspectList().add(Aspect.METAL, 3).add(Aspect.VOID, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BUCKET), new AspectList().add(Aspect.METAL, 8).add(Aspect.VOID, 1));
+
+        // Seeds
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.WHEAT_SEEDS), new AspectList().add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MELON_SEEDS), new AspectList().add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PUMPKIN_SEEDS), new AspectList().add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.WHEAT), new AspectList().add(Aspect.CROP, 2).add(Aspect.HUNGER, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MELON), new AspectList().add(Aspect.HUNGER, 1));
 
         // Fluid bucket item tags (used by placed fluid scan fallback)
         ThaumcraftApi.registerObjectTag(
@@ -206,6 +239,125 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(
                 new ItemStack(Items.LAVA_BUCKET),
                 new AspectList().add(Aspect.FIRE, 3).add(Aspect.EARTH, 1));
+    }
+
+    /**
+     * Aspect tags for vanilla blocks/items added in MC 1.8 – 1.12.2.
+     * Without an explicit (or recipe-derived) tag an object has no aspects and
+     * {@code ScanManager.validScan} rejects it — the thaumometer "can't scan" it.
+     * These are raw drops / uncraftable items that otherwise stay aspect-less.
+     */
+    private static void registerModernVanilla() {
+        // --- Sugarcane (raw drop, no producing recipe → was un-scannable) ---
+        // Ground truth from decompiled TC4 4.2.3.5 ConfigAspects.java (deobfuscated via
+        // fields.csv), NOT the wiki (which is incomplete for this item): PLANT 1 + WATER 1 + AIR 1.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.REEDS), new AspectList().add(Aspect.PLANT, 1).add(Aspect.WATER, 1).add(Aspect.AIR, 1));
+
+        // --- 1.8 Ocean Monument ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PRISMARINE, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.WATER, 2).add(Aspect.CRYSTAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SEA_LANTERN),
+                new AspectList().add(Aspect.LIGHT, 3).add(Aspect.WATER, 1).add(Aspect.CRYSTAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PRISMARINE_SHARD),
+                new AspectList().add(Aspect.WATER, 2).add(Aspect.CRYSTAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PRISMARINE_CRYSTALS),
+                new AspectList().add(Aspect.WATER, 1).add(Aspect.LIGHT, 2).add(Aspect.CRYSTAL, 1));
+
+        // --- 1.8 Red sandstone ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RED_SANDSTONE, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.EARTH, 1).add(Aspect.FIRE, 1));
+
+        // --- 1.8 Rabbit ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.FLESH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_RABBIT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 2));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.RABBIT_STEW),
+                new AspectList().add(Aspect.LIFE, 2).add(Aspect.BEAST, 1).add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT_FOOT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.MOTION, 2).add(Aspect.MAGIC, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT_HIDE), new AspectList().add(Aspect.BEAST, 1));
+
+        // --- 1.8 Mutton ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUTTON), new AspectList().add(Aspect.BEAST, 2).add(Aspect.FLESH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_MUTTON), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 2));
+
+        // --- 1.8 Iron trapdoor / banner / armor stand ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.IRON_TRAPDOOR), new AspectList().add(Aspect.METAL, 3).add(Aspect.MECHANISM, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BANNER, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.CLOTH, 2).add(Aspect.SENSES, 1));
+
+        // --- 1.9 The End: chorus, purpur, end rod, end bricks, dragon breath, end crystal ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CHORUS_PLANT), new AspectList().add(Aspect.PLANT, 2).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CHORUS_FLOWER), new AspectList().add(Aspect.PLANT, 2).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHORUS_FRUIT), new AspectList().add(Aspect.PLANT, 1).add(Aspect.ELDRITCH, 1).add(Aspect.TRAVEL, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHORUS_FRUIT_POPPED), new AspectList().add(Aspect.PLANT, 1).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_BLOCK), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_PILLAR), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_STAIRS), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_BRICKS), new AspectList().add(Aspect.EARTH, 2).add(Aspect.ELDRITCH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_ROD), new AspectList().add(Aspect.LIGHT, 2).add(Aspect.AIR, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DRAGON_BREATH), new AspectList().add(Aspect.ELDRITCH, 2).add(Aspect.MAGIC, 2).add(Aspect.AIR, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.END_CRYSTAL), new AspectList().add(Aspect.ELDRITCH, 3).add(Aspect.MAGIC, 3).add(Aspect.CRYSTAL, 2));
+
+        // --- 1.9 Combat: elytra, shield, arrows, lingering ---
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.ELYTRA, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.FLIGHT, 4).add(Aspect.ELDRITCH, 2).add(Aspect.CLOTH, 2));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SHIELD, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.ARMOR, 2).add(Aspect.TREE, 4).add(Aspect.METAL, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SPECTRAL_ARROW),
+                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.LIGHT, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.TIPPED_ARROW, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.POISON, 1));
+
+        // --- 1.9 Beetroot ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BEETROOT), new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BEETROOT_SEEDS), new AspectList().add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.BEETROOT_SOUP),
+                new AspectList().add(Aspect.LIFE, 2).add(Aspect.PLANT, 1));
+
+        // --- 1.9 Wooden boats ---
+        for (Item boat : new Item[]{Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT}) {
+            ThaumcraftApi.registerComplexObjectTag(new ItemStack(boat), new AspectList().add(Aspect.WATER, 4).add(Aspect.TRAVEL, 4));
+        }
+
+        // --- 1.10 Nether/end blocks: magma, nether wart block, red nether brick, bone block, end gateway ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MAGMA), new AspectList().add(Aspect.FIRE, 3).add(Aspect.EARTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHER_WART_BLOCK), new AspectList().add(Aspect.PLANT, 3).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RED_NETHER_BRICK), new AspectList().add(Aspect.EARTH, 2).add(Aspect.FIRE, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BONE_BLOCK), new AspectList().add(Aspect.UNDEAD, 3).add(Aspect.EARTH, 1));
+
+        // --- 1.11 Exploration/Woodland: observer, shulker box+shell, totem, grass path ---
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Blocks.OBSERVER), new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.SENSES, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRASS_PATH), new AspectList().add(Aspect.EARTH, 2).add(Aspect.PLANT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SHULKER_SHELL), new AspectList().add(Aspect.VOID, 2).add(Aspect.ELDRITCH, 2).add(Aspect.ARMOR, 1));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.TOTEM_OF_UNDYING),
+                new AspectList().add(Aspect.LIFE, 4).add(Aspect.MAGIC, 3).add(Aspect.HEAL, 3).add(Aspect.ELDRITCH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.IRON_NUGGET), new AspectList().add(Aspect.METAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.KNOWLEDGE_BOOK), new AspectList().add(Aspect.MIND, 4).add(Aspect.MAGIC, 2).add(Aspect.TREE, 2));
+        Block[] shulkerBoxes = {
+                Blocks.WHITE_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX,
+                Blocks.YELLOW_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX,
+                Blocks.SILVER_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX,
+                Blocks.BROWN_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX
+        };
+        for (Block box : shulkerBoxes) {
+            ThaumcraftApi.registerComplexObjectTag(new ItemStack(box),
+                    new AspectList().add(Aspect.VOID, 4).add(Aspect.EXCHANGE, 1).add(Aspect.ELDRITCH, 2));
+        }
+
+        // --- 1.12 World of Color: concrete, concrete powder, glazed terracotta ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CONCRETE, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.EARTH, 2).add(Aspect.SENSES, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CONCRETE_POWDER, 1, OreDictionary.WILDCARD_VALUE),
+                new AspectList().add(Aspect.EARTH, 1).add(Aspect.SENSES, 1));
+        Block[] glazed = {
+                Blocks.WHITE_GLAZED_TERRACOTTA, Blocks.ORANGE_GLAZED_TERRACOTTA, Blocks.MAGENTA_GLAZED_TERRACOTTA, Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA,
+                Blocks.YELLOW_GLAZED_TERRACOTTA, Blocks.LIME_GLAZED_TERRACOTTA, Blocks.PINK_GLAZED_TERRACOTTA, Blocks.GRAY_GLAZED_TERRACOTTA,
+                Blocks.SILVER_GLAZED_TERRACOTTA, Blocks.CYAN_GLAZED_TERRACOTTA, Blocks.PURPLE_GLAZED_TERRACOTTA, Blocks.BLUE_GLAZED_TERRACOTTA,
+                Blocks.BROWN_GLAZED_TERRACOTTA, Blocks.GREEN_GLAZED_TERRACOTTA, Blocks.RED_GLAZED_TERRACOTTA, Blocks.BLACK_GLAZED_TERRACOTTA
+        };
+        for (Block g : glazed) {
+            ThaumcraftApi.registerObjectTag(new ItemStack(g),
+                    new AspectList().add(Aspect.EARTH, 1).add(Aspect.CRAFT, 1).add(Aspect.SENSES, 1));
+        }
     }
 
     private static void registerVanillaUtilityAndMechanismTags() {
@@ -318,13 +470,15 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag("treeSapling", new AspectList().add(Aspect.PLANT, 2).add(Aspect.TREE, 1));
         ThaumcraftApi.registerObjectTag("treeLeaves", new AspectList().add(Aspect.PLANT, 2).add(Aspect.AIR, 1));
         ThaumcraftApi.registerObjectTag("logWood", new AspectList().add(Aspect.TREE, 4));
-        ThaumcraftApi.registerObjectTag("plankWood", new AspectList().add(Aspect.TREE, 2));
+        ThaumcraftApi.registerObjectTag("plankWood", new AspectList().add(Aspect.TREE, 1));
         ThaumcraftApi.registerObjectTag("slabWood", new AspectList().add(Aspect.TREE, 1));
         ThaumcraftApi.registerObjectTag("stairWood", new AspectList().add(Aspect.TREE, 1));
         ThaumcraftApi.registerObjectTag("stickWood", new AspectList().add(Aspect.TREE, 1));
-        ThaumcraftApi.registerObjectTag("blockGlass", new AspectList().add(Aspect.CRYSTAL, 2));
         ThaumcraftApi.registerObjectTag("paneGlass", new AspectList().add(Aspect.CRYSTAL, 1));
-        ThaumcraftApi.registerObjectTag("blockWool", new AspectList().add(Aspect.PLANT, 2).add(Aspect.TOOL, 1));
+        ThaumcraftApi.registerObjectTag("glowstone", new AspectList().add(Aspect.SENSES, 3).add(Aspect.LIGHT, 10));
+        // NOTE: no "blockGlass"/"blockWool" oreDict entries — the original TC4 does not
+        // register these via oreDict string tags; glass/wool are tagged directly on
+        // Blocks.GLASS / Blocks.WOOL in registerVanillaBlocks() instead.
 
         for (String dye : DYES) {
             ThaumcraftApi.registerObjectTag(dye, new AspectList().add(Aspect.SENSES, 1));

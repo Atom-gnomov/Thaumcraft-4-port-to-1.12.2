@@ -253,83 +253,104 @@ public class ConfigAspects {
         // fields.csv), NOT the wiki (which is incomplete for this item): PLANT 1 + WATER 1 + AIR 1.
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.REEDS), new AspectList().add(Aspect.PLANT, 1).add(Aspect.WATER, 1).add(Aspect.AIR, 1));
 
-        // --- 1.8 Ocean Monument ---
+        // --- 1.8 Ocean Monument (guardian farming required — moderate/hard tier) ---
+        // Block is crafted from shards+crystals (needs a cleared monument + guardian farm).
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PRISMARINE, 1, OreDictionary.WILDCARD_VALUE),
-                new AspectList().add(Aspect.WATER, 2).add(Aspect.CRYSTAL, 1));
+                new AspectList().add(Aspect.WATER, 3).add(Aspect.CRYSTAL, 2));
+        // Naturally found inside the monument core, also craftable from 4 shards+crystals — harder than plain prismarine.
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SEA_LANTERN),
-                new AspectList().add(Aspect.LIGHT, 3).add(Aspect.WATER, 1).add(Aspect.CRYSTAL, 1));
+                new AspectList().add(Aspect.LIGHT, 4).add(Aspect.WATER, 2).add(Aspect.CRYSTAL, 2));
+        // Common guardian drop.
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.PRISMARINE_SHARD),
-                new AspectList().add(Aspect.WATER, 2).add(Aspect.CRYSTAL, 1));
+                new AspectList().add(Aspect.WATER, 2).add(Aspect.CRYSTAL, 2));
+        // Rarer drop (mostly elder guardian / low guardian drop rate) — used for sponge farming.
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.PRISMARINE_CRYSTALS),
-                new AspectList().add(Aspect.WATER, 1).add(Aspect.LIGHT, 2).add(Aspect.CRYSTAL, 1));
+                new AspectList().add(Aspect.WATER, 2).add(Aspect.LIGHT, 2).add(Aspect.CRYSTAL, 2));
 
-        // --- 1.8 Red sandstone ---
+        // --- 1.8 Red sandstone (trivial craft from sand, same tier as regular sandstone) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RED_SANDSTONE, 1, OreDictionary.WILDCARD_VALUE),
                 new AspectList().add(Aspect.EARTH, 1).add(Aspect.FIRE, 1));
 
-        // --- 1.8 Rabbit ---
+        // --- 1.8 Rabbit (common mob, easy) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.FLESH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_RABBIT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_RABBIT), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLESH, 2).add(Aspect.HUNGER, 2));
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.RABBIT_STEW),
-                new AspectList().add(Aspect.LIFE, 2).add(Aspect.BEAST, 1).add(Aspect.PLANT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT_FOOT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.MOTION, 2).add(Aspect.MAGIC, 1));
+                new AspectList().add(Aspect.CRAFT, 1).add(Aspect.LIFE, 2).add(Aspect.BEAST, 1).add(Aspect.PLANT, 1));
+        // Rare drop (~10% base chance, needs Looting to be reliable) — bumped up a tier for rarity.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT_FOOT), new AspectList().add(Aspect.BEAST, 2).add(Aspect.MOTION, 3).add(Aspect.MAGIC, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.RABBIT_HIDE), new AspectList().add(Aspect.BEAST, 1));
 
-        // --- 1.8 Mutton ---
+        // --- 1.8 Mutton (common mob, easy) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUTTON), new AspectList().add(Aspect.BEAST, 2).add(Aspect.FLESH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_MUTTON), new AspectList().add(Aspect.BEAST, 2).add(Aspect.LIFE, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.COOKED_MUTTON), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLESH, 2).add(Aspect.HUNGER, 2));
 
-        // --- 1.8 Iron trapdoor / banner / armor stand ---
+        // --- 1.8 Iron trapdoor / banner (cheap crafts) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.IRON_TRAPDOOR), new AspectList().add(Aspect.METAL, 3).add(Aspect.MECHANISM, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BANNER, 1, OreDictionary.WILDCARD_VALUE),
                 new AspectList().add(Aspect.CLOTH, 2).add(Aspect.SENSES, 1));
 
-        // --- 1.9 The End: chorus, purpur, end rod, end bricks, dragon breath, end crystal ---
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CHORUS_PLANT), new AspectList().add(Aspect.PLANT, 2).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CHORUS_FLOWER), new AspectList().add(Aspect.PLANT, 2).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHORUS_FRUIT), new AspectList().add(Aspect.PLANT, 1).add(Aspect.ELDRITCH, 1).add(Aspect.TRAVEL, 2));
+        // --- 1.9 The End: reaching it requires a Stronghold + Eyes of Ender + surviving
+        //     the dimension — everything here sits at least one tier above overworld
+        //     equivalents, scaling further for End City / dragon-fight exclusives. ---
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CHORUS_PLANT), new AspectList().add(Aspect.PLANT, 2).add(Aspect.ELDRITCH, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CHORUS_FLOWER), new AspectList().add(Aspect.PLANT, 2).add(Aspect.ELDRITCH, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHORUS_FRUIT), new AspectList().add(Aspect.PLANT, 1).add(Aspect.ELDRITCH, 2).add(Aspect.TRAVEL, 3));
+        // Roasted (crafted) — trivial once you already have the fruit.
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHORUS_FRUIT_POPPED), new AspectList().add(Aspect.PLANT, 1).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_BLOCK), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_PILLAR), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_STAIRS), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_BRICKS), new AspectList().add(Aspect.EARTH, 2).add(Aspect.ELDRITCH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_ROD), new AspectList().add(Aspect.LIGHT, 2).add(Aspect.AIR, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DRAGON_BREATH), new AspectList().add(Aspect.ELDRITCH, 2).add(Aspect.MAGIC, 2).add(Aspect.AIR, 1));
-        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.END_CRYSTAL), new AspectList().add(Aspect.ELDRITCH, 3).add(Aspect.MAGIC, 3).add(Aspect.CRYSTAL, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_BLOCK), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_PILLAR), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PURPUR_STAIRS), new AspectList().add(Aspect.EARTH, 1).add(Aspect.ELDRITCH, 2));
+        // End City exclusive — guarded by shulkers, harder than plain End travel.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_BRICKS), new AspectList().add(Aspect.EARTH, 2).add(Aspect.ELDRITCH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_ROD), new AspectList().add(Aspect.LIGHT, 2).add(Aspect.ELDRITCH, 2).add(Aspect.AIR, 1));
+        // Only obtainable by defeating/respawning the Ender Dragon — top-tier endgame boss loot.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DRAGON_BREATH), new AspectList().add(Aspect.ELDRITCH, 4).add(Aspect.MAGIC, 3).add(Aspect.AIR, 2));
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.END_CRYSTAL), new AspectList().add(Aspect.ELDRITCH, 3).add(Aspect.MAGIC, 3).add(Aspect.CRYSTAL, 3));
 
         // --- 1.9 Combat: elytra, shield, arrows, lingering ---
+        // Elytra: End Ship loot only — one of the rarest finds in vanilla. Top tier.
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.ELYTRA, 1, OreDictionary.WILDCARD_VALUE),
-                new AspectList().add(Aspect.FLIGHT, 4).add(Aspect.ELDRITCH, 2).add(Aspect.CLOTH, 2));
+                new AspectList().add(Aspect.FLIGHT, 5).add(Aspect.ELDRITCH, 3).add(Aspect.CLOTH, 2));
+        // Shield: cheap iron+wood craft — kept modest despite the flat iron cost.
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SHIELD, 1, OreDictionary.WILDCARD_VALUE),
-                new AspectList().add(Aspect.ARMOR, 2).add(Aspect.TREE, 4).add(Aspect.METAL, 1));
+                new AspectList().add(Aspect.ARMOR, 2).add(Aspect.TREE, 3).add(Aspect.METAL, 1));
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.SPECTRAL_ARROW),
-                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.LIGHT, 1));
+                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.LIGHT, 2));
+        // Tipped arrows need a lingering potion, which itself needs Dragon's Breath — not trivial.
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.TIPPED_ARROW, 1, OreDictionary.WILDCARD_VALUE),
-                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.POISON, 1));
+                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.POISON, 2).add(Aspect.MAGIC, 1));
 
-        // --- 1.9 Beetroot ---
+        // --- 1.9 Beetroot (common crop, easy) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BEETROOT), new AspectList().add(Aspect.PLANT, 2).add(Aspect.LIFE, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BEETROOT_SEEDS), new AspectList().add(Aspect.PLANT, 1));
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.BEETROOT_SOUP),
                 new AspectList().add(Aspect.LIFE, 2).add(Aspect.PLANT, 1));
 
-        // --- 1.9 Wooden boats ---
+        // --- 1.9 Wooden boats (cheap craft — same tier as the vanilla oak boat) ---
         for (Item boat : new Item[]{Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT}) {
             ThaumcraftApi.registerComplexObjectTag(new ItemStack(boat), new AspectList().add(Aspect.WATER, 4).add(Aspect.TRAVEL, 4));
         }
 
-        // --- 1.10 Nether/end blocks: magma, nether wart block, red nether brick, bone block, end gateway ---
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MAGMA), new AspectList().add(Aspect.FIRE, 3).add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHER_WART_BLOCK), new AspectList().add(Aspect.PLANT, 3).add(Aspect.FIRE, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RED_NETHER_BRICK), new AspectList().add(Aspect.EARTH, 2).add(Aspect.FIRE, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BONE_BLOCK), new AspectList().add(Aspect.UNDEAD, 3).add(Aspect.EARTH, 1));
+        // --- 1.10 Nether/end blocks ---
+        // Magma block needs 4 Magma Cream (blaze powder + slime ball each) — moderate cost.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MAGMA), new AspectList().add(Aspect.FIRE, 4).add(Aspect.EARTH, 1).add(Aspect.SLIME, 1));
+        // Cannot be crafted — only obtainable with Silk Touch from Nether Fortress bastion structures.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHER_WART_BLOCK), new AspectList().add(Aspect.PLANT, 2).add(Aspect.FIRE, 2).add(Aspect.TRAP, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RED_NETHER_BRICK), new AspectList().add(Aspect.EARTH, 2).add(Aspect.FIRE, 2));
+        // Crafted from bonemeal — skeletons are common, so this stays a low tier.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BONE_BLOCK), new AspectList().add(Aspect.DEATH, 2).add(Aspect.EARTH, 1));
 
-        // --- 1.11 Exploration/Woodland: observer, shulker box+shell, totem, grass path ---
-        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Blocks.OBSERVER), new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.SENSES, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRASS_PATH), new AspectList().add(Aspect.EARTH, 2).add(Aspect.PLANT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SHULKER_SHELL), new AspectList().add(Aspect.VOID, 2).add(Aspect.ELDRITCH, 2).add(Aspect.ARMOR, 1));
+        // --- 1.11 Exploration/Woodland ---
+        // Needs Nether Quartz + Redstone — a small trip, moderate tier.
+        ThaumcraftApi.registerComplexObjectTag(new ItemStack(Blocks.OBSERVER), new AspectList().add(Aspect.MECHANISM, 3).add(Aspect.SENSES, 2));
+        // Trivial: right-click a grass block with a shovel.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRASS_PATH), new AspectList().add(Aspect.EARTH, 1).add(Aspect.PLANT, 1));
+        // Rare Shulker drop, obtainable only in End Cities — dangerous mob in a dangerous structure.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SHULKER_SHELL), new AspectList().add(Aspect.VOID, 3).add(Aspect.ELDRITCH, 3).add(Aspect.ARMOR, 2));
+        // Extremely rare Evoker drop (Woodland Mansion / raids only) and one of the most
+        // powerful items in the game — top tier.
         ThaumcraftApi.registerComplexObjectTag(new ItemStack(Items.TOTEM_OF_UNDYING),
-                new AspectList().add(Aspect.LIFE, 4).add(Aspect.MAGIC, 3).add(Aspect.HEAL, 3).add(Aspect.ELDRITCH, 2));
+                new AspectList().add(Aspect.LIFE, 5).add(Aspect.MAGIC, 4).add(Aspect.HEAL, 4).add(Aspect.ELDRITCH, 3));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.IRON_NUGGET), new AspectList().add(Aspect.METAL, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.KNOWLEDGE_BOOK), new AspectList().add(Aspect.MIND, 4).add(Aspect.MAGIC, 2).add(Aspect.TREE, 2));
         Block[] shulkerBoxes = {
@@ -338,12 +359,13 @@ public class ConfigAspects {
                 Blocks.SILVER_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX,
                 Blocks.BROWN_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX
         };
+        // Crafted from a chest + Shulker Shell — inherits the shell's rarity.
         for (Block box : shulkerBoxes) {
             ThaumcraftApi.registerComplexObjectTag(new ItemStack(box),
-                    new AspectList().add(Aspect.VOID, 4).add(Aspect.EXCHANGE, 1).add(Aspect.ELDRITCH, 2));
+                    new AspectList().add(Aspect.VOID, 5).add(Aspect.EXCHANGE, 2).add(Aspect.ELDRITCH, 3));
         }
 
-        // --- 1.12 World of Color: concrete, concrete powder, glazed terracotta ---
+        // --- 1.12 World of Color: concrete, concrete powder, glazed terracotta (all cheap crafts) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CONCRETE, 1, OreDictionary.WILDCARD_VALUE),
                 new AspectList().add(Aspect.EARTH, 2).add(Aspect.SENSES, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CONCRETE_POWDER, 1, OreDictionary.WILDCARD_VALUE),

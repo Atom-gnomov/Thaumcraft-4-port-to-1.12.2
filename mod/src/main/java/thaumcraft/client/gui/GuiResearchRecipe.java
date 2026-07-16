@@ -517,6 +517,14 @@ public class GuiResearchRecipe extends GuiScreen {
                 continue;
             }
             int rowY = y + count * 50;
+
+            // Darken the whole tile row while it's hovered, so it's clear which aspect
+            // is currently being pointed at (matches the item-grid hover trigger area below).
+            if (mouseX >= x + start && mouseY >= rowY && mouseX < x + start + 128 && mouseY < rowY + 40) {
+                GlStateManager.disableLighting();
+                this.drawRect(x + start, rowY, x + start + 128, rowY + 40, 0x30000000);
+            }
+
             GlStateManager.pushMatrix();
             GlStateManager.scale(2.0F, 2.0F, 1.0F);
             this.drawAspectTag((x + start) / 2, rowY / 2, aspect, aspects.getAmount(aspect));
@@ -529,8 +537,6 @@ public class GuiResearchRecipe extends GuiScreen {
                 this.fontRenderer.drawString("+", x + start + 83, rowY + 12, 0x999999);
                 this.drawCenteredScaledString("\u00a7o" + aspect.getComponents()[0].getName(), x + start + 62, rowY + 30, 70, 0x505050);
                 this.drawCenteredScaledString("\u00a7o" + aspect.getComponents()[1].getName(), x + start + 104, rowY + 30, 70, 0x505050);
-            } else {
-                this.fontRenderer.drawString(I18n.format("tc.aspect.primal"), x + start + 48, rowY + 12, 0x444444);
             }
             this.addAspectTooltip(aspect, mouseX, mouseY, x + start, rowY, 40, 40, 1);
             ++count;

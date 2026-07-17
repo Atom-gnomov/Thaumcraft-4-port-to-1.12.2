@@ -273,11 +273,20 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
             return null;
         }
         if (stack.getItem() instanceof ItemThaumometer) {
-            // This currently asks the gameplay item for the raw scan target so the HUD
-            // and the use-to-scan path stay aligned. Any remaining readout gaps should
-            // be fixed by tightening raw target selection, not by forking another
-            // renderer-local scan implementation.
-            return ((ItemThaumometer) stack.getItem()).findRawScanTarget(stack, player.world, player);
+            ItemThaumometer thaumometer = (ItemThaumometer) stack.getItem();
+            // While a scan is actively charging (right-click held), show exactly the
+            // target locked in by the gameplay tick logic instead of independently
+            // re-resolving the raw target every render frame. Two separate lookups at
+            // two different frequencies (tick vs. frame) could disagree for a frame or
+            // two around fallback-tier boundaries, making the screen readout appear to
+            // twitch even while the player's aim was steady.
+            if (player.isHandActive() && player.getActiveItemStack() == stack) {
+                ScanResult active = thaumometer.getActiveScan();
+                if (active != null) {
+                    return active;
+                }
+            }
+            return thaumometer.findRawScanTarget(stack, player.world, player);
         }
         return null;
     }

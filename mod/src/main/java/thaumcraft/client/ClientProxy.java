@@ -944,6 +944,7 @@ public class ClientProxy extends CommonProxy {
         }
         registerBuiltinItemModel(airyItem, 0, "blockairy");
         registerBuiltinItemModel(airyItem, 5, "blockairy");
+        registerBuiltinItemModel(airyItem, 1, "blockairy_nitor");
         Item crystalItem = Item.getItemFromBlock(ConfigBlocks.blockCrystal);
         for (int meta = 0; meta <= 7; meta++) {
             registerBuiltinItemModel(crystalItem, meta, "blockcrystal_tesr");
@@ -1178,6 +1179,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public boolean isShiftKeyDown() {
         return GuiScreen.isShiftKeyDown();
+    }
+
+    @Override
+    public boolean isUseItemKeyDown() {
+        return Minecraft.getMinecraft().gameSettings.keyBindUseItem.isKeyDown();
     }
 
     @Override

@@ -1550,3 +1550,25 @@ tc.research_name.PRIMALCRUSHER=Primal Crusher
 tc.research_text.PRIMALCRUSHER=Breaking all the things
 tc.research_page.PRIMALCRUSHER.1=The theory behind infusion crafting is simple - infuse a single object with essentia and the properties of other objects. There are limits however, but it seems with the discovery of the primordial pearl these limits are becoming less and less.<BR>As an experiment you tried infusing the properties of completely different objects into the pearl with suprising success. The Primal Crusher is the first practical application of this discovery.<BR>By combining a Shovel of the Earthmover and a Pickaxe of the Core with their void metal counterparts you created a
 tc.research_page.PRIMALCRUSHER.2=tool of unrivaled destructive capabilities that has most of the features of its component pieces.<BR>The Primal Crusher can mine through earth and stone with equal ease and does so in a 3x3 area. Like the Pickaxe of the Core it occasionally mines native clusters instead of raw ore.<BR>It repairs itself over time, has high enchantability and serves as a relatively good weapon in a pinch.<BR>Unfortunately it seems purely destructive in nature and has lost the construction and detection abilities of its parent tools.
+
+# --- 1.0.9: keys referenced by code but missing since the 1.7.10 port ---
+enchantment.frugal=Frugal
+enchantment.potency=Potency
+enchantment.haste=Haste
+enchantment.repair=Repair
+enchantment.wand_fortune=Treasure
+container.alchemyfurnace=Alchemical Furnace
+fluid.fluidPure=Purifying Fluid
+fluid.fluidDeath=Liquid Death
+fluid.fluxgoo=Flux Goo
+fluid.fluxgas=Flux Gas
+death.attack.taint=%1$s was corrupted by Taint
+death.attack.taint.player=%1$s was corrupted by Taint whilst fighting %2$s
+death.attack.tentacle=%1$s was squeezed by %2$s
+death.attack.swarm=%1$s was infested by %2$s
+death.attack.swarm.item=%1$s was infested by %2$s using %3$s
+death.attack.dissolve=%1$s was dissolved
+death.attack.dissolve.player=%1$s was dissolved whilst fighting %2$s
+tc.adv=Advanced
+tc.discount=discount
+tc.markedloc=marked locations

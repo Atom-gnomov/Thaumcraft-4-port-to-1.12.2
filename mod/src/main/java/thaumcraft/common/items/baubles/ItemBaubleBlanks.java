@@ -49,7 +49,7 @@ public class ItemBaubleBlanks extends Item implements IBauble, IVisDiscountGear,
         int meta = stack.getItemDamage();
         if (meta >= META_RING && meta <= META_ICHOR) {
             Aspect aspect = Aspect.getPrimalAspects().get(meta - META_RING);
-            return I18n.translateToLocal("item.ItemBaubleBlanks.3.name").replace("%TYPE", aspect.getName());
+            return I18n.translateToLocal("item.thaumcraft.bauble_blanks.3.name").replace("%TYPE", aspect.getName());
         }
         return super.getItemStackDisplayName(stack);
     }

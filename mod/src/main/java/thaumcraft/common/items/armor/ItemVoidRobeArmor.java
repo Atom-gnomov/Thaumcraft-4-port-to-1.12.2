@@ -61,14 +61,15 @@ public class ItemVoidRobeArmor extends ItemArmor implements IRepairable, IRunicA
     @SideOnly(Side.CLIENT)
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, net.minecraft.client.model.ModelBiped _default) {
-        int type = this.armorType.ordinal();
         if (this.model1 == null) {
             this.model1 = new ModelRobe(1.0f);
         }
         if (this.model2 == null) {
             this.model2 = new ModelRobe(0.5f);
         }
-        this.model = type == 1 || type == 3 ? this.model1 : this.model2;
+        // TC4: chest and boots use the thick (1.0) model, helm and legs the thin (0.5) one.
+        this.model = this.armorType == EntityEquipmentSlot.CHEST || this.armorType == EntityEquipmentSlot.FEET
+                ? this.model1 : this.model2;
         if (this.model != null) {
             this.model.bipedHead.showModel = armorSlot == EntityEquipmentSlot.HEAD;
             this.model.bipedHeadwear.showModel = armorSlot == EntityEquipmentSlot.HEAD;

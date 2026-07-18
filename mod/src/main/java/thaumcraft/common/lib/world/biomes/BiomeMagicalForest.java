@@ -34,8 +34,8 @@ public class BiomeMagicalForest extends Biome {
         super(new BiomeProperties("Magical Forest")
             .setBaseHeight(0.2f)
             .setHeightVariation(0.2f)
-            .setTemperature(0.6f)
-            .setRainfall(0.7f)
+            .setTemperature(0.7f)
+            .setRainfall(0.6f)
             .setWaterColor(0x0077EE));
         this.setRegistryName("thaumcraft", "biome_magical_forest");
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityWolf.class, 2, 1, 3));
@@ -81,12 +81,12 @@ public class BiomeMagicalForest extends Biome {
 
     @Override
     public int getFoliageColorAtPos(BlockPos pos) {
-        return Config.blueBiome ? 0x66AACC : 0x55FF11;
+        return Config.blueBiome ? 0x66AACC : 0x55FF81;
     }
 
     @Override
     public int getGrassColorAtPos(BlockPos pos) {
-        return Config.blueBiome ? 0x77CCEE : 0x66FF05;
+        return Config.blueBiome ? 0x77CCEE : 0x66FFC5;
     }
 
     @Override

@@ -88,7 +88,8 @@ public class BlockAiry extends BlockContainer {
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         int meta = this.getMetaFromState(state);
-        return meta == 0 || meta == 4 || meta == 5 ? EnumBlockRenderType.INVISIBLE : EnumBlockRenderType.MODEL;
+        // Nitor (meta 1) is a pure particle effect in TC4 — the block itself is never rendered.
+        return meta == 0 || meta == 1 || meta == 4 || meta == 5 ? EnumBlockRenderType.INVISIBLE : EnumBlockRenderType.MODEL;
     }
 
     @Override

@@ -42,12 +42,12 @@ public class BiomeEerie extends Biome {
 
     @Override
     public int getFoliageColorAtPos(BlockPos pos) {
-        return 0x404840;
+        return 0x405340;
     }
 
     @Override
     public int getGrassColorAtPos(BlockPos pos) {
-        return 0x405040;
+        return 0x404840;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BiomeEerie extends Biome {
 
     @Override
     public int getWaterColorMultiplier() {
-        return 0x2E52DF;
+        return 0x2E535F;
     }
 
     @Override

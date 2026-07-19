@@ -50,9 +50,10 @@ public class AmbientBiomeVisualParityStaticGuardTest {
         assertTrue(eerieBiome.contains("public int getFoliageColorAtPos(BlockPos pos) {\n        return 0x405340;"));
         assertTrue(eerieBiome.contains("public int getWaterColorMultiplier() {\n        return 0x2E535F;"));
 
-        // TC4 BiomeGenTaint: grass = 7160201 (0x6D4189), foliage = 8154503 (0x7C6D87), water = 0xCC1188
-        assertTrue(taintBiome.contains("return 0x6D4189;"));
-        assertTrue(taintBiome.contains("return 0x7C6D87;"));
+        // TC4 BiomeGenTaint: grass func_150558_b = 7160201 (0x6D4189),
+        // foliage func_150571_c = 8154503 (0x7C6D87), water = 0xCC1188
+        assertTrue(taintBiome.contains("public int getGrassColorAtPos(BlockPos pos) {\n        return 0x6D4189;"));
+        assertTrue(taintBiome.contains("public int getFoliageColorAtPos(BlockPos pos) {\n        return 0x7C6D87;"));
         assertTrue(taintBiome.contains("return 0xCC1188;"));
     }
 

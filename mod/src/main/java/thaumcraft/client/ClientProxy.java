@@ -1246,7 +1246,10 @@ public class ClientProxy extends CommonProxy {
     }
 
     private static String localizeOrFallback(String key, String fallback) {
-        String localized = net.minecraft.client.resources.I18n.format(key);
+        // Raw lookup, NOT I18n.format: these templates contain %s/%n placeholders that are
+        // substituted manually via String.replace. Running them through String.format with
+        // no args makes vanilla Locale return "Format error: <raw>" (and eats %n).
+        String localized = net.minecraft.util.text.translation.I18n.translateToLocal(key);
         return key.equals(localized) ? fallback : localized;
     }
 

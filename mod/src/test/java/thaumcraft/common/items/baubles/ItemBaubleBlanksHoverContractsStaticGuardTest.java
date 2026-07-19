@@ -17,7 +17,7 @@ public class ItemBaubleBlanksHoverContractsStaticGuardTest {
         String hover = readFile("src/main/java/thaumcraft/common/items/baubles/ItemGirdleHover.java");
 
         assertTrue("ItemBaubleBlanks must keep aspect-ring display name and tooltip localization contracts",
-                blanks.contains("I18n.translateToLocal(\"item.ItemBaubleBlanks.3.name\")")
+                blanks.contains("I18n.translateToLocal(\"item.thaumcraft.bauble_blanks.3.name\")")
                         && blanks.contains("I18n.translateToLocal(\"tc.discount\")")
                         && blanks.contains("tooltip.add(TextFormatting.DARK_PURPLE + aspect.getName() + \" \" + I18n.translateToLocal(\"tc.discount\") + \": 1%\");"));
         assertTrue("ItemGirdleHover must keep subtype-enabled setup and unclamped fall-distance reduction",

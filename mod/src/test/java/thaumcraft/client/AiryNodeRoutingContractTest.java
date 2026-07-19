@@ -32,7 +32,7 @@ public class AiryNodeRoutingContractTest {
                         && materialAiry.contains("public boolean blocksMovement()"));
 
         assertTrue("BlockAiry should route node/energized-node through TESR and keep warding aura invisible like TC4",
-                blockAiry.contains("return meta == 0 || meta == 4 || meta == 5 ? EnumBlockRenderType.INVISIBLE : EnumBlockRenderType.MODEL;"));
+                blockAiry.contains("return meta == 0 || meta == 1 || meta == 4 || meta == 5 ? EnumBlockRenderType.INVISIBLE : EnumBlockRenderType.MODEL;"));
 
         assertTrue("BlockAiry should restore the original airy small-bounds, no-side-solid, meta-specific collision, and nitor-only item-drop contract",
                 blockAiry.contains("private static final AxisAlignedBB AIRY_AABB = new AxisAlignedBB(0.3D, 0.3D, 0.3D, 0.7D, 0.7D, 0.7D);")

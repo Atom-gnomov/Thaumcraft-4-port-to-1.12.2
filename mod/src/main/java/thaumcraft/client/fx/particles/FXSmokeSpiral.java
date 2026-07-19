@@ -2,17 +2,15 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
+import thaumcraft.client.fx.ITCParticle;
 
 @SideOnly(Side.CLIENT)
-public class FXSmokeSpiral extends Particle {
+public class FXSmokeSpiral extends Particle implements ITCParticle {
     private float radius = 1.0f;
     private int start = 0;
     private int miny = 0;
@@ -31,8 +29,9 @@ public class FXSmokeSpiral extends Particle {
     }
 
     @Override
-    public int getFXLayer() {
-        return 3;
+    public int getTCParticleLayer() {
+        // TC4 smoke cells live on particles.png (original getFXLayer 1: normal-blend sheet 1)
+        return 1;
     }
 
     @Override
@@ -48,11 +47,8 @@ public class FXSmokeSpiral extends Particle {
     }
 
     @Override
-    public void renderParticle(BufferBuilder ignored, Entity entityIn, float partialTicks,
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks,
                                float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-
         int particle = 1 + (int) (this.particleAge / (float) this.particleMaxAge * 4.0F);
         float r1 = this.start + 720.0F * ((this.particleAge + partialTicks) / (float) this.particleMaxAge);
         float r2 = 90.0F - 180.0F * ((this.particleAge + partialTicks) / (float) this.particleMaxAge);
@@ -75,27 +71,21 @@ public class FXSmokeSpiral extends Particle {
         int lightU = brightness & 0xFFFF;
         int lightV = brightness >> 16 & 0xFFFF;
 
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
-        buffer.pos(px - rotationX * size - rotationXY * size, py - rotationZ * size, pz - rotationYZ * size - rotationXZ * size)
-                .tex(u1, v1)
+        addVertex(buffer, px - rotationX * size - rotationXY * size, py - rotationZ * size,
+                pz - rotationYZ * size - rotationXZ * size, u1, v1, lightU, lightV);
+        addVertex(buffer, px - rotationX * size + rotationXY * size, py + rotationZ * size,
+                pz - rotationYZ * size + rotationXZ * size, u1, v0, lightU, lightV);
+        addVertex(buffer, px + rotationX * size + rotationXY * size, py + rotationZ * size,
+                pz + rotationYZ * size + rotationXZ * size, u0, v0, lightU, lightV);
+        addVertex(buffer, px + rotationX * size - rotationXY * size, py - rotationZ * size,
+                pz + rotationYZ * size - rotationXZ * size, u0, v1, lightU, lightV);
+    }
+
+    private void addVertex(BufferBuilder buffer, double x, double y, double z, float u, float v, int lightU, int lightV) {
+        buffer.pos(x, y, z)
+                .tex(u, v)
                 .color(this.particleRed, this.particleGreen, this.particleBlue, 0.66F * this.particleAlpha)
                 .lightmap(lightU, lightV)
                 .endVertex();
-        buffer.pos(px - rotationX * size + rotationXY * size, py + rotationZ * size, pz - rotationYZ * size + rotationXZ * size)
-                .tex(u1, v0)
-                .color(this.particleRed, this.particleGreen, this.particleBlue, 0.66F * this.particleAlpha)
-                .lightmap(lightU, lightV)
-                .endVertex();
-        buffer.pos(px + rotationX * size + rotationXY * size, py + rotationZ * size, pz + rotationYZ * size + rotationXZ * size)
-                .tex(u0, v0)
-                .color(this.particleRed, this.particleGreen, this.particleBlue, 0.66F * this.particleAlpha)
-                .lightmap(lightU, lightV)
-                .endVertex();
-        buffer.pos(px + rotationX * size - rotationXY * size, py - rotationZ * size, pz + rotationYZ * size - rotationXZ * size)
-                .tex(u0, v1)
-                .color(this.particleRed, this.particleGreen, this.particleBlue, 0.66F * this.particleAlpha)
-                .lightmap(lightU, lightV)
-                .endVertex();
-        tessellator.draw();
     }
 }

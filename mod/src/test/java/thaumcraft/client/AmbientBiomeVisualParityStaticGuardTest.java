@@ -34,6 +34,30 @@ public class AmbientBiomeVisualParityStaticGuardTest {
     }
 
     @Test
+    public void biomeGrassFoliageWaterColorsMatchTC4() throws IOException {
+        String magicalForest = read("src/main/java/thaumcraft/common/lib/world/biomes/BiomeMagicalForest.java").replace("\r\n", "\n");
+        String eerieBiome = read("src/main/java/thaumcraft/common/lib/world/biomes/BiomeEerie.java").replace("\r\n", "\n");
+        String taintBiome = read("src/main/java/thaumcraft/common/lib/world/biomes/BiomeTaint.java").replace("\r\n", "\n");
+
+        // TC4 BiomeGenMagicalForest: grass func_150558_b = 5635969 (0x55FF81),
+        // foliage func_150571_c = 6750149 (0x66FFC5), water = 30702 (0x77EE)
+        assertTrue(magicalForest.contains("public int getGrassColorAtPos(BlockPos pos) {\n        return Config.blueBiome ? 0x66AACC : 0x55FF81;"));
+        assertTrue(magicalForest.contains("public int getFoliageColorAtPos(BlockPos pos) {\n        return Config.blueBiome ? 0x77CCEE : 0x66FFC5;"));
+        assertTrue(magicalForest.contains(".setWaterColor(0x0077EE)"));
+
+        // TC4 BiomeGenEerie: grass = 0x404840, foliage = 4215616 (0x405340), water = 3035999 (0x2E535F)
+        assertTrue(eerieBiome.contains("public int getGrassColorAtPos(BlockPos pos) {\n        return 0x404840;"));
+        assertTrue(eerieBiome.contains("public int getFoliageColorAtPos(BlockPos pos) {\n        return 0x405340;"));
+        assertTrue(eerieBiome.contains("public int getWaterColorMultiplier() {\n        return 0x2E535F;"));
+
+        // TC4 BiomeGenTaint: grass func_150558_b = 7160201 (0x6D4189),
+        // foliage func_150571_c = 8154503 (0x7C6D87), water = 0xCC1188
+        assertTrue(taintBiome.contains("public int getGrassColorAtPos(BlockPos pos) {\n        return 0x6D4189;"));
+        assertTrue(taintBiome.contains("public int getFoliageColorAtPos(BlockPos pos) {\n        return 0x7C6D87;"));
+        assertTrue(taintBiome.contains("return 0xCC1188;"));
+    }
+
+    @Test
     public void darkAndTaintedNodesMutateBiomesLikeTC4() throws IOException {
         String node = read("src/main/java/thaumcraft/common/tiles/TileNode.java");
         String utils = read("src/main/java/thaumcraft/common/lib/utils/Utils.java");

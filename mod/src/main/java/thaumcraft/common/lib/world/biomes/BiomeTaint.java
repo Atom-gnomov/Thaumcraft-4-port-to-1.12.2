@@ -48,12 +48,12 @@ public class BiomeTaint extends Biome {
 
     @Override
     public int getFoliageColorAtPos(BlockPos pos) {
-        return 0x6D4189;
+        return 0x7C6D87;
     }
 
     @Override
     public int getGrassColorAtPos(BlockPos pos) {
-        return 0x7C6D87;
+        return 0x6D4189;
     }
 
     @Override

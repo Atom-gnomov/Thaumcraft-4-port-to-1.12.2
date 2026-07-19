@@ -151,6 +151,10 @@ public class CommonProxy implements IGuiHandler {
         return false;
     }
 
+    public boolean isUseItemKeyDown() {
+        return false;
+    }
+
     public void registerHandlers() {
     }
 

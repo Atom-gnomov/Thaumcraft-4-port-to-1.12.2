@@ -266,6 +266,13 @@ public class ConfigAspects {
         // Rarer drop (mostly elder guardian / low guardian drop rate) — used for sponge farming.
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.PRISMARINE_CRYSTALS),
                 new AspectList().add(Aspect.WATER, 2).add(Aspect.LIGHT, 2).add(Aspect.CRYSTAL, 2));
+        // Sponge was unobtainable in 1.7.10, so TC4 never tagged it; since 1.8 the wet form
+        // drops from elder guardians and dries in a furnace (no crafting recipe → no
+        // recipe-derived tags for either meta). Values ported from the TC6 donor jar.
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SPONGE, 1, 0),
+                new AspectList().add(Aspect.EARTH, 5).add(Aspect.TRAP, 5).add(Aspect.VOID, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SPONGE, 1, 1),
+                new AspectList().add(Aspect.EARTH, 5).add(Aspect.TRAP, 5).add(Aspect.WATER, 5));
 
         // --- 1.8 Red sandstone (trivial craft from sand, same tier as regular sandstone) ---
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RED_SANDSTONE, 1, OreDictionary.WILDCARD_VALUE),

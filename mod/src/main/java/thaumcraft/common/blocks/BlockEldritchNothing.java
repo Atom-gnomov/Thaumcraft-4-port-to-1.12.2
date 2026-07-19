@@ -15,7 +15,9 @@ import thaumcraft.client.lib.EldritchDiagnostics;
 
 /**
  * Invisible void block used in the Outer Lands to fill empty space.
- * Original 1.7.10: zero-collision, shrunken selection box (0.125 inset).
+ * Original 1.7.10 contract: SOLID collision box inset by 0.125 on every side
+ * (func_149668_a), zero-size SELECTION box (func_149633_g), no raytrace hit,
+ * and 8.0 contact damage to non-creative entities older than 20 ticks.
  * Port notes: Block.NULL_AABB is null in 1.12.2 and callers like
  * WalkNodeProcessor.getSafePoint do not null-check, so all "no-box"
  * returns must use a real zero-size AxisAlignedBB, not NULL_AABB.
@@ -23,6 +25,9 @@ import thaumcraft.client.lib.EldritchDiagnostics;
 public class BlockEldritchNothing extends Block {
     /** Non-null zero-size AABB — replaces NULL_AABB which is null in 1.12.2. */
     private static final AxisAlignedBB ZERO_AABB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+    /** TC4 collision: full cube inset by 0.125 on every side. */
+    private static final AxisAlignedBB COLLISION_AABB =
+            new AxisAlignedBB(0.125, 0.125, 0.125, 0.875, 0.875, 0.875);
 
     public BlockEldritchNothing() {
         super(Material.AIR);
@@ -50,11 +55,21 @@ public class BlockEldritchNothing extends Block {
         return ZERO_AABB;
     }
 
-    /** No collision — zero-size AABB. */
+    /** TC4 parity: the void block is solid — collision cube inset by 0.125. */
     @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return ZERO_AABB;
+        return COLLISION_AABB;
+    }
+
+    /** TC4 parity: touching the void hurts (8.0, bypasses armor) unless creative or freshly spawned. */
+    @Override
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+        if (entity.ticksExisted > 20
+                && !(entity instanceof net.minecraft.entity.player.EntityPlayer
+                        && ((net.minecraft.entity.player.EntityPlayer) entity).capabilities.isCreativeMode)) {
+            entity.attackEntityFrom(net.minecraft.util.DamageSource.OUT_OF_WORLD, 8.0f);
+        }
     }
 
     /** Skip raytrace entirely for this invisible block. */

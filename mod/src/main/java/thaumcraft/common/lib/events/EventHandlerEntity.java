@@ -185,7 +185,7 @@ public class EventHandlerEntity {
                         }
                         if (pearl.getThrower() instanceof EntityPlayer) {
                             ((EntityPlayer) pearl.getThrower()).sendMessage(
-                                    new TextComponentString("\u00a75\u00a7oThe magic of a nearby warded object destroys the ender pearl."));
+                                    new net.minecraft.util.text.TextComponentTranslation("tc.wardedpearl"));
                         }
                         pearl.setDead();
                         return;

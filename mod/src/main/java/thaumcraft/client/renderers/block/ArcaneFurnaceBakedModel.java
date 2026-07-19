@@ -73,12 +73,14 @@ public final class ArcaneFurnaceBakedModel implements IBakedModel {
 
     private void addNozzleQuads(List<BakedQuad> quads, EnumFacing facing) {
         ModelRotation rotation = this.nozzleRotation(facing);
-        // Depth order (SOUTH base = outward, higher z = closer to viewer):
-        // fire deepest (behind), evil face in the middle, iron grate at the front.
-        // Previously the fire was outermost and hid the face — swap grate/fire depths.
-        this.addFace(quads, 0, 0, 12, 16, 16, 13, EnumFacing.SOUTH, this.sprite("minecraft:blocks/fire_layer_0"), rotation, false);
-        this.addFace(quads, 0, 0, 13, 16, 16, 14, EnumFacing.SOUTH, this.sprite(15), rotation, true);
-        this.addFace(quads, 0, 0, 14, 16, 16, 15, EnumFacing.SOUTH, this.sprite(13), rotation, true);
+        // TC4 BlockArcaneFurnaceRenderer plane depths, converted to the SOUTH
+        // base (outer surface = z=16): grate icon[13] recessed 10/16 (plane
+        // z=6), evil face icon[15] recessed 12.8/16 (z=3.2), vanilla fire
+        // recessed 14.4/16 (z=1.6) and drawn 1.5 blocks tall (TC4 sets render
+        // bounds 0..1.5 for the fire pass only).
+        this.addFace(quads, 0, 0, 0.6f, 16, 24, 1.6f, EnumFacing.SOUTH, this.sprite("minecraft:blocks/fire_layer_0"), rotation, false);
+        this.addFace(quads, 0, 0, 2.2f, 16, 16, 3.2f, EnumFacing.SOUTH, this.sprite(15), rotation, true);
+        this.addFace(quads, 0, 0, 5, 16, 16, 6, EnumFacing.SOUTH, this.sprite(13), rotation, true);
     }
 
     private int textureForSide(int meta, int level, int nozzleSide, EnumFacing face) {

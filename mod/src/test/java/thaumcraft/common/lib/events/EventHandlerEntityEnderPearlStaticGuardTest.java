@@ -17,7 +17,7 @@ public class EventHandlerEntityEnderPearlStaticGuardTest {
 
         assertTrue(source.contains("event.getEntity() instanceof EntityEnderPearl"));
         assertTrue(source.contains("tile instanceof TileOwned"));
-        assertTrue(source.contains("The magic of a nearby warded object destroys the ender pearl."));
+        assertTrue(source.contains("new net.minecraft.util.text.TextComponentTranslation(\"tc.wardedpearl\")"));
         assertTrue(source.contains("pearl.setDead();"));
     }
 

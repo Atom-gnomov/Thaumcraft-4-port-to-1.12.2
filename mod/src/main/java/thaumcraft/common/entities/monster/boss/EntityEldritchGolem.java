@@ -102,6 +102,16 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements thaumcr
     }
 
     @Override
+    public void generateName() {
+        int type = thaumcraft.common.lib.utils.EntityUtils.getChampionModifierType(this);
+        if (type >= 0 && type < thaumcraft.common.entities.monster.mods.ChampionModifier.mods.length) {
+            this.setCustomNameTag(String.format(
+                    net.minecraft.util.text.translation.I18n.translateToLocal("entity.thaumcraft.eldritchgolem.name"),
+                    thaumcraft.common.entities.monster.mods.ChampionModifier.mods[type].getModNameLocalized()));
+        }
+    }
+
+    @Override
     public float getEyeHeight() {
         return this.isHeadless() ? 3.33F : 3.0F;
     }

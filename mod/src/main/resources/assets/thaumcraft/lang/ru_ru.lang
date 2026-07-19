@@ -1570,3 +1570,5 @@ death.attack.dissolve.player=%1$s растворился, сражаясь с %2
 tc.adv=Улучшенный
 tc.discount=скидка
 tc.markedloc=отмеченных мест
+tc.arcanedoor.locked=Дверь не поддаётся.
+tc.wardedpearl=§5§oМагия ближайшего защищённого объекта уничтожает жемчуг Края.

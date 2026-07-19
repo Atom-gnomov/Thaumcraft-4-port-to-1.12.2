@@ -1711,6 +1711,19 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
+    public void hungryNodeFX(World world, net.minecraft.util.math.BlockPos source, net.minecraft.util.math.BlockPos node, IBlockState state) {
+        if (world == null || !world.isRemote || state == null) return;
+        // TC4: FXBoreParticles from a random point inside the eaten block toward the node center
+        ParticleEngine.addEffect(world, new FXBoreParticles(
+                world,
+                source.getX() + world.rand.nextFloat(),
+                source.getY() + world.rand.nextFloat(),
+                source.getZ() + world.rand.nextFloat(),
+                node.getX() + 0.5D, node.getY() + 0.5D, node.getZ() + 0.5D,
+                state));
+    }
+
+    @Override
     public void drawInfusionParticles3(World world, double x, double y, double z, int tx, int ty, int tz) {
         if (world == null || !world.isRemote) return;
         FXBoreSparkle sparkle = new FXBoreSparkle(world, x, y, z, tx + 0.5D, ty - 0.5D, tz + 0.5D);

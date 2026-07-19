@@ -1572,3 +1572,5 @@ death.attack.dissolve.player=%1$s was dissolved whilst fighting %2$s
 tc.adv=Advanced
 tc.discount=discount
 tc.markedloc=marked locations
+tc.arcanedoor.locked=The door refuses to budge.
+tc.wardedpearl=§5§oThe magic of a nearby warded object destroys the ender pearl.

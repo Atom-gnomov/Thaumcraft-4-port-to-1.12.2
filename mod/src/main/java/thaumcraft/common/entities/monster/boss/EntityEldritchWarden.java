@@ -94,6 +94,17 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements net.mi
     }
 
     @Override
+    public void generateName() {
+        int type = thaumcraft.common.lib.utils.EntityUtils.getChampionModifierType(this);
+        if (type >= 0 && type < thaumcraft.common.entities.monster.mods.ChampionModifier.mods.length) {
+            this.setCustomNameTag(String.format(
+                    net.minecraft.util.text.translation.I18n.translateToLocal("entity.thaumcraft.eldritchwarden.name"),
+                    this.getTitle(),
+                    thaumcraft.common.entities.monster.mods.ChampionModifier.mods[type].getModNameLocalized()));
+        }
+    }
+
+    @Override
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         compound.setByte("title", this.dataManager.get(TITLE).byteValue());

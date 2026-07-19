@@ -223,7 +223,7 @@ public class BlockArcaneDoor extends BlockContainer {
                 || owned.accessList != null && (owned.accessList.contains("0" + playerName)
                 || owned.accessList.contains("1" + playerName));
         if (!allowed) {
-            playerIn.sendStatusMessage(new TextComponentString("The door refuses to budge."), true);
+            playerIn.sendStatusMessage(new net.minecraft.util.text.TextComponentTranslation("tc.arcanedoor.locked"), true);
             worldIn.playSound(null, pos, TCSounds.DOORFAIL, SoundCategory.BLOCKS, 0.66F, 1.0F);
             return true;
         }

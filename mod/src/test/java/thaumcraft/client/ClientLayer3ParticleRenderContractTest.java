@@ -16,7 +16,7 @@ public class ClientLayer3ParticleRenderContractTest {
     public void layer3CustomParticlesShouldOwnExactlyOneInternalBeginDrawPass() throws IOException {
         assertLayer3SelfContained("src/main/java/thaumcraft/client/fx/particles/FXBurst.java");
         assertLayer3SelfContained("src/main/java/thaumcraft/client/fx/particles/FXBreaking.java");
-        assertLayer3SelfContained("src/main/java/thaumcraft/client/fx/particles/FXSmokeSpiral.java");
+        // FXSmokeSpiral is a TC sheet-1 particle (see FxLayerAndEldritchParityStaticGuardTest)
         assertLayer3SelfContained("src/main/java/thaumcraft/client/fx/other/FXSonic.java");
         assertLayer3SelfContained("src/main/java/thaumcraft/client/fx/other/FXShieldRunes.java");
         assertLayer3SelfContained("src/main/java/thaumcraft/client/fx/other/FXBlockWard.java");

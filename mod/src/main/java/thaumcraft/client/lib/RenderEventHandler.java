@@ -434,9 +434,9 @@ public class RenderEventHandler {
                     double wy = scanPos.getY() + yy;
                     double wz = scanPos.getZ() + zz;
                     if (value == -5) {
-                        drawSpecialBlockOverlay(wx, wy, wz, partialTicks, 0x3CD4BC, alpha, player);
+                        drawSpecialBlockOverlay(wx, wy, wz, partialTicks, 0x3CD4FC, alpha, player);
                     } else if (value == -10) {
-                        drawSpecialBlockOverlay(wx, wy, wz, partialTicks, 0xFF55C1, alpha, player);
+                        drawSpecialBlockOverlay(wx, wy, wz, partialTicks, 0xFF5A01, alpha, player);
                     } else {
                         float size = Math.max(0.08F, value / 7.0F);
                         drawScannedNodePulse(wx + 0.5D, wy + 0.5D, wz + 0.5D, alpha, frame, size);
@@ -487,7 +487,9 @@ public class RenderEventHandler {
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
         mc.getTextureManager().bindTexture(NODE_SCAN_TEX);
-        drawTexturedQuad(half, argb(alpha, rgb), u0, u1, 0.0F, 1.0F);
+        // nodes.png is a 32x32 grid; the scan pulse uses strip (row) 0 like TC4
+        // UtilsFX.renderFacingStrip(..., frames=32, strip=0, ...)
+        drawTexturedQuad(half, argb(alpha, rgb), u0, u1, 0.0F, 1.0F / 32.0F);
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         GlStateManager.enableCull();
         GlStateManager.disableBlend();

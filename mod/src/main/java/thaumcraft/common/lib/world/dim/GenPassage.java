@@ -275,7 +275,8 @@ public class GenPassage extends GenCommon {
             world.setBlockState(new BlockPos(x + 8, y + 4, z + 8), Blocks.MOB_SPAWNER.getDefaultState(), 3);
             TileEntityMobSpawner spawner = (TileEntityMobSpawner) world.getTileEntity(new BlockPos(x + 8, y + 4, z + 8));
             if (spawner != null) {
-                spawner.getSpawnerBaseLogic().setEntityId(new net.minecraft.util.ResourceLocation("thaumcraft", "mind_spider"));
+                // Registry path comes from ConfigBlocks.legacyPath("MindSpider") — plain lowercase, no underscore
+                spawner.getSpawnerBaseLogic().setEntityId(new net.minecraft.util.ResourceLocation("thaumcraft", "mindspider"));
             }
         }
     }

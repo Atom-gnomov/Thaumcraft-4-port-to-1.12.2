@@ -429,25 +429,61 @@ public class ItemWandCasting extends Item implements IArchitect {
                     TextFormatting.WHITE + I18n.translateToLocal("item.Wand." + cap.getTag() + ".cap"));
         }
 
-        // Vis display
+        // TC4 vis display: per-aspect lines with consumption % (and focus cost)
+        // when shift is held, otherwise a compact one-line summary; a
+        // "Capacity: N (avg %)" line is inserted at the top like the original.
         DecimalFormat formatter = new DecimalFormat("#####.##");
-        tooltip.add(TextFormatting.AQUA + "" + TextFormatting.ITALIC + I18n.translateToLocal("item.WandCasting.vis"));
-        for (Aspect aspect : Aspect.getPrimalAspects()) {
-            if (aspect == null) continue;
-            int vis = getVis(stack, aspect);
-            int max = getMaxVis(stack);
-            if (vis > 0 || max > 0) {
-                tooltip.add(" " + TextFormatting.GRAY + aspect.getName() + ": " +
-                        TextFormatting.WHITE + formatter.format((float) vis / 100.0F) + "/" + formatter.format((float) max / 100.0F));
+        int pos = tooltip.size();
+        String capacitySuffix = "";
+        EntityPlayer player = thaumcraft.common.Thaumcraft.proxy.getClientPlayer();
+        if (stack.hasTagCompound()) {
+            String compact = "";
+            int totalPercent = 0;
+            int aspectCount = 0;
+            for (Aspect aspect : Aspect.getPrimalAspects()) {
+                if (aspect == null || !stack.getTagCompound().hasKey(aspect.getTag())) continue;
+                String amount = formatter.format(stack.getTagCompound().getInteger(aspect.getTag()) / 100.0F);
+                float mod = getConsumptionModifier(stack, player, aspect, false);
+                String consumption = formatter.format(mod * 100.0F);
+                ++aspectCount;
+                totalPercent = (int) (totalPercent + mod * 100.0F);
+                String focusCostText = "";
+                ItemFocusBasic heldFocus = getFocus(stack);
+                if (heldFocus != null) {
+                    ItemStack focusItem = getFocusItem(stack);
+                    int visCost = heldFocus.getVisCost(focusItem).getAmount(aspect);
+                    if (visCost > 0) {
+                        focusCostText = "§r, " + formatter.format(visCost * mod / 100.0F) + " "
+                                + I18n.translateToLocal(heldFocus.isVisCostPerTick(focusItem) ? "item.Focus.cost2" : "item.Focus.cost1");
+                    }
+                }
+                if (thaumcraft.common.Thaumcraft.proxy.isShiftKeyDown()) {
+                    tooltip.add(" §" + aspect.getChatcolor() + aspect.getName() + "§r x " + amount
+                            + ", §o(" + consumption + "% " + I18n.translateToLocal("tc.vis.cost") + ")" + focusCostText);
+                    continue;
+                }
+                if (compact.length() > 0) {
+                    compact = compact + " | ";
+                }
+                compact = compact + "§" + aspect.getChatcolor() + amount + "§r";
+            }
+            if (!thaumcraft.common.Thaumcraft.proxy.isShiftKeyDown() && aspectCount > 0) {
+                tooltip.add(compact);
+                capacitySuffix = " (" + (totalPercent / aspectCount) + "% " + I18n.translateToLocal("tc.vis.costavg") + ")";
             }
         }
+        tooltip.add(pos, TextFormatting.GOLD + I18n.translateToLocal("item.capacity.text") + " "
+                + this.getMaxVis(stack) / 100 + "§r" + capacitySuffix);
 
-        // Focus info
+        // TC4 focus info: bold green focus name; shift expands its cost/upgrades
         ItemFocusBasic focus = getFocus(stack);
         if (focus != null) {
             ItemStack focusStack = getFocusItem(stack);
-            tooltip.add(TextFormatting.LIGHT_PURPLE + I18n.translateToLocal("item.WandCasting.focus") + " " +
-                    TextFormatting.WHITE + focusStack.getDisplayName());
+            tooltip.add(TextFormatting.BOLD + "" + TextFormatting.ITALIC + "" + TextFormatting.GREEN
+                    + focus.getItemStackDisplayName(focusStack));
+            if (thaumcraft.common.Thaumcraft.proxy.isShiftKeyDown()) {
+                focus.addFocusInformation(focusStack, player, tooltip, flagIn.isAdvanced());
+            }
         }
     }
 
@@ -661,6 +697,17 @@ public class ItemWandCasting extends Item implements IArchitect {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged;
+    }
+
+    /**
+     * Vis is stored in NBT and drains every tick while casting; the vanilla
+     * active-hand check compares stacks via NBT share tag, so without this the
+     * use state resets each tick (wand "re-clicks" itself: bobbing, restarted
+     * sounds, and a desynced stop when the button is released).
+     */
+    @Override
+    public boolean canContinueUsing(ItemStack oldStack, ItemStack newStack) {
+        return !newStack.isEmpty() && oldStack.getItem() == newStack.getItem();
     }
 
     @Override

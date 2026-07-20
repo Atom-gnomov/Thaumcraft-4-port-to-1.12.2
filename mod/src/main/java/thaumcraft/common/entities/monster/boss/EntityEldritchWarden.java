@@ -82,6 +82,9 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements net.mi
         this.spawnTimer = 150;
         this.setTitle(this.rand.nextInt(TITLES.length));
         this.setAbsorptionAmount(this.getAbsorptionAmount() + (float) (this.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.MAX_HEALTH).getBaseValue() * 0.66D));
+        // Champion + formatted name for every spawn path (locks re-apply makeChampion, it is idempotent);
+        // without this, egg/summon spawns show the raw "%s - %s" lang template.
+        thaumcraft.common.lib.utils.EntityUtils.makeChampion(this, true);
         return super.onInitialSpawn(difficulty, livingdata);
     }
 

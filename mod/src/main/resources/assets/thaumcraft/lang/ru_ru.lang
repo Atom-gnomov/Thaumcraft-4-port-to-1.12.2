@@ -1572,3 +1572,5 @@ tc.discount=скидка
 tc.markedloc=отмеченных мест
 tc.arcanedoor.locked=Дверь не поддаётся.
 tc.wardedpearl=§5§oМагия ближайшего защищённого объекта уничтожает жемчуг Края.
+tc.vis.cost=затраты Вис
+tc.vis.costavg=средние затраты Вис

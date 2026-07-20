@@ -98,6 +98,8 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements thaumcr
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
         this.spawnTimer = 100;
+        // Champion + formatted name for every spawn path (see EntityEldritchWarden note)
+        thaumcraft.common.lib.utils.EntityUtils.makeChampion(this, true);
         return super.onInitialSpawn(difficulty, livingdata);
     }
 

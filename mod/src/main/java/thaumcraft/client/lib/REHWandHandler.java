@@ -299,31 +299,9 @@ public class REHWandHandler {
         double sw = resolution.getScaledWidth_double();
         double sh = resolution.getScaledHeight_double();
 
-        // Lock cursor within radial circle while selector is open
-        if (KeyHandler.radialActive && radialHudScale > 0.0F && !foci.isEmpty()) {
-            float radius = 16.0F + fociItem.size() * 2.5F;
-            float clampRadius = radius * radialHudScale + 15.0F;
-            float centerX = (float)(sw / 2.0);
-            float centerY = (float)(sh / 2.0);
-
-            int rawX = Mouse.getX();
-            int rawY = Mouse.getY();
-            double mx = (double) rawX * sw / (double) mc.displayWidth;
-            double my = sh - (double) rawY * sh / (double) mc.displayHeight - 1.0;
-
-            double dx = mx - centerX;
-            double dy = my - centerY;
-            double dist = Math.sqrt(dx * dx + dy * dy);
-
-            if (dist > clampRadius && dist > 0.0) {
-                double clampedX = centerX + dx / dist * clampRadius;
-                double clampedY = centerY + dy / dist * clampRadius;
-                int newRawX = (int)(clampedX * mc.displayWidth / sw);
-                int newRawY = (int)((sh - clampedY - 1.0) * mc.displayHeight / sh);
-                Mouse.setCursorPosition(newRawX, newRawY);
-            }
-        }
-
+        // TC4 does not clamp the cursor while the radial is open; the clamp that
+        // used to live here fought the OS cursor every frame (jumpy, hard to
+        // aim, cursor often invisible).
         renderFocusRadialHUD(sw, sh, time, event.getPartialTicks());
 
         // Animate scales and handle selection

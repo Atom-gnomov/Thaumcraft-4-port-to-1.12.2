@@ -284,13 +284,21 @@ public class UtilsFX {
             drawGradientRect(tipX + maxW + 2, tipY - 3 + 1, tipX + maxW + 3, tipY + height + 3 - 1, border1, border2);
             drawGradientRect(tipX - 3, tipY - 3, tipX + maxW + 3, tipY - 3 + 1, border1, border1);
             drawGradientRect(tipX - 3, tipY + height + 2, tipX + maxW + 3, tipY + height + 3, border2, border2);
+            // Text is drawn above the rects (z 300) with shadow like TC4's
+            // func_78261_a; an explicit z-offset keeps it visible regardless of
+            // the depth/lightmap state the HUD happens to be in.
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0F, 0.0F, 301.0F);
+            GlStateManager.enableTexture2D();
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
                 line = i == 0 ? "\u00a7" + Integer.toHexString(subTipColor) + line : "\u00a77" + line;
-                fr.drawString(line, tipX, tipY, -1);
+                fr.drawStringWithShadow(line, tipX, tipY, -1);
                 if (i == 0) tipY += 2;
                 tipY += 10;
             }
+            GlStateManager.popMatrix();
             itemRenderer.zLevel = 0.0F;
         }
         GlStateManager.enableDepth();

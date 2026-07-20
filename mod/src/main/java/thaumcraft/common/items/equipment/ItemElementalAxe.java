@@ -127,7 +127,8 @@ public class ItemElementalAxe extends ItemAxe implements IRepairable {
         net.minecraft.world.World world = player.world;
         if (!player.isSneaking() && Utils.isWoodLog(world, pos)) {
             if (!world.isRemote) {
-                BlockUtils.breakFurthestBlock(world, pos, player);
+                // TC4: followItem=true, color 10 — chopped log drops fly to the player
+                BlockUtils.breakFurthestBlock(world, pos, player, true, 10);
                 PacketHandler.INSTANCE.sendToAllAround(
                         new PacketFXBlockBubble(pos.getX(), pos.getY(), pos.getZ(),
                                 new Color(0.33F, 0.33F, 1.0F).getRGB()),

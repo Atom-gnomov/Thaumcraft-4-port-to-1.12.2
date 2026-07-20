@@ -11,9 +11,24 @@
     "type=8": { "model": "thaumcraft:blockcosmeticsolid_8" },
     "type=9": { "model": "thaumcraft:blockcosmeticsolid_9" },
     "type=10": { "model": "thaumcraft:blockcosmeticsolid_10" },
-    "type=11": { "model": "thaumcraft:blockcosmeticsolid_11" },
-    "type=12": { "model": "thaumcraft:blockcosmeticsolid_12" },
-    "type=13": { "model": "thaumcraft:blockcosmeticsolid_13" },
+    "type=11": [
+      { "model": "thaumcraft:blockcosmeticsolid_11" },
+      { "model": "thaumcraft:blockcosmeticsolid_11_2" },
+      { "model": "thaumcraft:blockcosmeticsolid_11_3" },
+      { "model": "thaumcraft:blockcosmeticsolid_11_4" }
+    ],
+    "type=12": [
+      { "model": "thaumcraft:blockcosmeticsolid_12" },
+      { "model": "thaumcraft:blockcosmeticsolid_12_2" },
+      { "model": "thaumcraft:blockcosmeticsolid_12_3" },
+      { "model": "thaumcraft:blockcosmeticsolid_12_4" }
+    ],
+    "type=13": [
+      { "model": "thaumcraft:blockcosmeticsolid_13" },
+      { "model": "thaumcraft:blockcosmeticsolid_11_2" },
+      { "model": "thaumcraft:blockcosmeticsolid_11_3" },
+      { "model": "thaumcraft:blockcosmeticsolid_11_4" }
+    ],
     "type=14": { "model": "thaumcraft:blockcosmeticsolid_14" },
     "type=15": { "model": "thaumcraft:blockcosmeticsolid_15" }
   }

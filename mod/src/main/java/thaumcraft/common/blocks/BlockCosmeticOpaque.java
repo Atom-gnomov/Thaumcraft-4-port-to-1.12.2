@@ -3,6 +3,10 @@ package thaumcraft.common.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -78,5 +82,30 @@ public class BlockCosmeticOpaque extends Block {
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 4));
+    }
+
+    // TC4 renders amber and warded glass on the translucent pass (getRenderBlockPass() == 1)
+    // as a non-opaque cube; without this the semi-transparent textures bake onto the solid
+    // layer and the blocks look like dirty opaque stone.
+    @Override
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        // Glass-style culling as in the original: hide faces between identical neighbours.
+        IBlockState neighbor = blockAccess.getBlockState(pos.offset(side));
+        if (neighbor.getBlock() == this && neighbor.getValue(TYPE).equals(blockState.getValue(TYPE))) {
+            return false;
+        }
+        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 }

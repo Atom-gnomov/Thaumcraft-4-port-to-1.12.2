@@ -1,6 +1,5 @@
 package thaumcraft.client.renderers.tile;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemBlock;
@@ -28,11 +27,10 @@ public class TilePedestalRenderer extends TileEntitySpecialRenderer<TilePedestal
         GlStateManager.translate(x + 0.5D, y + 1.15D + bob, z + 0.5D);
         GlStateManager.rotate(ticks % 360.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.scale(scale, scale, scale);
+        // 1.7.10 drew a second copy rotated 180° on Fast graphics because flat item
+        // sprites were one-sided billboards. In 1.12.2 items are always 3D baked
+        // models, so the extra copy just showed as a visibly doubled item.
         TileRenderHelper.renderEntityItem(tile, stack, 0.0F);
-        if (!Minecraft.isFancyGraphicsEnabled()) {
-            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-            TileRenderHelper.renderEntityItem(tile, stack, 0.0F);
-        }
         GlStateManager.popMatrix();
     }
 }

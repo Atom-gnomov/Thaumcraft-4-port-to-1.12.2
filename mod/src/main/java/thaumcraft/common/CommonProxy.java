@@ -278,6 +278,10 @@ public class CommonProxy implements IGuiHandler {
     public void drawInfusionParticles3(World world, double x, double y, double z, int tx, int ty, int tz) {
     }
 
+    /** TC4 hungry node FX: block crumbs streaming from the eaten block toward the node. */
+    public void hungryNodeFX(World world, net.minecraft.util.math.BlockPos source, net.minecraft.util.math.BlockPos node, IBlockState state) {
+    }
+
     public void drawInfusionParticles4(World world, double x, double y, double z, int tx, int ty, int tz) {
     }
 

@@ -43,6 +43,8 @@ public class TileEssentiaCrystalizerRenderer extends TileEntitySpecialRenderer<T
         GlStateManager.blendFunc(770, 771);
         bindTexture(CRYSTAL_TEXTURE);
         GlStateManager.color(tile.cr, tile.cg, tile.cb, 1.0F);
+        float prevLightX = OpenGlHelper.lastBrightnessX;
+        float prevLightY = OpenGlHelper.lastBrightnessY;
         for (int i = 0; i < 4; i++) {
             GlStateManager.pushMatrix();
             GlStateManager.scale(0.75F, 0.75F, 0.75F);
@@ -57,6 +59,7 @@ public class TileEssentiaCrystalizerRenderer extends TileEntitySpecialRenderer<T
             model.renderCrystal(MODEL_SCALE);
             GlStateManager.popMatrix();
         }
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevLightX, prevLightY);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableBlend();
 

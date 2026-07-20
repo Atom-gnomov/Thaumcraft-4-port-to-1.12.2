@@ -22,7 +22,8 @@ public class PedestalRendererFidelityStaticGuardTest {
                         && pedestal.contains("GlStateManager.rotate(ticks % 360.0F, 0.0F, 1.0F, 0.0F);")
                         && pedestal.contains("stack.getItem() instanceof ItemBlock ? 2.0F : 1.0F")
                         && pedestal.contains("TileRenderHelper.renderEntityItem(tile, stack, 0.0F);")
-                        && pedestal.contains("if (!Minecraft.isFancyGraphicsEnabled())"));
+                        // 1.0.13: the 1.7.10 Fast-graphics 180-degree second copy is intentionally gone
+                        && !pedestal.contains("if (!Minecraft.isFancyGraphicsEnabled())"));
         assertFalse("TilePedestalRenderer should not regress to generic floating helper path",
                 pedestal.contains("TileRenderHelper.renderFloatingItem("));
 

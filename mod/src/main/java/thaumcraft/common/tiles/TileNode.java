@@ -289,9 +289,11 @@ implements ITickable, INode, IAspectContainer, IWandable {
             this.lastActive = System.currentTimeMillis();
             changed |= rechargeOneMissingAspect();
         }
+        changed = handleHungryNodeFirst(changed);
         changed = handleTaintNode(changed);
         changed = handleDarkNode(changed);
         changed = handlePureNode(changed);
+        changed = handleHungryNodeSecond(changed);
 
         if (changed) {
             nodeChange();
@@ -568,6 +570,105 @@ implements ITickable, INode, IAspectContainer, IWandable {
             }
         }
         return changed;
+    }
+
+    /**
+     * TC4 hungry node, part 1 (every tick): client-side block-crumb FX streaming
+     * toward the node; with Config.hardNode also pulls entities within 15 blocks
+     * and consumes those closer than 2 (1.0 damage/tick, on death a random
+     * primal-reduced aspect of the victim feeds the node).
+     */
+    private boolean handleHungryNodeFirst(boolean changed) {
+        if (this.getNodeType() != NodeType.HUNGRY) {
+            return changed;
+        }
+        if (this.world.isRemote) {
+            for (int a = 0; a < thaumcraft.common.Thaumcraft.proxy.particleCount(1); ++a) {
+                BlockPos target = this.randomHungryTarget();
+                if (target == null) continue;
+                net.minecraft.block.state.IBlockState state = this.world.getBlockState(target);
+                if (state.getBlock().isAir(state, this.world, target)) continue;
+                thaumcraft.common.Thaumcraft.proxy.hungryNodeFX(this.world, target, this.pos, state);
+            }
+            return changed;
+        }
+        if (!Config.hardNode) {
+            return changed;
+        }
+        java.util.List<Entity> ents = this.world.getEntitiesWithinAABB(Entity.class,
+                new AxisAlignedBB(this.pos).grow(15.0, 15.0, 15.0));
+        for (Entity eo : ents) {
+            if (eo instanceof EntityPlayer && ((EntityPlayer) eo).capabilities.disableDamage) continue;
+            if (eo.isEntityAlive() && !eo.isEntityInvulnerable(net.minecraft.util.DamageSource.OUT_OF_WORLD)
+                    && eo.getDistanceSq(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5) < 4.0) {
+                eo.attackEntityFrom(net.minecraft.util.DamageSource.OUT_OF_WORLD, 1.0f);
+                if (!eo.isEntityAlive()) {
+                    thaumcraft.api.research.ScanResult scan =
+                            new thaumcraft.api.research.ScanResult((byte) 2, 0, 0, eo, "");
+                    AspectList al = thaumcraft.common.lib.research.ScanManager.getScanAspects(scan, this.world);
+                    if (al != null && al.size() > 0) {
+                        al = ResearchManager.reduceToPrimals(al.copy());
+                        if (al != null && al.size() > 0) {
+                            Aspect aspect = al.getAspects()[this.world.rand.nextInt(al.size())];
+                            if (this.getAspects().getAmount(aspect) < this.getNodeVisBase(aspect)) {
+                                this.addToContainer(aspect, 1);
+                                changed = true;
+                            } else if (this.world.rand.nextInt(1 + this.getNodeVisBase(aspect) * 2) < al.getAmount(aspect)) {
+                                this.aspectsBase.add(aspect, 1);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+            double dx = (this.pos.getX() + 0.5 - eo.posX) / 15.0;
+            double dy = (this.pos.getY() + 0.5 - eo.posY) / 15.0;
+            double dz = (this.pos.getZ() + 0.5 - eo.posZ) / 15.0;
+            double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            double strength = 1.0 - dist;
+            if (strength <= 0.0) continue;
+            strength *= strength;
+            eo.motionX += dx / dist * strength * 0.15;
+            eo.motionY += dy / dist * strength * 0.25;
+            eo.motionZ += dz / dist * strength * 0.15;
+        }
+        return changed;
+    }
+
+    /**
+     * TC4 hungry node, part 2 (every 50 ticks, server): picks a random raycast
+     * target within 16 blocks and destroys it (with drops) if hardness is in [0,5).
+     */
+    private boolean handleHungryNodeSecond(boolean changed) {
+        if (this.getNodeType() != NodeType.HUNGRY || this.world.isRemote || this.count % 50 != 0) {
+            return changed;
+        }
+        BlockPos target = this.randomHungryTarget();
+        if (target != null) {
+            net.minecraft.block.state.IBlockState state = this.world.getBlockState(target);
+            if (!state.getBlock().isAir(state, this.world, target)) {
+                float hardness = state.getBlockHardness(this.world, target);
+                if (hardness >= 0.0f && hardness < 5.0f) {
+                    this.world.destroyBlock(target, true);
+                }
+            }
+        }
+        return changed;
+    }
+
+    /** Random raycast target within +-16 like TC4: clamped to terrain height, hit must be within 16 blocks. */
+    private BlockPos randomHungryTarget() {
+        int tx = this.pos.getX() + this.world.rand.nextInt(16) - this.world.rand.nextInt(16);
+        int ty = this.pos.getY() + this.world.rand.nextInt(16) - this.world.rand.nextInt(16);
+        int tz = this.pos.getZ() + this.world.rand.nextInt(16) - this.world.rand.nextInt(16);
+        int height = this.world.getHeight(tx, tz);
+        if (ty > height) ty = height;
+        Vec3d from = new Vec3d(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
+        Vec3d to = new Vec3d(tx + 0.5, ty + 0.5, tz + 0.5);
+        RayTraceResult mop = thaumcraft.api.ThaumcraftApiHelper.rayTraceIgnoringSource(this.world, from, to, true, false, false);
+        if (mop == null || mop.getBlockPos() == null) return null;
+        if (this.pos.distanceSq(mop.getBlockPos()) >= 256.0) return null;
+        return mop.getBlockPos();
     }
 
     private boolean handlePureNode(boolean changed) {

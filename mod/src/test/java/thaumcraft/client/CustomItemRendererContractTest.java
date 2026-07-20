@@ -76,14 +76,17 @@ public class CustomItemRendererContractTest {
                         && wandCalibration.contains("0.6f,0.6f,0.6f")
                         && wandCalibration.contains("20f,-45f,45f")
                         && wandCalibration.contains("0f,0.6f,0f")
-                        && wandCalibration.contains("0f,1f,0f")
+                        // 1.0.13 drop/frame calibration: wand GROUND 0.5x @ +0.7, FIXED 0.5x @ +0.25
+                        && wandCalibration.contains("0f,0.7f,0f")
+                        && wandCalibration.contains("0f,0.25f,0f")
                         && wandCalibration.contains("0.5f,1f,0.5f")
                         && wandCalibration.contains("1f,1.1f,1f")
                         && wandCalibration.contains("0.5f,0.5f,0.5f")
                         && wandCalibration.contains("0f,0.5f,0f")
                         && wandCalibration.contains("-0.7f,1.2f,0f")
-                        && wandCalibration.contains("0f,1.5f,0f")
-                        && wandCalibration.contains("0.9f,0.9f,0.9f")
+                        // staff GROUND 0.35x @ +0.5, FIXED 0.35x @ -0.1
+                        && wandCalibration.contains("0.35f,0.35f,0.35f")
+                        && wandCalibration.contains("0f,-0.1f,0f")
                         && wandCalibration.contains("thaumcraft.debugWandRender"));
 
         assertTrue("The bundled wand_casting.json calibration asset must declare the three kinds and the TC4 180-degree X final rotate",

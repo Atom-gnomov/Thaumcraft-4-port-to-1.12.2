@@ -66,6 +66,11 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
         EntityPlayerSP player = mc.player;
         ItemCameraTransforms.TransformType transformType = CURRENT_TRANSFORM.get();
 
+        // The scanner display overrides the lightmap for its glow; save the
+        // current coords so GUI slot rendering after this item is not darkened.
+        float prevLightX = OpenGlHelper.lastBrightnessX;
+        float prevLightY = OpenGlHelper.lastBrightnessY;
+
         GlStateManager.pushMatrix();
         try {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -79,6 +84,7 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
         } finally {
             setTransformType(ItemCameraTransforms.TransformType.NONE);
             GlStateManager.popMatrix();
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevLightX, prevLightY);
         }
     }
 

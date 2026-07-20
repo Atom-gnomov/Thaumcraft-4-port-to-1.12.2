@@ -359,11 +359,11 @@ public final class WandRenderCalibration {
      * <ul>
      *   <li>common final rotate: 180 about X</li>
      *   <li>wand GUI: translate(0.5,0.5,0) scale(0.6) rotate(20,-45,45) translate(0,0.6,0)</li>
-     *   <li>wand GROUND/FIXED: translate(0,1,0)</li>
+     *   <li>wand GROUND: translate(0,0.7,0) scale(0.5); FIXED: translate(0,0.25,0) scale(0.5)</li>
      *   <li>wand hand: translate(0.5,1.0,0.5) [fp: scale(1,1.1,1)] scale(0.5)</li>
      *   <li>wand NONE: translate(0.5,1.5,0.5)</li>
      *   <li>staff preTranslate(0,0.5,0); staff GUI scaleMul(0.8) postAdd(-0.7,0.6,0);
-     *       staff GROUND/FIXED translate(0,1.5,0) scale(0.9)</li>
+     *       staff GROUND translate(0,0.5,0) scale(0.35); FIXED translate(0,-0.1,0) scale(0.35)</li>
      *   <li>sceptre: identical to wand (separate kind so it can diverge later)</li>
      * </ul>
      */
@@ -379,10 +379,10 @@ public final class WandRenderCalibration {
                 1f,1.1f,1f,  0.6f,0.6f,0.6f,  1f,1f,1f,
                 20f,-45f,45f,  0f,0.6f,0f,  finalRotate, false);
         putContext(wand, ItemCameraTransforms.TransformType.GROUND,
-                0,0,0,  0f,1f,0f,  1f,1.1f,1f,  1f,1f,1f,  1f,1f,1f,
+                0,0,0,  0f,0.7f,0f,  1f,1.1f,1f,  0.5f,0.5f,0.5f,  1f,1f,1f,
                 0f,0f,0f,  0f,0f,0f,  finalRotate, false);
         putContext(wand, ItemCameraTransforms.TransformType.FIXED,
-                0,0,0,  0f,1f,0f,  1f,1.1f,1f,  1f,1f,1f,  1f,1f,1f,
+                0,0,0,  0f,0.25f,0f,  1f,1.1f,1f,  0.5f,0.5f,0.5f,  1f,1f,1f,
                 0f,0f,0f,  0f,0f,0f,  finalRotate, false);
         putContext(wand, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND,
                 0,0,0,  0.5f,1f,0.5f,  1f,1.1f,1f,  0.5f,0.5f,0.5f,  1f,1f,1f,
@@ -409,10 +409,10 @@ public final class WandRenderCalibration {
                 1f,1.1f,1f,  0.6f,0.6f,0.6f,  0.8f,0.8f,0.8f,
                 20f,-45f,45f,  -0.7f,1.2f,0f,  finalRotate, false);
         putContext(staff, ItemCameraTransforms.TransformType.GROUND,
-                0f,0.5f,0f,  0f,1.5f,0f,  1f,1.1f,1f,  0.9f,0.9f,0.9f,  1f,1f,1f,
+                0f,0.5f,0f,  0f,0.5f,0f,  1f,1.1f,1f,  0.35f,0.35f,0.35f,  1f,1f,1f,
                 0f,0f,0f,  0f,0f,0f,  finalRotate, false);
         putContext(staff, ItemCameraTransforms.TransformType.FIXED,
-                0f,0.5f,0f,  0f,1.5f,0f,  1f,1.1f,1f,  0.9f,0.9f,0.9f,  1f,1f,1f,
+                0f,0.5f,0f,  0f,-0.1f,0f,  1f,1.1f,1f,  0.35f,0.35f,0.35f,  1f,1f,1f,
                 0f,0f,0f,  0f,0f,0f,  finalRotate, false);
         putContext(staff, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND,
                 0f,0.5f,0f,  0.5f,1f,0.5f,  1f,1.1f,1f,  0.5f,0.5f,0.5f,  1f,1f,1f,

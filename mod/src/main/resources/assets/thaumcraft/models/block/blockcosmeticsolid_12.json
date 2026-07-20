@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "thaumcraft:blocks/es_5"
+    "all": "thaumcraft:blocks/er_1"
   }
 }

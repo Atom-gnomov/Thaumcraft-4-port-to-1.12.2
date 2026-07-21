@@ -77,6 +77,13 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
             // lightmap to full-bright for the model pass (restored in finally).
             GlStateManager.disableLighting();
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+            // The body/tanks are OPAQUE. Without forcing blend off + depth on, the model
+            // inherits whatever blend state the world-render pass left (or one the vis/heat
+            // quads below would set), which made the whole furnace render see-through.
+            GlStateManager.disableBlend();
+            GlStateManager.enableDepth();
+            GlStateManager.depthMask(true);
+            GlStateManager.enableTexture2D();
             if (!rescaleNormalEnabled) {
                 GlStateManager.enableRescaleNormal();
             }

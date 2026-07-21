@@ -1,6 +1,7 @@
 package thaumcraft.client.renderers.tile;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -30,13 +31,31 @@ public class TileThaumatoriumRenderer extends TileEntitySpecialRenderer<TileThau
     }
 
     private void renderThaumatoriumModel(TileThaumatorium tile, double x, double y, double z) {
+        // ModelBase.renderAll() carries no lightmap; in 1.7.10 the TESR pipeline lit it
+        // by default, but in 1.12 the lightmap coords are left at ambient (near-zero) so
+        // the whole model renders black. Pin them to the block's combined light like the
+        // other model TESRs, and restore afterwards.
+        float prevLightX = OpenGlHelper.lastBrightnessX;
+        float prevLightY = OpenGlHelper.lastBrightnessY;
+        int packedLight = tile.getWorld() != null
+                ? tile.getWorld().getCombinedLight(tile.getPos(), 0)
+                : 0xF000F0;
+
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5D, y, z + 0.5D);
         GlStateManager.rotate(90.0F, -1.0F, 0.0F, 0.0F);
         rotateByFacing(tile.facing);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        boolean lightingWasOn = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_LIGHTING);
+        GlStateManager.disableLighting();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
+                packedLight & 0xFFFF, (packedLight >> 16) & 0xFFFF);
         bindTexture(THAUMATORIUM_TEXTURE);
         model.renderAll();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevLightX, prevLightY);
+        if (lightingWasOn) {
+            GlStateManager.enableLighting();
+        }
         GlStateManager.popMatrix();
     }
 

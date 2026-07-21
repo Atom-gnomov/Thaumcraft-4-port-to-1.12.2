@@ -44,6 +44,13 @@ public class ItemGoggles extends ItemArmor implements IRepairable, IVisDiscountG
         return 5;
     }
 
+    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    @Override
+    public void addInformation(ItemStack stack, net.minecraft.world.World worldIn, java.util.List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
+        tooltip.add(net.minecraft.util.text.TextFormatting.DARK_PURPLE + net.minecraft.util.text.translation.I18n.translateToLocal("tc.visdiscount") + ": " + this.getVisDiscount(stack, null, null) + "%");
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+    }
+
     @Override
     public boolean showNodes(ItemStack itemstack, EntityLivingBase player) {
         return true;

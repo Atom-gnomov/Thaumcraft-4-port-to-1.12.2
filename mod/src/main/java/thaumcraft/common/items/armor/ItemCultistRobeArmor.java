@@ -50,6 +50,13 @@ public class ItemCultistRobeArmor extends ItemArmor implements IRepairable, IRun
         return 1;
     }
 
+    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    @Override
+    public void addInformation(ItemStack stack, net.minecraft.world.World worldIn, java.util.List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
+        tooltip.add(net.minecraft.util.text.TextFormatting.DARK_PURPLE + net.minecraft.util.text.translation.I18n.translateToLocal("tc.visdiscount") + ": " + this.getVisDiscount(stack, null, null) + "%");
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+    }
+
     @Override
     public int getWarp(ItemStack itemstack, net.minecraft.entity.player.EntityPlayer player) {
         return 1;

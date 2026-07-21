@@ -44,11 +44,21 @@ public class TileEssentiaReservoirRenderer extends TileEntitySpecialRenderer<Til
         }
 
         boolean rescaleNormalEnabled = GL11.glIsEnabled(GL12.GL_RESCALE_NORMAL);
+        // The OLDMODEL format carries no lightmap; without pinning it the shell inherits
+        // whatever brightness the previous TESR left (often full-bright), washing the
+        // light metal texture out to a frosted "ice" look. Use the block's real light.
+        float prevLightX = OpenGlHelper.lastBrightnessX;
+        float prevLightY = OpenGlHelper.lastBrightnessY;
+        int packedLight = tile.getWorld() != null
+                ? tile.getWorld().getCombinedLight(tile.getPos(), 0)
+                : 0xF000F0;
         GlStateManager.pushMatrix();
         try {
             translateFromOrientation(x, y, z,
                     (tile.facing == null ? EnumFacing.DOWN : tile.facing).ordinal());
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
+                    packedLight & 0xFFFF, (packedLight >> 16) & 0xFFFF);
             bindTexture(RESERVOIR_TEXTURE);
             if (!rescaleNormalEnabled) {
                 GlStateManager.enableRescaleNormal();
@@ -58,6 +68,7 @@ public class TileEssentiaReservoirRenderer extends TileEntitySpecialRenderer<Til
             model.render(CCRenderState.normalAttrib);
             CCRenderState.draw();
         } finally {
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevLightX, prevLightY);
             if (!rescaleNormalEnabled) {
                 GlStateManager.disableRescaleNormal();
             }

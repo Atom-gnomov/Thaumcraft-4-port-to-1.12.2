@@ -69,6 +69,11 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
             GlStateManager.translate(x + 0.5D, y, z + 0.5D);
             GlStateManager.rotate(90.0F, -1.0F, 0.0F, 0.0F);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            // 1.7.10 rendered the OBJ with GL lighting effectively off (brightness
+            // comes from the lightmap); with lighting on, the CCModel normals shade
+            // the whole model black. Restored to TC4 behavior; the finally block
+            // puts the previous lighting state back.
+            GlStateManager.disableLighting();
             if (!rescaleNormalEnabled) {
                 GlStateManager.enableRescaleNormal();
             }

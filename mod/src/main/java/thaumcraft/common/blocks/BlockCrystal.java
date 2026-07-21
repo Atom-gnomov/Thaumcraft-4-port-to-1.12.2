@@ -103,11 +103,17 @@ implements IInfusionStabiliser {
 
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return this.getLightValue(state);
+    }
+
+    /** Stateless overload feeds chunk-generation lighting (see BlockEldritch). */
+    @Override
+    public int getLightValue(IBlockState state) {
         int md = this.getMetaFromState(state);
         if (md < 6) {
             return 8;
         }
-        return super.getLightValue(state, world, pos);
+        return super.getLightValue(state);
     }
 
     @Override
@@ -143,8 +149,9 @@ implements IInfusionStabiliser {
 
     @Override
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+        // TC4 does NOT drop-check on add — worldgen places the crystal before
+        // its tile orientation (and sometimes neighbours) exist.
         super.onBlockAdded(worldIn, pos, state);
-        this.checkAndDropBlock(worldIn, pos, state);
     }
 
     @Override
@@ -154,6 +161,23 @@ implements IInfusionStabiliser {
     }
 
     private void checkAndDropBlock(World worldIn, BlockPos pos, IBlockState state) {
+        // TC4 parity: only metas <= 6 are drop-checked (nest "balanced" clusters,
+        // meta 7, never pop), and only the anchored side from the tile matters.
+        int md = this.getMetaFromState(state);
+        if (md > 6) {
+            return;
+        }
+        net.minecraft.tileentity.TileEntity te = worldIn.getTileEntity(pos);
+        if (te instanceof thaumcraft.common.tiles.TileCrystal) {
+            net.minecraft.util.EnumFacing anchor =
+                    net.minecraft.util.EnumFacing.byIndex(((thaumcraft.common.tiles.TileCrystal) te).orientation)
+                            .getOpposite();
+            if (!worldIn.isSideSolid(pos.offset(anchor), anchor.getOpposite())) {
+                this.dropBlockAsItem(worldIn, pos, state, 0);
+                worldIn.setBlockToAir(pos);
+            }
+            return;
+        }
         if (!this.canBlockStay(worldIn, pos, state)) {
             this.dropBlockAsItem(worldIn, pos, state, 0);
             worldIn.setBlockToAir(pos);

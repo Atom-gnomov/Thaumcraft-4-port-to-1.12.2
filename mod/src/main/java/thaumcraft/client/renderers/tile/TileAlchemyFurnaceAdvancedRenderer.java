@@ -58,6 +58,7 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
         float previousLightY = OpenGlHelper.lastBrightnessY;
         boolean blendEnabled = GL11.glIsEnabled(GL11.GL_BLEND);
         boolean lightingEnabled = GL11.glIsEnabled(GL11.GL_LIGHTING);
+        boolean cullEnabled = GL11.glIsEnabled(GL11.GL_CULL_FACE);
         boolean rescaleNormalEnabled = GL11.glIsEnabled(GL12.GL_RESCALE_NORMAL);
         int blendSrcRgb = GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB);
         int blendDstRgb = GL11.glGetInteger(GL14.GL_BLEND_DST_RGB);
@@ -84,6 +85,11 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
             GlStateManager.enableDepth();
             GlStateManager.depthMask(true);
             GlStateManager.enableTexture2D();
+            // adv_alch_furnace.obj is wound the opposite way from the other TC4 OBJs
+            // (reservoir/scanner render fine with the same CCModel path), so with normal
+            // back-face culling GL discards the OUTER faces and shows the interior —
+            // the "inside-out" look. Render both sides for this model.
+            GlStateManager.disableCull();
             if (!rescaleNormalEnabled) {
                 GlStateManager.enableRescaleNormal();
             }
@@ -126,6 +132,11 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
                 GlStateManager.enableRescaleNormal();
             } else {
                 GlStateManager.disableRescaleNormal();
+            }
+            if (cullEnabled) {
+                GlStateManager.enableCull();
+            } else {
+                GlStateManager.disableCull();
             }
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.popMatrix();

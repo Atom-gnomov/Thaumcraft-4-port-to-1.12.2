@@ -139,7 +139,10 @@ public class ItemThaumometer extends Item {
             }
         }
         if (count % 2 == 0) {
-            world.playSound(player, player.posX, player.posY, player.posZ, TCSounds.CAMERATICKS, SoundCategory.PLAYERS, 0.2f, 0.45f + world.rand.nextFloat() * 0.1f);
+            // Client-side scan tick: pass null player so the LOCAL player hears it.
+            // world.playSound(player, ...) excludes that player (they are assumed to
+            // have played it locally already), which on the client silenced it entirely.
+            world.playSound(null, player.posX, player.posY, player.posZ, TCSounds.CAMERATICKS, SoundCategory.PLAYERS, 0.2f, 0.45f + world.rand.nextFloat() * 0.1f);
         }
     }
 

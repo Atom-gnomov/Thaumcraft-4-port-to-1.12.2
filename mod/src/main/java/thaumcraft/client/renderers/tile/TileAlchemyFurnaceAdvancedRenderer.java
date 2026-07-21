@@ -69,11 +69,14 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
             GlStateManager.translate(x + 0.5D, y, z + 0.5D);
             GlStateManager.rotate(90.0F, -1.0F, 0.0F, 0.0F);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            // 1.7.10 rendered the OBJ with GL lighting effectively off (brightness
-            // comes from the lightmap); with lighting on, the CCModel normals shade
-            // the whole model black. Restored to TC4 behavior; the finally block
-            // puts the previous lighting state back.
+            // The OBJ is drawn with the OLDMODEL_POSITION_TEX_NORMAL format, which
+            // carries no per-vertex color or lightmap. With GL lighting on the CCModel
+            // normals shade it black; with lighting off it is still modulated by the
+            // world lightmap texture, whose coords are left at the ambient (near-zero)
+            // value here — so the whole model went black. Disable lighting AND pin the
+            // lightmap to full-bright for the model pass (restored in finally).
             GlStateManager.disableLighting();
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
             if (!rescaleNormalEnabled) {
                 GlStateManager.enableRescaleNormal();
             }

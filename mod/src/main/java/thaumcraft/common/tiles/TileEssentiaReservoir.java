@@ -156,7 +156,7 @@ public class TileEssentiaReservoir extends TileThaumcraft implements ITickable, 
         int add = Math.min(amount, this.maxAmount - total);
         if (add <= 0) return amount;
         this.essentia.add(tag, add);
-        this.markDirty();
+        this.markDirtyAndSync();
         return amount - add;
     }
 
@@ -165,7 +165,7 @@ public class TileEssentiaReservoir extends TileThaumcraft implements ITickable, 
         if (tag == null || amount <= 0) return false;
         if (this.containerContains(tag) < amount) return false;
         this.essentia.remove(tag, amount);
-        this.markDirty();
+        this.markDirtyAndSync();
         return true;
     }
 
@@ -180,8 +180,21 @@ public class TileEssentiaReservoir extends TileThaumcraft implements ITickable, 
         for (Aspect aspect : list.getAspects()) {
             this.essentia.remove(aspect, list.getAmount(aspect));
         }
-        this.markDirty();
+        this.markDirtyAndSync();
         return true;
+    }
+
+    /**
+     * TC4/FOREVA: the reservoir stores essentia server-side but must also push a block
+     * update so the client sees the new contents — otherwise the liquid never renders
+     * and the reservoir looks like it "isn't accepting" anything.
+     */
+    private void markDirtyAndSync() {
+        this.markDirty();
+        if (this.world != null && !this.world.isRemote) {
+            this.world.notifyBlockUpdate(this.pos, this.world.getBlockState(this.pos),
+                    this.world.getBlockState(this.pos), 3);
+        }
     }
 
     @Override

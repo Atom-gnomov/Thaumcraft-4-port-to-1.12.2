@@ -46,4 +46,11 @@ public class GuiMagicBox extends GuiContainer {
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, inventoryHeight + 17);
         this.drawTexturedModalRect(this.guiLeft, this.guiTop + inventoryHeight + 17, 0, 126, this.xSize, 96);
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

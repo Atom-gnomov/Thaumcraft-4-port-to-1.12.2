@@ -212,4 +212,11 @@ public class GuiGolem extends GuiContainer {
         int relY = mouseY - (this.guiTop + y);
         return relX >= 0 && relY >= 0 && relX < width && relY < height;
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

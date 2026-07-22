@@ -84,4 +84,11 @@ public class GuiArcaneBore extends GuiContainer {
                 && focus.getItem() instanceof ItemFocusBasic
                 && ((ItemFocusBasic) focus.getItem()).isUpgradedWith(focus, FocusUpgradeType.silktouch);
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

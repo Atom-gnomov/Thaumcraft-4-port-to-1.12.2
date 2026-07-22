@@ -46,4 +46,11 @@ public class GuiAlchemyFurnace extends GuiContainer {
         this.drawTexturedModalRect(this.guiLeft + 60, this.guiTop + 8, 232, 0, 10, 55);
         GlStateManager.disableBlend();
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

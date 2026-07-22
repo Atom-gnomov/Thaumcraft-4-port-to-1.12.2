@@ -207,4 +207,11 @@ public class GuiArcaneWorkbench extends GuiContainer {
         int blue = Math.round((color & 0xFF) * GHOST_SHADE);
         return GHOST_ALPHA << 24 | red << 16 | green << 8 | blue;
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

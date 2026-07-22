@@ -40,6 +40,10 @@ public class ItemThaumometer extends Item {
     private ScanResult startScan;
     private Object startScanKey;
     private boolean awaitingRelease;
+    /** Use-count at the moment the current target was (re)locked; charge = start - now. */
+    private int scanStartCount;
+    /** Ticks of continuous aim needed to finish a scan (TC4: 25-tick use, done at count<=5). */
+    private static final int SCAN_CHARGE_TICKS = 20;
 
     public ItemThaumometer() {
         this.setMaxStackSize(1);
@@ -55,7 +59,10 @@ public class ItemThaumometer extends Item {
 
     @Override
     public int getMaxItemUseDuration(ItemStack stack) {
-        return 25;
+        // Effectively unlimited: the hold never expires on its own, so sweeping to a
+        // new target re-charges smoothly without the hand dropping and re-raising.
+        // Completion is tracked via scanStartCount (SCAN_CHARGE_TICKS of steady aim).
+        return 72000;
     }
 
     @Override
@@ -77,6 +84,7 @@ public class ItemThaumometer extends Item {
             }
             this.startScan = doActiveScan(stack, world, player, true);
             this.startScanKey = this.startScan != null ? resolveTargetKey(world, player) : null;
+            this.scanStartCount = this.getMaxItemUseDuration(stack);
         }
         player.setActiveHand(hand);
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
@@ -96,26 +104,31 @@ public class ItemThaumometer extends Item {
         }
         EntityPlayer player = (EntityPlayer)entity;
         World world = player.world;
-        if (!world.isRemote || this.startScan == null) {
+        if (!world.isRemote) {
             return;
         }
 
-        // Only cancel the charge if the player has genuinely looked away from the
+        // Only restart the charge if the player has genuinely looked away from the
         // locked target (same block pos / entity id). Re-deriving and comparing the
         // *fully resolved* ScanResult every tick (item/meta via getPickBlock, etc.)
         // is fragile against normal mouse micro-jitter, causing the charge/sound to
         // stutter and restart even while still aiming at the same spot.
+        // Sweeping onto a NEW target re-locks smoothly: the hand stays active and
+        // the charge simply starts over for the new target (no drop/re-raise jerk).
         Object currentKey = resolveTargetKey(world, player);
-        if (this.startScanKey == null || !this.startScanKey.equals(currentKey)) {
-            this.startScan = null;
-            this.startScanKey = null;
-            return;
+        if (this.startScan == null || this.startScanKey == null || !this.startScanKey.equals(currentKey)) {
+            this.startScan = currentKey == null ? null : doActiveScan(stack, world, player, true);
+            this.startScanKey = this.startScan != null ? currentKey : null;
+            this.scanStartCount = count;
+            if (this.startScan == null) {
+                return;
+            }
         }
 
         ScanResult current = doActiveScan(stack, world, player, false);
         ScanResult effective = current != null ? current : this.startScan;
 
-        if (count <= 5) {
+        if (this.scanStartCount - count >= SCAN_CHARGE_TICKS) {
             this.startScan = null;
             this.startScanKey = null;
             this.awaitingRelease = true;
@@ -126,7 +139,10 @@ public class ItemThaumometer extends Item {
             }
         }
         if (count % 2 == 0) {
-            world.playSound(player, player.posX, player.posY, player.posZ, TCSounds.CAMERATICKS, SoundCategory.PLAYERS, 0.2f, 0.45f + world.rand.nextFloat() * 0.1f);
+            // Client-side scan tick: pass null player so the LOCAL player hears it.
+            // world.playSound(player, ...) excludes that player (they are assumed to
+            // have played it locally already), which on the client silenced it entirely.
+            world.playSound(null, player.posX, player.posY, player.posZ, TCSounds.CAMERATICKS, SoundCategory.PLAYERS, 0.2f, 0.45f + world.rand.nextFloat() * 0.1f);
         }
     }
 

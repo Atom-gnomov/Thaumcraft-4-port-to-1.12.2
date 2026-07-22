@@ -74,4 +74,11 @@ public class GuiPech extends GuiContainer {
         float pitch = 0.95F + this.mc.player.world.rand.nextFloat() * 0.1F;
         this.mc.player.playSound(TCSounds.PECH_DICE, 0.5F, pitch);
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

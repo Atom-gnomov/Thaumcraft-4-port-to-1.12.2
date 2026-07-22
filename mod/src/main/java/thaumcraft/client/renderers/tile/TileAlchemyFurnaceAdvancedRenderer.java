@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 import thaumcraft.codechicken.lib.render.CCModel;
 import thaumcraft.codechicken.lib.render.CCRenderState;
+import thaumcraft.codechicken.lib.vec.Vector3;
 import thaumcraft.common.tiles.TileAlchemyFurnaceAdvanced;
 
 public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRenderer<TileAlchemyFurnaceAdvanced> {
@@ -36,11 +37,13 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
 
     public TileAlchemyFurnaceAdvancedRenderer() {
         Map<String, CCModel> models = CCModel.parseObjModels(FURNACE_MODEL);
-        this.base = models.get("Base");
-        this.tank = models.get("Tank");
-        if (this.base == null || this.tank == null) {
+        CCModel parsedBase = models.get("Base");
+        CCModel parsedTank = models.get("Tank");
+        if (parsedBase == null || parsedTank == null) {
             throw new IllegalStateException("Advanced alchemical furnace OBJ is missing Base or Tank");
         }
+        this.base = restoreObjFaceOrder(parsedBase);
+        this.tank = restoreObjFaceOrder(parsedTank);
     }
 
     @Override
@@ -59,6 +62,7 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
         boolean blendEnabled = GL11.glIsEnabled(GL11.GL_BLEND);
         boolean lightingEnabled = GL11.glIsEnabled(GL11.GL_LIGHTING);
         boolean rescaleNormalEnabled = GL11.glIsEnabled(GL12.GL_RESCALE_NORMAL);
+        boolean cullEnabled = GL11.glIsEnabled(GL11.GL_CULL_FACE);
         int blendSrcRgb = GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB);
         int blendDstRgb = GL11.glGetInteger(GL14.GL_BLEND_DST_RGB);
         int blendSrcAlpha = GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA);
@@ -72,6 +76,7 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
             if (!rescaleNormalEnabled) {
                 GlStateManager.enableRescaleNormal();
             }
+            GlStateManager.enableCull();
 
             bindTexture(tile.heat > 100 ? FURNACE_ON : FURNACE);
             renderModel(this.base);
@@ -111,6 +116,11 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
                 GlStateManager.enableRescaleNormal();
             } else {
                 GlStateManager.disableRescaleNormal();
+            }
+            if (cullEnabled) {
+                GlStateManager.enableCull();
+            } else {
+                GlStateManager.disableCull();
             }
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.popMatrix();
@@ -214,6 +224,20 @@ public class TileAlchemyFurnaceAdvancedRenderer extends TileEntitySpecialRendere
         CCRenderState.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
         model.render(CCRenderState.normalAttrib);
         CCRenderState.draw();
+    }
+
+    private static CCModel restoreObjFaceOrder(CCModel model) {
+        // CCL reverses OBJ triangle winding; reverse it back without changing the authored normals.
+        CCModel corrected = model.backfacedCopy();
+        Vector3[] normals = corrected.normals();
+        if (normals != null) {
+            for (Vector3 normal : normals) {
+                if (normal != null) {
+                    normal.negate();
+                }
+            }
+        }
+        return corrected;
     }
 
     private static TextureAtlasSprite atlas(String sprite) {

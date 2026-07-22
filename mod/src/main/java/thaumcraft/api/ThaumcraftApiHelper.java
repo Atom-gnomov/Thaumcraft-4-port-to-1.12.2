@@ -198,7 +198,28 @@ public class ThaumcraftApiHelper {
             Double.isNaN(v2.x) || Double.isNaN(v2.y) || Double.isNaN(v2.z)) {
             return null;
         }
-        return world.rayTraceBlocks(v1, v2, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        // TC4 name means what it says: the SOURCE block (the one containing the ray
+        // origin) must not count as an obstruction. Vanilla rayTraceBlocks does not
+        // skip it, so a source with its own collision box (e.g. a vis conduit) self-hits
+        // and the vis-net visibility check (canNodeBeSeen) fails — the network never
+        // forms and vis-powered devices get no power. Retrace past any self-hit.
+        net.minecraft.util.math.BlockPos sourceBlock = new net.minecraft.util.math.BlockPos(v1);
+        RayTraceResult mop = world.rayTraceBlocks(v1, v2, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        int guard = 0;
+        while (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK
+                && sourceBlock.equals(mop.getBlockPos()) && guard++ < 8) {
+            Vec3d step = v2.subtract(mop.hitVec).normalize().scale(0.05);
+            Vec3d nudged = mop.hitVec.add(step);
+            // Ensure we actually left the source cell before retracing.
+            while (sourceBlock.equals(new net.minecraft.util.math.BlockPos(nudged)) && guard++ < 8) {
+                nudged = nudged.add(step);
+            }
+            if (Double.isNaN(nudged.x) || Double.isNaN(nudged.y) || Double.isNaN(nudged.z)) {
+                return null;
+            }
+            mop = world.rayTraceBlocks(nudged, v2, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        }
+        return mop;
     }
 }
 

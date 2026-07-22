@@ -152,6 +152,16 @@ public class BlockEldritch extends Block {
 
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return this.getLightValue(state);
+    }
+
+    /**
+     * Chunk GENERATION seeds blocklight from the stateless overload (Chunk from
+     * ChunkPrimer); without it, worldgen-placed glowing blocks (crusted
+     * glowstone etc.) stay pitch black until a neighbour update.
+     */
+    @Override
+    public int getLightValue(IBlockState state) {
         int meta = this.getMetaFromState(state);
         if (meta == 4 || meta == 5 || meta == 7) {
             return 12;

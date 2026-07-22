@@ -192,4 +192,19 @@ public class TileNodeEnergized extends TileVisNode implements IAspectContainer {
     public byte getAttunement() {
         return -1;
     }
+
+    @Override
+    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
+        // The energized-node visual (glow + lightning ring) is larger than one block;
+        // grow the box like TileNode so the TESR is not culled when its centre leaves view.
+        return new net.minecraft.util.math.AxisAlignedBB(
+                this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+                this.pos.getX() + 1, this.pos.getY() + 1, this.pos.getZ() + 1).grow(8.0D);
+    }
+
+    @Override
+    public double getMaxRenderDistanceSquared() {
+        return 16384.0D;
+    }
 }

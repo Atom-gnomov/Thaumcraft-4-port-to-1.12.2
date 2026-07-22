@@ -32,4 +32,11 @@ public class GuiHoverHarness extends GuiContainer {
     protected boolean checkHotbarKeys(int keyCode) {
         return false;
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

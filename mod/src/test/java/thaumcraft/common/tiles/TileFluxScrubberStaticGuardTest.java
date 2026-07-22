@@ -29,7 +29,8 @@ public class TileFluxScrubberStaticGuardTest {
         assertTrue(source.contains("for (int cc = 0; cc < 16 && this.checklist.size() > 0; ++cc)"));
         assertTrue(source.contains("this.world.setBlockState(target, state.getBlock().getStateFromMeta(lmd - 1), 3);"));
         assertTrue(source.contains("this.world.setBlockToAir(target);"));
-        assertTrue(source.contains("PacketHandler.INSTANCE.sendToAllAround(new PacketFXBlockSparkle(x, y, z, 0xDD00FF),"));
+        assertTrue(source.contains("this.sendFluxCleanupEffect(target);"));
+        assertTrue(source.contains("new PacketFXBlockSparkle(target.getX(), target.getY(), target.getZ(), 0xDD00FF)"));
         assertTrue(source.contains("++this.charges;"));
     }
 

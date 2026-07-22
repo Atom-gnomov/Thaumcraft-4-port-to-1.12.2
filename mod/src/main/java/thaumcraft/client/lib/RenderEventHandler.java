@@ -194,6 +194,89 @@ public class RenderEventHandler {
         drawTagsOnContainer(x, y, z, aspects, 220, side, event.getPartialTicks());
     }
 
+    private java.util.ArrayList<thaumcraft.api.BlockCoordinates> architectBlocks;
+    private int lastArcHash = Integer.MIN_VALUE;
+    private static final ResourceLocation WARDED_OVERLAY_TEX =
+            new ResourceLocation("thaumcraft", "textures/blocks/wardedglass.png");
+
+    /**
+     * Architect-style world overlay for IArchitect wands (e.g. the Warding focus
+     * with the Architect upgrade): highlights every block that would be affected
+     * with a pulsing warded-glass box. TC4 rendered these with connected block
+     * textures via RenderBlocks; that pipeline is gone in 1.12, so this draws a
+     * per-block translucent overlay with the same texture and pulse, which reads
+     * the same in-world while staying independent of the old side-render API.
+     */
+    @SubscribeEvent
+    public void architectHighlight(DrawBlockHighlightEvent event) {
+        EntityPlayer player = event.getPlayer();
+        if (player == null) {
+            return;
+        }
+        ItemStack held = player.getHeldItemMainhand();
+        if (held.isEmpty() || !(held.getItem() instanceof thaumcraft.api.IArchitect)
+                || held.getItem() instanceof thaumcraft.api.wands.ItemFocusBasic) {
+            return;
+        }
+        RayTraceResult target = event.getTarget();
+        if (target == null || target.typeOfHit != RayTraceResult.Type.BLOCK || target.getBlockPos() == null) {
+            return;
+        }
+        thaumcraft.api.IArchitect architect = (thaumcraft.api.IArchitect) held.getItem();
+        BlockPos pos = target.getBlockPos();
+        int side = target.sideHit == null ? EnumFacing.UP.getIndex() : target.sideHit.getIndex();
+        int ticks = player.ticksExisted;
+
+        // Cache the (expensive) block scan; refresh when target/side changes.
+        int hash = (pos.getX() + "" + pos.getY() + "" + pos.getZ() + "" + side + "" + ticks / 5).hashCode();
+        if (hash != this.lastArcHash) {
+            this.lastArcHash = hash;
+            this.architectBlocks = architect.getArchitectBlocks(held, player.world,
+                    pos.getX(), pos.getY(), pos.getZ(), side, player);
+        }
+        if (this.architectBlocks == null || this.architectBlocks.isEmpty()) {
+            return;
+        }
+        for (thaumcraft.api.BlockCoordinates cc : this.architectBlocks) {
+            drawArchitectBlock(cc.x, cc.y, cc.z, ticks, player, event.getPartialTicks());
+        }
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        event.setCanceled(true);
+    }
+
+    private static void drawArchitectBlock(int x, int y, int z, int ticks, EntityPlayer player, float partialTicks) {
+        double px = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
+        double py = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
+        double pz = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+        // TC4 pulse colors (RenderEventHandler.drawOverlayBlock)
+        float r = MathHelper.sin(ticks / 2.0F + x) * 0.2F + 0.3F;
+        float g = MathHelper.sin(ticks / 3.0F + y) * 0.2F + 0.3F;
+        float b = MathHelper.sin(ticks / 4.0F + z) * 0.2F + 0.8F;
+        int color = (Math.round(MathHelper.clamp(r, 0F, 1F) * 255) << 16)
+                | (Math.round(MathHelper.clamp(g, 0F, 1F) * 255) << 8)
+                | Math.round(MathHelper.clamp(b, 0F, 1F) * 255);
+
+        GlStateManager.pushMatrix();
+        GlStateManager.depthMask(false);
+        GlStateManager.disableLighting();
+        GlStateManager.translate(x + 0.5D - px, y + 0.5D - py, z + 0.5D - pz);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        GlStateManager.disableCull();
+        Minecraft.getMinecraft().getTextureManager().bindTexture(WARDED_OVERLAY_TEX);
+        for (EnumFacing face : EnumFacing.values()) {
+            GlStateManager.pushMatrix();
+            alignToFace(face);
+            drawTexturedQuad(0.5F, argb(0.2F, color), 0.0F, 1.0F, 0.0F, 1.0F);
+            GlStateManager.popMatrix();
+        }
+        GlStateManager.enableCull();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
+    }
+
     @SubscribeEvent
     public void renderLast(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getMinecraft();

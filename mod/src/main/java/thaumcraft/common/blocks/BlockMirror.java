@@ -1,12 +1,18 @@
 package thaumcraft.common.blocks;
 
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleDigging;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -23,15 +29,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.TileMirror;
 import thaumcraft.common.tiles.TileMirrorEssentia;
 
 public class BlockMirror extends BlockContainer {
     public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 11);
-
-    /** Non-null zero-size AABB — replaces NULL_AABB which is null in 1.12.2. */
-    private static final AxisAlignedBB ZERO_AABB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     public BlockMirror() {
         super(Material.GLASS);
@@ -49,7 +54,35 @@ public class BlockMirror extends BlockContainer {
     public boolean isFullCube(IBlockState state) { return false; }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) { return EnumBlockRenderType.MODEL; }
+    public EnumBlockRenderType getRenderType(IBlockState state) { return EnumBlockRenderType.INVISIBLE; }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
+        IBlockState state = world.getBlockState(pos);
+        String texture = state.getValue(TYPE) >= 6
+                ? "thaumcraft:blocks/mirrorframe2"
+                : "thaumcraft:blocks/mirrorframe";
+        TextureAtlasSprite frame = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture);
+        ParticleDigging.Factory factory = new ParticleDigging.Factory();
+        for (int x = 0; x < 4; ++x) {
+            for (int y = 0; y < 4; ++y) {
+                for (int z = 0; z < 4; ++z) {
+                    double px = ((double) x + 0.5D) / 4.0D;
+                    double py = ((double) y + 0.5D) / 4.0D;
+                    double pz = ((double) z + 0.5D) / 4.0D;
+                    Particle particle = factory.createParticle(0, world,
+                            pos.getX() + px, pos.getY() + py, pos.getZ() + pz,
+                            px - 0.5D, py - 0.5D, pz - 0.5D, Block.getStateId(state));
+                    if (particle != null) {
+                        particle.setParticleTexture(frame);
+                        manager.addEffect(particle);
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
@@ -170,7 +203,7 @@ public class BlockMirror extends BlockContainer {
 
     @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) { return ZERO_AABB; }
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) { return NULL_AABB; }
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {

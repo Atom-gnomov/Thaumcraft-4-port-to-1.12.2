@@ -97,4 +97,11 @@ public class GuiTravelingTrunk extends GuiContainer {
         SoundEvent click = SoundEvents.UI_BUTTON_CLICK;
         this.player.playSound(click, 0.3F, 0.6F + (currentlyStay ? 0.0F : 0.2F));
     }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

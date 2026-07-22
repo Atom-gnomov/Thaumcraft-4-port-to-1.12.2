@@ -26,6 +26,7 @@ public class TileMirrorRenderer extends TileEntitySpecialRenderer<TileEntity> {
     private static final ResourceLocation MIRROR_FRAME_ESS = new ResourceLocation("thaumcraft", "blocks/mirrorframe2");
 
     private static final float INSET = 0.1875F;
+    private static final float FRAME_THICKNESS = 0.0625F;
 
     @Override
     public void render(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
@@ -42,6 +43,7 @@ public class TileMirrorRenderer extends TileEntitySpecialRenderer<TileEntity> {
         } else {
             renderPane(facing, x, y, z, MIRROR_PANE, 0.02F + instability);
         }
+        renderFrame(facing, x, y, z, tile instanceof TileMirrorEssentia);
     }
 
     private void renderPortalLayers(EnumFacing facing, double x, double y, double z, float partialTicks) {
@@ -53,28 +55,37 @@ public class TileMirrorRenderer extends TileEntitySpecialRenderer<TileEntity> {
         double viewZ = view.lastTickPosZ + (view.posZ - view.lastTickPosZ) * partialTicks;
         float near = 0.01F;
         float far = 0.99F;
-        float axisOffset = facing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE ? far : near;
+        float axisOffset = facing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE ? near : far;
         LayeredFieldPlaneHelper.renderLayeredFaceRect(
-                facing, x, y, z, axisOffset, true, 1.0F, viewX, viewY, viewZ,
+                facing.getOpposite(), x, y, z, axisOffset, true, 1.0F, viewX, viewY, viewZ,
                 INSET, 1.0F - INSET, INSET, 1.0F - INSET);
     }
 
     private void renderPane(EnumFacing facing, double x, double y, double z, ResourceLocation tex, float offset) {
         bindTexture(tex);
         GlStateManager.pushMatrix();
-        transformFromOrientation(x, y, z, facing.getIndex(), offset);
-        drawUnitQuad(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.popMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableRescaleNormal();
+        try {
+            transformFromOrientation(x, y, z, facing.getIndex(), offset);
+            drawUnitQuad(1.0F, 1.0F, 1.0F, 1.0F);
+        } finally {
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.disableBlend();
+            GlStateManager.popMatrix();
+        }
     }
 
-    private void renderFrame(EnumFacing facing, double x, double y, double z, boolean essentiaFrame, float instability) {
+    private void renderFrame(EnumFacing facing, double x, double y, double z, boolean essentiaFrame) {
         TextureAtlasSprite sprite = getFrameSprite(essentiaFrame);
         if (sprite == null) return;
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
-        transformFromOrientation(x, y, z, facing.getIndex(), instability);
-        drawUnitQuad(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0F, 1.0F, 1.0F, 1.0F);
+        transformFromOrientation(x, y, z, facing.getIndex(), 0.0F);
+        ExtrudedSpriteRenderHelper.render(sprite, FRAME_THICKNESS);
         GlStateManager.popMatrix();
     }
 
@@ -136,11 +147,11 @@ public class TileMirrorRenderer extends TileEntitySpecialRenderer<TileEntity> {
     private static void drawUnitQuad(float u0, float v0, float u1, float v1, float r, float g, float b, float a) {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buf = tess.getBuffer();
-        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buf.pos(0.0D, 0.0D, 0.0D).tex(u0, v1).color(r, g, b, a).endVertex();
-        buf.pos(1.0D, 0.0D, 0.0D).tex(u1, v1).color(r, g, b, a).endVertex();
-        buf.pos(1.0D, 1.0D, 0.0D).tex(u1, v0).color(r, g, b, a).endVertex();
-        buf.pos(0.0D, 1.0D, 0.0D).tex(u0, v0).color(r, g, b, a).endVertex();
+        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        buf.pos(0.0D, 1.0D, 0.0D).tex(u1, v0).color(r, g, b, a).normal(0.0F, 0.0F, -1.0F).endVertex();
+        buf.pos(1.0D, 1.0D, 0.0D).tex(u0, v0).color(r, g, b, a).normal(0.0F, 0.0F, -1.0F).endVertex();
+        buf.pos(1.0D, 0.0D, 0.0D).tex(u0, v1).color(r, g, b, a).normal(0.0F, 0.0F, -1.0F).endVertex();
+        buf.pos(0.0D, 0.0D, 0.0D).tex(u1, v1).color(r, g, b, a).normal(0.0F, 0.0F, -1.0F).endVertex();
         tess.draw();
     }
 

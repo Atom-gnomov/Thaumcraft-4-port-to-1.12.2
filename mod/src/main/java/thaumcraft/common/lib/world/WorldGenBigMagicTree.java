@@ -229,7 +229,12 @@ public class WorldGenBigMagicTree extends WorldGenAbstractTree {
                         MathHelper.floor((float)start.getX() + (float)i * stepX),
                         MathHelper.floor((float)start.getY() + (float)i * stepY),
                         MathHelper.floor((float)start.getZ() + (float)i * stepZ));
-                if (!this.isReplaceable(this.world, pos)) {
+                // TC4 checks only air-or-leaves as passable (isReplaceable also treats
+                // wood/logs as passable, which lets branches punch through neighbouring
+                // trunks and grow tangled log spurs on the canopy).
+                IBlockState state = this.world.getBlockState(pos);
+                Block block = state.getBlock();
+                if (!block.isAir(state, this.world, pos) && !block.isLeaves(state, this.world, pos)) {
                     return i;
                 }
             }

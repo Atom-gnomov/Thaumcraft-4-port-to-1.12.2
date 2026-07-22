@@ -275,6 +275,16 @@ public class BlockMetalDevice extends BlockContainer {
                 worldIn.notifyBlockUpdate(pos, state, state, 3);
             }
         }
+        // TC4: a placed vis conduit attaches to the clicked face (orientation = side),
+        // so it hangs off the surface like the original instead of always pointing up.
+        if (state.getValue(TYPE) == 14) {
+            TileEntity te = worldIn.getTileEntity(pos);
+            if (te instanceof TileVisRelay) {
+                ((TileVisRelay) te).orientation = (byte) this.lastPlacementSide.getIndex();
+                te.markDirty();
+                worldIn.notifyBlockUpdate(pos, state, state, 3);
+            }
+        }
         if (worldIn.isRemote || state.getValue(TYPE) != 12) return;
         TileEntity te = worldIn.getTileEntity(pos);
         if (!(te instanceof TileBrainbox)) return;
@@ -542,8 +552,14 @@ public class BlockMetalDevice extends BlockContainer {
         return 0;
     }
 
+    // The clicked face for the just-placed block. MC placement is single-threaded
+    // per side, so a field is enough to carry it into onBlockPlacedBy (which has no
+    // side parameter). Used to orient the vis conduit toward the clicked surface.
+    private EnumFacing lastPlacementSide = EnumFacing.UP;
+
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        this.lastPlacementSide = facing;
         return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 14));
     }
 

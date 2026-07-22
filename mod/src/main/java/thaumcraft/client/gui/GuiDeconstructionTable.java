@@ -52,6 +52,7 @@ public class GuiDeconstructionTable extends GuiContainer {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
         Aspect aspect = this.table.aspect;
         if (aspect != null && isMouseIn(mouseX, mouseY, 64, 48, 16, 16)) {
             this.drawHoveringText(Arrays.asList(aspect.getName(), aspect.getLocalizedDescription()), mouseX, mouseY);

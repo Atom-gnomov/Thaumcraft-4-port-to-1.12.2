@@ -341,4 +341,15 @@ public class EntityUtils {
                 break;
         }
     }
+
+    /** True when target lies within the source's view cone (half-angle fov/2) and inside range. */
+    public static boolean isVisibleTo(float fov, Entity source, Entity target, float range) {
+        if (source == null || target == null) return false;
+        Vec3d eyes = new Vec3d(source.posX, source.getEntityBoundingBox().minY + source.getEyeHeight(), source.posZ);
+        Vec3d targetCenter = new Vec3d(target.posX, target.getEntityBoundingBox().minY + target.height / 2.0F, target.posZ);
+        Vec3d toTarget = targetCenter.subtract(eyes);
+        double distance = toTarget.length();
+        if (distance <= 0.0D || distance >= range) return false;
+        return toTarget.normalize().dotProduct(source.getLook(1.0F).normalize()) > Math.cos(fov / 2.0F);
+    }
 }

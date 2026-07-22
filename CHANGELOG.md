@@ -38,6 +38,25 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.31]
+### Адаптировано из FOREVA — система варпа
+- **Сообщения варпа → HUD-оверлей** (`PacketWarpMessage`): вместо спама в чат
+  (`TextComponentTranslation` + `sendMessage`) уведомления идут через
+  `PlayerNotifications.addNotification` (всплывающий оверлей), сохраняя
+  прокси-границу `Thaumcraft.proxy.scheduleClientTask`. Разгружает чат
+  (частично закрывает задачу «наложение чата»). Логика уточнена: временный
+  варп уведомляет только при получении, липкий — в обе стороны, обычный —
+  при получении; шёпот (`TCSounds.WHISPERS`) вынесен в `@SideOnly` хелпер.
+- **Неизлечимые варп-эффекты** (`WarpEvents`): дебаффы варпа (VisExhaust,
+  Thaumarhia, SunScorned, InfectiousVisExhaust, DeathGaze) накладываются через
+  `applyPotionWithoutCuratives` — очищается список curative items, молоко и
+  прочие «лекарства» их не снимают (как в оригинале). UnnaturalHunger получает
+  ambient-флаг.
+- **Death Gaze учитывает видимость**: таргетинг `checkDeathGaze` теперь
+  проверяет `canBeCollidedWith` и конус обзора игрока
+  (`EntityUtils.isVisibleTo(0.75F, …)`) и помечает игрока последним атакующим
+  (`setLastAttackedEntity`). Добавлен `EntityUtils.isVisibleTo` (FOV-проверка).
+
 ## [1.0.30]
 ### Адаптировано из FOREVA — фокусы палочки (раскопки/огонь/шок)
 - **Поддержка оффхенда**: `FocusExcavation`/`FocusFire`/`FocusShock` теперь

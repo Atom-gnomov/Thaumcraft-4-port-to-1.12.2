@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import org.lwjgl.opengl.GL11;
 import thaumcraft.client.renderers.models.entities.ModelGolem;
 import thaumcraft.client.renderers.models.entities.ModelGolemAccessories;
+import thaumcraft.common.blocks.BlockJarItem;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.EnumGolemType;
@@ -112,7 +113,11 @@ public class RenderGolemBase extends RenderLiving<EntityGolemBase> {
             GlStateManager.scale(0.4F, 0.4F, 0.4F);
             this.model.golemBody.postRender(0.0625F);
             float z = entity.getGolemDecoration() != null && entity.getGolemDecoration().contains("P") ? -7.25F : -6.05F;
-            renderBodySprite(sprite, 0.0F, 4.0F, z, 0.4375F);
+            renderBodySprite(0.0F, 4.0F, z, 0.4375F);
+            GlStateManager.translate(0.5F, 0.5F, 0.0F);
+            GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.translate(-0.5F, -0.5F, 0.0F);
+            renderSprite(sprite, 0.0D);
             endIconRender();
             GlStateManager.popMatrix();
         }
@@ -161,11 +166,6 @@ public class RenderGolemBase extends RenderLiving<EntityGolemBase> {
             GlStateManager.enableCull();
             GlStateManager.disableBlend();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
-
-        private static void renderBodySprite(TextureAtlasSprite sprite, float x, float y, float z, float size) {
-            renderBodySprite(x, y, z, size);
-            renderSprite(sprite, 0.0D);
         }
 
         private static void renderBodySprite(float x, float y, float z, float size) {
@@ -313,25 +313,30 @@ public class RenderGolemBase extends RenderLiving<EntityGolemBase> {
             GlStateManager.pushMatrix();
             GlStateManager.scale(0.4F, 0.4F, 0.4F);
 
-            ModelGolem model = (ModelGolem) this.renderer.getMainModel();
-            model.golemRightArm.postRender(0.0625F);
-
-            // Position at the hand area
-            GlStateManager.translate(-10.0F * 0.0625F, 20.0F * 0.0625F, 0.0F);
-
-            if (stack.getItem() instanceof ItemBlock) {
-                // Blocks: center in hand, no extra rotation — keep attached to arm
+            ItemCameraTransforms.TransformType transformType;
+            if (stack.getItem() instanceof BlockJarItem) {
+                GlStateManager.translate(0.0F, 2.5F, -1.0F);
+                float jarScale = (1.0F + (float) Math.min(64, entity.getCarryLimit()) / 64.0F) * 2.25F;
+                GlStateManager.scale(jarScale, jarScale, jarScale);
+                GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+                transformType = ItemCameraTransforms.TransformType.FIXED;
+            } else if (stack.getItem() instanceof ItemBlock) {
+                GlStateManager.translate(0.0F, 2.5F, -1.25F);
+                // Blocks: center between the hands without extra item rotation
                 GlStateManager.scale(0.5F, 0.5F, 0.5F);
+                transformType = ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND;
             } else {
-                // Regular items: orient upright as held
-                GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-                GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                GlStateManager.translate(0.0F, 2.5F, -1.25F);
+                GlStateManager.scale(1.25F, 1.25F, 1.25F);
+                GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+                transformType = ItemCameraTransforms.TransformType.FIXED;
             }
 
             Minecraft.getMinecraft().getItemRenderer().renderItemSide(
                     entity,
                     stack,
-                    ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND,
+                    transformType,
                     false);
 
             GlStateManager.popMatrix();

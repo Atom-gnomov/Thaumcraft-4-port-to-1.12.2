@@ -65,6 +65,7 @@ import thaumcraft.client.gui.GuiSpa;
 import thaumcraft.client.gui.GuiThaumatorium;
 import thaumcraft.client.gui.GuiTravelingTrunk;
 import thaumcraft.client.fx.ParticleEngine;
+import thaumcraft.client.fx.particles.FXSlimyBubble;
 import thaumcraft.client.fx.beams.FXArc;
 import thaumcraft.client.fx.beams.FXBeam;
 import thaumcraft.client.fx.beams.FXBeamBore;
@@ -2226,6 +2227,16 @@ public class ClientProxy extends CommonProxy {
                     .setGravity(0.05F);
             ParticleEngine.addEffect(world, bubble);
         }
+    }
+
+    @Override
+    public void slimyBubble(World world, double x, double y, double z, float scale,
+                            float red, float green, float blue, float alpha) {
+        if (world == null || !world.isRemote) return;
+        FXSlimyBubble bubble = new FXSlimyBubble(world, x, y, z, scale);
+        bubble.setRBGColorF(red, green, blue);
+        bubble.setAlphaF(alpha);
+        ParticleEngine.addEffect(world, bubble);
     }
 
     @Override

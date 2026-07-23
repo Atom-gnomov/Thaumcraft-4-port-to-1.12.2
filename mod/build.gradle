@@ -17,12 +17,18 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.33"
+version = "1.0.34"
 ext.advertisedModVersion = "6.1.BETA26"
 group = "thaumcraft"
 archivesBaseName = "Thaumcraft"
 
 sourceCompatibility = targetCompatibility = '1.8'
+
+// Sources are UTF-8 (lang refs, § literals in static-guard tests). Without this,
+// javac falls back to the platform codepage on Windows and garbles the literals.
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
 
 minecraft {
     version = "1.12.2-14.23.5.2847"

@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -42,10 +38,6 @@ import thaumcraft.api.crafting.ShapedArcaneRecipe;
 import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 import thaumcraft.api.research.ResearchItem;
 import thaumcraft.api.research.ResearchPage;
-import thaumcraft.common.CommonProxy;
-import thaumcraft.common.lib.capabilities.IPlayerKnowledge;
-import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
-import thaumcraft.common.lib.research.ScanManager;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
 public class GuiResearchRecipe extends GuiScreen {
@@ -70,18 +62,6 @@ public class GuiResearchRecipe extends GuiScreen {
     private List<String> tooltip;
     private int tooltipX;
     private int tooltipY;
-    /** Aspect -> items known (scanned) to carry that aspect. Populated only for the "ASPECTS" research key. */
-    private final Map<Aspect, List<ItemStack>> aspectItems = new HashMap<Aspect, List<ItemStack>>();
-    /** Reverse lookup of ScanManager item-hash -> ItemStack, lazily filled by MappingThread. */
-    public static final ConcurrentHashMap<Integer, ItemStack> cache = new ConcurrentHashMap<Integer, ItemStack>();
-
-    public static void putToCache(int key, ItemStack stack) {
-        cache.put(key, stack);
-    }
-
-    public static ItemStack getFromCache(int key) {
-        return cache.get(key);
-    }
 
     public GuiResearchRecipe(ResearchItem research, int page, double guiMapX, double guiMapY) {
         this.research = research;
@@ -101,11 +81,6 @@ public class GuiResearchRecipe extends GuiScreen {
             visiblePages.add(visiblePage);
         }
         this.pages = visiblePages.toArray(new ResearchPage[0]);
-
-        if (research != null && "ASPECTS".equals(research.key) && player != null) {
-            this.pages = buildAspectsPages(player, this.pages);
-        }
-
         this.maxPages = this.pages.length;
         if ((page & 1) == 1) {
             --page;
@@ -114,72 +89,6 @@ public class GuiResearchRecipe extends GuiScreen {
         if ((this.page & 1) == 1) {
             --this.page;
         }
-    }
-
-    /**
-     * Special-cased research entry: appends extra {@link ResearchPage}s built from the
-     * player's currently-discovered aspects (4 per page, matching the original TC4 layout),
-     * and populates {@link #aspectItems} so hovering an aspect icon can show which known
-     * (scanned) items carry it. Mirrors the original 1.7.10 {@code GuiResearchRecipe}
-     * constructor's {@code research.key.equals("ASPECTS")} branch.
-     */
-    private ResearchPage[] buildAspectsPages(EntityPlayer player, ResearchPage[] basePages) {
-        IPlayerKnowledge knowledge = CommonProxy.getPlayerKnowledge(player);
-        if (knowledge == null) {
-            return basePages;
-        }
-
-        Set<String> scanned = knowledge.getScannedItems();
-        if (scanned != null) {
-            for (String key : scanned) {
-                if (key == null || key.length() < 2) {
-                    continue;
-                }
-                try {
-                    int hash = Integer.parseInt(key.substring(1));
-                    ItemStack cached = getFromCache(hash);
-                    if (cached == null || cached.isEmpty()) {
-                        continue;
-                    }
-                    AspectList tags = ThaumcraftCraftingManager.getObjectTags(cached);
-                    tags = ThaumcraftCraftingManager.getBonusTags(cached, tags);
-                    if (tags == null || tags.size() <= 0) {
-                        continue;
-                    }
-                    for (Aspect aspect : tags.getAspects()) {
-                        List<ItemStack> items = this.aspectItems.get(aspect);
-                        if (items == null) {
-                            items = new ArrayList<ItemStack>();
-                            this.aspectItems.put(aspect, items);
-                        }
-                        ItemStack display = cached.copy();
-                        display.setCount(Math.max(1, tags.getAmount(aspect)));
-                        items.add(display);
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
-
-        AspectList discovered = knowledge.getAspectsDiscovered();
-        List<ResearchPage> combined = new ArrayList<ResearchPage>(Arrays.asList(basePages));
-        if (discovered != null) {
-            AspectList batch = new AspectList();
-            int count = 0;
-            for (Aspect aspect : discovered.getAspectsSorted()) {
-                batch.add(aspect, discovered.getAmount(aspect));
-                ++count;
-                if (count == 4) {
-                    combined.add(new ResearchPage(batch.copy()));
-                    batch = new AspectList();
-                    count = 0;
-                }
-            }
-            if (count > 0) {
-                combined.add(new ResearchPage(batch));
-            }
-        }
-        return combined.toArray(new ResearchPage[0]);
     }
 
     @Override
@@ -517,14 +426,6 @@ public class GuiResearchRecipe extends GuiScreen {
                 continue;
             }
             int rowY = y + count * 50;
-
-            // Ring highlight around the aspect icon while it's hovered, so it's clear
-            // which aspect is currently being pointed at (icon is 32x32 on screen \u2014
-            // drawAspectTag draws 16x16 under the 2x GL scale applied below).
-            if (mouseX >= x + start && mouseY >= rowY && mouseX < x + start + 128 && mouseY < rowY + 40) {
-                this.drawHoverRing(x + start + 16, rowY + 16, 17.0F, 21.0F, 0x70FFCC33);
-            }
-
             GlStateManager.pushMatrix();
             GlStateManager.scale(2.0F, 2.0F, 1.0F);
             this.drawAspectTag((x + start) / 2, rowY / 2, aspect, aspects.getAmount(aspect));
@@ -543,56 +444,6 @@ public class GuiResearchRecipe extends GuiScreen {
             this.addAspectTooltip(aspect, mouseX, mouseY, x + start, rowY, 40, 40, 1);
             ++count;
         }
-
-        // Second pass: while hovering an aspect tile, show the known (scanned) items
-        // that carry it, as a grid of item icons anchored near the mouse cursor.
-        // Mirrors the original TC4 "aspectItems" hover behavior.
-        if (!this.aspectItems.isEmpty()) {
-            count = 0;
-            for (Aspect aspect : aspects.getAspectsSorted()) {
-                if (aspect == null) {
-                    ++count;
-                    continue;
-                }
-                int rowY = y + count * 50;
-                int tx = x + start;
-                if (mouseX >= tx && mouseY >= rowY && mouseX < tx + 40 && mouseY < rowY + 40) {
-                    List<ItemStack> items = this.aspectItems.get(aspect);
-                    if (items != null && !items.isEmpty()) {
-                        this.drawAspectItemGrid(items, mouseX, mouseY);
-                    }
-                }
-                ++count;
-            }
-        }
-    }
-
-    /**
-     * Draws a grid of item icons (max 8 per row) anchored near the mouse cursor,
-     * used by {@link #drawAspectPage} to show which known items carry the hovered aspect.
-     */
-    private void drawAspectItemGrid(List<ItemStack> items, int mouseX, int mouseY) {
-        int xcount = 0;
-        int ycount = 0;
-        int rows = items.size() / 8;
-        int baseY = mouseY - (4 + rows * 8);
-        for (ItemStack item : items) {
-            int slotX = mouseX + 8 + xcount * 17;
-            int slotY = baseY + 17 * ycount;
-            GlStateManager.pushMatrix();
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderHelper.enableGUIStandardItemLighting();
-            GlStateManager.enableDepth();
-            this.itemRender.renderItemAndEffectIntoGUI(item, slotX, slotY);
-            this.itemRender.renderItemOverlayIntoGUI(this.fontRenderer, item, slotX, slotY, null);
-            RenderHelper.disableStandardItemLighting();
-            GlStateManager.popMatrix();
-            if (++xcount >= 8) {
-                xcount = 0;
-                ++ycount;
-            }
-        }
-        this.setTooltip(Collections.<String>emptyList(), mouseX, mouseY);
     }
 
     private void drawObjectGrid(Object[] items, int width, int height, int x, int y, int mouseX, int mouseY) {
@@ -686,37 +537,6 @@ public class GuiResearchRecipe extends GuiScreen {
             this.addAspectTooltip(tag, mouseX, mouseY, tx, ty, 16, 16, amountMultiplier);
             ++total;
         }
-    }
-
-    /**
-     * Draws a soft ring (annulus) centered on ({@code centerX}, {@code centerY}), used to
-     * highlight the aspect icon currently under the mouse cursor on the Thaumonomicon
-     * "Aspects" page (see {@link #drawAspectPage}).
-     */
-    private void drawHoverRing(float centerX, float centerY, float innerRadius, float outerRadius, int color) {
-        float a = (color >>> 24) / 255.0F;
-        float r = (color >> 16 & 255) / 255.0F;
-        float g = (color >> 8 & 255) / 255.0F;
-        float b = (color & 255) / 255.0F;
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(r, g, b, a);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
-        int segments = 32;
-        for (int i = 0; i <= segments; ++i) {
-            double angle = 2.0D * Math.PI * i / segments;
-            double cos = Math.cos(angle);
-            double sin = Math.sin(angle);
-            buffer.pos(centerX + cos * outerRadius, centerY + sin * outerRadius, this.zLevel).endVertex();
-            buffer.pos(centerX + cos * innerRadius, centerY + sin * innerRadius, this.zLevel).endVertex();
-        }
-        tessellator.draw();
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private void drawAspectTag(int x, int y, Aspect aspect, int amount) {

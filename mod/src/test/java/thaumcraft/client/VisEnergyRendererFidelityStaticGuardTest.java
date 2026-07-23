@@ -48,7 +48,7 @@ public class VisEnergyRendererFidelityStaticGuardTest {
                         && nodeCoreRenderer.contains("renderNodeSeeded("));
 
         assertTrue("TileNodeEnergizedRenderer should keep node-core rendering and animated lightning-ring overlay",
-                nodeRenderer.contains("TileNodeRenderer.renderNode(")
+                nodeRenderer.contains("TileNodeRenderer.renderNodeSeeded(")
                         && nodeRenderer.contains("tile.getAuraBase()")
                         && nodeRenderer.contains("tile.getNodeType()")
                         && nodeRenderer.contains("tile.getNodeModifier()")

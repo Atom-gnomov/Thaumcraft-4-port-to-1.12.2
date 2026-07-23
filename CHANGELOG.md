@@ -38,6 +38,25 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.36]
+### Адаптировано из FOREVA — пакет рендереров
+- **Узлы** (`TileNodeRenderer`, `TileNodeEnergizedRenderer`,
+  `TileNodeStabilizerRenderer`): новый API `renderNodeSeeded` — фаза анимации
+  сидится мировыми координатами (стабильна при движении камеры);
+  GL-гигиена: save/restore cull/lighting, fullbright-пузырь стабилизатора
+  с восстановлением лайтмапы. Guard обновлён под `renderNodeSeeded`.
+- **Тигель** (`TileCrucibleRenderer`): per-vertex освещение поверхности
+  жидкости (`DefaultVertexFormats.BLOCK` + `.lightmap()` вместо глобального
+  `setLightmapTextureCoords`) и гейт `hasWater()` — поверхность рисуется
+  только при реальной воде, как в TC4. В `TileCrucible` добавлен `hasWater()`.
+- **Клапан трубы** (`TileTubeValveRenderer`): экструзия спрайта через общий
+  `ExtrudedSpriteRenderHelper` (инфра 1.0.27) вместо ручной геометрии.
+- **Кристаллы** (`ItemCrystalRenderer`): версия FOREVA.
+- **Warded-блоки** (`TileWardedRenderer`): connected-textures через новую
+  инфру `ConnectedTextureUtils` (соединённые текстуры печатей как в TC4).
+- Guard-пары рендерер+тест синхронизированы с FOREVA (crucible, tube, warded).
+  Полный набор остаётся зелёным (0 провалов).
+
 ## [1.0.35]
 ### Исправлено — eldritch-оболочки + тестовая база 0 провалов
 - **Eldritch-блоки meta 4/5/6** (`blockeldritch_4/5/6.json`): возвращена

@@ -38,6 +38,121 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.39]
+### Адаптировано из FOREVA — генерация Внешних Земель
+- **`GenCommon`**: доработана генерация данжа — ячейки корки (CRUST, feature 7:
+  камень→`blockCosmeticSolid` meta 14 + шанс `blockEldritch` meta 4), внешняя
+  оболочка из BEDROCK вместо STONE, упрощённая и корректная логика размещения
+  спавнеров крабов/декора.
+- **`ChunkProviderOuter`**, **`GenBossRoom`**, **`GenPassage`**, **`MazeThread`**:
+  версии FOREVA (провайдер чанков измерения, комната босса, коридоры-паутины,
+  поток генерации лабиринта).
+- **`ConfigEntities`**: константа `MIND_SPIDER_ID` (`legacyPath("MindSpider")`),
+  спавнеры web-nest теперь ссылаются на неё; спавн-биомы через
+  `BiomeProvider.allowedBiomes`. Guard web-nest обновлён под константу.
+- Полный набор тестов остаётся зелёным (0 провалов).
+
+## [1.0.38]
+### Адаптировано из FOREVA — пакет блоков
+- **`BlockCustomOre`**: hit-эффект `infusedStoneSparkle` при ударе по
+  инфьюженному камню (искры цвета по мете). Добавлен прокси-метод
+  `infusedStoneSparkle` (Common no-op / Client `FXSparkle`).
+- **`BlockCosmeticSolid`**: `addDestroyEffects` — взрыв-пуфф + звук
+  `CRAFTFAIL` при разрушении меты 8.
+- **`BlockWoodenDevice`**: тихое событие сенсора (`id == -1 || 255`) —
+  обновление redstone-сигнала сенсора без ноты; guard-пара синхронизирована.
+- **`BlockStoneDevice`**, **`BlockMagicalLog`**, **`BlockAlchemyFurnace`**,
+  **`BlockArcaneFurnace`**, **`BlockWarded`**, **`BlockEssentiaReservoir`**:
+  приняты версии FOREVA.
+- Полный набор тестов остаётся зелёным (0 провалов).
+- **Не взято:** FX-частицы/лучи FOREVA — конфликт с нашей локальной
+  архитектурой `ITCParticle` (движок владеет отрисовкой). Детали в
+  PORTING_HANDOFF.md.
+
+## [1.0.37]
+### Адаптировано из FOREVA — пакет тайлов
+- **`TileInfusionMatrix`**: принята версия FOREVA (ядро инфузионного алтаря —
+  стабильность крафта, обращение с эссенцией и нестабильностью).
+- **`TileFocalManipulator`**, **`TileWandPedestal`**: версии FOREVA
+  (манипулятор фокусов, пьедестал — зарядка/логика).
+- **`TileEldritchCrabSpawner`**: версия FOREVA (спавнер крабов данжа).
+- **`TileSensor`**, **`TileOwned`**: версии FOREVA; guard-пара сенсора
+  синхронизирована.
+- Полный набор тестов остаётся зелёным (0 провалов).
+
+## [1.0.36]
+### Адаптировано из FOREVA — пакет рендереров
+- **Узлы** (`TileNodeRenderer`, `TileNodeEnergizedRenderer`,
+  `TileNodeStabilizerRenderer`): новый API `renderNodeSeeded` — фаза анимации
+  сидится мировыми координатами (стабильна при движении камеры);
+  GL-гигиена: save/restore cull/lighting, fullbright-пузырь стабилизатора
+  с восстановлением лайтмапы. Guard обновлён под `renderNodeSeeded`.
+- **Тигель** (`TileCrucibleRenderer`): per-vertex освещение поверхности
+  жидкости (`DefaultVertexFormats.BLOCK` + `.lightmap()` вместо глобального
+  `setLightmapTextureCoords`) и гейт `hasWater()` — поверхность рисуется
+  только при реальной воде, как в TC4. В `TileCrucible` добавлен `hasWater()`.
+- **Клапан трубы** (`TileTubeValveRenderer`): экструзия спрайта через общий
+  `ExtrudedSpriteRenderHelper` (инфра 1.0.27) вместо ручной геометрии.
+- **Кристаллы** (`ItemCrystalRenderer`): версия FOREVA.
+- **Warded-блоки** (`TileWardedRenderer`): connected-textures через новую
+  инфру `ConnectedTextureUtils` (соединённые текстуры печатей как в TC4).
+- Guard-пары рендерер+тест синхронизированы с FOREVA (crucible, tube, warded).
+  Полный набор остаётся зелёным (0 провалов).
+
+## [1.0.35]
+### Исправлено — eldritch-оболочки + тестовая база 0 провалов
+- **Eldritch-блоки meta 4/5/6** (`blockeldritch_4/5/6.json`): возвращена
+  элементная геометрия вместо плоского `cube_all` — оболочка утоплена по
+  бокам (`2..14`), но прижата к полу (`y: 0..14`, а не парит на 2px над
+  опорой, как в свежей FOREVA). Восстанавливает наш фикс из задачи
+  «парящие eldritch-блоки», потерянный при откате массового копирования.
+- **Эталонное дерево `mod/thaumcraft_src/`** (1096 файлов, ~15 МБ,
+  решение FOREVA): декомпилированные ассеты оригинального TC4 для
+  fidelity-тестов (obj-модели, текстуры). Озеленяет последние 6 тестов:
+  BlockTextureAssetCoverage, FluxReservoirRendererFidelity,
+  FocusExcavation/FocusFrost VisualParity, RotaryMachineShell,
+  AlchemyFurnaceAdvancedRendererContract.
+- **Итог: полный тестовый набор зелёный (0 провалов)** — впервые.
+  Путь: 21 → 17 (scripts/docs) → 14 (CRLF lang + таумометр) → 13 (UTF-8
+  компиляция) → 7 (LF-нормализация исходников) → 6 (eldritch) → 0
+  (thaumcraft_src).
+
+## [1.0.34]
+### Адаптировано из FOREVA — Таумономикон + фикс залипшего каста палочки
+- **`ClientTickEventsFML`**: release-latch палочки — ванила шлёт
+  RELEASE_USE_ITEM только пока клиент считает руку активной; синхронизация
+  NBT/руки могла сбросить флаг до отпускания кнопки, и серверный канал
+  каста жил вечно. Теперь удержание отслеживается защёлкой, и обычный
+  релиз отправляется один раз на key-up (пара к фиксу фокусов 1.0.30).
+- **`GuiResearchRecipe`**: принята версия FOREVA — убран фоновый
+  `MappingThread` (hash→ItemStack кэш); рендер страниц рецептов идёт без
+  предварительного маппинга. `client/gui/MappingThread.java` удалён,
+  бутстрап потока из тик-хендлера убран.
+- **`build.gradle`: `options.encoding = 'UTF-8'`** для всех JavaCompile —
+  на Windows javac брал системную кодировку (cp1251) и портил `§`-литералы
+  в guard-тестах (ложный провал `GuiResearchRecipeStaticGuardTest` при
+  корректном контенте). FOREVA не замечает это, живя на Linux.
+- **Тестовая база: 14 → 13** (GuiResearchRecipeStaticGuardTest зелёный).
+
+## [1.0.33]
+### Адаптировано из FOREVA — таумометр (скан + рендер)
+- **`ItemThaumometer`**: принята версия FOREVA — валидация аспектов один раз
+  за попытку скана (`doActiveScan(..., notifyInvalid)`), скан узлов доходит до
+  сервера даже если аспекты узла ещё не синхронизированы клиенту
+  (`isNodeScan`-путь), защищённый pick-block скан блоков с сортировкой
+  кандидатов по аспектам.
+- **`ItemThaumometerRenderer`**: рендерер сам вычисляет цель скана (`doScan`)
+  вместо чтения состояния предмета (`getActiveScan` убран); TC6-донорские позы
+  TEISR для GUI/земли/фиксации/третьего лица (`itemthaumometer_tesr.json`:
+  поворот 90° и трансляция экрана). Поверх FOREVA возвращён save/restore
+  лайтмапы (`prevLightX/Y` + `setLightmapTextureCoords` при выходе) — у FOREVA
+  была утечка GL-состояния, которую ловит наш guard-тест
+  (`HungryNodeAndGlStateParityStaticGuardTest`).
+- **Тестовая база: 17 → 14.** Плюс `.gitattributes` (`*.lang text eol=lf`) —
+  CRLF-чекаут ломал `\n`-якорные проверки (`CreativeTabVisualParity` прошёл
+  без изменения контента). Зелёными стали: CreativeTabVisualParity,
+  ItemThaumometerStaticGuard, ThaumometerItemRendererContract.
+
 ## [1.0.32]
 ### Адаптировано из FOREVA — таинт (падение/каскад) + flux scrubber
 - **`BlockTaint`: падение и каскад корки** (классика TC4). Таинтовая корка

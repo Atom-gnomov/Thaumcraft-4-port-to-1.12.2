@@ -2240,6 +2240,24 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
+    public void infusedStoneSparkle(World world, int x, int y, int z, int metadata) {
+        if (world == null || !world.isRemote) return;
+        int color = metadata;
+        if (metadata == 2) color = 4;
+        if (metadata == 3) color = 2;
+        if (metadata == 4) color = 3;
+        if (metadata == 5) color = 6;
+        if (metadata == 6) color = 5;
+        for (int i = 0; i < particleCount(3); ++i) {
+            thaumcraft.client.fx.particles.FXSparkle fx = new thaumcraft.client.fx.particles.FXSparkle(world,
+                    x + world.rand.nextFloat(), y + world.rand.nextFloat(), z + world.rand.nextFloat(),
+                    1.75F, color, 3.0F + world.rand.nextInt(3));
+            fx.setGravity(0.1F);
+            ParticleEngine.addEffect(world, fx);
+        }
+    }
+
+    @Override
     public void crucibleBubble(World world, float x, float y, float z, float red, float green, float blue) {
         if (world == null || !world.isRemote) return;
         int amount = particleCount(1);

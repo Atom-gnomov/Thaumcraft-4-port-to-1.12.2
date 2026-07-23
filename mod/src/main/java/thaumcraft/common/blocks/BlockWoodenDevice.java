@@ -12,7 +12,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -26,12 +28,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.Explosion;
 import net.minecraft.init.SoundEvents;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.CommonProxy;
+import thaumcraft.common.config.Config;
 import thaumcraft.common.items.ItemEssence;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.tiles.*;
@@ -73,7 +77,11 @@ public class BlockWoodenDevice extends BlockContainer {
                 ? EnumBlockRenderType.INVISIBLE
                 : EnumBlockRenderType.MODEL;
     }
-    @Override public boolean hasTileEntity(IBlockState state) { return true; }
+    @Override
+    public boolean hasTileEntity(IBlockState state) {
+        int meta = state.getValue(TYPE);
+        return meta != 6 && meta != 7;
+    }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
@@ -83,12 +91,22 @@ public class BlockWoodenDevice extends BlockContainer {
         if (meta == 4) return new TileArcaneBoreBase();
         if (meta == 5) return new TileArcaneBore();
         if (meta == 8) return new TileBanner();
-        return new TileOwned();
+        return null;
     }
 
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
         return createNewTileEntity(world, getMetaFromState(state));
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(world, pos, state, placer, stack);
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileOwned && placer instanceof EntityPlayer) {
+            ((TileOwned) tile).owner = placer.getName();
+            tile.markDirty();
+        }
     }
 
     @Override
@@ -169,7 +187,50 @@ public class BlockWoodenDevice extends BlockContainer {
     }
 
     @Override
-    public int damageDropped(IBlockState state) { return getMetaFromState(state); }
+    public int damageDropped(IBlockState state) {
+        int meta = getMetaFromState(state);
+        return meta == 3 ? 2 : meta;
+    }
+
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        int meta = state.getValue(TYPE);
+        return (meta == 2 || meta == 3) && Config.wardedStone
+                ? Items.AIR
+                : super.getItemDropped(state, rand, fortune);
+    }
+
+    @Override
+    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
+        int meta = state.getValue(TYPE);
+        if (meta == 2 || meta == 3) {
+            return Config.wardedStone ? -1.0F : 2.0F;
+        }
+        return super.getBlockHardness(state, world, pos);
+    }
+
+    @Override
+    public float getExplosionResistance(World world, BlockPos pos, Entity exploder, Explosion explosion) {
+        int meta = world.getBlockState(pos).getValue(TYPE);
+        if (meta == 2 || meta == 3) {
+            return 999.0F;
+        }
+        return super.getExplosionResistance(world, pos, exploder, explosion);
+    }
+
+    @Override
+    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
+        int meta = state.getValue(TYPE);
+        return meta != 2 && meta != 3 && super.canEntityDestroy(state, world, pos, entity);
+    }
+
+    @Override
+    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
+        int meta = world.getBlockState(pos).getValue(TYPE);
+        if (meta != 2 && meta != 3) {
+            super.onBlockExploded(world, pos, explosion);
+        }
+    }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
@@ -392,9 +453,10 @@ public class BlockWoodenDevice extends BlockContainer {
 
     @Override
     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param) {
-        if (id <= 4) {
+        boolean silentSensorEvent = id == -1 || id == 255;
+        if (silentSensorEvent || id >= 0 && id <= 4) {
             float pitch = (float) Math.pow(2.0D, (param - 12) / 12.0D);
-            if (id >= 0) {
+            if (!silentSensorEvent) {
                 switch (id) {
                     case 1:
                         worldIn.playSound(null, pos, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundCategory.BLOCKS, 3.0F, pitch);
@@ -411,6 +473,13 @@ public class BlockWoodenDevice extends BlockContainer {
                     default:
                         worldIn.playSound(null, pos, SoundEvents.BLOCK_NOTE_HARP, SoundCategory.BLOCKS, 3.0F, pitch);
                         break;
+                }
+            }
+            if (worldIn.isRemote && silentSensorEvent) {
+                TileEntity tile = worldIn.getTileEntity(pos);
+                if (tile instanceof TileSensor) {
+                    ((TileSensor) tile).redstoneSignal = 10;
+                    worldIn.markBlockRangeForRenderUpdate(pos, pos);
                 }
             }
             float note = (float) param / 24.0F;

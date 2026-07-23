@@ -138,8 +138,32 @@ public class TileNodeRenderer extends TileEntitySpecialRenderer<TileEntity> {
     }
 
     public static void renderNodeAt(INode node, double x, double y, double z, float partialTicks, float size) {
+        renderNodeAt(node, x, y, z, partialTicks, size, false);
+    }
+
+    public static void renderNodeAt(INode node, double x, double y, double z, float partialTicks, float size,
+                                    boolean depthIgnore) {
         if (node == null) return;
-        renderNodeAt(node.getAspects(), node.getId(), node.getNodeType(), node.getNodeModifier(), x, y, z, partialTicks, size);
+        EntityLivingBase viewer = Minecraft.getMinecraft().player;
+        double worldX = x;
+        double worldY = y;
+        double worldZ = z;
+        if (node instanceof TileEntity) {
+            TileEntity tile = (TileEntity) node;
+            if (tile.getWorld() == null) {
+                viewer = null;
+            } else {
+                BlockPos pos = tile.getPos();
+                worldX = pos.getX() + 0.5D;
+                worldY = pos.getY() + 0.5D;
+                worldZ = pos.getZ() + 0.5D;
+            }
+        }
+        int seed = node.getId() == null ? 0 : node.getId().hashCode();
+        renderNodeSeeded(viewer, 64.0D, true, depthIgnore, size,
+                x, y, z,
+                worldX, worldY, worldZ,
+                partialTicks, node.getAspects(), node.getNodeType(), node.getNodeModifier(), seed);
     }
 
     public static void renderNodeAt(AspectList aspectsList,
@@ -208,18 +232,18 @@ public class TileNodeRenderer extends TileEntitySpecialRenderer<TileEntity> {
      * renderX/Y/Z — camera-relative coordinates, used for actual drawing (renderFacingStrip).
      * worldX/Y/Z — absolute world coordinates, used for distance/visibility checks.
      */
-    private static void renderNodeSeeded(EntityLivingBase viewer,
-                                         double viewDistance,
-                                         boolean visible,
-                                         boolean depthIgnore,
-                                         float size,
-                                         double renderX, double renderY, double renderZ,
-                                         double worldX, double worldY, double worldZ,
-                                         float partialTicks,
-                                         AspectList aspects,
-                                         NodeType type,
-                                         NodeModifier modifier,
-                                         int seed) {
+    static void renderNodeSeeded(EntityLivingBase viewer,
+                                 double viewDistance,
+                                 boolean visible,
+                                 boolean depthIgnore,
+                                 float size,
+                                 double renderX, double renderY, double renderZ,
+                                 double worldX, double worldY, double worldZ,
+                                 float partialTicks,
+                                 AspectList aspects,
+                                 NodeType type,
+                                 NodeModifier modifier,
+                                 int seed) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(NODES_TEXTURE);
         long nano = System.nanoTime();
         int frame = (int) ((nano / 40000000L + seed) % FRAMES);

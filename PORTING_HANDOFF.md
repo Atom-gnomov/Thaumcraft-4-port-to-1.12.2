@@ -39,77 +39,41 @@ Working doc for continuing the adoption of upstream **FOREVA**
 
 ---
 
-## Test baseline — READ THIS
+## Test baseline — GREEN (0 failures)
 
-`cd mod && ./gradlew.bat test` currently leaves **17 failing tests** (was 21
-before this session fixed 4). BUILD FAILED is expected — it just means failing
-tests exist. The rule: **do not increase the failing set.** After a change,
-extract failing classes from `mod/build/test-results/test/*.xml`
-(testsuite `failures>0 || errors>0`) and diff against the known set.
+`cd mod && ./gradlew.bat test` now passes completely: **318 suites, 0 failures**
+(was 21 failing at the start of this effort). The rule going forward: **keep it
+at zero.** After any change, run the full suite; investigate every new failure
+before shipping.
 
 When a **static-guard test pins an old reconstruction you deliberately
-replaced with FOREVA's version, UPDATE the guard to the new contract** (done
-this session for `ItemElementalAxeStaticGuardTest`, `ClientProxyFxStaticGuardTest`
+replaced with FOREVA's version, UPDATE the guard to the new contract** (done for
+`ItemElementalAxeStaticGuardTest`, `ClientProxyFxStaticGuardTest`
 [PacketWarpMessage], `TileFluxScrubberStaticGuardTest`). That is correct, not
-cheating — the guard should track the intended implementation.
+cheating — the guard should track the intended implementation. The inverse also
+happens: our guards sometimes pin deliberate local improvements over upstream
+(e.g. `EldritchTesrRoutingContractTest` pins floor-anchored shells `[2, 0, 2]`
+where FOREVA still floats at `[2, 2, 2]`; `HungryNodeAndGlStateParityStaticGuardTest`
+pins the lightmap save/restore FOREVA's thaumometer renderer leaks). When
+adopting FOREVA code, preserve those local fixes — don't blindly downgrade.
 
-### The 17 remaining failures split into two groups
+### How it got to zero (for context / future platform issues)
 
-**Group A — missing reference files (`NoSuchFileException`).** These tests read
-reference assets that live under `mod/` at test runtime (CWD = `mod/`). FOREVA
-ships them; we were missing them. Already fixed 4 by copying `mod/scripts/` and
-`mod/docs/` from FOREVA. The remaining ~6 need the decompiled reference asset
-tree **`thaumcraft_src/` (~15 MB, 1096 files)** placed at **`mod/thaumcraft_src/`**:
-  - AlchemyFurnaceAdvancedRendererContractTest (adv_alch_furnace.obj)
-  - BlockTextureAssetCoverageTest (textures/blocks)
-  - FluxReservoirRendererFidelityStaticGuardTest (reservoir.obj)
-  - FocusExcavationVisualParityStaticGuardTest (focus_excavation.png)
-  - FocusFrostVisualParityStaticGuardTest (orb.obj)
-  - RotaryMachineShellContractTest (IIOException — reads an image)
-  - **DECISION PENDING (ask the user):** committing 15 MB of decompiled original
-    TC4 assets to a public repo is a notable, hard-to-reverse choice. Options:
-    (a) `cp -r <foreva>/thaumcraft_src mod/thaumcraft_src` and commit;
-    (b) keep it local-only + add `mod/thaumcraft_src/` to `.gitignore`;
-    (c) leave these 6 tests as a documented can't-run-here baseline.
-    Note: once the files exist, each test still runs a *real* fidelity assertion
-    that may itself pass or fail — verify per-test.
-
-**Group B — real assertion failures (contracts our source doesn't meet).**
-These are NOT environment noise; FOREVA passes them because they describe
-FOREVA's implementation. Fix by adopting FOREVA's version of the source the test
-reads (map below), then update the guard only if it pins a now-obsolete detail.
-
-  | Test | Reads (primary) |
-  |------|-----------------|
-  | ArcaneFurnaceVisualShellContractTest | ArcaneFurnaceBakedModel.java, blockstates/blockarcanefurnace.json |
-  | BlockStoneDeviceContractTest | BlockStoneDevice.java, blockstates/blockstonedevice.json |
-  | ClientProxyDedicatedBeamBoltStaticGuardTest | ClientProxy.java, fx/beams/FXBeam*.java |
-  | CreativeTabVisualParityStaticGuardTest | lang/en_us.lang (**CRLF issue — see below**) |
-  | EldritchTesrRoutingContractTest | Eldritch*Renderer.java, models/block/blockeldritch_4.json |
-  | GuiResearchRecipeStaticGuardTest | GuiResearchRecipe.java, en_us.lang |
-  | InfusionRendererFidelityStaticGuardTest | TileRunicMatrixRenderer.java, ModelInfusionPillar.java |
-  | ItemThaumometerStaticGuardTest | ItemThaumometer.java |
-  | ReportedItemModelRoutingContractTest | Item*Renderer.java (jar/reservoir/...) |
-  | RotaryMachineShellContractTest | TileCentrifugeRenderer.java (+ image asset) |
-  | ThaumometerItemRendererContractTest | ItemThaumometerRenderer.java, ThaumometerPerspectiveModel.java |
-  | VisEnergyRendererFidelityStaticGuardTest | TileNodeConverterRenderer.java, TileNode*Renderer.java |
-
-### ⚠ CRLF ROOT CAUSE (investigate first — likely unblocks several Group B)
-
-This repo checks out with **CRLF** (`git config core.autocrlf` = `true`, no
-`.gitattributes`). Tests that assert `\n`-anchored substrings on reference text
-files (`en_us.lang`, `.json`) fail because the bytes are `\r\n`. Example:
-`CreativeTabVisualParityStaticGuardTest` checks
-`lang.contains("\nitemGroup.thaumcraft=Thaumcraft\n")` — our lang line **is**
-present but ends `...Thaumcraft\r\n`, so the match fails. FOREVA develops on LF.
-
-**Recommended fix (verify, then do):** add a `.gitattributes` forcing `text eol=lf`
-for reference text (`*.lang`, `*.json`, `*.md`, `scripts/*`) and renormalize the
-working tree (`git add --renormalize .`). This may fix CreativeTab,
-GuiResearchRecipe, and any other `\n`-anchored guard at once, and is safe for
-the game (Minecraft reads either line ending). Java-source contract tests use
-non-`\n` substrings, so `.java` CRLF does not affect them. **Do CRLF first**,
-re-run, then only the genuinely content-diverged Group B tests remain to adopt.
+1. **Reference dirs** `mod/scripts/`, `mod/docs/`, and `mod/thaumcraft_src/`
+   (~15 MB decompiled TC4 assets) copied from FOREVA — tests read them relative
+   to `mod/` (the Gradle CWD), not the repo root.
+2. **Line endings**: `.gitattributes` forces `eol=lf` for
+   java/json/lang/md/sh/gradle. The CRLF checkout (`core.autocrlf=true`) broke
+   every guard asserting `
+`-anchored (multi-line) source blocks even when
+   content matched exactly. If a guard fails but the content looks right,
+   check bytes first (`file`, `cat -A`).
+3. **Compiler encoding**: `build.gradle` sets `options.encoding = 'UTF-8'` for
+   all JavaCompile tasks — Windows javac otherwise uses cp1251 and garbles
+   `§`-literals inside test sources.
+4. **Content adoption**: thaumometer (scan + renderer + TEISR json),
+   GuiResearchRecipe (+ drop gui/MappingThread), wand release latch in
+   ClientTickEventsFML, eldritch shell models (floor-anchored).
 
 ---
 
@@ -122,10 +86,31 @@ re-run, then only the genuinely content-diverged Group B tests remain to adopt.
 - **1.0.31** warp — WarpEvents/PacketWarpMessage → `PlayerNotifications` HUD, `EntityUtils.isVisibleTo`.
 - **1.0.32** taint fall/cascade (BlockTaint/BlockFluidDeath/EntityFallingTaint) + flux scrubber + `slimyBubble` proxy.
 - **(test)** `mod/scripts/`, `mod/docs/` reference dirs → 4 Group-A tests green.
+- **1.0.33** thaumometer — FOREVA scan flow + renderer (TC6 TEISR poses) with our lightmap save/restore kept.
+- **1.0.34** GuiResearchRecipe (drop MappingThread) + wand-use release latch in ClientTickEventsFML; UTF-8 javac encoding.
+- **1.0.35** eldritch shells floor-anchored (metas 4/5/6) + `mod/thaumcraft_src/` reference tree → **suite fully green**.
 
 See `CHANGELOG.md` for detail.
 
 ---
+
+
+## ⛔ Do NOT adopt FOREVA's FX particle/beam classes
+
+Our FX layer is a deliberate LOCAL architecture: particles implement `ITCParticle`
+and emit vertices into the shared `ParticleEngine` buffer (the engine owns
+begin/draw). FOREVA's particles extend vanilla `Particle` and own their own
+`buffer.begin()`/`tessellator.draw()`. These are fundamentally incompatible, and
+our local guard `FxLayerAndEldritchParityStaticGuardTest` protects the ITCParticle
+design (`implements ITCParticle`, `getTCParticleLayer()`, no self-owned begin/draw).
+
+Adopting FOREVA's `FXVisSparkle`/`FXSmokeSpiral`/`FXGeneric`/`FXBoreParticles`/
+`FXBeam*` — and by extension FOREVA's `ClientProxyFxStaticGuardTest`, which pins
+`class FX* extends Particle` + `getFXLayer()` — cascades into the proxies,
+`RenderEventHandler`, `PacketFXVisDrain` serialization, and contradicts our own
+FX guards. This was attempted and fully reverted. **Skip the FX cluster.** If a
+specific FX behaviour is worth porting, re-implement it inside our ITCParticle
+model rather than copying FOREVA's class.
 
 ## Remaining FOREVA systems to port (after tests are green)
 

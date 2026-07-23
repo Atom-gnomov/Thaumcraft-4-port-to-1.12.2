@@ -64,8 +64,11 @@ public class FxLayerAndEldritchParityStaticGuardTest {
     @Test
     public void webNestSpawnerUsesRegisteredEntityId() throws IOException {
         String gen = read("src/main/java/thaumcraft/common/lib/world/dim/GenPassage.java");
-        assertTrue(gen.contains("new net.minecraft.util.ResourceLocation(\"thaumcraft\", \"mindspider\")"));
+        assertTrue(gen.contains("ConfigEntities.MIND_SPIDER_ID"));
         assertFalse(gen.contains("mind_spider"));
+        // The shared id must still resolve to the registered "mindspider" path.
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigEntities.java");
+        assertTrue(cfg.contains("MIND_SPIDER_ID") && cfg.contains("legacyPath(\"MindSpider\")"));
     }
 
     /** Warded glass model must resolve to a texture that ships in resources. */

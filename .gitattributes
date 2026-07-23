@@ -1,0 +1,8 @@
+# Reference text assets read by static-guard tests must stay LF so
+# newline-anchored assertions work regardless of checkout platform.
+*.java text eol=lf
+*.json text eol=lf
+*.lang text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.gradle text eol=lf

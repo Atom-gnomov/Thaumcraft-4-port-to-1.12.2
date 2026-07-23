@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.36"
+version = "1.0.37"
 ext.advertisedModVersion = "6.1.BETA26"
 group = "thaumcraft"
 archivesBaseName = "Thaumcraft"

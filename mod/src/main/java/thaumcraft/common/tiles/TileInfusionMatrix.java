@@ -191,15 +191,12 @@ public class TileInfusionMatrix extends TileThaumcraft implements ITickable, IWa
 
     @Override
     public int onWandRightClick(World world, ItemStack wandstack, EntityPlayer player, int x, int y, int z, int side, int md) {
-        // Byte-faithful to TC4: only intercept the click server-side. On the client this
-        // MUST return -1 so ItemWandCasting.onItemUseFirst falls through to the wand-trigger
-        // registry (event 3 → createInfusionAltar). Returning 0 on the client short-circuited
-        // that path, so the altar could never be assembled/activated.
-        if (!world.isRemote && this.active && !this.crafting) {
+        if (world.isRemote) return 0;
+        if (this.active && !this.crafting) {
             this.craftingStart(player);
             return 0;
         }
-        if (!world.isRemote && !this.active && this.validLocation()) {
+        if (!this.active && this.validLocation()) {
             this.active = true;
             this.startUp = 1.0F;
             this.markDirtyAndSync();
@@ -753,6 +750,16 @@ public class TileInfusionMatrix extends TileThaumcraft implements ITickable, IWa
 
     private void doEffects() {
         if (this.crafting) {
+            Thaumcraft.proxy.blockRunes(
+                    this.world,
+                    this.pos.getX(),
+                    this.pos.getY() - 2,
+                    this.pos.getZ(),
+                    0.5F + this.world.rand.nextFloat() * 0.2F,
+                    0.1F,
+                    0.7F + this.world.rand.nextFloat() * 0.3F,
+                    25,
+                    -0.03F);
             if (this.craftCount == 0) {
                 this.world.playSound(
                         this.pos.getX(),
@@ -828,9 +835,14 @@ public class TileInfusionMatrix extends TileThaumcraft implements ITickable, IWa
                         } else {
                             Item item = stack.getItem();
                             int meta = stack.getItemDamage();
-                            if (meta == 0 && item instanceof ItemBlock) {
+                            if (item instanceof ItemBlock) {
                                 Block block = Block.getBlockFromItem(item);
-                                IBlockState state = block.getStateFromMeta(meta);
+                                IBlockState state;
+                                try {
+                                    state = block.getStateFromMeta(meta);
+                                } catch (RuntimeException ignored) {
+                                    state = block.getDefaultState();
+                                }
                                 for (int i = 0; i < Thaumcraft.proxy.particleCount(2); ++i) {
                                     Thaumcraft.proxy.drawInfusionParticles2(
                                             this.world,

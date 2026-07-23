@@ -38,6 +38,24 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.35]
+### Исправлено — eldritch-оболочки + тестовая база 0 провалов
+- **Eldritch-блоки meta 4/5/6** (`blockeldritch_4/5/6.json`): возвращена
+  элементная геометрия вместо плоского `cube_all` — оболочка утоплена по
+  бокам (`2..14`), но прижата к полу (`y: 0..14`, а не парит на 2px над
+  опорой, как в свежей FOREVA). Восстанавливает наш фикс из задачи
+  «парящие eldritch-блоки», потерянный при откате массового копирования.
+- **Эталонное дерево `mod/thaumcraft_src/`** (1096 файлов, ~15 МБ,
+  решение FOREVA): декомпилированные ассеты оригинального TC4 для
+  fidelity-тестов (obj-модели, текстуры). Озеленяет последние 6 тестов:
+  BlockTextureAssetCoverage, FluxReservoirRendererFidelity,
+  FocusExcavation/FocusFrost VisualParity, RotaryMachineShell,
+  AlchemyFurnaceAdvancedRendererContract.
+- **Итог: полный тестовый набор зелёный (0 провалов)** — впервые.
+  Путь: 21 → 17 (scripts/docs) → 14 (CRLF lang + таумометр) → 13 (UTF-8
+  компиляция) → 7 (LF-нормализация исходников) → 6 (eldritch) → 0
+  (thaumcraft_src).
+
 ## [1.0.34]
 ### Адаптировано из FOREVA — Таумономикон + фикс залипшего каста палочки
 - **`ClientTickEventsFML`**: release-latch палочки — ванила шлёт

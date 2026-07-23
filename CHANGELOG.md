@@ -38,6 +38,23 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.38]
+### Адаптировано из FOREVA — пакет блоков
+- **`BlockCustomOre`**: hit-эффект `infusedStoneSparkle` при ударе по
+  инфьюженному камню (искры цвета по мете). Добавлен прокси-метод
+  `infusedStoneSparkle` (Common no-op / Client `FXSparkle`).
+- **`BlockCosmeticSolid`**: `addDestroyEffects` — взрыв-пуфф + звук
+  `CRAFTFAIL` при разрушении меты 8.
+- **`BlockWoodenDevice`**: тихое событие сенсора (`id == -1 || 255`) —
+  обновление redstone-сигнала сенсора без ноты; guard-пара синхронизирована.
+- **`BlockStoneDevice`**, **`BlockMagicalLog`**, **`BlockAlchemyFurnace`**,
+  **`BlockArcaneFurnace`**, **`BlockWarded`**, **`BlockEssentiaReservoir`**:
+  приняты версии FOREVA.
+- Полный набор тестов остаётся зелёным (0 провалов).
+- **Не взято:** FX-частицы/лучи FOREVA — конфликт с нашей локальной
+  архитектурой `ITCParticle` (движок владеет отрисовкой). Детали в
+  PORTING_HANDOFF.md.
+
 ## [1.0.37]
 ### Адаптировано из FOREVA — пакет тайлов
 - **`TileInfusionMatrix`**: принята версия FOREVA (ядро инфузионного алтаря —

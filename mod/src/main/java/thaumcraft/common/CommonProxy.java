@@ -399,6 +399,9 @@ public class CommonProxy implements IGuiHandler {
                             float red, float green, float blue, float alpha) {
     }
 
+    public void infusedStoneSparkle(World world, int x, int y, int z, int metadata) {
+    }
+
     public void crucibleBoilSound(World world, int x, int y, int z) {
     }
 

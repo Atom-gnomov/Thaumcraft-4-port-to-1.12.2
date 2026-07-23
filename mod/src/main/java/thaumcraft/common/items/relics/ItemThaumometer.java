@@ -38,12 +38,6 @@ public class ItemThaumometer extends Item {
     private static final long DEBUG_LOG_INTERVAL_MS = 1500L;
     private static long lastFallbackDebugLogMs = 0L;
     private ScanResult startScan;
-    private Object startScanKey;
-    private boolean awaitingRelease;
-    /** Use-count at the moment the current target was (re)locked; charge = start - now. */
-    private int scanStartCount;
-    /** Ticks of continuous aim needed to finish a scan (TC4: 25-tick use, done at count<=5). */
-    private static final int SCAN_CHARGE_TICKS = 20;
 
     public ItemThaumometer() {
         this.setMaxStackSize(1);
@@ -59,10 +53,7 @@ public class ItemThaumometer extends Item {
 
     @Override
     public int getMaxItemUseDuration(ItemStack stack) {
-        // Effectively unlimited: the hold never expires on its own, so sweeping to a
-        // new target re-charges smoothly without the hand dropping and re-raising.
-        // Completion is tracked via scanStartCount (SCAN_CHARGE_TICKS of steady aim).
-        return 72000;
+        return 25;
     }
 
     @Override
@@ -74,27 +65,10 @@ public class ItemThaumometer extends Item {
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (world.isRemote) {
-            // A finished scan stops the active hand a few ticks early (see onUsingTick)
-            // while the player may still be holding right-click. Minecraft immediately
-            // re-attempts onItemRightClick in that case, which used to restart a brand
-            // new scan instantly and look like a jarring "jerk/restart". Require the
-            // use key to be released before arming another scan.
-            if (this.awaitingRelease) {
-                return new ActionResult<>(EnumActionResult.FAIL, stack);
-            }
             this.startScan = doActiveScan(stack, world, player, true);
-            this.startScanKey = this.startScan != null ? resolveTargetKey(world, player) : null;
-            this.scanStartCount = this.getMaxItemUseDuration(stack);
         }
         player.setActiveHand(hand);
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
-    }
-
-    @Override
-    public void onUpdate(ItemStack stack, World world, net.minecraft.entity.Entity entity, int itemSlot, boolean isSelected) {
-        if (world.isRemote && this.awaitingRelease && !Thaumcraft.proxy.isUseItemKeyDown()) {
-            this.awaitingRelease = false;
-        }
     }
 
     @Override
@@ -108,41 +82,21 @@ public class ItemThaumometer extends Item {
             return;
         }
 
-        // Only restart the charge if the player has genuinely looked away from the
-        // locked target (same block pos / entity id). Re-deriving and comparing the
-        // *fully resolved* ScanResult every tick (item/meta via getPickBlock, etc.)
-        // is fragile against normal mouse micro-jitter, causing the charge/sound to
-        // stutter and restart even while still aiming at the same spot.
-        // Sweeping onto a NEW target re-locks smoothly: the hand stays active and
-        // the charge simply starts over for the new target (no drop/re-raise jerk).
-        Object currentKey = resolveTargetKey(world, player);
-        if (this.startScan == null || this.startScanKey == null || !this.startScanKey.equals(currentKey)) {
-            this.startScan = currentKey == null ? null : doActiveScan(stack, world, player, true);
-            this.startScanKey = this.startScan != null ? currentKey : null;
-            this.scanStartCount = count;
-            if (this.startScan == null) {
-                return;
-            }
-        }
-
         ScanResult current = doActiveScan(stack, world, player, false);
-        ScanResult effective = current != null ? current : this.startScan;
-
-        if (this.scanStartCount - count >= SCAN_CHARGE_TICKS) {
-            this.startScan = null;
-            this.startScanKey = null;
-            this.awaitingRelease = true;
-            player.stopActiveHand();
-            boolean completedClientSide = ScanManager.completeScan(player, effective, "@");
-            if (completedClientSide || isNodeScan(effective)) {
-                PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(effective, player, "@"));
+        if (this.startScan != null && current != null && current.equals(this.startScan)) {
+            if (count <= 5) {
+                this.startScan = null;
+                player.stopActiveHand();
+                boolean completedClientSide = ScanManager.completeScan(player, current, "@");
+                if (completedClientSide || isNodeScan(current)) {
+                    PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(current, player, "@"));
+                }
             }
-        }
-        if (count % 2 == 0) {
-            // Client-side scan tick: pass null player so the LOCAL player hears it.
-            // world.playSound(player, ...) excludes that player (they are assumed to
-            // have played it locally already), which on the client silenced it entirely.
-            world.playSound(null, player.posX, player.posY, player.posZ, TCSounds.CAMERATICKS, SoundCategory.PLAYERS, 0.2f, 0.45f + world.rand.nextFloat() * 0.1f);
+            if (count % 2 == 0) {
+                world.playSound(player, player.posX, player.posY, player.posZ, TCSounds.CAMERATICKS, SoundCategory.PLAYERS, 0.2f, 0.45f + world.rand.nextFloat() * 0.1f);
+            }
+        } else {
+            this.startScan = null;
         }
     }
 
@@ -150,40 +104,6 @@ public class ItemThaumometer extends Item {
     public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entityLiving, int timeLeft) {
         super.onPlayerStoppedUsing(stack, world, entityLiving, timeLeft);
         this.startScan = null;
-        this.startScanKey = null;
-    }
-
-    /**
-     * The scan target currently locked in by an in-progress hold-to-scan (right-click held),
-     * or null when idle. Used by {@link thaumcraft.client.renderers.item.ItemThaumometerRenderer}
-     * so the in-hand screen shows exactly what's charging instead of independently re-resolving
-     * the target every render frame, which could show a different result than what's progressing.
-     */
-    public ScanResult getActiveScan() {
-        return this.startScan;
-    }
-
-    /**
-     * Cheap identity of whatever's currently under the crosshair (block pos or entity id),
-     * used to decide whether an in-progress scan should keep charging. Deliberately does not
-     * resolve the full item/meta of the target, since that resolution can flip between
-     * fallback tiers (pick block / damage-dropped / raw meta) on minor aim jitter even while
-     * still pointing at the same block.
-     */
-    private Object resolveTargetKey(World world, EntityPlayer player) {
-        Entity pointed = EntityUtils.getPointedEntity(world, player, 0.5D, 10.0D, 0.0F, true);
-        if (pointed != null) {
-            return pointed.getEntityId();
-        }
-        RayTraceResult hit = this.rayTrace(world, player, true);
-        if (hit != null && hit.typeOfHit == RayTraceResult.Type.BLOCK) {
-            return hit.getBlockPos();
-        }
-        TileEntity lookedAtNode = findLookedAtNodeTile(world, player, 10.0D);
-        if (lookedAtNode != null) {
-            return lookedAtNode.getPos();
-        }
-        return null;
     }
 
     private ScanResult doActiveScan(ItemStack stack, World world, EntityPlayer player, boolean notifyInvalid) {

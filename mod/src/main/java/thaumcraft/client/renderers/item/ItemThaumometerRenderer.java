@@ -66,11 +66,6 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
         EntityPlayerSP player = mc.player;
         ItemCameraTransforms.TransformType transformType = CURRENT_TRANSFORM.get();
 
-        // The scanner display overrides the lightmap for its glow; save the
-        // current coords so GUI slot rendering after this item is not darkened.
-        float prevLightX = OpenGlHelper.lastBrightnessX;
-        float prevLightY = OpenGlHelper.lastBrightnessY;
-
         GlStateManager.pushMatrix();
         try {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -84,7 +79,6 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
         } finally {
             setTransformType(ItemCameraTransforms.TransformType.NONE);
             GlStateManager.popMatrix();
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevLightX, prevLightY);
         }
     }
 
@@ -111,6 +105,8 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
                                       ItemCameraTransforms.TransformType transformType) {
         mc.getTextureManager().bindTexture(SCANSCREEN_TEXTURE);
         int packed = getScannerGlow(player instanceof EntityPlayerSP ? (EntityPlayerSP) player : null, 0);
+        float prevLightX = OpenGlHelper.lastBrightnessX;
+        float prevLightY = OpenGlHelper.lastBrightnessY;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, packed % 65536, packed / 65536);
 
         GlStateManager.pushMatrix();
@@ -136,6 +132,7 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
 
         GlStateManager.disableBlend();
         GlStateManager.enableLighting();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevLightX, prevLightY);
         GlStateManager.popMatrix();
     }
 
@@ -279,20 +276,11 @@ public class ItemThaumometerRenderer extends TileEntityItemStackRenderer {
             return null;
         }
         if (stack.getItem() instanceof ItemThaumometer) {
-            ItemThaumometer thaumometer = (ItemThaumometer) stack.getItem();
-            // While a scan is actively charging (right-click held), show exactly the
-            // target locked in by the gameplay tick logic instead of independently
-            // re-resolving the raw target every render frame. Two separate lookups at
-            // two different frequencies (tick vs. frame) could disagree for a frame or
-            // two around fallback-tier boundaries, making the screen readout appear to
-            // twitch even while the player's aim was steady.
-            if (player.isHandActive() && player.getActiveItemStack() == stack) {
-                ScanResult active = thaumometer.getActiveScan();
-                if (active != null) {
-                    return active;
-                }
-            }
-            return thaumometer.findRawScanTarget(stack, player.world, player);
+            // This currently asks the gameplay item for the raw scan target so the HUD
+            // and the use-to-scan path stay aligned. Any remaining readout gaps should
+            // be fixed by tightening raw target selection, not by forking another
+            // renderer-local scan implementation.
+            return ((ItemThaumometer) stack.getItem()).findRawScanTarget(stack, player.world, player);
         }
         return null;
     }

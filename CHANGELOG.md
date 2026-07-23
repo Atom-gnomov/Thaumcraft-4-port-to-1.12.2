@@ -38,6 +38,25 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.33]
+### Адаптировано из FOREVA — таумометр (скан + рендер)
+- **`ItemThaumometer`**: принята версия FOREVA — валидация аспектов один раз
+  за попытку скана (`doActiveScan(..., notifyInvalid)`), скан узлов доходит до
+  сервера даже если аспекты узла ещё не синхронизированы клиенту
+  (`isNodeScan`-путь), защищённый pick-block скан блоков с сортировкой
+  кандидатов по аспектам.
+- **`ItemThaumometerRenderer`**: рендерер сам вычисляет цель скана (`doScan`)
+  вместо чтения состояния предмета (`getActiveScan` убран); TC6-донорские позы
+  TEISR для GUI/земли/фиксации/третьего лица (`itemthaumometer_tesr.json`:
+  поворот 90° и трансляция экрана). Поверх FOREVA возвращён save/restore
+  лайтмапы (`prevLightX/Y` + `setLightmapTextureCoords` при выходе) — у FOREVA
+  была утечка GL-состояния, которую ловит наш guard-тест
+  (`HungryNodeAndGlStateParityStaticGuardTest`).
+- **Тестовая база: 17 → 14.** Плюс `.gitattributes` (`*.lang text eol=lf`) —
+  CRLF-чекаут ломал `\n`-якорные проверки (`CreativeTabVisualParity` прошёл
+  без изменения контента). Зелёными стали: CreativeTabVisualParity,
+  ItemThaumometerStaticGuard, ThaumometerItemRendererContract.
+
 ## [1.0.32]
 ### Адаптировано из FOREVA — таинт (падение/каскад) + flux scrubber
 - **`BlockTaint`: падение и каскад корки** (классика TC4). Таинтовая корка

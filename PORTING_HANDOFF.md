@@ -94,6 +94,24 @@ See `CHANGELOG.md` for detail.
 
 ---
 
+
+## ⛔ Do NOT adopt FOREVA's FX particle/beam classes
+
+Our FX layer is a deliberate LOCAL architecture: particles implement `ITCParticle`
+and emit vertices into the shared `ParticleEngine` buffer (the engine owns
+begin/draw). FOREVA's particles extend vanilla `Particle` and own their own
+`buffer.begin()`/`tessellator.draw()`. These are fundamentally incompatible, and
+our local guard `FxLayerAndEldritchParityStaticGuardTest` protects the ITCParticle
+design (`implements ITCParticle`, `getTCParticleLayer()`, no self-owned begin/draw).
+
+Adopting FOREVA's `FXVisSparkle`/`FXSmokeSpiral`/`FXGeneric`/`FXBoreParticles`/
+`FXBeam*` — and by extension FOREVA's `ClientProxyFxStaticGuardTest`, which pins
+`class FX* extends Particle` + `getFXLayer()` — cascades into the proxies,
+`RenderEventHandler`, `PacketFXVisDrain` serialization, and contradicts our own
+FX guards. This was attempted and fully reverted. **Skip the FX cluster.** If a
+specific FX behaviour is worth porting, re-implement it inside our ITCParticle
+model rather than copying FOREVA's class.
+
 ## Remaining FOREVA systems to port (after tests are green)
 
 From the full diverged-file set (was captured as `$TEMP/adopt2.txt`; regenerate

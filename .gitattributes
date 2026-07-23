@@ -1,0 +1,3 @@
+# Reference text assets read by static-guard tests must stay LF so
+# newline-anchored assertions work regardless of checkout platform.
+*.lang text eol=lf

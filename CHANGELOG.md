@@ -38,6 +38,20 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.39]
+### Адаптировано из FOREVA — генерация Внешних Земель
+- **`GenCommon`**: доработана генерация данжа — ячейки корки (CRUST, feature 7:
+  камень→`blockCosmeticSolid` meta 14 + шанс `blockEldritch` meta 4), внешняя
+  оболочка из BEDROCK вместо STONE, упрощённая и корректная логика размещения
+  спавнеров крабов/декора.
+- **`ChunkProviderOuter`**, **`GenBossRoom`**, **`GenPassage`**, **`MazeThread`**:
+  версии FOREVA (провайдер чанков измерения, комната босса, коридоры-паутины,
+  поток генерации лабиринта).
+- **`ConfigEntities`**: константа `MIND_SPIDER_ID` (`legacyPath("MindSpider")`),
+  спавнеры web-nest теперь ссылаются на неё; спавн-биомы через
+  `BiomeProvider.allowedBiomes`. Guard web-nest обновлён под константу.
+- Полный набор тестов остаётся зелёным (0 провалов).
+
 ## [1.0.38]
 ### Адаптировано из FOREVA — пакет блоков
 - **`BlockCustomOre`**: hit-эффект `infusedStoneSparkle` при ударе по

@@ -135,10 +135,25 @@ roughly ordered by coherence / lower risk:
    which FOREVA's version lacks; reconcile (keep our `putToCache` or update the
    caller) or the mod won't compile.
 9. **Higher-risk interdependent infra** (do as one careful pass, last):
-   WandUsePose*/WandPoseMath/ItemWandRenderer, ConnectedTextureUtils,
-   EldritchCrustBakedModel/WardedGlassBakedModel (need ClientModelRegistry
-   registration), WandEffectOrigin, BlockStoneDeviceItem. A wholesale copy of
-   these previously cascaded into compile errors — port incrementally.
+   WandUsePose*/WandPoseMath/ItemWandRenderer, WandEffectOrigin,
+   BlockStoneDeviceItem. A wholesale copy of these previously cascaded into
+   compile errors — port incrementally. NOTE: WandEffectOrigin + WandUsePose*
+   are only used by FOREVA's FX beam classes, which we do NOT adopt (ITCParticle
+   conflict, see the ⛔ section) — so this cluster likely has no consumer here.
+
+   **DONE (1.0.36):** ConnectedTextureUtils. **DONE (1.0.40):** WardedGlassBakedModel
+   + BlockCosmeticOpaque connected-glass (registered in ClientModelRegistry:
+   47 warded_glass_* sprites, WARDED_GLASS_MODEL, replaceWardedGlassModel).
+
+   **DEFERRED — EldritchCrustBakedModel:** requires BlockEldritch changes that
+   conflict with our local fixes. FOREVA's BlockEldritch (a) DELETES our
+   `getLightValue(IBlockState)` override that seeds worldgen blocklight (crusted
+   glowstone stays black without it), (b) changes the default state TYPE 0→4,
+   (c) drops `meta == 9` from the INVISIBLE `getRenderType` set. Three guards
+   read BlockEldritch (BlockEldritchAmbientFx, EldritchTesrRouting,
+   FxLayerAndEldritchParity). To adopt: surgically add `CRUST_NEIGHBOR_MASK`
+   PropertyInteger + `getActualState` (neighbor mask) + `createBlockState` entry,
+   KEEP our getLightValue override, and re-verify all three guards + item render.
 
 ## Known open gameplay tasks (separate from FOREVA parity)
 - Focus radial menu missing info.

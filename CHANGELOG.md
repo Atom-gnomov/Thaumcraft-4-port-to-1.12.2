@@ -38,6 +38,25 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.41]
+### Публичный API для аддонов
+- **Документация `API.md`** (корень репо): руководство для аддон-разработчиков —
+  как подключить `Thaumcraft-<version>-api.jar`, регистрация аспектов/тегов
+  объектов, рецепты (аркана/тигель/инфузия/зачарование), aura/essentia
+  (`AuraHelper`/`AspectSourceHelper`), исследования, варп, лут, семена, и полный
+  список интерфейсов для реализации (`IWandFocus`, `INode`, `IAspectContainer`,
+  `IEssentiaTransport`, `IGoggles`, `IVisDiscountGear`, `IWarpingGear` и др.) +
+  события (`AspectRegistryEvent`, `IScanEventHandler`).
+- **`apiJar`**: добавлен манифест (`Specification-Title: Thaumcraft|API`,
+  версия) и исходники `thaumcraft/api/**` в jar — IDE аддонов получают
+  сигнатуры/джавадок.
+- **`ThaumcraftApiSurfaceStaticGuardTest`**: пинит публичные сигнатуры
+  `ThaumcraftApi`/`AuraHelper`/`AspectSourceHelper`/`AspectEventProxy` +
+  Forge `@API`-токен, чтобы сборки аддонов не ломались молча между версиями.
+- Проверено: API-поверхность полна (`ThaumcraftApi` — 30+ методов, реальный
+  `InternalMethodHandler` проводится при инициализации), api-jar не тянет
+  внутренние `common`/`client` классы.
+
 ## [1.0.40]
 ### Адаптировано из FOREVA — connected-текстуры варёного стекла (baked-model инфра)
 - **`BlockCosmeticOpaque`** (варёное стекло): extended block state с

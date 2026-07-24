@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "variant=0": { "model": "thaumcraft:blockdarkquartz_0" },
+    "variant=1": { "model": "thaumcraft:blockdarkquartz_1" },
+    "variant=2": { "model": "thaumcraft:blockdarkquartz_2" }
+  }
+}

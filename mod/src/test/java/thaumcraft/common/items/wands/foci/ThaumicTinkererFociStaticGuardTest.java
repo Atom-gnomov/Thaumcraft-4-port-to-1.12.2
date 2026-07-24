@@ -102,6 +102,28 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void darkQuartzBlockIsRegisteredWithVariants() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockDarkQuartz registered + item + in getAllBlocks",
+                cfg.contains("blockDarkQuartz;") && cfg.contains("blockDarkQuartzItem;")
+                        && cfg.contains("blockDarkQuartz,") && cfg.contains("blockDarkQuartzItem,"));
+        assertTrue("BlockDarkQuartz source is a tinkerer block",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/blocks/tinkerer/BlockDarkQuartz.java")));
+        assertTrue("dark quartz blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockdarkquartz.json")));
+        String lang = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        for (int m = 0; m <= 2; m++) {
+            assertTrue("dark quartz block model " + m,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/models/block/blockdarkquartz_" + m + ".json")));
+            assertTrue("lang dark_quartz." + m, lang.contains("tile.thaumcraft.dark_quartz." + m + ".name="));
+        }
+        for (String t : new String[]{"dark_quartz", "dark_quartz_chiseled", "dark_quartz_pillar"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

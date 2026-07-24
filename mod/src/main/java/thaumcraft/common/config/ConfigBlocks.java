@@ -9,6 +9,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import thaumcraft.common.blocks.*;
 import thaumcraft.common.blocks.ItemBlocks.*;
+import thaumcraft.common.blocks.tinkerer.*;
 import thaumcraft.common.compat.ThaumcraftSixCompatibility;
 import thaumcraft.common.tiles.*;
 
@@ -73,6 +74,9 @@ public class ConfigBlocks {
     public static BlockCustomOreItem blockCustomOreItem;
     public static BlockCustomPlantItem blockCustomPlantItem;
     public static BlockCosmeticSolidItem blockCosmeticSolidItem;
+    // Thaumic Tinkerer decorative block
+    public static BlockDarkQuartz blockDarkQuartz;
+    public static BlockDarkQuartzItem blockDarkQuartzItem;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -147,6 +151,10 @@ public class ConfigBlocks {
         blockCosmeticSolid = (BlockCosmeticSolid) new BlockCosmeticSolid()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticSolid"))
                 .setTranslationKey("thaumcraft.cosmetic_solid");
+
+        blockDarkQuartz = (BlockDarkQuartz) new BlockDarkQuartz()
+                .setRegistryName("thaumcraft", legacyPath("blockDarkQuartz"))
+                .setTranslationKey("thaumcraft.dark_quartz");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -270,6 +278,9 @@ public class ConfigBlocks {
         blockCustomPlantItem = (BlockCustomPlantItem) new BlockCustomPlantItem(blockCustomPlant)
                 .setRegistryName(blockCustomPlant.getRegistryName());
 
+        blockDarkQuartzItem = (BlockDarkQuartzItem) new BlockDarkQuartzItem(blockDarkQuartz)
+                .setRegistryName(blockDarkQuartz.getRegistryName());
+
         blockCosmeticSolidItem = (BlockCosmeticSolidItem) new BlockCosmeticSolidItem(blockCosmeticSolid)
                 .setRegistryName(blockCosmeticSolid.getRegistryName());
 
@@ -315,6 +326,7 @@ public class ConfigBlocks {
                 blockCustomOre,
                 blockCustomPlant,
                 blockCosmeticSolid,
+                blockDarkQuartz,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -352,6 +364,7 @@ public class ConfigBlocks {
             blockCustomOreItem,
             blockCustomPlantItem,
             blockCosmeticSolidItem,
+            blockDarkQuartzItem,
             blockCosmeticOpaqueItem,
             blockTaintItem,
             blockTaintFibresItem,

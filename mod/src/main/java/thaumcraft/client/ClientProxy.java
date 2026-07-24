@@ -1037,6 +1037,7 @@ public class ClientProxy extends CommonProxy {
         for (int meta = 0; meta <= 2; meta++) {
             registerBlockItemModel(darkQuartzItem, meta, "variant=" + meta);
         }
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
         Item magicalLogItem = Item.getItemFromBlock(ConfigBlocks.blockMagicalLog);
         registerBlockItemModel(magicalLogItem, 0, "axis=y,type=0");
         registerBlockItemModel(magicalLogItem, 1, "axis=y,type=1");

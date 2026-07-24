@@ -38,6 +38,19 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.45]
+### Интеграция Thaumic Tinkerer — Воронка (функциональный тайл-блок)
+- **Воронка** (`BlockFunnel` + `TileFunnel`, пакеты `blocks/tinkerer` и
+  `tiles/tinkerer`) — блок-пылесос: тайл каждые 8 тиков собирает дропнутые
+  предметы в области над собой и вставляет их в инвентарь снизу через
+  `IItemHandler`-capability (`ItemHandlerHelper.insertItem`).
+- Полный тайл-пайплайн: `BlockContainer` + `createNewTileEntity` +
+  `getRenderType(MODEL)`, регистрация блока/ItemBlock/тайла
+  (`TILE_REGISTRATIONS`), blockstate + cube-модель (top/side) + base
+  item-модель + текстуры (из ассетов TT) + lang. Доступен в креативе.
+- Первый **функциональный тайл-блок** TT-модуля (валидирован тайл-реестр
+  и тик-логика). Guard расширен. Набор зелёный.
+
 ## [1.0.44]
 ### Интеграция Thaumic Tinkerer — тёмный кварц (декор-блок)
 - **Тёмный кварц** (`BlockDarkQuartz`, пакет `common/blocks/tinkerer/`) —

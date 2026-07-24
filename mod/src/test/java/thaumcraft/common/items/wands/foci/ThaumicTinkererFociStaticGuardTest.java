@@ -124,6 +124,34 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void funnelBlockAndTileAreRegistered() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockFunnel registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockFunnel;") && cfg.contains("blockFunnel,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockFunnel)"));
+        assertTrue("TileFunnel registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileFunnel.class, \"TileFunnel\")"));
+        assertTrue("BlockFunnel source",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/blocks/tinkerer/BlockFunnel.java")));
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileFunnel.java");
+        assertTrue("TileFunnel must tick and vacuum into the inventory below",
+                tile.contains("implements ITickable")
+                        && tile.contains("public void update()")
+                        && tile.contains("EntityItem")
+                        && tile.contains("ItemHandlerHelper.insertItem"));
+        assertTrue("funnel blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockfunnel.json")));
+        assertTrue("funnel block model ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/models/block/blockfunnel.json")));
+        for (String t : new String[]{"funnel_top", "funnel_side"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+        assertTrue("funnel lang",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang").contains("tile.thaumcraft.funnel.name="));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

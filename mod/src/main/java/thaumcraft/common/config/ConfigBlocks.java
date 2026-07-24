@@ -12,6 +12,7 @@ import thaumcraft.common.blocks.ItemBlocks.*;
 import thaumcraft.common.blocks.tinkerer.*;
 import thaumcraft.common.compat.ThaumcraftSixCompatibility;
 import thaumcraft.common.tiles.*;
+import thaumcraft.common.tiles.tinkerer.*;
 
 import java.util.Locale;
 
@@ -77,6 +78,8 @@ public class ConfigBlocks {
     // Thaumic Tinkerer decorative block
     public static BlockDarkQuartz blockDarkQuartz;
     public static BlockDarkQuartzItem blockDarkQuartzItem;
+    // Thaumic Tinkerer functional block
+    public static BlockFunnel blockFunnel;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -155,6 +158,10 @@ public class ConfigBlocks {
         blockDarkQuartz = (BlockDarkQuartz) new BlockDarkQuartz()
                 .setRegistryName("thaumcraft", legacyPath("blockDarkQuartz"))
                 .setTranslationKey("thaumcraft.dark_quartz");
+
+        blockFunnel = (BlockFunnel) new BlockFunnel()
+                .setRegistryName("thaumcraft", legacyPath("blockFunnel"))
+                .setTranslationKey("thaumcraft.funnel");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -327,6 +334,7 @@ public class ConfigBlocks {
                 blockCustomPlant,
                 blockCosmeticSolid,
                 blockDarkQuartz,
+                blockFunnel,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -425,6 +433,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockChestHungry.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockLifter)
                 .setRegistryName(blockLifter.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFunnel)
+                .setRegistryName(blockFunnel.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -502,6 +512,7 @@ public class ConfigBlocks {
     }
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
+            new TileRegistration(TileFunnel.class, "TileFunnel"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),
             new TileRegistration(TileJarNode.class, "TileJarNode"),

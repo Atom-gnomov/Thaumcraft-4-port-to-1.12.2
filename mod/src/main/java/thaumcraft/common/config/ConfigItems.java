@@ -72,6 +72,14 @@ public class ConfigItems {
     public static FocusPech focusPech;
     public static FocusTrade focusTrade;
     public static FocusPortableHole focusPortableHole;
+    // Thaumic Tinkerer foci (reimplemented for 1.12.2 from TT by pixlepix/nekosune)
+    public static FocusSmelt focusSmelt;
+    public static FocusTelekinesis focusTelekinesis;
+    public static FocusFlight focusFlight;
+    public static FocusHeal focusHeal;
+    public static FocusDeflect focusDeflect;
+    public static FocusDislocation focusDislocation;
+    public static FocusEnderChest focusEnderChest;
 
     // Basic items
     public static ItemShard itemShard;
@@ -318,6 +326,48 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.focus_portable_hole")
                 .setCreativeTab(tab);
         allItems.add(focusPortableHole);
+
+        focusSmelt = (FocusSmelt) new FocusSmelt()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusSmelt"))
+                .setTranslationKey("thaumcraft.focus_smelt")
+                .setCreativeTab(tab);
+        allItems.add(focusSmelt);
+
+        focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))
+                .setTranslationKey("thaumcraft.focus_telekinesis")
+                .setCreativeTab(tab);
+        allItems.add(focusTelekinesis);
+
+        focusFlight = (FocusFlight) new FocusFlight()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusFlight"))
+                .setTranslationKey("thaumcraft.focus_flight")
+                .setCreativeTab(tab);
+        allItems.add(focusFlight);
+
+        focusHeal = (FocusHeal) new FocusHeal()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusHeal"))
+                .setTranslationKey("thaumcraft.focus_heal")
+                .setCreativeTab(tab);
+        allItems.add(focusHeal);
+
+        focusDeflect = (FocusDeflect) new FocusDeflect()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDeflect"))
+                .setTranslationKey("thaumcraft.focus_deflect")
+                .setCreativeTab(tab);
+        allItems.add(focusDeflect);
+
+        focusDislocation = (FocusDislocation) new FocusDislocation()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDislocation"))
+                .setTranslationKey("thaumcraft.focus_dislocation")
+                .setCreativeTab(tab);
+        allItems.add(focusDislocation);
+
+        focusEnderChest = (FocusEnderChest) new FocusEnderChest()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusEnderChest"))
+                .setTranslationKey("thaumcraft.focus_enderchest")
+                .setCreativeTab(tab);
+        allItems.add(focusEnderChest);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

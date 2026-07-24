@@ -46,6 +46,7 @@ import thaumcraft.common.items.wands.ItemWandCap;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.ItemWandRod;
 import thaumcraft.common.items.wands.foci.*;
+import thaumcraft.common.items.tinkerer.*;
 import thaumcraft.common.lib.CreativeTabThaumcraft;
 
 import java.util.ArrayList;
@@ -80,6 +81,11 @@ public class ConfigItems {
     public static FocusDeflect focusDeflect;
     public static FocusDislocation focusDislocation;
     public static FocusEnderChest focusEnderChest;
+    // Thaumic Tinkerer utility items
+    public static ItemPlacementMirror itemPlacementMirror;
+    public static ItemCleansingTalisman itemCleansingTalisman;
+    public static ItemXpTalisman itemXpTalisman;
+    public static ItemCatAmulet itemCatAmulet;
 
     // Basic items
     public static ItemShard itemShard;
@@ -368,6 +374,26 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.focus_enderchest")
                 .setCreativeTab(tab);
         allItems.add(focusEnderChest);
+
+        itemPlacementMirror = (ItemPlacementMirror) new ItemPlacementMirror()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("PlacementMirror"))
+                .setTranslationKey("thaumcraft.placement_mirror");
+        allItems.add(itemPlacementMirror);
+
+        itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))
+                .setTranslationKey("thaumcraft.cleansing_talisman");
+        allItems.add(itemCleansingTalisman);
+
+        itemXpTalisman = (ItemXpTalisman) new ItemXpTalisman()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("XpTalisman"))
+                .setTranslationKey("thaumcraft.xp_talisman");
+        allItems.add(itemXpTalisman);
+
+        itemCatAmulet = (ItemCatAmulet) new ItemCatAmulet()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CatAmulet"))
+                .setTranslationKey("thaumcraft.cat_amulet");
+        allItems.add(itemCatAmulet);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

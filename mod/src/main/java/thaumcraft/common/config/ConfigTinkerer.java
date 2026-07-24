@@ -1,5 +1,6 @@
 package thaumcraft.common.config;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
@@ -40,6 +41,38 @@ public class ConfigTinkerer {
         arcane("FocusEnderChest", "FOCUSPORTABLEHOLE", ConfigItems.focusEnderChest,
                 new AspectList().add(Aspect.ENTROPY, 10).add(Aspect.ORDER, 20),
                 Items.ENDER_EYE, 5);
+    }
+
+    /** Thaumic Tinkerer utility items, gated behind existing thematically-related research. */
+    public static void registerUtilityItemRecipes() {
+        ConfigResearch.recipes.put("PlacementMirror", ThaumcraftApi.addArcaneCraftingRecipe(
+                "MIRROR", new ItemStack(ConfigItems.itemPlacementMirror),
+                new AspectList().add(Aspect.AIR, 15).add(Aspect.ORDER, 15).add(Aspect.EXCHANGE, 5),
+                "GQG", "QMQ", "GQG",
+                'M', new ItemStack(Items.QUARTZ),
+                'Q', new ItemStack(Blocks.GLASS_PANE),
+                'G', new ItemStack(Items.GOLD_NUGGET)));
+
+        ConfigResearch.recipes.put("CleansingTalisman", ThaumcraftApi.addArcaneCraftingRecipe(
+                "BATHSALTS", new ItemStack(ConfigItems.itemCleansingTalisman),
+                new AspectList().add(Aspect.WATER, 15).add(Aspect.ORDER, 15),
+                " G ", "GSG", " G ",
+                'S', new ItemStack(ConfigItems.itemShard, 1, 2),
+                'G', new ItemStack(Items.GOLD_INGOT)));
+
+        ConfigResearch.recipes.put("XpTalisman", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ENCHANT", new ItemStack(ConfigItems.itemXpTalisman),
+                new AspectList().add(Aspect.ORDER, 20).add(Aspect.MAGIC, 10),
+                " G ", "GXG", " G ",
+                'X', new ItemStack(Items.EXPERIENCE_BOTTLE),
+                'G', new ItemStack(Items.GOLD_INGOT)));
+
+        ConfigResearch.recipes.put("CatAmulet", ThaumcraftApi.addArcaneCraftingRecipe(
+                "BOOTSTRAVELLER", new ItemStack(ConfigItems.itemCatAmulet),
+                new AspectList().add(Aspect.AIR, 20).add(Aspect.MOTION, 10),
+                " G ", "GFG", " G ",
+                'F', new ItemStack(Items.FEATHER),
+                'G', new ItemStack(Items.GOLD_INGOT)));
     }
 
     /** Standard TC4 focus recipe frame: shard corners, quartz edges, theme item centre. */

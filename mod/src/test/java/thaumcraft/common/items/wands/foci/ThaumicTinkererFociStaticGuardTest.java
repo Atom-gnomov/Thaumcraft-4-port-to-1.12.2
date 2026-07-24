@@ -54,6 +54,33 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("Tinkerer foci recipes must be registered at init",
                 read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
                         .contains("ConfigTinkerer.registerFociRecipes()"));
+    }
+
+    @Test
+    public void utilityItemsAreRegisteredAndCraftable() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        String lang = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String[] fields = {"itemPlacementMirror", "itemCleansingTalisman", "itemXpTalisman", "itemCatAmulet"};
+        String[] classes = {"ItemPlacementMirror", "ItemCleansingTalisman", "ItemXpTalisman", "ItemCatAmulet"};
+        String[] langKeys = {"placement_mirror", "cleansing_talisman", "xp_talisman", "cat_amulet"};
+        String[] recipeKeys = {"PlacementMirror", "CleansingTalisman", "XpTalisman", "CatAmulet"};
+        for (String field : fields) {
+            assertTrue(field + " registered", cfg.contains(field + ";") && cfg.contains("allItems.add(" + field + ")"));
+        }
+        for (String c : classes) {
+            assertTrue(c + " source must exist as a tinkerer item",
+                    Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/" + c + ".java")));
+        }
+        for (String key : recipeKeys) {
+            assertTrue("recipe " + key, rec.contains("\"" + key + "\"") && rec.contains("ConfigItems.item" + key));
+        }
+        for (String key : langKeys) {
+            assertTrue("lang " + key, lang.contains("item.thaumcraft." + key + ".name="));
+        }
+        assertTrue("utility recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerUtilityItemRecipes()"));
         for (String key : langKeys) {
             assertTrue("lang key for " + key, lang.contains("item.thaumcraft." + key + ".name="));
         }

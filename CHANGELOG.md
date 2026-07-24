@@ -38,6 +38,22 @@
   и стоимостью каста фокуса), имя фокуса зелёным (Shift — его апгрейды).
   Добавлены ключи `tc.vis.cost`/`tc.vis.costavg` в оба языка.
 
+## [1.0.40]
+### Адаптировано из FOREVA — connected-текстуры варёного стекла (baked-model инфра)
+- **`BlockCosmeticOpaque`** (варёное стекло): extended block state с
+  `IUnlistedProperty` соседей — грани соединяются с примыкающими блоками
+  варёного стекла (как в оригинале TC4), а не рисуют полную сетку швов.
+- **`WardedGlassBakedModel`** (новый): baked-модель, выбирающая один из 47
+  спрайтов `warded_glass_N` по маске соседей через `ConnectedTextureUtils`.
+- **`ClientModelRegistry`**: регистрация 47 спрайтов `warded_glass_*`,
+  константа `WARDED_GLASS_MODEL` и подмена модели в `ModelBakeEvent`.
+- Модель `blockcosmeticopaque_2.json` → базовый спрайт `warded_glass_1`;
+  guard `wardedGlassTextureShips` обновлён.
+- Полный набор тестов остаётся зелёным (0 провалов).
+- **Отложено:** eldritch-crust baked-model — конфликтует с нашим фиксом
+  `getLightValue` (светокамень в генерации) и меняет default-state/render-type
+  BlockEldritch; требует осторожного мёржа. Детали в PORTING_HANDOFF.md.
+
 ## [1.0.39]
 ### Адаптировано из FOREVA — генерация Внешних Земель
 - **`GenCommon`**: доработана генерация данжа — ячейки корки (CRUST, feature 7:

@@ -75,8 +75,8 @@ public class FxLayerAndEldritchParityStaticGuardTest {
     @Test
     public void wardedGlassTextureShips() throws IOException {
         String model = read("src/main/resources/assets/thaumcraft/models/block/blockcosmeticopaque_2.json");
-        assertTrue(model.contains("thaumcraft:blocks/wardedglass"));
-        assertTrue(Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/wardedglass.png")));
+        assertTrue(model.contains("thaumcraft:blocks/warded_glass_1"));
+        assertTrue(Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/warded_glass_1.png")));
     }
 
     private static String read(String path) throws IOException {

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "thaumcraft:blockanimationtablet",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "thaumcraft:blockanimationtablet",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "thaumcraft:blockanimationtablet",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "thaumcraft:blockanimationtablet",
+      "y": 270
+    }
+  }
+}

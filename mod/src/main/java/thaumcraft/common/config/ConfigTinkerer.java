@@ -140,6 +140,16 @@ public class ConfigTinkerer {
                 'Q', new ItemStack(Items.QUARTZ),
                 'R', new ItemStack(Items.BLAZE_ROD)));
 
+        // Animation tablet: works a tool against the block it faces.
+        ConfigResearch.recipes.put("AnimationTablet", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GOLEMANCY", new ItemStack(ConfigBlocks.blockAnimationTablet),
+                new AspectList().add(Aspect.MECHANISM, 20).add(Aspect.MOTION, 15).add(Aspect.TOOL, 10),
+                "TQT", "QMQ", "SSS",
+                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
+                'Q', new ItemStack(Items.QUARTZ),
+                'M', new ItemStack(Blocks.PISTON),
+                'S', new ItemStack(Blocks.STONE_SLAB)));
+
         // Repairer: essentia-fed tool mender, gated behind essentia distillation.
         ConfigResearch.recipes.put("Repairer", ThaumcraftApi.addArcaneCraftingRecipe(
                 "DISTILESSENTIA", new ItemStack(ConfigBlocks.blockRepairer),

@@ -290,12 +290,50 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void animationTabletWorksAToolAgainstTheBlockItFaces() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockAnimationTablet registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockAnimationTablet;") && cfg.contains("blockAnimationTablet,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockAnimationTablet)"));
+        assertTrue("TileAnimationTablet registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileAnimationTablet.class, \"TileAnimationTablet\")"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileAnimationTablet.java");
+        assertTrue("swing cycle must keep the original speed and arc",
+                tile.contains("SWING_SPEED = 3") && tile.contains("MAX_DEGREE = 45"));
+        assertTrue("must act through a fake player",
+                tile.contains("FakePlayerFactory.get") && tile.contains("attackTargetEntityWithCurrentItem"));
+        assertTrue("strike mode must break blocks progressively, not instantly",
+                tile.contains("breakProgress") && tile.contains("getDigSpeed")
+                        && tile.contains("sendBlockBreakProgress"));
+        assertTrue("use mode must try block activation and item use",
+                tile.contains("onBlockActivated(") && tile.contains("onItemUse("));
+        assertTrue("must never target its own fake player",
+                tile.contains("e instanceof FakePlayer"));
+        assertTrue("both toggles must persist", tile.contains("strikeMode") && tile.contains("redstoneMode"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockAnimationTablet.java");
+        assertTrue("sneak-click toggles mode, redstone in hand toggles the trigger",
+                block.contains("toggleMode()") && block.contains("toggleRedstoneMode()"));
+        assertTrue("the held tool must survive breaking the block",
+                block.contains("InventoryHelper.spawnItemStack"));
+
+        assertTrue("tablet blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockanimationtablet.json")));
+        for (String t : new String[]{"animation_tablet_top", "animation_tablet_side"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
         for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
-                "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator"}) {
+                "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator",
+                "AnimationTablet"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -320,6 +358,7 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "tile.thaumcraft.transvector_interface.name",
                 "item.thaumcraft.transvector_connector.name",
                 "tile.thaumcraft.transvector_dislocator.name",
+                "tile.thaumcraft.animation_tablet.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));

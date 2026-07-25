@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "thaumcraft:blocks/animation_tablet_top",
+    "bottom": "thaumcraft:blocks/animation_tablet_side",
+    "side": "thaumcraft:blocks/animation_tablet_side"
+  }
+}

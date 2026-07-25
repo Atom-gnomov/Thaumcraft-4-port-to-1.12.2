@@ -152,6 +152,73 @@ public class ThaumicTinkererFociStaticGuardTest {
                 read("src/main/resources/assets/thaumcraft/lang/en_us.lang").contains("tile.thaumcraft.funnel.name="));
     }
 
+    @Test
+    public void magnetBlockAndTileAreRegistered() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockMagnet registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockMagnet;") && cfg.contains("blockMagnet,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockMagnet)"));
+        assertTrue("TileMagnet registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileMagnet.class, \"TileMagnet\")"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockMagnet.java");
+        assertTrue("magnet must expose the attract/repel state and toggle on right-click",
+                block.contains("PropertyBool.create(\"pulling\")")
+                        && block.contains("public boolean onBlockActivated(")
+                        && block.contains("cycleProperty(PULLING)"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMagnet.java");
+        assertTrue("TileMagnet must tick, need redstone, and move dropped items",
+                tile.contains("implements ITickable")
+                        && tile.contains("public void update()")
+                        && tile.contains("EntityItem")
+                        && tile.contains("getRedstonePower"));
+        assertTrue("reach must stay the original signal/2", tile.contains("redstone / 2.0D"));
+
+        assertTrue("magnet blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockmagnet.json")));
+        for (String m : new String[]{"blockmagnet_pull", "blockmagnet_push"}) {
+            assertTrue("model " + m,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/models/block/" + m + ".json")));
+        }
+        for (String t : new String[]{"magnet", "magnet_top_pull", "magnet_top_push"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+    }
+
+    /** Every TT block must be obtainable in survival, not creative-only. */
+    @Test
+    public void tinkererBlocksAreCraftable() throws IOException {
+        String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet"}) {
+            assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
+        }
+        assertTrue("block recipes must be registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerBlockRecipes()"));
+    }
+
+    /** The module ships in both languages — the rest of the mod is fully translated. */
+    @Test
+    public void tinkererContentIsLocalisedInBothLanguages() throws IOException {
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        String[] keys = {
+                "item.thaumcraft.focus_smelt.name", "item.thaumcraft.focus_telekinesis.name",
+                "item.thaumcraft.focus_flight.name", "item.thaumcraft.focus_heal.name",
+                "item.thaumcraft.focus_deflect.name", "item.thaumcraft.focus_dislocation.name",
+                "item.thaumcraft.focus_enderchest.name", "item.thaumcraft.placement_mirror.name",
+                "item.thaumcraft.cleansing_talisman.name", "item.thaumcraft.xp_talisman.name",
+                "item.thaumcraft.cat_amulet.name", "tile.thaumcraft.dark_quartz.0.name",
+                "tile.thaumcraft.funnel.name", "tile.thaumcraft.magnet.name",
+        };
+        for (String key : keys) {
+            assertTrue(key + " missing from en_us.lang", en.contains(key + "="));
+            assertTrue(key + " missing from ru_ru.lang", ru.contains(key + "="));
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

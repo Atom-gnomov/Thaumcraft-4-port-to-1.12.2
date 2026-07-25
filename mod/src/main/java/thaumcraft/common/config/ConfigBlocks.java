@@ -80,6 +80,7 @@ public class ConfigBlocks {
     public static BlockDarkQuartzItem blockDarkQuartzItem;
     // Thaumic Tinkerer functional block
     public static BlockFunnel blockFunnel;
+    public static BlockMagnet blockMagnet;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -162,6 +163,10 @@ public class ConfigBlocks {
         blockFunnel = (BlockFunnel) new BlockFunnel()
                 .setRegistryName("thaumcraft", legacyPath("blockFunnel"))
                 .setTranslationKey("thaumcraft.funnel");
+
+        blockMagnet = (BlockMagnet) new BlockMagnet()
+                .setRegistryName("thaumcraft", legacyPath("blockMagnet"))
+                .setTranslationKey("thaumcraft.magnet");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -335,6 +340,7 @@ public class ConfigBlocks {
                 blockCosmeticSolid,
                 blockDarkQuartz,
                 blockFunnel,
+                blockMagnet,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -435,6 +441,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockLifter.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockFunnel)
                 .setRegistryName(blockFunnel.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockMagnet)
+                .setRegistryName(blockMagnet.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -513,6 +521,7 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),
             new TileRegistration(TileJarNode.class, "TileJarNode"),

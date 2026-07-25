@@ -75,6 +75,48 @@ public class ConfigTinkerer {
                 'G', new ItemStack(Items.GOLD_INGOT)));
     }
 
+    /**
+     * Thaumic Tinkerer blocks. Until 1.0.46 the dark quartz and the funnel were
+     * creative-only (no recipe at all); they are craftable from here on, together
+     * with the magnet.
+     */
+    public static void registerBlockRecipes() {
+        // Dark quartz: plain -> chiseled -> pillar, mirroring vanilla quartz shapes.
+        ConfigResearch.recipes.put("DarkQuartz", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ARCANESTONE", new ItemStack(ConfigBlocks.blockDarkQuartz, 4, 0),
+                new AspectList().add(Aspect.ENTROPY, 5).add(Aspect.EARTH, 5),
+                "QQ", "QQ",
+                'Q', new ItemStack(Blocks.QUARTZ_BLOCK, 1, 0)));
+
+        ConfigResearch.recipes.put("DarkQuartzChiseled", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ARCANESTONE", new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
+                new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.CRAFT, 3),
+                "D", "D",
+                'D', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0)));
+
+        ConfigResearch.recipes.put("DarkQuartzPillar", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ARCANESTONE", new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
+                new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.CRAFT, 3),
+                "D", "D",
+                'D', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1)));
+
+        // Funnel: hopper-like collector, gated behind the grate (item-flow research).
+        ConfigResearch.recipes.put("Funnel", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GRATE", new ItemStack(ConfigBlocks.blockFunnel),
+                new AspectList().add(Aspect.AIR, 10).add(Aspect.ORDER, 10).add(Aspect.VOID, 5),
+                "I I", "IHI", " I ",
+                'I', new ItemStack(Items.IRON_INGOT),
+                'H', new ItemStack(Blocks.HOPPER)));
+
+        // Magnet: redstone-driven item attractor.
+        ConfigResearch.recipes.put("Magnet", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GRATE", new ItemStack(ConfigBlocks.blockMagnet),
+                new AspectList().add(Aspect.AIR, 15).add(Aspect.MOTION, 15).add(Aspect.MAGIC, 5),
+                "III", "IRI", "III",
+                'I', new ItemStack(Items.IRON_INGOT),
+                'R', new ItemStack(Blocks.REDSTONE_BLOCK)));
+    }
+
     /** Standard TC4 focus recipe frame: shard corners, quartz edges, theme item centre. */
     private static void arcane(String key, String research, net.minecraft.item.Item focus,
                                AspectList aspects, net.minecraft.item.Item centre, int shardMeta) {

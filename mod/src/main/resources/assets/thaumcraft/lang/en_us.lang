@@ -1605,3 +1605,4 @@ tc.transvector.gone=The device is no longer there
 tc.transvector.nochain=Two interfaces cannot be linked to each other
 tc.transvector.toofar=Too far — the range is %s blocks
 tc.transvector.holding=Holding device at %s
+tile.thaumcraft.transvector_dislocator.name=Transvector Dislocator

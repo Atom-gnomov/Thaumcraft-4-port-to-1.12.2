@@ -83,6 +83,7 @@ public class ConfigBlocks {
     public static BlockMagnet blockMagnet;
     public static BlockRepairer blockRepairer;
     public static BlockTransvectorInterface blockTransvectorInterface;
+    public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -177,6 +178,10 @@ public class ConfigBlocks {
         blockTransvectorInterface = (BlockTransvectorInterface) new BlockTransvectorInterface()
                 .setRegistryName("thaumcraft", legacyPath("blockTransvectorInterface"))
                 .setTranslationKey("thaumcraft.transvector_interface");
+
+        blockTransvectorDislocator = (BlockTransvectorDislocator) new BlockTransvectorDislocator()
+                .setRegistryName("thaumcraft", legacyPath("blockTransvectorDislocator"))
+                .setTranslationKey("thaumcraft.transvector_dislocator");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -353,6 +358,7 @@ public class ConfigBlocks {
                 blockMagnet,
                 blockRepairer,
                 blockTransvectorInterface,
+                blockTransvectorDislocator,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -459,6 +465,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockRepairer.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockTransvectorInterface)
                 .setRegistryName(blockTransvectorInterface.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockTransvectorDislocator)
+                .setRegistryName(blockTransvectorDislocator.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -540,6 +548,7 @@ public class ConfigBlocks {
             new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileRepairer.class, "TileRepairer"),
             new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
+            new TileRegistration(TileTransvectorDislocator.class, "TileTransvectorDislocator"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),
             new TileRegistration(TileJarNode.class, "TileJarNode"),

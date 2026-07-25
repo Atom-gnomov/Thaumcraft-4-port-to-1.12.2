@@ -1605,3 +1605,4 @@ tc.transvector.gone=Устройства там больше нет
 tc.transvector.nochain=Два интерфейса нельзя связать друг с другом
 tc.transvector.toofar=Слишком далеко — радиус %s блоков
 tc.transvector.holding=В руке устройство из %s
+tile.thaumcraft.transvector_dislocator.name=Трансвекторный дислокатор

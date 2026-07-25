@@ -255,12 +255,47 @@ public class ThaumicTinkererFociStaticGuardTest {
                 Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/transvector_connector.png")));
     }
 
+    @Test
+    public void dislocatorSwapsBlocksOnARedstonePulse() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockTransvectorDislocator registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockTransvectorDislocator;") && cfg.contains("blockTransvectorDislocator,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockTransvectorDislocator)"));
+        assertTrue("TileTransvectorDislocator registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileTransvectorDislocator.class, \"TileTransvectorDislocator\")"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileTransvectorDislocator.java");
+        assertTrue("dislocator reach must stay the original 16", tile.contains("MAX_DISTANCE = 16"));
+        assertTrue("cooldown must stay the original 10 ticks", tile.contains("COOLDOWN = 10"));
+        assertTrue("a pulse during cooldown must be remembered, not dropped",
+                tile.contains("pulseStored = true") && tile.contains("pulseStored = false"));
+        assertTrue("tiles must travel with their blocks",
+                tile.contains("detachTile(") && tile.contains("attachTile("));
+        assertTrue("entities standing on either side must be swapped too",
+                tile.contains("swapEntities("));
+        assertTrue("must refuse nodes, blacklisted blocks and unbreakable blocks",
+                tile.contains("ConfigBlocks.blockAiry")
+                        && tile.contains("portableHoleBlackList")
+                        && tile.contains("getBlockHardness(world, at) >= 0.0F"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockTransvectorDislocator.java");
+        assertTrue("must fire on the rising redstone edge only",
+                block.contains("public void neighborChanged(") && block.contains("powered == wasPowered"));
+
+        assertTrue("dislocator blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blocktransvectordislocator.json")));
+        for (String t : new String[]{"transvector_dislocator", "transvector_dislocator_on"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
         for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
-                "TransvectorInterface", "TransvectorConnector"}) {
+                "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -284,6 +319,7 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "tile.thaumcraft.repairer.name",
                 "tile.thaumcraft.transvector_interface.name",
                 "item.thaumcraft.transvector_connector.name",
+                "tile.thaumcraft.transvector_dislocator.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));

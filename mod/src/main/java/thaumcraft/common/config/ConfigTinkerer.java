@@ -125,6 +125,14 @@ public class ConfigTinkerer {
                 'Q', new ItemStack(Items.QUARTZ),
                 'E', new ItemStack(Items.ENDER_EYE)));
 
+        ConfigResearch.recipes.put("TransvectorDislocator", ThaumcraftApi.addArcaneCraftingRecipe(
+                "MIRROR", new ItemStack(ConfigBlocks.blockTransvectorDislocator),
+                new AspectList().add(Aspect.EXCHANGE, 25).add(Aspect.MOTION, 15).add(Aspect.VOID, 10),
+                "SPS", "PEP", "SPS",
+                'S', new ItemStack(ConfigItems.itemShard, 1, 5),
+                'P', new ItemStack(Blocks.PISTON),
+                'E', new ItemStack(Items.ENDER_EYE)));
+
         ConfigResearch.recipes.put("TransvectorConnector", ThaumcraftApi.addArcaneCraftingRecipe(
                 "MIRROR", new ItemStack(ConfigItems.itemTransvectorConnector),
                 new AspectList().add(Aspect.EXCHANGE, 10).add(Aspect.MAGIC, 10),

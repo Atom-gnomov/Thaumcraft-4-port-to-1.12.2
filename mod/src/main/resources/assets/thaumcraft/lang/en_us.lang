@@ -1594,3 +1594,4 @@ tc.wardedpearl=§5§oThe magic of a nearby warded object destroys the ender pear
 tc.vis.cost=vis cost
 tc.vis.costavg=avg vis cost
 tile.thaumcraft.magnet.name=Magnet
+tile.thaumcraft.repairer.name=Repairer

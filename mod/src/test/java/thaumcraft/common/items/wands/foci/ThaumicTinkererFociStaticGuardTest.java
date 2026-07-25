@@ -187,11 +187,44 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void repairerConsumesEssentiaToMendTools() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockRepairer registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockRepairer;") && cfg.contains("blockRepairer,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockRepairer)"));
+        assertTrue("TileRepairer registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileRepairer.class, \"TileRepairer\")"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileRepairer.java");
+        assertTrue("repairer must be an essentia consumer that ticks",
+                tile.contains("implements ITickable") && tile.contains("IEssentiaTransport")
+                        && tile.contains("public void update()"));
+        assertTrue("original repair values must be preserved: TOOL 8, CRAFT 5, ORDER 3",
+                tile.contains("REPAIR_VALUES.put(Aspect.TOOL, 8)")
+                        && tile.contains("REPAIR_VALUES.put(Aspect.CRAFT, 5)")
+                        && tile.contains("REPAIR_VALUES.put(Aspect.ORDER, 3)"));
+        assertTrue("must draw exactly one essentia per attempt through the facing side",
+                tile.contains("takeEssentia(entry.getKey(), 1, opposite)"));
+        assertTrue("must expose its slot to pipes/hoppers",
+                tile.contains("CapabilityItemHandler.ITEM_HANDLER_CAPABILITY"));
+        assertTrue("the held tool must survive breaking the block",
+                read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockRepairer.java")
+                        .contains("InventoryHelper.spawnItemStack"));
+
+        assertTrue("repairer blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockrepairer.json")));
+        for (String t : new String[]{"repairer_side", "repairer_top"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
-        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet"}) {
+        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -212,6 +245,7 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "item.thaumcraft.cleansing_talisman.name", "item.thaumcraft.xp_talisman.name",
                 "item.thaumcraft.cat_amulet.name", "tile.thaumcraft.dark_quartz.0.name",
                 "tile.thaumcraft.funnel.name", "tile.thaumcraft.magnet.name",
+                "tile.thaumcraft.repairer.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));

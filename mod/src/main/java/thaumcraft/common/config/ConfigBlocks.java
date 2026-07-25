@@ -81,6 +81,7 @@ public class ConfigBlocks {
     // Thaumic Tinkerer functional block
     public static BlockFunnel blockFunnel;
     public static BlockMagnet blockMagnet;
+    public static BlockRepairer blockRepairer;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -167,6 +168,10 @@ public class ConfigBlocks {
         blockMagnet = (BlockMagnet) new BlockMagnet()
                 .setRegistryName("thaumcraft", legacyPath("blockMagnet"))
                 .setTranslationKey("thaumcraft.magnet");
+
+        blockRepairer = (BlockRepairer) new BlockRepairer()
+                .setRegistryName("thaumcraft", legacyPath("blockRepairer"))
+                .setTranslationKey("thaumcraft.repairer");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -341,6 +346,7 @@ public class ConfigBlocks {
                 blockDarkQuartz,
                 blockFunnel,
                 blockMagnet,
+                blockRepairer,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -443,6 +449,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockFunnel.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockMagnet)
                 .setRegistryName(blockMagnet.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockRepairer)
+                .setRegistryName(blockRepairer.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -522,6 +530,7 @@ public class ConfigBlocks {
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
+            new TileRegistration(TileRepairer.class, "TileRepairer"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),
             new TileRegistration(TileJarNode.class, "TileJarNode"),

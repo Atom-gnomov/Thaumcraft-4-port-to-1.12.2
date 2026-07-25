@@ -1594,3 +1594,4 @@ tile.thaumcraft.funnel.name=Воронка
 tile.thaumcraft.magnet.name=Магнит
 tc.placementmirror.bound=Привязано: %s
 tc.xptalisman.stored=Накоплено опыта: %s
+tile.thaumcraft.repairer.name=Ремонтник

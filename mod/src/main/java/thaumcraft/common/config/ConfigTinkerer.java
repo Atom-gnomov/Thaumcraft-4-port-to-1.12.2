@@ -115,6 +115,15 @@ public class ConfigTinkerer {
                 "III", "IRI", "III",
                 'I', new ItemStack(Items.IRON_INGOT),
                 'R', new ItemStack(Blocks.REDSTONE_BLOCK)));
+
+        // Repairer: essentia-fed tool mender, gated behind essentia distillation.
+        ConfigResearch.recipes.put("Repairer", ThaumcraftApi.addArcaneCraftingRecipe(
+                "DISTILESSENTIA", new ItemStack(ConfigBlocks.blockRepairer),
+                new AspectList().add(Aspect.TOOL, 20).add(Aspect.CRAFT, 15).add(Aspect.ORDER, 10),
+                "ATA", "TQT", "ATA",
+                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
+                'Q', new ItemStack(Items.QUARTZ),
+                'A', new ItemStack(Items.IRON_INGOT)));
     }
 
     /** Standard TC4 focus recipe frame: shard corners, quartz edges, theme item centre. */

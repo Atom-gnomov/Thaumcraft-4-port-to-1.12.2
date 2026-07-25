@@ -140,6 +140,17 @@ public class ConfigTinkerer {
                 'Q', new ItemStack(Items.QUARTZ),
                 'R', new ItemStack(Items.BLAZE_ROD)));
 
+        // Osmotic enchanter: vis-powered enchanting, needs the totem/nitor pillars.
+        ConfigResearch.recipes.put("Enchanter", ThaumcraftApi.addArcaneCraftingRecipe(
+                "INFUSIONENCHANTMENT", new ItemStack(ConfigBlocks.blockEnchanter),
+                new AspectList().add(Aspect.MAGIC, 25).add(Aspect.ORDER, 20).add(Aspect.EXCHANGE, 15),
+                "SBS", "TQT", "OOO",
+                'S', new ItemStack(ConfigItems.itemShard, 1, 5),
+                'B', new ItemStack(Items.BOOK),
+                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
+                'Q', new ItemStack(Items.QUARTZ),
+                'O', new ItemStack(Blocks.OBSIDIAN)));
+
         // Animation tablet: works a tool against the block it faces.
         ConfigResearch.recipes.put("AnimationTablet", ThaumcraftApi.addArcaneCraftingRecipe(
                 "GOLEMANCY", new ItemStack(ConfigBlocks.blockAnimationTablet),

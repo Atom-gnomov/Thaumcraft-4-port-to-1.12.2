@@ -85,6 +85,7 @@ public class ConfigBlocks {
     public static BlockTransvectorInterface blockTransvectorInterface;
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
+    public static BlockEnchanter blockEnchanter;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -187,6 +188,10 @@ public class ConfigBlocks {
         blockAnimationTablet = (BlockAnimationTablet) new BlockAnimationTablet()
                 .setRegistryName("thaumcraft", legacyPath("blockAnimationTablet"))
                 .setTranslationKey("thaumcraft.animation_tablet");
+
+        blockEnchanter = (BlockEnchanter) new BlockEnchanter()
+                .setRegistryName("thaumcraft", legacyPath("blockEnchanter"))
+                .setTranslationKey("thaumcraft.enchanter");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -365,6 +370,7 @@ public class ConfigBlocks {
                 blockTransvectorInterface,
                 blockTransvectorDislocator,
                 blockAnimationTablet,
+                blockEnchanter,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -475,6 +481,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockTransvectorDislocator.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockAnimationTablet)
                 .setRegistryName(blockAnimationTablet.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockEnchanter)
+                .setRegistryName(blockEnchanter.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -558,6 +566,7 @@ public class ConfigBlocks {
             new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
             new TileRegistration(TileTransvectorDislocator.class, "TileTransvectorDislocator"),
             new TileRegistration(TileAnimationTablet.class, "TileAnimationTablet"),
+            new TileRegistration(TileEnchanter.class, "TileEnchanter"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),
             new TileRegistration(TileJarNode.class, "TileJarNode"),

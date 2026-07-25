@@ -327,13 +327,57 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void osmoticEnchanterNeedsPillarsAndDrainsWandVis() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockEnchanter registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockEnchanter;") && cfg.contains("blockEnchanter,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockEnchanter)"));
+        assertTrue("TileEnchanter registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileEnchanter.class, \"TileEnchanter\")"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileEnchanter.java");
+        assertTrue("multiblock must keep the original shape: 6 pillars, 2..12 tall, radius 4",
+                tile.contains("PILLARS_REQUIRED = 6") && tile.contains("SEARCH_RADIUS = 4")
+                        && tile.contains("MIN_PILLAR = 2") && tile.contains("MAX_PILLAR = 12"));
+        assertTrue("pillars must be obsidian totems capped with nitor",
+                tile.contains("ConfigBlocks.blockCosmeticSolid") && tile.contains("ConfigBlocks.blockAiry"));
+        assertTrue("must drain one vis point at a time from a non-staff wand",
+                tile.contains("consumeAllVisCrafting(wand, null, new AspectList().add(aspect, 1), true)")
+                        && tile.contains("wandItem.isStaff(wand)"));
+        assertTrue("wand vis is stored at 100 per point", tile.contains(">= 100"));
+        assertTrue("only primal cost is payable", tile.contains("aspect.isPrimal()"));
+        assertTrue("enchantments are applied once fully paid", tile.contains("tool.addEnchantment("));
+
+        String costs = read("src/main/java/thaumcraft/common/lib/tinkerer/EnchantmentCosts.java");
+        assertTrue("the original's exponential curve must be preserved",
+                costs.contains("level * (1.0D + level * 0.2D)"));
+        assertTrue("ported base costs must stay put",
+                costs.contains("Enchantments.SILK_TOUCH, aspects(Aspect.ORDER, 50")
+                        && costs.contains("Enchantments.SHARPNESS, aspects(Aspect.ORDER, 10)"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockEnchanter.java");
+        assertTrue("an enchanted book starts a run and is only consumed on success",
+                block.contains("Items.ENCHANTED_BOOK") && block.contains("beginFromBook(held)")
+                        && block.contains("held.shrink(1)"));
+        assertTrue("contents must survive breaking the block",
+                block.contains("InventoryHelper.spawnItemStack"));
+
+        assertTrue("enchanter blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockenchanter.json")));
+        for (String t : new String[]{"enchanter_top", "enchanter_side"}) {
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/" + t + ".png")));
+        }
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
         for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
                 "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator",
-                "AnimationTablet"}) {
+                "AnimationTablet", "Enchanter"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -359,6 +403,7 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "item.thaumcraft.transvector_connector.name",
                 "tile.thaumcraft.transvector_dislocator.name",
                 "tile.thaumcraft.animation_tablet.name",
+                "tile.thaumcraft.enchanter.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));

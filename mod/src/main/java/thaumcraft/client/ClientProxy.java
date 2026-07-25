@@ -1044,6 +1044,7 @@ public class ClientProxy extends CommonProxy {
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorDislocator), 0,
                 "facing=up,powered=false");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockAnimationTablet), 0, "facing=north");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockEnchanter), 0, "normal");
         Item magicalLogItem = Item.getItemFromBlock(ConfigBlocks.blockMagicalLog);
         registerBlockItemModel(magicalLogItem, 0, "axis=y,type=0");
         registerBlockItemModel(magicalLogItem, 1, "axis=y,type=1");

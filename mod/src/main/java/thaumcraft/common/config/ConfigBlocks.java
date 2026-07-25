@@ -82,6 +82,7 @@ public class ConfigBlocks {
     public static BlockFunnel blockFunnel;
     public static BlockMagnet blockMagnet;
     public static BlockRepairer blockRepairer;
+    public static BlockTransvectorInterface blockTransvectorInterface;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -172,6 +173,10 @@ public class ConfigBlocks {
         blockRepairer = (BlockRepairer) new BlockRepairer()
                 .setRegistryName("thaumcraft", legacyPath("blockRepairer"))
                 .setTranslationKey("thaumcraft.repairer");
+
+        blockTransvectorInterface = (BlockTransvectorInterface) new BlockTransvectorInterface()
+                .setRegistryName("thaumcraft", legacyPath("blockTransvectorInterface"))
+                .setTranslationKey("thaumcraft.transvector_interface");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -347,6 +352,7 @@ public class ConfigBlocks {
                 blockFunnel,
                 blockMagnet,
                 blockRepairer,
+                blockTransvectorInterface,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -451,6 +457,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockMagnet.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockRepairer)
                 .setRegistryName(blockRepairer.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockTransvectorInterface)
+                .setRegistryName(blockTransvectorInterface.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -531,6 +539,7 @@ public class ConfigBlocks {
             new TileRegistration(TileFunnel.class, "TileFunnel"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileRepairer.class, "TileRepairer"),
+            new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),
             new TileRegistration(TileJarNode.class, "TileJarNode"),

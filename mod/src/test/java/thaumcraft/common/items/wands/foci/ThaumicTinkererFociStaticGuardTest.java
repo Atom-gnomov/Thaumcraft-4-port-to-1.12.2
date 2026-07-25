@@ -220,11 +220,47 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void transvectorInterfaceProxiesALinkedBlock() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("blockTransvectorInterface registered + in getAllBlocks + ItemBlock",
+                cfg.contains("blockTransvectorInterface;") && cfg.contains("blockTransvectorInterface,")
+                        && cfg.contains("new net.minecraft.item.ItemBlock(blockTransvectorInterface)"));
+        assertTrue("TileTransvectorInterface registered in TILE_REGISTRATIONS",
+                cfg.contains("new TileRegistration(TileTransvectorInterface.class, \"TileTransvectorInterface\")"));
+
+        String base = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileTransvector.java");
+        assertTrue("links must be range-checked per axis and dropped when out of range",
+                base.contains("public boolean withinRange(") && base.contains("unlink();"));
+        assertTrue("must not force-load the target chunk",
+                base.contains("world.isBlockLoaded(target)"));
+        assertTrue("must never resolve to itself", base.contains("tile == this ? null : tile"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileTransvectorInterface.java");
+        assertTrue("interface reach must stay the original 4", tile.contains("MAX_DISTANCE = 4"));
+        assertTrue("must forward capabilities to the linked tile",
+                tile.contains("public <T> T getCapability(") && tile.contains("linked.getCapability(capability, facing)"));
+        assertTrue("must delegate Thaumcraft essentia interfaces",
+                tile.contains("IAspectContainer") && tile.contains("IEssentiaTransport"));
+
+        String connector = read("src/main/java/thaumcraft/common/items/tinkerer/ItemTransvectorConnector.java");
+        assertTrue("connector must link in two clicks and refuse interface-to-interface chains",
+                connector.contains("device.link(pos)") && connector.contains("tc.transvector.nochain"));
+
+        assertTrue("interface blockstate ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blocktransvectorinterface.json")));
+        assertTrue("interface texture ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/transvector_interface.png")));
+        assertTrue("connector texture ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/transvector_connector.png")));
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
-        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer"}) {
+        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
+                "TransvectorInterface", "TransvectorConnector"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -246,6 +282,8 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "item.thaumcraft.cat_amulet.name", "tile.thaumcraft.dark_quartz.0.name",
                 "tile.thaumcraft.funnel.name", "tile.thaumcraft.magnet.name",
                 "tile.thaumcraft.repairer.name",
+                "tile.thaumcraft.transvector_interface.name",
+                "item.thaumcraft.transvector_connector.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));

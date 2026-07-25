@@ -116,6 +116,22 @@ public class ConfigTinkerer {
                 'I', new ItemStack(Items.IRON_INGOT),
                 'R', new ItemStack(Blocks.REDSTONE_BLOCK)));
 
+        // Transvector interface + its connector: remote block proxying.
+        ConfigResearch.recipes.put("TransvectorInterface", ThaumcraftApi.addArcaneCraftingRecipe(
+                "MIRROR", new ItemStack(ConfigBlocks.blockTransvectorInterface),
+                new AspectList().add(Aspect.EXCHANGE, 20).add(Aspect.MAGIC, 15).add(Aspect.VOID, 10),
+                "SQS", "QEQ", "SQS",
+                'S', new ItemStack(ConfigItems.itemShard, 1, 5),
+                'Q', new ItemStack(Items.QUARTZ),
+                'E', new ItemStack(Items.ENDER_EYE)));
+
+        ConfigResearch.recipes.put("TransvectorConnector", ThaumcraftApi.addArcaneCraftingRecipe(
+                "MIRROR", new ItemStack(ConfigItems.itemTransvectorConnector),
+                new AspectList().add(Aspect.EXCHANGE, 10).add(Aspect.MAGIC, 10),
+                "  Q", " R ", "R  ",
+                'Q', new ItemStack(Items.QUARTZ),
+                'R', new ItemStack(Items.BLAZE_ROD)));
+
         // Repairer: essentia-fed tool mender, gated behind essentia distillation.
         ConfigResearch.recipes.put("Repairer", ThaumcraftApi.addArcaneCraftingRecipe(
                 "DISTILESSENTIA", new ItemStack(ConfigBlocks.blockRepairer),

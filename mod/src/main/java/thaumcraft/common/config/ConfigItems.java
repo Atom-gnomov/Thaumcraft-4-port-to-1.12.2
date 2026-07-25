@@ -83,6 +83,7 @@ public class ConfigItems {
     public static FocusEnderChest focusEnderChest;
     // Thaumic Tinkerer utility items
     public static ItemPlacementMirror itemPlacementMirror;
+    public static ItemTransvectorConnector itemTransvectorConnector;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
@@ -379,6 +380,11 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("PlacementMirror"))
                 .setTranslationKey("thaumcraft.placement_mirror");
         allItems.add(itemPlacementMirror);
+
+        itemTransvectorConnector = (ItemTransvectorConnector) new ItemTransvectorConnector()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("TransvectorConnector"))
+                .setTranslationKey("thaumcraft.transvector_connector");
+        allItems.add(itemTransvectorConnector);
 
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))

@@ -25,6 +25,24 @@
 
 ## Открыто
 
+- **5 guard-тестов клиентского рендера падают** (найдено при работах по TT,
+  1.0.46): `ArcaneFurnaceVisualShellContractTest`,
+  `ClientProxyDedicatedBeamBoltStaticGuardTest`,
+  `InfusionRendererFidelityStaticGuardTest`,
+  `VisEnergyRendererFidelityStaticGuardTest`,
+  `ReportedItemModelRoutingContractTest`.
+  Проверено через stash на чистом дереве — падали **до** работ по TT, то есть
+  это наследие adoption рендереров FOREVA 1.0.36–1.0.45. При этом
+  `PORTING_HANDOFF.md` до сих пор утверждает «318 suites, 0 failures».
+  Нужно либо починить рендер, либо обновить guard-контракты под намеренно
+  изменённую реализацию (по правилу из самого PORTING_HANDOFF) — и поправить
+  утверждение о зелёном наборе.
+- **`mod/gradle.properties` закоммичен с абсолютным путём чужой машины** —
+  `org.gradle.java.home=C:/Users/Game-On-Dp/tc4-port/tools/jdk/jdk8u492-b09`.
+  У любого другого разработчика сборка падает сразу («Java home supplied is
+  invalid»). Обход: `-Dorg.gradle.java.home=<свой путь>`. Правильно — убрать
+  строку из версионируемого файла (перенести в `gradle.properties.local` или
+  переменную окружения).
 - **Волшебный лес: столбы из брёвен на кронах, очень высокие** — баг раскладки
   ветвей `WorldGenBigMagicTree` (сами дубовые брёвна/листва — оригинальное
   поведение, крона тонируется биомом). В работе.

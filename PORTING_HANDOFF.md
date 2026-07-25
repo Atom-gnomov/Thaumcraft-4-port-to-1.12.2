@@ -39,11 +39,28 @@ Working doc for continuing the adoption of upstream **FOREVA**
 
 ---
 
-## Test baseline — GREEN (0 failures)
+## Test baseline — 5 failures as of 1.0.47 (was GREEN at 1.0.35)
 
-`cd mod && ./gradlew.bat test` now passes completely: **318 suites, 0 failures**
-(was 21 failing at the start of this effort). The rule going forward: **keep it
-at zero.** After any change, run the full suite; investigate every new failure
+At **1.0.35** `cd mod && ./gradlew.bat test` passed completely: 318 suites,
+0 failures (down from 21 at the start of that effort).
+
+**That is no longer true.** As of **1.0.47** the suite runs 539 tests with
+**5 failures**, all client-render guards:
+
+- `ArcaneFurnaceVisualShellContractTest`
+- `ClientProxyDedicatedBeamBoltStaticGuardTest`
+- `InfusionRendererFidelityStaticGuardTest`
+- `VisEnergyRendererFidelityStaticGuardTest`
+- `ReportedItemModelRoutingContractTest`
+
+They were verified pre-existing (stash the working tree, re-run on a clean
+checkout) and trace back to the FOREVA renderer/tile/block adoption of
+1.0.36–1.0.45 — not to the Thaumic Tinkerer module. Either fix the renderers
+or update those guards to the intended contract (see the rule below), then
+restore this section to GREEN.
+
+The rule still stands: **do not add new failures.** After any change, run the
+full suite and compare against these five; investigate every *new* failure
 before shipping.
 
 When a **static-guard test pins an old reconstruction you deliberately

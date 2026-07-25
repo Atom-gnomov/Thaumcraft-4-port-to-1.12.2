@@ -314,8 +314,17 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("both toggles must persist", tile.contains("strikeMode") && tile.contains("redstoneMode"));
 
         String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockAnimationTablet.java");
-        assertTrue("sneak-click toggles mode, redstone in hand toggles the trigger",
-                block.contains("toggleMode()") && block.contains("toggleRedstoneMode()"));
+        assertTrue("a wand rotates the tablet and anything else opens its screen, as in the original",
+                block.contains("instanceof ItemWandCasting") && block.contains("rotateY()")
+                        && block.contains("GUI_ANIMATION_TABLET"));
+        assertTrue("the tablet must have a real container and screen, not ad-hoc interaction",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/container/ContainerAnimationTablet.java"))
+                        && Files.exists(Paths.get("src/main/java/thaumcraft/client/gui/GuiAnimationTablet.java"))
+                        && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/gui/animation_tablet.png")));
+        String container = read("src/main/java/thaumcraft/common/container/ContainerAnimationTablet.java");
+        assertTrue("both toggles must travel as container button presses",
+                container.contains("public boolean enchantItem(") && container.contains("BUTTON_REDSTONE")
+                        && container.contains("BUTTON_STRIKE") && container.contains("BUTTON_USE"));
         assertTrue("the held tool must survive breaking the block",
                 block.contains("InventoryHelper.spawnItemStack"));
 

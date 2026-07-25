@@ -246,8 +246,14 @@ public class TileAnimationTablet extends TileThaumcraft implements ITickable {
     }
 
     public void toggleMode() {
-        strikeMode = !strikeMode;
-        resetSwing();
+        setStrikeMode(!strikeMode);
+    }
+
+    public void setStrikeMode(boolean strike) {
+        if (strikeMode != strike) {
+            strikeMode = strike;
+            resetSwing();
+        }
         markDirty();
     }
 

@@ -11,28 +11,28 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.items.ItemStackHandler;
+import thaumcraft.common.CommonProxy;
 import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.tinkerer.TileAnimationTablet;
 
 /**
  * Animation Tablet — reimplemented from Thaumic Tinkerer (pixlepix/nekosune,
  * originally Vazkii) for 1.12.2. Works a held tool against the block it faces.
  *
- * <p>Interaction, in place of the original's GUI: right-click inserts or
- * retrieves the tool, sneak-click switches strike/use mode, and sneak-click
- * with redstone in hand switches between running freely and waiting for a
- * pulse.</p>
+ * <p>Interaction matches the original: a wand rotates the tablet, anything
+ * else opens its screen, where the tool goes in and the strike/use and
+ * redstone-control toggles live.</p>
  *
  * @see TileAnimationTablet
  */
@@ -73,36 +73,16 @@ public class BlockAnimationTablet extends BlockContainer {
         if (!(te instanceof TileAnimationTablet)) {
             return false;
         }
-        TileAnimationTablet tablet = (TileAnimationTablet) te;
         ItemStack held = player.getHeldItem(hand);
 
-        if (player.isSneaking()) {
-            if (!held.isEmpty() && held.getItem() == Items.REDSTONE) {
-                tablet.toggleRedstoneMode();
-                player.sendStatusMessage(new TextComponentTranslation(
-                        tablet.isRedstoneMode() ? "tc.tablet.redstone.on" : "tc.tablet.redstone.off"), true);
-            } else {
-                tablet.toggleMode();
-                player.sendStatusMessage(new TextComponentTranslation(
-                        tablet.isStrikeMode() ? "tc.tablet.mode.strike" : "tc.tablet.mode.use"), true);
-            }
+        // As in the original: a wand rotates the tablet, anything else opens the GUI.
+        if (!held.isEmpty() && held.getItem() instanceof ItemWandCasting) {
+            world.setBlockState(pos, state.withProperty(FACING, state.getValue(FACING).rotateY()), 3);
+            world.playSound(null, pos, TCSounds.TOOL, SoundCategory.BLOCKS, 0.6F, 1.0F);
             return true;
         }
-
-        ItemStackHandler inv = tablet.getInventory();
-        ItemStack stored = inv.getStackInSlot(0);
-        if (!stored.isEmpty()) {
-            if (!player.inventory.addItemStackToInventory(stored)) {
-                player.dropItem(stored, false);
-            }
-            inv.setStackInSlot(0, ItemStack.EMPTY);
-        }
-        if (!held.isEmpty()) {
-            ItemStack single = held.copy();
-            single.setCount(1);
-            inv.setStackInSlot(0, single);
-            held.shrink(1);
-        }
+        player.openGui(Thaumcraft.instance, CommonProxy.GUI_ANIMATION_TABLET,
+                world, pos.getX(), pos.getY(), pos.getZ());
         return true;
     }
 

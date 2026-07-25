@@ -1319,6 +1319,15 @@ public class ClientProxy extends CommonProxy {
             return null;
         }
         switch (ID) {
+            case GUI_ENCHANTER:
+            {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileEnchanter
+                        ? new thaumcraft.client.gui.GuiEnchanter(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileEnchanter) tile)
+                        : null;
+            }
             case GUI_ANIMATION_TABLET:
             {
                 net.minecraft.tileentity.TileEntity tile =

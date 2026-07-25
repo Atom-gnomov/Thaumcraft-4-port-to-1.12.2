@@ -139,39 +139,113 @@ public class TileEnchanter extends TileThaumcraft implements ITickable {
     }
 
     /**
-     * Queues everything on an enchanted book. Returns false when nothing on it
-     * can be priced, so the caller can keep the book.
+     * Adds, re-levels or removes a queued enchantment — the operation the
+     * original drove from its picker screen.
+     *
+     * @param level {@code 0} adds at level 1, a negative value removes it,
+     *              anything else sets that level (clamped to the enchantment's
+     *              maximum, which is as far as the cost table reaches).
      */
-    public boolean beginFromBook(ItemStack book) {
-        Map<Enchantment, Integer> found = EnchantmentHelper.getEnchantments(book);
-        if (found.isEmpty() || inventory.getStackInSlot(SLOT_TOOL).isEmpty()) {
+    public void setEnchant(Enchantment enchantment, int level) {
+        if (working || enchantment == null || !EnchantmentCosts.isSupported(enchantment)) {
+            return;
+        }
+        if (level < 0) {
+            queued.remove(enchantment);
+        } else if (level == 0) {
+            if (!queued.containsKey(enchantment)) {
+                queued.put(enchantment, 1);
+            }
+        } else {
+            queued.put(enchantment, Math.min(level, enchantment.getMaxLevel()));
+        }
+        recomputeCost();
+        markDirty();
+    }
+
+    /** Begins a run on the queued enchantments; refuses without the multiblock. */
+    public boolean start() {
+        if (working || queued.isEmpty() || inventory.getStackInSlot(SLOT_TOOL).isEmpty()) {
             return false;
         }
+        if (countPillars() < PILLARS_REQUIRED) {
+            return false;
+        }
+        recomputeCost();
+        if (totalCost.size() == 0) {
+            return false;
+        }
+        paid = new AspectList();
+        working = true;
+        markDirty();
+        return true;
+    }
+
+    /** Total vis the queue costs. Only primals: wands hold nothing else. */
+    private void recomputeCost() {
         AspectList cost = new AspectList();
-        Map<Enchantment, Integer> accepted = new LinkedHashMap<>();
-        for (Map.Entry<Enchantment, Integer> entry : found.entrySet()) {
+        for (Map.Entry<Enchantment, Integer> entry : queued.entrySet()) {
             AspectList part = EnchantmentCosts.costFor(entry.getKey(), entry.getValue());
             if (part == null) {
                 continue;
             }
-            accepted.put(entry.getKey(), entry.getValue());
             for (Aspect aspect : part.getAspectsSorted()) {
-                // Wands only ever hold primals, so only primal cost is payable —
-                // the same aspects the original actually drained and checked.
                 if (aspect.isPrimal()) {
                     cost.add(aspect, part.getAmount(aspect));
                 }
             }
         }
-        if (accepted.isEmpty() || cost.size() == 0) {
+        totalCost = cost;
+    }
+
+    /** Queue in insertion order — the screen addresses rows by index. */
+    public List<Enchantment> getQueuedEnchantments() {
+        return new ArrayList<>(queued.keySet());
+    }
+
+    public int getQueuedLevel(Enchantment enchantment) {
+        Integer level = queued.get(enchantment);
+        return level == null ? 0 : level;
+    }
+
+    /**
+     * The enchantments on offer for the tool inside, capped at {@code limit} —
+     * the original filled a grid of sixteen the same way, in registry order.
+     */
+    public List<Enchantment> getOffers(int limit) {
+        List<Enchantment> offers = new ArrayList<>();
+        for (Enchantment enchantment : Enchantment.REGISTRY) {
+            if (canOffer(enchantment)) {
+                offers.add(enchantment);
+                if (offers.size() >= limit) {
+                    break;
+                }
+            }
+        }
+        return offers;
+    }
+
+    /** Whether this enchantment may be offered for the tool currently inside. */
+    public boolean canOffer(Enchantment enchantment) {
+        ItemStack tool = inventory.getStackInSlot(SLOT_TOOL);
+        if (tool.isEmpty() || !EnchantmentCosts.isSupported(enchantment)) {
             return false;
         }
-        queued.clear();
-        queued.putAll(accepted);
-        totalCost = cost;
-        paid = new AspectList();
-        working = true;
-        markDirty();
+        if (tool.getItem().getItemEnchantability() == 0 || tool.isItemEnchanted()) {
+            return false;
+        }
+        if (!enchantment.canApply(tool)) {
+            return false;
+        }
+        // Refuse anything the queue already conflicts with, as the original did.
+        for (Enchantment other : queued.keySet()) {
+            if (other == enchantment) {
+                return false;
+            }
+            if (!other.isCompatibleWith(enchantment) || !enchantment.isCompatibleWith(other)) {
+                return false;
+            }
+        }
         return true;
     }
 

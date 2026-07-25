@@ -366,9 +366,22 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && costs.contains("Enchantments.SHARPNESS, aspects(Aspect.ORDER, 10)"));
 
         String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockEnchanter.java");
-        assertTrue("an enchanted book starts a run and is only consumed on success",
-                block.contains("Items.ENCHANTED_BOOK") && block.contains("beginFromBook(held)")
-                        && block.contains("held.shrink(1)"));
+        assertTrue("right-click must open the enchanter screen, as in the original",
+                block.contains("GUI_ENCHANTER"));
+        assertTrue("the enchanter must have a real container and picker screen",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/container/ContainerEnchanter.java"))
+                        && Files.exists(Paths.get("src/main/java/thaumcraft/client/gui/GuiEnchanter.java"))
+                        && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/gui/enchanter.png")));
+        String container = read("src/main/java/thaumcraft/common/container/ContainerEnchanter.java");
+        assertTrue("start, the 16 offer buttons and per-row level controls must all be wired",
+                container.contains("BUTTON_START") && container.contains("OFFER_BUTTONS = 16")
+                        && container.contains("ROW_STRIDE = 3") && container.contains("public boolean enchantItem("));
+        assertTrue("the queue must be editable from the screen",
+                tile.contains("public void setEnchant(") && tile.contains("public boolean start()")
+                        && tile.contains("public List<Enchantment> getOffers("));
+        assertTrue("offers must respect enchantability, existing enchants and conflicts",
+                tile.contains("getItemEnchantability() == 0") && tile.contains("isItemEnchanted()")
+                        && tile.contains("isCompatibleWith"));
         assertTrue("contents must survive breaking the block",
                 block.contains("InventoryHelper.spawnItemStack"));
 

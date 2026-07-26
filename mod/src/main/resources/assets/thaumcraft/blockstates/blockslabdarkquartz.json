@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "half=bottom,seamless=false": { "model": "thaumcraft:blockslabdarkquartz_bottom" },
+    "half=bottom,seamless=true": { "model": "thaumcraft:blockslabdarkquartz_bottom" },
+    "half=top,seamless=false": { "model": "thaumcraft:blockslabdarkquartz_top" },
+    "half=top,seamless=true": { "model": "thaumcraft:blockslabdarkquartz_top" }
+  }
+}

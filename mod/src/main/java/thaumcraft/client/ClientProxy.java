@@ -1038,6 +1038,10 @@ public class ClientProxy extends CommonProxy {
             registerBlockItemModel(darkQuartzItem, meta, "variant=" + meta);
         }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockSlabDarkQuartz), 0,
+                "half=bottom,seamless=false");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockStairsDarkQuartz), 0,
+                "facing=east,half=bottom,shape=straight");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "pulling=true");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");

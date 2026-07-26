@@ -540,6 +540,63 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    /**
+     * The cat amulet and the placement mirror, which the audit found were
+     * inventions rather than ports. Both now follow the original.
+     */
+    @Test
+    public void catAmuletAndMirrorMatchTheOriginal() throws IOException {
+        String cat = read("src/main/java/thaumcraft/common/items/tinkerer/ItemCatAmulet.java");
+        assertTrue("cat amulet is an amulet bauble that rewires nearby AI",
+                cat.contains("implements IBauble")
+                        && cat.contains("return BaubleType.AMULET;")
+                        && cat.contains("EntityAIAvoidEntity")
+                        && cat.contains("EntityAINearestAttackableTarget"));
+        assertTrue("ocelot-avoiders flee the wearer and player-hunters lose interest",
+                cat.contains("EntityOcelot.class, EntityPlayer.class")
+                        && cat.contains("EntityPlayer.class, EntityEnderCrystal.class"));
+        assertTrue("creepers stop counting down and drop their target",
+                cat.contains("setCreeperFuse") && cat.contains("setAttackTarget(null)"));
+        assertTrue("cat amulet keeps the original's 10 by 4 search box",
+                cat.contains("RANGE = 10") && cat.contains("RANGE_Y = 4"));
+
+        String mirror = read("src/main/java/thaumcraft/common/items/tinkerer/ItemPlacementMirror.java");
+        assertTrue("mirror lays a whole square, not one block",
+                mirror.contains("placeAllBlocks") && mirror.contains("getBlocksToPlace"));
+        assertTrue("mirror cycles 3x3 up to 11x11",
+                mirror.contains("size == 11 ? 3 : size + 2"));
+        assertTrue("mirror binds only full cubes and pays out of the inventory",
+                mirror.contains("EnumBlockRenderType.MODEL")
+                        && mirror.contains("hasBlocks(player, stackToPlace, blocksToPlace.size())")
+                        && mirror.contains("placeBlockAndConsume"));
+    }
+
+    /** The original also cut dark quartz into a slab and stairs. */
+    @Test
+    public void darkQuartzHasSlabAndStairs() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("slab halves and stairs registered",
+                cfg.contains("blockSlabDarkQuartz = (BlockDarkQuartzSlab) new BlockDarkQuartzSlab.Half()")
+                        && cfg.contains("blockDoubleSlabDarkQuartz = (BlockDarkQuartzSlab) new BlockDarkQuartzSlab.Double()")
+                        && cfg.contains("blockStairsDarkQuartz = (BlockDarkQuartzStairs) new BlockDarkQuartzStairs()"));
+        assertTrue("slab item is an ItemSlab bound to both halves",
+                cfg.contains("new net.minecraft.item.ItemSlab(blockSlabDarkQuartz,"));
+        assertTrue("stairs are cut from plain dark quartz, as upstream",
+                read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockDarkQuartzStairs.java")
+                        .contains("ConfigBlocks.blockDarkQuartz.getStateFromMeta(0)"));
+        assertTrue("slab keeps the original's hardness and resistance",
+                read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockDarkQuartzSlab.java")
+                        .contains("setHardness(0.8F)"));
+        for (String f : new String[]{"blockslabdarkquartz", "blockdoubleslabdarkquartz", "blockstairsdarkquartz"}) {
+            assertTrue("blockstate " + f,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/" + f + ".json")));
+        }
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        assertTrue("slab and stairs are named",
+                en.contains("tile.thaumcraft.slab_dark_quartz.name=")
+                        && en.contains("tile.thaumcraft.stairs_dark_quartz.name="));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

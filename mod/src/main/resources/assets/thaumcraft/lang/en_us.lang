@@ -1634,3 +1634,6 @@ enchantment.valiance=Valiance
 ttmisc.full=Full
 ttmisc.absorbing=Absorbing
 ttmisc.notAbsorbing=Not absorbing
+tile.thaumcraft.slab_dark_quartz.name=Dark Quartz Slab
+tile.thaumcraft.stairs_dark_quartz.name=Dark Quartz Stairs
+tc.placementmirror.size=Area: %s

@@ -80,6 +80,9 @@ public class ConfigBlocks {
     public static BlockDarkQuartzItem blockDarkQuartzItem;
     // Thaumic Tinkerer functional block
     public static BlockFunnel blockFunnel;
+    public static BlockDarkQuartzSlab blockSlabDarkQuartz;
+    public static BlockDarkQuartzSlab blockDoubleSlabDarkQuartz;
+    public static BlockDarkQuartzStairs blockStairsDarkQuartz;
     public static BlockMagnet blockMagnet;
     public static BlockRepairer blockRepairer;
     public static BlockTransvectorInterface blockTransvectorInterface;
@@ -168,6 +171,16 @@ public class ConfigBlocks {
         blockFunnel = (BlockFunnel) new BlockFunnel()
                 .setRegistryName("thaumcraft", legacyPath("blockFunnel"))
                 .setTranslationKey("thaumcraft.funnel");
+
+        blockSlabDarkQuartz = (BlockDarkQuartzSlab) new BlockDarkQuartzSlab.Half()
+                .setRegistryName("thaumcraft", legacyPath("blockSlabDarkQuartz"))
+                .setTranslationKey("thaumcraft.slab_dark_quartz");
+        blockDoubleSlabDarkQuartz = (BlockDarkQuartzSlab) new BlockDarkQuartzSlab.Double()
+                .setRegistryName("thaumcraft", legacyPath("blockDoubleSlabDarkQuartz"))
+                .setTranslationKey("thaumcraft.slab_dark_quartz");
+        blockStairsDarkQuartz = (BlockDarkQuartzStairs) new BlockDarkQuartzStairs()
+                .setRegistryName("thaumcraft", legacyPath("blockStairsDarkQuartz"))
+                .setTranslationKey("thaumcraft.stairs_dark_quartz");
 
         blockMagnet = (BlockMagnet) new BlockMagnet()
                 .setRegistryName("thaumcraft", legacyPath("blockMagnet"))
@@ -365,6 +378,9 @@ public class ConfigBlocks {
                 blockCosmeticSolid,
                 blockDarkQuartz,
                 blockFunnel,
+                blockSlabDarkQuartz,
+                blockDoubleSlabDarkQuartz,
+                blockStairsDarkQuartz,
                 blockMagnet,
                 blockRepairer,
                 blockTransvectorInterface,
@@ -471,6 +487,11 @@ public class ConfigBlocks {
                 .setRegistryName(blockLifter.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockFunnel)
                 .setRegistryName(blockFunnel.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemSlab(blockSlabDarkQuartz,
+                blockSlabDarkQuartz, blockDoubleSlabDarkQuartz)
+                .setRegistryName(blockSlabDarkQuartz.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockStairsDarkQuartz)
+                .setRegistryName(blockStairsDarkQuartz.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockMagnet)
                 .setRegistryName(blockMagnet.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockRepairer)

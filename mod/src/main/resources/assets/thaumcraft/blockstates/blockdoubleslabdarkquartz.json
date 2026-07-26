@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "seamless=false": { "model": "thaumcraft:blockslabdarkquartz_double" },
+    "seamless=true": { "model": "thaumcraft:blockslabdarkquartz_double" }
+  }
+}

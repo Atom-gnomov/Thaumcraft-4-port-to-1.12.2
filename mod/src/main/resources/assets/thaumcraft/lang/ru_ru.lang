@@ -1634,3 +1634,6 @@ enchantment.valiance=Доблесть
 ttmisc.full=Полон
 ttmisc.absorbing=Поглощает
 ttmisc.notAbsorbing=Не поглощает
+tile.thaumcraft.slab_dark_quartz.name=Плита из тёмного кварца
+tile.thaumcraft.stairs_dark_quartz.name=Ступени из тёмного кварца
+tc.placementmirror.size=Область: %s

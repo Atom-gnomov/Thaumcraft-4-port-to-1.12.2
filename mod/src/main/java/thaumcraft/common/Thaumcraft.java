@@ -279,6 +279,11 @@ public class Thaumcraft {
                 Config.enchPotency,
                 Config.enchWandFortune
         );
+        // Thaumic Tinkerer's own fourteen, and the handler that gives them effect.
+        event.getRegistry().registerAll(
+                thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer.create());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.enchantment.tinkerer.TinkererEnchantmentHandler());
     }
 
     @SubscribeEvent

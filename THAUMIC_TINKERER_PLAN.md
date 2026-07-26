@@ -225,7 +225,12 @@ mod-id, второй жизненный цикл и API-мост между мо
 
 ### Открыто — по убыванию объёма
 
-1. **Нет 14 своих зачарований TT.** В оригинале `ModEnchantments` регистрирует:
+1. ~~**Нет 14 своих зачарований TT.**~~ — закрыто в 1.0.55: перенесены все
+   четырнадцать (`EnchantmentTinkerer` + `ModEnchantmentsTinkerer` +
+   `TinkererEnchantmentHandler`), формулы, уровни, слоты и правила
+   совместимости оригинала, стоимости в чарователе, названия en+ru, guard.
+
+   Было: В оригинале `ModEnchantments` регистрирует:
    ascent boost, slow fall, auto smelt, desintegrate, quick draw, vampirism,
    dispersed strikes, final strike, focused strikes, pounce, shatter,
    shockwave, tunnel, valiance. Плюс их стоимости в таблице чарователя и гейт

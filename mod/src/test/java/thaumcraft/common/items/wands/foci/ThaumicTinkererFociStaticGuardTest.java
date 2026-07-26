@@ -540,6 +540,32 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    /** The original also cut dark quartz into a slab and stairs. */
+    @Test
+    public void darkQuartzHasSlabAndStairs() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        assertTrue("slab halves and stairs registered",
+                cfg.contains("blockSlabDarkQuartz = (BlockDarkQuartzSlab) new BlockDarkQuartzSlab.Half()")
+                        && cfg.contains("blockDoubleSlabDarkQuartz = (BlockDarkQuartzSlab) new BlockDarkQuartzSlab.Double()")
+                        && cfg.contains("blockStairsDarkQuartz = (BlockDarkQuartzStairs) new BlockDarkQuartzStairs()"));
+        assertTrue("slab item is an ItemSlab bound to both halves",
+                cfg.contains("new net.minecraft.item.ItemSlab(blockSlabDarkQuartz,"));
+        assertTrue("stairs are cut from plain dark quartz, as upstream",
+                read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockDarkQuartzStairs.java")
+                        .contains("ConfigBlocks.blockDarkQuartz.getStateFromMeta(0)"));
+        assertTrue("slab keeps the original's hardness and resistance",
+                read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockDarkQuartzSlab.java")
+                        .contains("setHardness(0.8F)"));
+        for (String f : new String[]{"blockslabdarkquartz", "blockdoubleslabdarkquartz", "blockstairsdarkquartz"}) {
+            assertTrue("blockstate " + f,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/" + f + ".json")));
+        }
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        assertTrue("slab and stairs are named",
+                en.contains("tile.thaumcraft.slab_dark_quartz.name=")
+                        && en.contains("tile.thaumcraft.stairs_dark_quartz.name="));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

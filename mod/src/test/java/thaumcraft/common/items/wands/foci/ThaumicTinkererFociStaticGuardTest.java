@@ -167,6 +167,38 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    /**
+     * Both talismans are Baubles upstream and carry the original's numbers.
+     * Pinned after the audit found them shipped as plain inventory items.
+     */
+    @Test
+    public void talismansAreBaublesWithTheOriginalNumbers() throws IOException {
+        String cleansing = read("src/main/java/thaumcraft/common/items/tinkerer/ItemCleansingTalisman.java");
+        assertTrue("cleansing talisman is an amulet bauble",
+                cleansing.contains("implements IBauble")
+                        && cleansing.contains("return BaubleType.AMULET;")
+                        && cleansing.contains("public void onWornTick("));
+        assertTrue("cleansing talisman keeps 100 uses, the on/off switch and the once-a-second cadence",
+                cleansing.contains("USES = 100")
+                        && cleansing.contains("flipEnabled")
+                        && cleansing.contains("player.ticksExisted % 20 != 0")
+                        && cleansing.contains("player.extinguish()")
+                        && cleansing.contains("potion.isBadEffect()")
+                        && cleansing.contains("stack.damageItem(1, player)"));
+
+        String xp = read("src/main/java/thaumcraft/common/items/tinkerer/ItemXpTalisman.java");
+        assertTrue("xp talisman is an amulet bauble that absorbs orbs",
+                xp.contains("implements IBauble")
+                        && xp.contains("return BaubleType.AMULET;")
+                        && xp.contains("EntityXPOrb")
+                        && xp.contains("consumeXPOrb"));
+        assertTrue("xp talisman keeps range 3, cap 1500 and the 10-xp bottle trade",
+                xp.contains("RANGE = 3") && xp.contains("MAX_XP = 1500")
+                        && xp.contains("BOTTLE_COST = 10")
+                        && xp.contains("Items.EXPERIENCE_BOTTLE")
+                        && xp.contains("consumeGlassBottle"));
+    }
+
     @Test
     public void darkQuartzBlockIsRegisteredWithVariants() throws IOException {
         String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");

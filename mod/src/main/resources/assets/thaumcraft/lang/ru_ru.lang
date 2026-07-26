@@ -1631,3 +1631,6 @@ enchantment.shatter=Дробление
 enchantment.shockwave=Ударная волна
 enchantment.tunnel=Проходка
 enchantment.valiance=Доблесть
+ttmisc.full=Полон
+ttmisc.absorbing=Поглощает
+ttmisc.notAbsorbing=Не поглощает

@@ -1631,3 +1631,6 @@ enchantment.shatter=Shatter
 enchantment.shockwave=Shockwave
 enchantment.tunnel=Tunnel
 enchantment.valiance=Valiance
+ttmisc.full=Full
+ttmisc.absorbing=Absorbing
+ttmisc.notAbsorbing=Not absorbing

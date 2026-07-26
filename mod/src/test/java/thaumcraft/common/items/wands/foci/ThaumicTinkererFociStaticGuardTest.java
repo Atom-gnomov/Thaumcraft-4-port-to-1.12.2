@@ -200,11 +200,21 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("BlockFunnel source",
                 Files.exists(Paths.get("src/main/java/thaumcraft/common/blocks/tinkerer/BlockFunnel.java")));
         String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileFunnel.java");
-        assertTrue("TileFunnel must tick and vacuum into the inventory below",
-                tile.contains("implements ITickable")
+        // The original drips essentia from a filled jar in its slot into
+        // whatever the hopper below points at, one point at a time.
+        assertTrue("TileFunnel must tick and hold a jar as an aspect container",
+                tile.contains("implements ITickable, IAspectContainer")
                         && tile.contains("public void update()")
-                        && tile.contains("EntityItem")
-                        && tile.contains("ItemHandlerHelper.insertItem"));
+                        && tile.contains("BlockJarItem"));
+        assertTrue("TileFunnel must follow the hopper below to a jar",
+                tile.contains("instanceof TileEntityHopper")
+                        && tile.contains("getHopperFacing")
+                        && tile.contains("instanceof TileJarFillable"));
+        assertTrue("TileFunnel must move one point and honour filter, cap and void jars",
+                tile.contains("destination.addToContainer(aspect, 1)")
+                        && tile.contains("aspectList.remove(aspect, 1)")
+                        && tile.contains("destination.aspectFilter == null || destination.aspectFilter == aspect")
+                        && tile.contains("< 64 || voidJar"));
         assertTrue("funnel blockstate ships",
                 Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockfunnel.json")));
         assertTrue("funnel block model ships",

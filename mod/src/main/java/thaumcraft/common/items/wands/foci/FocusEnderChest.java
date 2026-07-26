@@ -3,7 +3,6 @@ package thaumcraft.common.items.wands.foci;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
@@ -14,13 +13,14 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
 /**
- * Focus of the Ender Chest — reimplemented from Thaumic Tinkerer
- * (pixlepix/nekosune) for 1.12.2. Right-click to open your ender chest inventory
- * from anywhere.
+ * Focus of the Ender Chest — ported from Thaumic Tinkerer's
+ * ItemFocusEnderChest (pixlepix / nekosune / Vazkii): opens the caster's ender
+ * chest from anywhere, at the original's cost.
  */
 public class FocusEnderChest extends ItemFocusBasic {
 
-    private static final AspectList COST = new AspectList().add(Aspect.VOID, 10).add(Aspect.TRAVEL, 5);
+    /** The original's visUsage. */
+    public static final AspectList COST = new AspectList().add(Aspect.ENTROPY, 100).add(Aspect.ORDER, 100);
 
     public FocusEnderChest() {
         super();
@@ -43,29 +43,21 @@ public class FocusEnderChest extends ItemFocusBasic {
     }
 
     @Override
-    public int getActivationCooldown(ItemStack focusstack) {
-        return 40;
-    }
-
-    @Override
     public ItemStack onFocusRightClick(ItemStack wandStack, World world, EntityPlayer player, RayTraceResult mop) {
         if (!(wandStack.getItem() instanceof ItemWandCasting)) return wandStack;
         ItemWandCasting wand = (ItemWandCasting) wandStack.getItem();
-        ItemStack focusStack = wand.getFocusItem(wandStack);
-        EnumHand hand = ItemWandCasting.getHandHoldingWand(player, wandStack);
 
-        if (!wand.consumeAllVis(wandStack, player, getVisCost(focusStack), true, false)) {
-            return wandStack;
-        }
-        if (!world.isRemote) {
-            InventoryEnderChest ender = player.getInventoryEnderChest();
-            if (ender != null) {
-                player.displayGUIChest(ender);
-                world.playSound(null, player.posX, player.posY, player.posZ,
-                        SoundEvents.BLOCK_ENDERCHEST_OPEN, SoundCategory.PLAYERS, 0.5F, 1.0F);
+        if (wand.consumeAllVis(wandStack, player, COST, true, false)) {
+            if (!world.isRemote) {
+                InventoryEnderChest ender = player.getInventoryEnderChest();
+                if (ender != null) {
+                    player.displayGUIChest(ender);
+                    world.playSound(null, player.posX, player.posY, player.posZ,
+                            SoundEvents.BLOCK_ENDERCHEST_OPEN, SoundCategory.PLAYERS, 0.5F, 1.0F);
+                }
             }
+            player.swingArm(ItemWandCasting.getHandHoldingWand(player, wandStack));
         }
-        player.swingArm(hand);
         return wandStack;
     }
 }

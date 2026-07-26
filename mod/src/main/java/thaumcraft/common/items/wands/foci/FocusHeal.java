@@ -1,26 +1,35 @@
 package thaumcraft.common.items.wands.foci;
 
-import net.minecraft.entity.EntityLivingBase;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.wands.FocusUpgradeType;
 import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.items.wands.WandManager;
+import thaumcraft.common.lib.TCSounds;
 
 /**
- * Focus of Healing — reimplemented from Thaumic Tinkerer (pixlepix/nekosune) for
- * 1.12.2. Right-click to heal the looked-at living entity, or the caster when no
- * target is in view.
+ * Focus of Healing — ported 1:1 from Thaumic Tinkerer's ItemFocusHeal
+ * (pixlepix / nekosune / Vazkii). Held to channel: a counter runs while the
+ * caster can be healed and every 30 ticks (less with potency) one half-heart is
+ * restored and the vis is actually charged.
  */
 public class FocusHeal extends ItemFocusBasic {
 
-    private static final AspectList COST = new AspectList().add(Aspect.HEAL, 12);
-    private static final float HEAL_AMOUNT = 4.0F;
+    /** The original's visUsage: charged on each heal tick. */
+    private static final AspectList COST = new AspectList().add(Aspect.EARTH, 45).add(Aspect.WATER, 45);
+
+    /** Per-player countdown, as the original's playerHealData map. */
+    private static final Map<UUID, Integer> HEAL_DATA = new HashMap<>();
 
     public FocusHeal() {
         super();
@@ -38,39 +47,58 @@ public class FocusHeal extends ItemFocusBasic {
     }
 
     @Override
+    public boolean isVisCostPerTick(ItemStack focusstack) {
+        return true;
+    }
+
+    @Override
     public String getSortingHelper(ItemStack stack) {
         return "HL" + super.getSortingHelper(stack);
     }
 
     @Override
-    public int getActivationCooldown(ItemStack focusstack) {
-        return 40;
+    public ItemFocusBasic.WandFocusAnimation getAnimation(ItemStack focusstack) {
+        return ItemFocusBasic.WandFocusAnimation.CHARGE;
     }
 
     @Override
     public ItemStack onFocusRightClick(ItemStack wandStack, World world, EntityPlayer player, RayTraceResult mop) {
         if (!(wandStack.getItem() instanceof ItemWandCasting)) return wandStack;
-        ItemWandCasting wand = (ItemWandCasting) wandStack.getItem();
-        ItemStack focusStack = wand.getFocusItem(wandStack);
-        EnumHand hand = ItemWandCasting.getHandHoldingWand(player, wandStack);
-
-        EntityLivingBase target = player;
-        if (mop != null && mop.typeOfHit == RayTraceResult.Type.ENTITY
-                && mop.entityHit instanceof EntityLivingBase) {
-            target = (EntityLivingBase) mop.entityHit;
-        }
-        if (target.getHealth() >= target.getMaxHealth()) {
-            return wandStack;
-        }
-        if (!wand.consumeAllVis(wandStack, player, getVisCost(focusStack), true, false)) {
-            return wandStack;
-        }
-        if (!world.isRemote) {
-            target.heal(HEAL_AMOUNT);
-        }
-        Thaumcraft.proxy.blockSparkle(world, (int) target.posX, (int) (target.posY + target.getEyeHeight()),
-                (int) target.posZ, 0xFF88AA, 8);
-        player.swingArm(hand);
+        player.setActiveHand(ItemWandCasting.getHandHoldingWand(player, wandStack));
+        WandManager.setCooldown(player, -1);
         return wandStack;
+    }
+
+    @Override
+    public void onUsingFocusTick(ItemStack wandStack, EntityPlayer player, int count) {
+        if (!(wandStack.getItem() instanceof ItemWandCasting)) return;
+        ItemWandCasting wand = (ItemWandCasting) wandStack.getItem();
+        World world = player.world;
+
+        if (!wand.consumeAllVis(wandStack, player, COST, false, false) || !player.shouldHeal()) {
+            return;
+        }
+
+        int potency = this.getUpgradeLevel(wand.getFocusItem(wandStack), FocusUpgradeType.potency);
+        int progress = HEAL_DATA.getOrDefault(player.getUniqueID(), 0) + 1;
+        HEAL_DATA.put(player.getUniqueID(), progress);
+
+        Thaumcraft.proxy.sparkle(
+                (float) player.posX + world.rand.nextFloat() - 0.5F,
+                (float) player.posY + world.rand.nextFloat(),
+                (float) player.posZ + world.rand.nextFloat() - 0.5F, 0);
+
+        if (progress >= 30 - potency * 10 / 3) {
+            HEAL_DATA.put(player.getUniqueID(), 0);
+            wand.consumeAllVis(wandStack, player, COST, true, false);
+            player.heal(1);
+            world.playSound(null, player.posX, player.posY, player.posZ,
+                    TCSounds.WAND, SoundCategory.PLAYERS, 0.5F, 1.0F);
+        }
+    }
+
+    @Override
+    public void onPlayerStoppedUsingFocus(ItemStack wandstack, World world, EntityPlayer player, int count) {
+        HEAL_DATA.remove(player.getUniqueID());
     }
 }

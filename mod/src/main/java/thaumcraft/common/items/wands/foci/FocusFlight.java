@@ -1,26 +1,31 @@
 package thaumcraft.common.items.wands.foci;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.wands.FocusUpgradeType;
 import thaumcraft.api.wands.ItemFocusBasic;
+import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.lib.TCSounds;
 
 /**
- * Focus of Flight — reimplemented from Thaumic Tinkerer (pixlepix/nekosune) for
- * 1.12.2. Right-click for a dash impulse in the look direction and cancel fall
- * damage; a lightweight take on TT's flight focus.
+ * Focus of Flight — ported 1:1 from Thaumic Tinkerer's ItemFocusFlight
+ * (pixlepix / nekosune / Vazkii). Each cast throws the caster along their look
+ * vector at 1/1.5, increased a fifth per potency level, clears fall damage and
+ * resets the server's floating-tick counter so the flight is not rejected.
  */
 public class FocusFlight extends ItemFocusBasic {
 
-    private static final AspectList COST = new AspectList().add(Aspect.FLIGHT, 10);
+    /** The original's visUsage, charged per cast. */
+    private static final AspectList COST = new AspectList().add(Aspect.AIR, 15);
 
     public FocusFlight() {
         super();
@@ -43,31 +48,34 @@ public class FocusFlight extends ItemFocusBasic {
     }
 
     @Override
-    public int getActivationCooldown(ItemStack focusstack) {
-        return 15;
-    }
-
-    @Override
     public ItemStack onFocusRightClick(ItemStack wandStack, World world, EntityPlayer player, RayTraceResult mop) {
         if (!(wandStack.getItem() instanceof ItemWandCasting)) return wandStack;
         ItemWandCasting wand = (ItemWandCasting) wandStack.getItem();
-        ItemStack focusStack = wand.getFocusItem(wandStack);
-        EnumHand hand = ItemWandCasting.getHandHoldingWand(player, wandStack);
 
-        if (!wand.consumeAllVis(wandStack, player, getVisCost(focusStack), true, false)) {
-            return wandStack;
+        if (wand.consumeAllVis(wandStack, player, COST, true, false)) {
+            int potency = this.getUpgradeLevel(wand.getFocusItem(wandStack), FocusUpgradeType.potency);
+            Vec3d look = player.getLookVec();
+            double force = 1.0D / 1.5D * (1.0D + potency * 0.2D);
+            player.motionX = look.x * force;
+            player.motionY = look.y * force;
+            player.motionZ = look.z * force;
+            player.fallDistance = 0.0F;
+            player.velocityChanged = true;
+            if (player instanceof EntityPlayerMP) {
+                // Without this the server's floating-player check kicks the flight.
+                thaumcraft.common.lib.utils.Utils.resetFloatCounter((EntityPlayerMP) player);
+            }
+            for (int i = 0; i < 5; i++) {
+                Thaumcraft.proxy.smokeSpiral(world, player.posX, player.posY - player.motionY, player.posZ,
+                        2.0F, (int) (Math.random() * 360.0D), (int) player.posY, 0xFFFFFF);
+            }
+            world.playSound(null, player.posX, player.posY, player.posZ,
+                    TCSounds.WIND, SoundCategory.PLAYERS, 0.4F, 1.0F);
         }
 
-        Vec3d look = player.getLookVec();
-        double power = 1.15D;
-        player.motionX += look.x * power;
-        player.motionY += look.y * power + 0.35D;
-        player.motionZ += look.z * power;
-        player.fallDistance = 0.0F;
-        player.velocityChanged = true;
-        world.playSound(null, player.posX, player.posY, player.posZ,
-                SoundEvents.ENTITY_ENDERDRAGON_FLAP, SoundCategory.PLAYERS, 0.5F, 1.6F);
-        player.swingArm(hand);
+        if (world.isRemote) {
+            player.swingArm(ItemWandCasting.getHandHoldingWand(player, wandStack));
+        }
         return wandStack;
     }
 }

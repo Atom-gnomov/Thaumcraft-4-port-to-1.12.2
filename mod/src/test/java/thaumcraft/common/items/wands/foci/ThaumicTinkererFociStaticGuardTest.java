@@ -33,6 +33,71 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    /**
+     * The four foci that channel in Thaumic Tinkerer must channel here too:
+     * right-click only starts the use, the work happens per tick, and the cost
+     * is charged per tick. Pinned after the 1.0.54 audit found them firing once.
+     */
+    @Test
+    public void channelledFociChannelAndChargePerTick() throws IOException {
+        for (String f : new String[]{"Smelt", "Telekinesis", "Heal", "Deflect"}) {
+            String src = read("src/main/java/thaumcraft/common/items/wands/foci/Focus" + f + ".java");
+            assertTrue(f + " must start a channel on right-click",
+                    src.contains("player.setActiveHand(ItemWandCasting.getHandHoldingWand(player, wandStack))")
+                            && src.contains("WandManager.setCooldown(player, -1)"));
+            assertTrue(f + " must do its work per tick",
+                    src.contains("public void onUsingFocusTick("));
+            assertTrue(f + " must charge per tick",
+                    src.contains("public boolean isVisCostPerTick(") && src.contains("return true;"));
+        }
+    }
+
+    /** The original's vis costs, aspect for aspect. */
+    @Test
+    public void fociKeepTheOriginalVisCosts() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/items/wands/foci/Focus";
+        assertTrue("Smelt: FIRE 45 + ENTROPY 12",
+                read(dir + "Smelt.java").contains("add(Aspect.FIRE, 45).add(Aspect.ENTROPY, 12)"));
+        assertTrue("Telekinesis: AIR 5 + ENTROPY 5",
+                read(dir + "Telekinesis.java").contains("add(Aspect.AIR, 5).add(Aspect.ENTROPY, 5)"));
+        assertTrue("Flight: AIR 15",
+                read(dir + "Flight.java").contains("add(Aspect.AIR, 15)"));
+        assertTrue("Heal: EARTH 45 + WATER 45",
+                read(dir + "Heal.java").contains("add(Aspect.EARTH, 45).add(Aspect.WATER, 45)"));
+        assertTrue("Deflect: ORDER 8 + AIR 4",
+                read(dir + "Deflect.java").contains("add(Aspect.ORDER, 8).add(Aspect.AIR, 4)"));
+        assertTrue("EnderChest: ENTROPY 100 + ORDER 100",
+                read(dir + "EnderChest.java").contains("add(Aspect.ENTROPY, 100).add(Aspect.ORDER, 100)"));
+        String dis = read(dir + "Dislocation.java");
+        assertTrue("Dislocation: 500/500/100 with x5 and x20 tiers",
+                dis.contains("add(Aspect.ENTROPY, 500).add(Aspect.ORDER, 500).add(Aspect.EARTH, 100)")
+                        && dis.contains("add(Aspect.ENTROPY, 2500).add(Aspect.ORDER, 2500).add(Aspect.EARTH, 500)")
+                        && dis.contains("add(Aspect.ENTROPY, 10000).add(Aspect.ORDER, 10000).add(Aspect.EARTH, 5000)"));
+    }
+
+    /** Behaviours that the pre-audit versions had outright wrong. */
+    @Test
+    public void fociKeepTheOriginalBehaviours() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/items/wands/foci/Focus";
+        String smelt = read(dir + "Smelt.java");
+        assertTrue("Smelt runs a per-block countdown and only smelts block into block",
+                smelt.contains("20 - Math.min(3, potency) * 5")
+                        && smelt.contains("result.getItem() instanceof ItemBlock"));
+        assertTrue("Deflect is a projectile shield, not a knockback",
+                read(dir + "Deflect.java").contains("protectFromProjectiles")
+                        && read(dir + "Deflect.java").contains("instanceof IProjectile"));
+        String dis = read(dir + "Dislocation.java");
+        assertTrue("Dislocation lifts a block with its tile entity and places it again",
+                dis.contains("storePickedBlock") && dis.contains("getStackTileEntity")
+                        && dis.contains("TileEntity.create(world, tileTag)"));
+        assertTrue("Heal restores half a heart on the original's cadence",
+                read(dir + "Heal.java").contains("30 - potency * 10 / 3")
+                        && read(dir + "Heal.java").contains("player.heal(1)"));
+        assertTrue("Flight uses the original's impulse and clears the float counter",
+                read(dir + "Flight.java").contains("1.0D / 1.5D * (1.0D + potency * 0.2D)")
+                        && read(dir + "Flight.java").contains("resetFloatCounter"));
+    }
+
     @Test
     public void fociAreRegisteredAndCraftable() throws IOException {
         String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");

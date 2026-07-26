@@ -39,11 +39,28 @@ Working doc for continuing the adoption of upstream **FOREVA**
 
 ---
 
-## Test baseline — GREEN (0 failures)
+## Test baseline — 5 failures as of 1.0.47 (was GREEN at 1.0.35)
 
-`cd mod && ./gradlew.bat test` now passes completely: **318 suites, 0 failures**
-(was 21 failing at the start of this effort). The rule going forward: **keep it
-at zero.** After any change, run the full suite; investigate every new failure
+At **1.0.35** `cd mod && ./gradlew.bat test` passed completely: 318 suites,
+0 failures (down from 21 at the start of that effort).
+
+**That is no longer true.** As of **1.0.47** the suite runs 539 tests with
+**5 failures**, all client-render guards:
+
+- `ArcaneFurnaceVisualShellContractTest`
+- `ClientProxyDedicatedBeamBoltStaticGuardTest`
+- `InfusionRendererFidelityStaticGuardTest`
+- `VisEnergyRendererFidelityStaticGuardTest`
+- `ReportedItemModelRoutingContractTest`
+
+They were verified pre-existing (stash the working tree, re-run on a clean
+checkout) and trace back to the FOREVA renderer/tile/block adoption of
+1.0.36–1.0.45 — not to the Thaumic Tinkerer module. Either fix the renderers
+or update those guards to the intended contract (see the rule below), then
+restore this section to GREEN.
+
+The rule still stands: **do not add new failures.** After any change, run the
+full suite and compare against these five; investigate every *new* failure
 before shipping.
 
 When a **static-guard test pins an old reconstruction you deliberately
@@ -135,10 +152,25 @@ roughly ordered by coherence / lower risk:
    which FOREVA's version lacks; reconcile (keep our `putToCache` or update the
    caller) or the mod won't compile.
 9. **Higher-risk interdependent infra** (do as one careful pass, last):
-   WandUsePose*/WandPoseMath/ItemWandRenderer, ConnectedTextureUtils,
-   EldritchCrustBakedModel/WardedGlassBakedModel (need ClientModelRegistry
-   registration), WandEffectOrigin, BlockStoneDeviceItem. A wholesale copy of
-   these previously cascaded into compile errors — port incrementally.
+   WandUsePose*/WandPoseMath/ItemWandRenderer, WandEffectOrigin,
+   BlockStoneDeviceItem. A wholesale copy of these previously cascaded into
+   compile errors — port incrementally. NOTE: WandEffectOrigin + WandUsePose*
+   are only used by FOREVA's FX beam classes, which we do NOT adopt (ITCParticle
+   conflict, see the ⛔ section) — so this cluster likely has no consumer here.
+
+   **DONE (1.0.36):** ConnectedTextureUtils. **DONE (1.0.40):** WardedGlassBakedModel
+   + BlockCosmeticOpaque connected-glass (registered in ClientModelRegistry:
+   47 warded_glass_* sprites, WARDED_GLASS_MODEL, replaceWardedGlassModel).
+
+   **DEFERRED — EldritchCrustBakedModel:** requires BlockEldritch changes that
+   conflict with our local fixes. FOREVA's BlockEldritch (a) DELETES our
+   `getLightValue(IBlockState)` override that seeds worldgen blocklight (crusted
+   glowstone stays black without it), (b) changes the default state TYPE 0→4,
+   (c) drops `meta == 9` from the INVISIBLE `getRenderType` set. Three guards
+   read BlockEldritch (BlockEldritchAmbientFx, EldritchTesrRouting,
+   FxLayerAndEldritchParity). To adopt: surgically add `CRUST_NEIGHBOR_MASK`
+   PropertyInteger + `getActualState` (neighbor mask) + `createBlockState` entry,
+   KEEP our getLightValue override, and re-verify all three guards + item render.
 
 ## Known open gameplay tasks (separate from FOREVA parity)
 - Focus radial menu missing info.

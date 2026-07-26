@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.39"
+version = "1.0.57"
 ext.advertisedModVersion = "6.1.BETA26"
 group = "thaumcraft"
 archivesBaseName = "Thaumcraft"
@@ -69,11 +69,23 @@ jar {
     from sourceSets.main.output
 }
 
-// API jar: packages thaumcraft.api.* for addon mods
+// API jar: packages thaumcraft.api.* for addon mods (see API.md)
 task apiJar(type: Jar) {
     classifier = 'api'
     from(sourceSets.main.output) {
         include 'thaumcraft/api/**'
+    }
+    from(sourceSets.main.allJava) {
+        include 'thaumcraft/api/**'   // ship sources too so addon IDEs get javadoc/signatures
+    }
+    manifest {
+        attributes(
+            'Specification-Title'  : 'Thaumcraft|API',
+            'Specification-Vendor' : 'Thaumcraft',
+            'Specification-Version': '4.2.2.0',
+            'Implementation-Title' : 'Thaumcraft',
+            'Implementation-Version': project.version
+        )
     }
 }
 

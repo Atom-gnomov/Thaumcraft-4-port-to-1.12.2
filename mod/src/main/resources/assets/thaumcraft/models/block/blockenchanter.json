@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "thaumcraft:blocks/enchanter_top",
+    "bottom": "thaumcraft:blocks/enchanter_side",
+    "side": "thaumcraft:blocks/enchanter_side"
+  }
+}

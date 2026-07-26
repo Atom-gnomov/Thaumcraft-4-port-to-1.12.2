@@ -46,6 +46,7 @@ import thaumcraft.common.items.wands.ItemWandCap;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.ItemWandRod;
 import thaumcraft.common.items.wands.foci.*;
+import thaumcraft.common.items.tinkerer.*;
 import thaumcraft.common.lib.CreativeTabThaumcraft;
 
 import java.util.ArrayList;
@@ -72,6 +73,20 @@ public class ConfigItems {
     public static FocusPech focusPech;
     public static FocusTrade focusTrade;
     public static FocusPortableHole focusPortableHole;
+    // Thaumic Tinkerer foci (reimplemented for 1.12.2 from TT by pixlepix/nekosune)
+    public static FocusSmelt focusSmelt;
+    public static FocusTelekinesis focusTelekinesis;
+    public static FocusFlight focusFlight;
+    public static FocusHeal focusHeal;
+    public static FocusDeflect focusDeflect;
+    public static FocusDislocation focusDislocation;
+    public static FocusEnderChest focusEnderChest;
+    // Thaumic Tinkerer utility items
+    public static ItemPlacementMirror itemPlacementMirror;
+    public static ItemTransvectorConnector itemTransvectorConnector;
+    public static ItemCleansingTalisman itemCleansingTalisman;
+    public static ItemXpTalisman itemXpTalisman;
+    public static ItemCatAmulet itemCatAmulet;
 
     // Basic items
     public static ItemShard itemShard;
@@ -318,6 +333,73 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.focus_portable_hole")
                 .setCreativeTab(tab);
         allItems.add(focusPortableHole);
+
+        focusSmelt = (FocusSmelt) new FocusSmelt()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusSmelt"))
+                .setTranslationKey("thaumcraft.focus_smelt")
+                .setCreativeTab(tab);
+        allItems.add(focusSmelt);
+
+        focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))
+                .setTranslationKey("thaumcraft.focus_telekinesis")
+                .setCreativeTab(tab);
+        allItems.add(focusTelekinesis);
+
+        focusFlight = (FocusFlight) new FocusFlight()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusFlight"))
+                .setTranslationKey("thaumcraft.focus_flight")
+                .setCreativeTab(tab);
+        allItems.add(focusFlight);
+
+        focusHeal = (FocusHeal) new FocusHeal()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusHeal"))
+                .setTranslationKey("thaumcraft.focus_heal")
+                .setCreativeTab(tab);
+        allItems.add(focusHeal);
+
+        focusDeflect = (FocusDeflect) new FocusDeflect()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDeflect"))
+                .setTranslationKey("thaumcraft.focus_deflect")
+                .setCreativeTab(tab);
+        allItems.add(focusDeflect);
+
+        focusDislocation = (FocusDislocation) new FocusDislocation()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDislocation"))
+                .setTranslationKey("thaumcraft.focus_dislocation")
+                .setCreativeTab(tab);
+        allItems.add(focusDislocation);
+
+        focusEnderChest = (FocusEnderChest) new FocusEnderChest()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusEnderChest"))
+                .setTranslationKey("thaumcraft.focus_enderchest")
+                .setCreativeTab(tab);
+        allItems.add(focusEnderChest);
+
+        itemPlacementMirror = (ItemPlacementMirror) new ItemPlacementMirror()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("PlacementMirror"))
+                .setTranslationKey("thaumcraft.placement_mirror");
+        allItems.add(itemPlacementMirror);
+
+        itemTransvectorConnector = (ItemTransvectorConnector) new ItemTransvectorConnector()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("TransvectorConnector"))
+                .setTranslationKey("thaumcraft.transvector_connector");
+        allItems.add(itemTransvectorConnector);
+
+        itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))
+                .setTranslationKey("thaumcraft.cleansing_talisman");
+        allItems.add(itemCleansingTalisman);
+
+        itemXpTalisman = (ItemXpTalisman) new ItemXpTalisman()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("XpTalisman"))
+                .setTranslationKey("thaumcraft.xp_talisman");
+        allItems.add(itemXpTalisman);
+
+        itemCatAmulet = (ItemCatAmulet) new ItemCatAmulet()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CatAmulet"))
+                .setTranslationKey("thaumcraft.cat_amulet");
+        allItems.add(itemCatAmulet);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

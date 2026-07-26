@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "facing=down,powered=true": {
+      "model": "thaumcraft:blocktransvectordislocator_on"
+    },
+    "facing=down,powered=false": {
+      "model": "thaumcraft:blocktransvectordislocator"
+    },
+    "facing=up,powered=true": {
+      "model": "thaumcraft:blocktransvectordislocator_on"
+    },
+    "facing=up,powered=false": {
+      "model": "thaumcraft:blocktransvectordislocator"
+    },
+    "facing=north,powered=true": {
+      "model": "thaumcraft:blocktransvectordislocator_on"
+    },
+    "facing=north,powered=false": {
+      "model": "thaumcraft:blocktransvectordislocator"
+    },
+    "facing=south,powered=true": {
+      "model": "thaumcraft:blocktransvectordislocator_on"
+    },
+    "facing=south,powered=false": {
+      "model": "thaumcraft:blocktransvectordislocator"
+    },
+    "facing=west,powered=true": {
+      "model": "thaumcraft:blocktransvectordislocator_on"
+    },
+    "facing=west,powered=false": {
+      "model": "thaumcraft:blocktransvectordislocator"
+    },
+    "facing=east,powered=true": {
+      "model": "thaumcraft:blocktransvectordislocator_on"
+    },
+    "facing=east,powered=false": {
+      "model": "thaumcraft:blocktransvectordislocator"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "thaumcraft:blocks/funnel_top",
+    "bottom": "thaumcraft:blocks/funnel_top",
+    "side": "thaumcraft:blocks/funnel_side"
+  }
+}

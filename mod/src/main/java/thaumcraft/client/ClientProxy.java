@@ -1033,6 +1033,18 @@ public class ClientProxy extends CommonProxy {
         for (int meta = 0; meta <= 15; meta++) {
             registerBlockItemModel(cosmeticSolidItem, meta, "type=" + meta);
         }
+        Item darkQuartzItem = Item.getItemFromBlock(ConfigBlocks.blockDarkQuartz);
+        for (int meta = 0; meta <= 2; meta++) {
+            registerBlockItemModel(darkQuartzItem, meta, "variant=" + meta);
+        }
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "pulling=true");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorDislocator), 0,
+                "facing=up,powered=false");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockAnimationTablet), 0, "facing=north");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockEnchanter), 0, "normal");
         Item magicalLogItem = Item.getItemFromBlock(ConfigBlocks.blockMagicalLog);
         registerBlockItemModel(magicalLogItem, 0, "axis=y,type=0");
         registerBlockItemModel(magicalLogItem, 1, "axis=y,type=1");
@@ -1307,6 +1319,24 @@ public class ClientProxy extends CommonProxy {
             return null;
         }
         switch (ID) {
+            case GUI_ENCHANTER:
+            {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileEnchanter
+                        ? new thaumcraft.client.gui.GuiEnchanter(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileEnchanter) tile)
+                        : null;
+            }
+            case GUI_ANIMATION_TABLET:
+            {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileAnimationTablet
+                        ? new thaumcraft.client.gui.GuiAnimationTablet(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileAnimationTablet) tile)
+                        : null;
+            }
             case GUI_FOCUS_POUCH:
                 return new GuiFocusPouch(player.inventory, world, x, y, z);
             case GUI_HAND_MIRROR:

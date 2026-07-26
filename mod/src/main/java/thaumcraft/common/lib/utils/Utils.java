@@ -85,6 +85,17 @@ public class Utils {
         return dropped;
     }
 
+    /**
+     * Sets a player's remaining item-use ticks. Thaumic Tinkerer's Quick Draw
+     * shortens a bow's draw by writing this counter, which is private in 1.12.
+     */
+    public static void setItemInUseCount(net.minecraft.entity.player.EntityPlayer player, int count) {
+        try {
+            ObfuscationReflectionHelper.setPrivateValue(net.minecraft.entity.EntityLivingBase.class, player, count,
+                    "activeItemStackUseCount", "field_184628_bn");
+        } catch (Exception ignored) {}
+    }
+
     public static void resetFloatCounter(EntityPlayerMP player) {
         try {
             ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class, player.connection, 0,

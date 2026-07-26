@@ -45,6 +45,8 @@ public class CommonProxy implements IGuiHandler {
     public static final int GUI_MAGIC_BOX = 18;
     public static final int GUI_SPA = 19;
     public static final int GUI_FOCAL_MANIPULATOR = 20;
+    public static final int GUI_ANIMATION_TABLET = 21;
+    public static final int GUI_ENCHANTER = 22;
     public final WandManager wandManager = new WandManager();
 
     // Capability-based player data accessors
@@ -99,6 +101,20 @@ public class CommonProxy implements IGuiHandler {
             case GUI_RESEARCH_TABLE: {
                 TileEntity tile = world.getTileEntity(pos);
                 return tile instanceof TileResearchTable ? new ContainerResearchTable(player.inventory, (TileResearchTable) tile) : null;
+            }
+            case GUI_ANIMATION_TABLET: {
+                TileEntity tile = world.getTileEntity(pos);
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileAnimationTablet
+                        ? new thaumcraft.common.container.ContainerAnimationTablet(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileAnimationTablet) tile)
+                        : null;
+            }
+            case GUI_ENCHANTER: {
+                TileEntity tile = world.getTileEntity(pos);
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileEnchanter
+                        ? new thaumcraft.common.container.ContainerEnchanter(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileEnchanter) tile)
+                        : null;
             }
             case GUI_THAUMONOMICON: return null;
             case GUI_ARCANE_WORKBENCH: {

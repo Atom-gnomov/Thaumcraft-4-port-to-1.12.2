@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "thaumcraft:blocks/repairer_top",
+    "bottom": "thaumcraft:blocks/repairer_top",
+    "side": "thaumcraft:blocks/repairer_side"
+  }
+}

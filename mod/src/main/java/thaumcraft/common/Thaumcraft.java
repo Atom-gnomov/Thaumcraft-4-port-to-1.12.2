@@ -123,6 +123,8 @@ public class Thaumcraft {
         MinecraftForge.EVENT_BUS.register(new EventHandlerEntity());
         MinecraftForge.EVENT_BUS.register(runicEventHandler);
         MinecraftForge.EVENT_BUS.register(new ServerTickEventsFML());
+        MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.tinkerer.kami.DimensionalShardDropHandler());
         MinecraftForge.TERRAIN_GEN_BUS.register(new EventHandlerWorld());
 
         // Init network
@@ -131,6 +133,8 @@ public class Thaumcraft {
         // Init world generator
         worldGen = new ThaumcraftWorldGenerator();
         GameRegistry.registerWorldGenerator(worldGen, 0);
+        GameRegistry.registerWorldGenerator(
+                new thaumcraft.common.lib.world.dim.bedrock.OreClusterGenerator(), 10);
 
         // Init biomes (creates biome instances, must happen before registry event)
         ThaumcraftWorldGenerator.initBiomes();
@@ -147,10 +151,23 @@ public class Thaumcraft {
 
         // Register dimension
         registerOuterLandsDimension();
+        registerBedrockDimension();
 
         // Register entity renderers (must be called in preInit for Forge 1.12.2
         // RenderingRegistry.registerEntityRenderingHandler(Class, IRenderFactory))
         proxy.registerEntityRenders();
+    }
+
+    /** Thaumic Tinkerer's Bedrock dimension: a solid world reached through bedrock. */
+    private void registerBedrockDimension() {
+        if (DimensionManager.isDimensionRegistered(Config.dimensionBedrockId)) {
+            throw new IllegalStateException(
+                    "Thaumic Tinkerer Bedrock dimension id already registered: " + Config.dimensionBedrockId);
+        }
+        DimensionType bedrock = DimensionType.register(
+                "BEDROCK", "_bedrock", Config.dimensionBedrockId,
+                thaumcraft.common.lib.world.dim.bedrock.WorldProviderBedrock.class, false);
+        DimensionManager.registerDimension(Config.dimensionBedrockId, bedrock);
     }
 
     private void registerOuterLandsDimension() {
@@ -245,6 +262,8 @@ public class Thaumcraft {
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         log.info("Registering recipes");
         ConfigRecipes.registerSpecialRecipes(event.getRegistry());
+        // Thaumic Tinkerer's own bench recipes, kept out of the audited corpus.
+        thaumcraft.common.config.ConfigTinkerer.registerBenchRecipes(event.getRegistry());
     }
 
     @SubscribeEvent
@@ -342,6 +361,9 @@ public class Thaumcraft {
         new WandCap("gold", 1.0f, new ItemStack(ConfigItems.itemWandCap, 1, 1), 3);
         new WandCap("thaumium", 0.9f, new ItemStack(ConfigItems.itemWandCap, 1, 2), 6);
         new WandCap("void", 0.8f, new ItemStack(ConfigItems.itemWandCap, 1, 7), 9);
+        // KAMI wand parts (Thaumic Tinkerer): ichor cap, ichorcloth rod.
+        new thaumcraft.common.items.tinkerer.kami.wand.CapIchor();
+        new thaumcraft.common.items.tinkerer.kami.wand.RodIchorcloth();
         new WandRod("wood", 25, new ItemStack(Items.STICK), 1);
         new WandRod("greatwood", 50, new ItemStack(ConfigItems.itemWandRod, 1, 0), 3);
         new WandRod("obsidian", 75, new ItemStack(ConfigItems.itemWandRod, 1, 1), 6, new WandRodPrimalOnUpdate(Aspect.EARTH));

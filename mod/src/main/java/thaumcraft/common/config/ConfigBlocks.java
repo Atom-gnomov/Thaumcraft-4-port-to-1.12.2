@@ -89,6 +89,7 @@ public class ConfigBlocks {
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
     public static BlockEnchanter blockEnchanter;
+    public static thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal blockBedrockPortal;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -205,6 +206,11 @@ public class ConfigBlocks {
         blockEnchanter = (BlockEnchanter) new BlockEnchanter()
                 .setRegistryName("thaumcraft", legacyPath("blockEnchanter"))
                 .setTranslationKey("thaumcraft.enchanter");
+
+        blockBedrockPortal = (thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal)
+                new thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal()
+                        .setRegistryName("thaumcraft", legacyPath("blockBedrockPortal"))
+                        .setTranslationKey("thaumcraft.bedrock_portal");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -387,6 +393,7 @@ public class ConfigBlocks {
                 blockTransvectorDislocator,
                 blockAnimationTablet,
                 blockEnchanter,
+                blockBedrockPortal,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,
@@ -492,7 +499,7 @@ public class ConfigBlocks {
                 .setRegistryName(blockSlabDarkQuartz.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockStairsDarkQuartz)
                 .setRegistryName(blockStairsDarkQuartz.getRegistryName()));
-        registry.register(new net.minecraft.item.ItemBlock(blockMagnet)
+        registry.register(new thaumcraft.common.blocks.ItemBlocks.BlockMagnetItem(blockMagnet)
                 .setRegistryName(blockMagnet.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockRepairer)
                 .setRegistryName(blockRepairer.getRegistryName()));
@@ -583,6 +590,7 @@ public class ConfigBlocks {
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
+            new TileRegistration(TileMobMagnet.class, "TileMobMagnet"),
             new TileRegistration(TileRepairer.class, "TileRepairer"),
             new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
             new TileRegistration(TileTransvectorDislocator.class, "TileTransvectorDislocator"),

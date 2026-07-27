@@ -20,9 +20,9 @@ import thaumcraft.common.tiles.tinkerer.TileTransvectorInterface;
 public class BlockTransvectorInterface extends BlockContainer {
 
     public BlockTransvectorInterface() {
-        super(Material.ROCK);
+        super(Material.IRON);
         this.setHardness(3.0F);
-        this.setResistance(12.0F);
+        this.setResistance(10.0F);
         this.setSoundType(SoundType.STONE);
         this.setCreativeTab(Thaumcraft.tabTC);
     }

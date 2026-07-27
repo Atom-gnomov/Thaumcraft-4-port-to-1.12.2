@@ -1,6 +1,7 @@
 package thaumcraft.common.tiles.tinkerer;
 
 import java.util.List;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -41,10 +42,10 @@ public class TileMagnet extends TileThaumcraft implements ITickable {
         AxisAlignedBB box = new AxisAlignedBB(
                 cx - range, pos.getY(), cz - range,
                 cx + range, pos.getY() + range + 1.0D, cz + range);
-        List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, box);
+        List<? extends Entity> items = world.getEntitiesWithinAABB(getTargetClass(), box);
 
-        for (EntityItem item : items) {
-            if (item == null || item.isDead) {
+        for (Entity item : items) {
+            if (item == null || item.isDead || !isTarget(item)) {
                 continue;
             }
             double dx = cx - item.posX;
@@ -65,6 +66,19 @@ public class TileMagnet extends TileThaumcraft implements ITickable {
             item.motionZ = dz / dist * SPEED * sign;
             item.velocityChanged = true;
         }
+    }
+
+    /**
+     * Entity class this magnet gathers. The item magnet takes dropped items;
+     * the mob variant overrides it, mirroring the original's entity selector.
+     */
+    protected Class<? extends Entity> getTargetClass() {
+        return EntityItem.class;
+    }
+
+    /** Extra filtering on top of {@link #getTargetClass()}. */
+    protected boolean isTarget(Entity entity) {
+        return true;
     }
 
     /** Strongest redstone signal reaching any face, as the original sampled it. */

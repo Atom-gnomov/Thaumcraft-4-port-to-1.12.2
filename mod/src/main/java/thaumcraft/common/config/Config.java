@@ -70,6 +70,8 @@ public class Config {
 
     // Dimension
     public static int dimensionOuterId = -42;
+    public static int dimensionBedrockId = -43;
+    public static int bedrockOreDensity = 3;
 
     // Mobs
     public static boolean championMobs = true;
@@ -270,6 +272,8 @@ public class Config {
         biomeEerieID = config.get(CATEGORY_BIOMES, "biome_eerie", 194).getInt();
         biomeEldritchID = config.get(CATEGORY_BIOMES, "biome_eldritch", 195).getInt();
         dimensionOuterId = config.get(CATEGORY_BIOMES, "outer_lands_dim", -42).getInt();
+        dimensionBedrockId = config.get(CATEGORY_BIOMES, "bedrock_dim", -43).getInt();
+        bedrockOreDensity = config.get(CATEGORY_BIOMES, "bedrock_ore_density", 3).getInt();
 
         ThaumcraftApi.enchantHaste = config.get(CATEGORY_ENCH, "ench_haste", 150).getInt();
         ThaumcraftApi.enchantRepair = config.get(CATEGORY_ENCH, "ench_repair", 151).getInt();

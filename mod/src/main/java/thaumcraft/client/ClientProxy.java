@@ -1042,7 +1042,27 @@ public class ClientProxy extends CommonProxy {
                 "half=bottom,seamless=false");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockStairsDarkQuartz), 0,
                 "facing=east,half=bottom,shape=straight");
-        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "pulling=true");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "mob=false,pulling=true");
+        // Item damage 1 is the mob magnet — the original's ItemBlockMagnet numbering.
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 1, "mob=true,pulling=true");
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorPickAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorpickadv_" + mode), "inventory"));
+        }
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorAxeAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichoraxeadv_" + mode), "inventory"));
+        }
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorShovelAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorshoveladv_" + mode), "inventory"));
+        }
+        for (int meta = 0; meta < thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES.length; meta++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemKamiResource, meta,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft",
+                            "kamiresource_" + thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES[meta]),
+                            "inventory"));
+        }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorDislocator), 0,
@@ -1323,6 +1343,15 @@ public class ClientProxy extends CommonProxy {
             return null;
         }
         switch (ID) {
+            case GUI_MOB_MAGNET:
+            {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileMobMagnet
+                        ? new thaumcraft.client.gui.GuiMobMagnet(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
+                        : null;
+            }
             case GUI_ENCHANTER:
             {
                 net.minecraft.tileentity.TileEntity tile =

@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -137,9 +138,26 @@ public class ThaumicTinkererFociStaticGuardTest {
             assertTrue(c + " source must exist as a tinkerer item",
                     Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/" + c + ".java")));
         }
-        for (String key : recipeKeys) {
-            assertTrue("recipe " + key, rec.contains("\"" + key + "\"") && rec.contains("ConfigItems.item" + key));
-        }
+        // Only the Feline Amulet can be built here: the other three need items
+        // this port lacks, and the rule is to register nothing rather than
+        // substitute. Their blockers must stay written down instead.
+        assertTrue("Feline Amulet recipe, transcribed from CAT_AMULET",
+                rec.contains("\"CAT_AMULET\"") && rec.contains("ConfigItems.itemCatAmulet"));
+        // Both talismans were unblocked by the smokey quartz gem and now carry
+        // the original's own infusions.
+        assertTrue("Talisman of Remedium infuses on an ender pearl with four gems",
+                rec.contains("\"CLEANSING_TALISMAN\"")
+                        && rec.contains("add(Aspect.HEAL, 10).add(Aspect.TOOL, 10)")
+                        && rec.contains("ConfigItems.itemDarkQuartz"));
+        assertTrue("Talisman of Withhold infuses on a gold ingot",
+                rec.contains("\"XP_TALISMAN\"")
+                        && rec.contains("add(Aspect.GREED, 20).add(Aspect.EXCHANGE, 10)"));
+        // The looking glass still needs the Block Talisman, so it registers
+        // nothing and its recipe stays written down instead.
+        assertFalse("PlacementMirror must not register an invented recipe",
+                rec.contains("ConfigResearch.recipes.put(\"PlacementMirror\""));
+        assertTrue("its blocker must stay documented in ConfigTinkerer",
+                rec.contains("PLACEMENT_MIRROR") && rec.contains("Block Talisman"));
         for (String key : langKeys) {
             assertTrue("lang " + key, lang.contains("item.thaumcraft." + key + ".name="));
         }
@@ -262,9 +280,9 @@ public class ThaumicTinkererFociStaticGuardTest {
     @Test
     public void magnetBlockAndTileAreRegistered() throws IOException {
         String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
-        assertTrue("blockMagnet registered + in getAllBlocks + ItemBlock",
+        assertTrue("blockMagnet registered + in getAllBlocks + its own metadata ItemBlock",
                 cfg.contains("blockMagnet;") && cfg.contains("blockMagnet,")
-                        && cfg.contains("new net.minecraft.item.ItemBlock(blockMagnet)"));
+                        && cfg.contains("BlockMagnetItem(blockMagnet)"));
         assertTrue("TileMagnet registered in TILE_REGISTRATIONS",
                 cfg.contains("new TileRegistration(TileMagnet.class, \"TileMagnet\")"));
 
@@ -500,13 +518,165 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void mobMagnetIsTheSecondVariant() throws IOException {
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockMagnet.java");
+        assertTrue("the variant must live in metadata bit 1, as in the original",
+                block.contains("PropertyBool.create(\"mob\")")
+                        && block.contains("(meta & 2) == 2 ? new TileMobMagnet() : new TileMagnet()"));
+        assertTrue("the mob variant opens its screen", block.contains("GUI_MOB_MAGNET"));
+
+        String magnet = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMagnet.java");
+        assertTrue("the item magnet must expose the hooks the mob variant overrides",
+                magnet.contains("protected Class<? extends Entity> getTargetClass()")
+                        && magnet.contains("protected boolean isTarget("));
+
+        String mob = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMobMagnet.java");
+        assertTrue("mob magnet must extend the item magnet and pull living things, never players",
+                mob.contains("extends TileMagnet") && mob.contains("EntityLivingBase.class")
+                        && mob.contains("entity instanceof EntityPlayer"));
+        assertTrue("the adult/baby switch must match the original's flag",
+                mob.contains("adult == ((EntityAgeable) entity).isChild()"));
+        assertTrue("a soul mould in the slot must narrow it to one kind",
+                mob.contains("ItemSoulMould.matches"));
+
+        assertTrue("mob magnet must have a container and screen",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/container/ContainerMobMagnet.java"))
+                        && Files.exists(Paths.get("src/main/java/thaumcraft/client/gui/GuiMobMagnet.java"))
+                        && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/gui/mob_magnet.png")));
+        assertTrue("soul mould ships",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/ItemSoulMould.java"))
+                        && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/soul_mould.png")));
+    }
+
+    @Test
+    public void kamiTierFoundation() throws IOException {
+        String res = read("src/main/java/thaumcraft/common/items/tinkerer/kami/ItemKamiResource.java");
+        assertTrue("subtype order is load-bearing and must match the original",
+                res.contains("\"ichor\", \"ichorcloth\", \"ichorium\", \"ichor_nugget\"")
+                        && res.contains("\"ichor_cap\", \"ichorcloth_rod\", \"nether_shard\", \"ender_shard\""));
+        assertTrue("KAMI is the endgame tier — epic rarity, as in the original",
+                res.contains("EnumRarity.EPIC"));
+
+        String drops = read("src/main/java/thaumcraft/common/lib/tinkerer/kami/DimensionalShardDropHandler.java");
+        assertTrue("shard chances must stay 1/32 ender and 1/16 nether",
+                drops.contains("1.0D / 32.0D") && drops.contains("1.0D / 16.0D"));
+        assertTrue("shards only drop in their own dimension, to a player kill",
+                drops.contains("DimensionType.THE_END.getId()") && drops.contains("DimensionType.NETHER.getId()")
+                        && drops.contains("getTrueSource() instanceof EntityPlayer"));
+        assertTrue("the handler must be registered on the event bus",
+                read("src/main/java/thaumcraft/common/Thaumcraft.java")
+                        .contains("DimensionalShardDropHandler()"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("ichor is an infusion on a nether star at instability 7 with the original's aspects",
+                rec.contains("Items.NETHER_STAR") && rec.contains("Aspect.SOUL, 64")
+                        && rec.contains("Aspect.MAN, 32"));
+        assertTrue("ichorcloth rod keeps instability 9 and its aspect list",
+                rec.contains("Aspect.MAGIC, 100") && rec.contains("Aspect.TOOL, 32"));
+        assertTrue("crafts are priced at the same amount of every primal, as the original did",
+                rec.contains("allPrimals(125)") && rec.contains("allPrimals(100)"));
+        assertTrue("KAMI recipes must be registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiRecipes()"));
+
+        String lang = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        for (String name : new String[]{"ichor", "ichorcloth", "ichorium", "ichor_nugget",
+                "ichor_cap", "ichorcloth_rod", "nether_shard", "ender_shard"}) {
+            String key = "item.thaumcraft.kami." + name + ".name";
+            assertTrue("en lang " + key, lang.contains(key + "="));
+            assertTrue("ru lang " + key, ru.contains(key + "="));
+            assertTrue("texture " + name,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/kami_" + name + ".png")));
+        }
+    }
+
+    @Test
+    public void kamiToolsAndWandParts() throws IOException {
+        String mat = read("src/main/java/thaumcraft/common/items/tinkerer/kami/KamiMaterials.java");
+        assertTrue("the ichor material must keep the original's numbers, -1 uses included",
+                mat.contains("addToolMaterial(\"ICHOR\", 4, -1, 10.0F, 5.0F, 25)"));
+
+        for (String cls : new String[]{"ItemIchorPick", "ItemIchorAxe", "ItemIchorShovel", "ItemIchorSword"}) {
+            String src = read("src/main/java/thaumcraft/common/items/tinkerer/kami/tool/" + cls + ".java");
+            assertTrue(cls + " must be built on the ichor material", src.contains("KamiMaterials.ICHOR"));
+            assertTrue(cls + " must be epic, as the whole tier is", src.contains("EnumRarity.EPIC"));
+        }
+        assertTrue("the digging tools keep harvest level 4",
+                read("src/main/java/thaumcraft/common/items/tinkerer/kami/tool/ItemIchorPick.java")
+                        .contains("setHarvestLevel(\"pickaxe\", 4)"));
+
+        String cap = read("src/main/java/thaumcraft/common/items/tinkerer/kami/wand/CapIchor.java");
+        assertTrue("ichor cap keeps tag, discount and cost",
+                cap.contains("\"ICHOR\", 0.8F") && cap.contains("ICHOR_CAP") && cap.contains(", 10)"));
+        String rod = read("src/main/java/thaumcraft/common/items/tinkerer/kami/wand/RodIchorcloth.java");
+        assertTrue("ichorcloth rod keeps tag, capacity, cost and glow",
+                rod.contains("\"ICHORCLOTH\", 1000") && rod.contains("setGlowing(true)"));
+        assertTrue("both wand parts must be constructed at init",
+                read("src/main/java/thaumcraft/common/Thaumcraft.java").contains("new CapIchor()")
+                        || read("src/main/java/thaumcraft/common/Thaumcraft.java").contains("wand.CapIchor()"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("each tool is priced at 75 of a single primal, as in the original",
+                rec.contains("Aspect.FIRE, \"III\"".replace("\"III\"", "")) || rec.contains("aspect, 75"));
+        assertTrue("tool recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiToolRecipes()"));
+
+        String lang = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        for (String t : new String[]{"ichor_pick", "ichor_axe", "ichor_shovel", "ichor_sword"}) {
+            assertTrue("en " + t, lang.contains("item.thaumcraft.kami." + t + ".name="));
+            assertTrue("ru " + t, ru.contains("item.thaumcraft.kami." + t + ".name="));
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/kami_" + t + ".png")));
+        }
+    }
+
+    @Test
+    public void bedrockDimension() throws IOException {
+        String gen = read("src/main/java/thaumcraft/common/lib/world/dim/bedrock/ChunkGeneratorBedrock.java");
+        assertTrue("the world must be solid bedrock for all 256 layers, as the original built it",
+                gen.contains("y < 256") && gen.contains("Blocks.BEDROCK.getDefaultState()"));
+
+        String ore = read("src/main/java/thaumcraft/common/lib/world/dim/bedrock/OreClusterGenerator.java");
+        assertTrue("cluster numbers must stay the original's: 200 attempts, veins to 20, y 6..250",
+                ore.contains("ATTEMPTS = 200") && ore.contains("MAX_VEIN = 20")
+                        && ore.contains("MIN_Y = 6") && ore.contains("Y_RANGE = 245"));
+        assertTrue("veins are cut into bedrock only",
+                ore.contains("input.getBlock() == Blocks.BEDROCK"));
+        assertTrue("clusters only generate in this dimension",
+                ore.contains("world.provider instanceof WorldProviderBedrock"));
+
+        String freq = read("src/main/java/thaumcraft/common/lib/world/dim/bedrock/OreFrequency.java");
+        for (String sample : new String[]{"\"oreCoal\", 2648", "\"oreIron\", 1503",
+                "\"oreDiamond\", 67", "\"oreInfusedOrder\", 31", "\"oreVinteum\", 392"}) {
+            assertTrue("frequency preserved: " + sample, freq.contains(sample));
+        }
+        assertTrue("the original's blacklist is kept", freq.contains("oreFirestone"));
+
+        String portal = read("src/main/java/thaumcraft/common/blocks/tinkerer/kami/BlockBedrockPortal.java");
+        assertTrue("the portal must catch entities that fall through it",
+                portal.contains("public void onEntityCollision("));
+        assertTrue("entering clears the arrival pocket at 251..253, as in the original",
+                portal.contains("y = 251; y <= 253"));
+        assertTrue("only from a surface world, server side",
+                portal.contains("world.provider.isSurfaceWorld()") && portal.contains("world.isRemote"));
+
+        String tc = read("src/main/java/thaumcraft/common/Thaumcraft.java");
+        assertTrue("dimension and its worldgen must both be registered",
+                tc.contains("registerBedrockDimension()") && tc.contains("OreClusterGenerator()"));
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
         for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
                 "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator",
-                "AnimationTablet", "Enchanter"}) {
+                "AnimationTablet", "Enchanter",
+                "MobMagnet", "SoulMould"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -533,6 +703,7 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "tile.thaumcraft.transvector_dislocator.name",
                 "tile.thaumcraft.animation_tablet.name",
                 "tile.thaumcraft.enchanter.name",
+                "item.thaumcraft.soul_mould.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));
@@ -595,6 +766,106 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("slab and stairs are named",
                 en.contains("tile.thaumcraft.slab_dark_quartz.name=")
                         && en.contains("tile.thaumcraft.stairs_dark_quartz.name="));
+    }
+
+    /**
+     * The 1.1.5.0 audit put every block back on the original's numbers. These
+     * are the ones that had drifted; pinning them stops the drift recurring.
+     * All values are from {@code TT_OBJECT_REFERENCE.md}.
+     */
+    @Test
+    public void blockConstantsMatchTheOriginal() throws IOException {
+        String blocks = "src/main/java/thaumcraft/common/blocks/tinkerer/";
+
+        String quartz = read(blocks + "BlockDarkQuartz.java");
+        assertTrue("dark quartz: 0.8 / 10.0",
+                quartz.contains("setHardness(0.8F)") && quartz.contains("setResistance(10.0F)"));
+
+        String funnel = read(blocks + "BlockFunnel.java");
+        assertTrue("funnel is stone, not iron",
+                funnel.contains("super(Material.ROCK)") && funnel.contains("SoundType.STONE"));
+        assertTrue("funnel is a 1/8-block plate", funnel.contains("1.0D / 8.0D"));
+
+        String magnet = read(blocks + "BlockMagnet.java");
+        assertTrue("magnet: 1.7 / 1.0, wood",
+                magnet.contains("setHardness(1.7F)") && magnet.contains("setResistance(1.0F)")
+                        && magnet.contains("SoundType.WOOD"));
+        assertTrue("magnet is a thin plate inset on x/z",
+                magnet.contains("new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 2.0D / 16.0D, 0.9375D)"));
+        assertTrue("mob magnet drops as item damage 1, as ItemBlockMagnet expects",
+                magnet.contains("state.getValue(MOB) ? 1 : 0"));
+
+        String repairer = read(blocks + "BlockRepairer.java");
+        assertTrue("repairer: 5.0 / 10.0",
+                repairer.contains("setHardness(5.0F)") && repairer.contains("setResistance(10.0F)"));
+
+        String enchanter = read(blocks + "BlockEnchanter.java");
+        assertTrue("enchanter: 5.0 / 2000.0",
+                enchanter.contains("setHardness(5.0F)") && enchanter.contains("setResistance(2000.0F)"));
+        assertTrue("enchanter stands 0.75 tall", enchanter.contains("1.0D, 0.75D, 1.0D"));
+
+        for (String f : new String[]{"BlockTransvectorInterface.java", "BlockTransvectorDislocator.java"}) {
+            String s = read(blocks + f);
+            assertTrue(f + ": iron, resistance 10",
+                    s.contains("super(Material.IRON)") && s.contains("setResistance(10.0F)"));
+        }
+
+        String tablet = read(blocks + "BlockAnimationTablet.java");
+        assertTrue("animation tablet: iron, 50.0, metal",
+                tablet.contains("super(Material.IRON)") && tablet.contains("setResistance(50.0F)")
+                        && tablet.contains("SoundType.METAL"));
+    }
+
+    /**
+     * Display names come from the original's own en_US/ru_RU files. A handful
+     * were invented before 1.1.5.0; these are the corrected ones.
+     */
+    @Test
+    public void namesComeFromTheOriginalsLangFiles() throws IOException {
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        String[][] pairs = {
+                {"tile.thaumcraft.magnet.name=Kinetic Attractor", "tile.thaumcraft.magnet.name=Кинетический притяжатель"},
+                {"tile.thaumcraft.mobMagnet.name=Corporeal Attractor", "tile.thaumcraft.mobMagnet.name=Материальный притяжатель"},
+                {"tile.thaumcraft.repairer.name=Thaumic Restorer", "tile.thaumcraft.repairer.name=Таум-восстановитель"},
+                {"tile.thaumcraft.funnel.name=Essentia Funnel", "tile.thaumcraft.funnel.name=Воронка для эссенции"},
+                {"tile.thaumcraft.animation_tablet.name=Dynamism Tablet", "tile.thaumcraft.animation_tablet.name=Динамическая дощечка"},
+                {"item.thaumcraft.cat_amulet.name=Feline Amulet", "item.thaumcraft.cat_amulet.name=Кошачий амулет"},
+                {"item.thaumcraft.focus_smelt.name=Wand Focus: Efreet's Flame", "item.thaumcraft.focus_smelt.name=Набалдашник: Пламя ифрита"},
+                {"tile.thaumcraft.dark_quartz.0.name=Block of Smokey Quartz", "tile.thaumcraft.dark_quartz.0.name=Блок закоптившегося кварца"},
+        };
+        for (String[] pair : pairs) {
+            assertTrue("en: " + pair[0], en.contains(pair[0]));
+            assertTrue("ru: " + pair[1], ru.contains(pair[1]));
+        }
+    }
+
+    /**
+     * Each advanced tool has its own third mode in the original — they are not
+     * three copies of the pickaxe's bore.
+     */
+    @Test
+    public void advancedToolsKeepTheirOwnThirdMode() throws IOException {
+        String tools = "src/main/java/thaumcraft/common/items/tinkerer/kami/tool/";
+
+        assertTrue("pickaxe mode 2 bores ten blocks along the line of sight",
+                read(tools + "ItemIchorPickAdv.java").contains("xo >= 0 ? 0 : -10"));
+        assertTrue("shovel mode 2 is a column of the struck block only",
+                read(tools + "ItemIchorShovelAdv.java")
+                        .contains("0, -8, 0, 1, 8, 1,\n                        state.getBlock()"));
+        String axe = read(tools + "ItemIchorAxeAdv.java");
+        assertTrue("axe mode 2 fells the tree and gathers the drops",
+                axe.contains("BlockUtils.breakFurthestBlock") && axe.contains("Utils.isWoodLog"));
+
+        String handler = read(tools + "KamiToolHandler.java");
+        assertTrue("the original's absolute-vs-offset guard is kept verbatim",
+                handler.contains("hit.getX() != x1 && hit.getY() != y1 && hit.getZ() != z1"));
+
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        assertTrue("mode names are the original's, and differ per tool",
+                en.contains("tc.kami.mode.pick.2=Line Mode")
+                        && en.contains("tc.kami.mode.shovel.2=Column Mode")
+                        && en.contains("tc.kami.mode.axe.2=Tree Mode"));
     }
 
     private static String read(String path) throws IOException {

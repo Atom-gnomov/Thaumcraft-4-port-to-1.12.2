@@ -11,6 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemStackHandler;
@@ -29,10 +30,13 @@ import thaumcraft.common.tiles.tinkerer.TileEnchanter;
  */
 public class BlockEnchanter extends BlockContainer {
 
+    /** The original's {@code setBlockBounds(0, 0, 0, 1, 0.75F, 1)}. */
+    private static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
+
     public BlockEnchanter() {
         super(Material.ROCK);
-        this.setHardness(3.0F);
-        this.setResistance(12.0F);
+        this.setHardness(5.0F);
+        this.setResistance(2000.0F);
         this.setSoundType(SoundType.STONE);
         this.setCreativeTab(Thaumcraft.tabTC);
     }
@@ -40,6 +44,21 @@ public class BlockEnchanter extends BlockContainer {
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEnchanter();
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
     }
 
     @Override

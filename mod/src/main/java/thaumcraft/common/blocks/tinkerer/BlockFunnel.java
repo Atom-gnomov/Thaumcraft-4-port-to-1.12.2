@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
@@ -23,17 +24,35 @@ import thaumcraft.common.tiles.tinkerer.TileFunnel;
  */
 public class BlockFunnel extends BlockContainer {
 
+    /** The original's {@code setBlockBounds(0, 0, 0, 1, 1F / 8F, 1)}. */
+    private static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D / 8.0D, 1.0D);
+
     public BlockFunnel() {
-        super(Material.IRON);
+        super(Material.ROCK);
         this.setHardness(3.0F);
         this.setResistance(8.0F);
-        this.setSoundType(net.minecraft.block.SoundType.METAL);
+        this.setSoundType(net.minecraft.block.SoundType.STONE);
         this.setCreativeTab(Thaumcraft.tabTC);
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileFunnel();
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
     }
 
     @Override

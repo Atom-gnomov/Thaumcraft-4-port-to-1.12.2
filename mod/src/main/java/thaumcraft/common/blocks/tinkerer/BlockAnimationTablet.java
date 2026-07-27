@@ -18,6 +18,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.CommonProxy;
@@ -44,11 +45,14 @@ public class BlockAnimationTablet extends BlockContainer {
     public static final GameProfile TABLET_PROFILE =
             new GameProfile(UUID.fromString("b1c4e0a2-6f3d-4a5b-9c7e-0d2f8a1b3c4d"), "[thaumcraft_tablet]");
 
+    /** The original's {@code setBlockBounds(0, 0, 0, 1, 2F / 16F, 1)}. */
+    private static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 2.0D / 16.0D, 1.0D);
+
     public BlockAnimationTablet() {
-        super(Material.ROCK);
+        super(Material.IRON);
         this.setHardness(3.0F);
-        this.setResistance(10.0F);
-        this.setSoundType(SoundType.STONE);
+        this.setResistance(50.0F);
+        this.setSoundType(SoundType.METAL);
         this.setCreativeTab(Thaumcraft.tabTC);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
@@ -57,6 +61,22 @@ public class BlockAnimationTablet extends BlockContainer {
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileAnimationTablet();
     }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
 
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {

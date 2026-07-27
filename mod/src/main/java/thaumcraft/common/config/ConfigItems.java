@@ -84,9 +84,19 @@ public class ConfigItems {
     // Thaumic Tinkerer utility items
     public static ItemPlacementMirror itemPlacementMirror;
     public static ItemTransvectorConnector itemTransvectorConnector;
+    public static ItemSoulMould itemSoulMould;
+    public static thaumcraft.common.items.tinkerer.kami.ItemKamiResource itemKamiResource;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPick itemIchorPick;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPickAdv itemIchorPickAdv;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxeAdv itemIchorAxeAdv;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovelAdv itemIchorShovelAdv;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe itemIchorAxe;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel itemIchorShovel;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword itemIchorSword;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
+    public static ItemDarkQuartz itemDarkQuartz;
 
     // Basic items
     public static ItemShard itemShard;
@@ -386,6 +396,59 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.transvector_connector");
         allItems.add(itemTransvectorConnector);
 
+        itemSoulMould = (ItemSoulMould) new ItemSoulMould()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SoulMould"))
+                .setTranslationKey("thaumcraft.soul_mould");
+        allItems.add(itemSoulMould);
+
+        itemKamiResource = (thaumcraft.common.items.tinkerer.kami.ItemKamiResource)
+                new thaumcraft.common.items.tinkerer.kami.ItemKamiResource()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("KamiResource"))
+                        .setTranslationKey("thaumcraft.kami");
+        allItems.add(itemKamiResource);
+
+        itemIchorPick = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPick)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPick()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorPick"))
+                        .setTranslationKey("thaumcraft.kami.ichor_pick");
+        allItems.add(itemIchorPick);
+
+        itemIchorAxe = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorAxe"))
+                        .setTranslationKey("thaumcraft.kami.ichor_axe");
+        allItems.add(itemIchorAxe);
+
+        itemIchorShovel = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorShovel"))
+                        .setTranslationKey("thaumcraft.kami.ichor_shovel");
+        allItems.add(itemIchorShovel);
+
+        itemIchorSword = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorSword"))
+                        .setTranslationKey("thaumcraft.kami.ichor_sword");
+        allItems.add(itemIchorSword);
+
+        itemIchorPickAdv = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPickAdv)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPickAdv()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorPickAdv"))
+                        .setTranslationKey("thaumcraft.kami.ichor_pick_adv");
+        allItems.add(itemIchorPickAdv);
+
+        itemIchorAxeAdv = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxeAdv)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxeAdv()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorAxeAdv"))
+                        .setTranslationKey("thaumcraft.kami.ichor_axe_adv");
+        allItems.add(itemIchorAxeAdv);
+
+        itemIchorShovelAdv = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovelAdv)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovelAdv()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorShovelAdv"))
+                        .setTranslationKey("thaumcraft.kami.ichor_shovel_adv");
+        allItems.add(itemIchorShovelAdv);
+
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))
                 .setTranslationKey("thaumcraft.cleansing_talisman");
@@ -400,6 +463,11 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CatAmulet"))
                 .setTranslationKey("thaumcraft.cat_amulet");
         allItems.add(itemCatAmulet);
+
+        itemDarkQuartz = (ItemDarkQuartz) new ItemDarkQuartz()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("DarkQuartz"))
+                .setTranslationKey("thaumcraft.dark_quartz");
+        allItems.add(itemDarkQuartz);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

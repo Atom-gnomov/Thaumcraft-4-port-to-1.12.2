@@ -84,6 +84,7 @@ public class ConfigItems {
     // Thaumic Tinkerer utility items
     public static ItemPlacementMirror itemPlacementMirror;
     public static ItemTransvectorConnector itemTransvectorConnector;
+    public static ItemSoulMould itemSoulMould;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
@@ -385,6 +386,11 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("TransvectorConnector"))
                 .setTranslationKey("thaumcraft.transvector_connector");
         allItems.add(itemTransvectorConnector);
+
+        itemSoulMould = (ItemSoulMould) new ItemSoulMould()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SoulMould"))
+                .setTranslationKey("thaumcraft.soul_mould");
+        allItems.add(itemSoulMould);
 
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))

@@ -583,6 +583,7 @@ public class ConfigBlocks {
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
+            new TileRegistration(TileMobMagnet.class, "TileMobMagnet"),
             new TileRegistration(TileRepairer.class, "TileRepairer"),
             new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
             new TileRegistration(TileTransvectorDislocator.class, "TileTransvectorDislocator"),

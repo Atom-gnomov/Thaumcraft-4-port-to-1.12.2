@@ -47,6 +47,7 @@ public class CommonProxy implements IGuiHandler {
     public static final int GUI_FOCAL_MANIPULATOR = 20;
     public static final int GUI_ANIMATION_TABLET = 21;
     public static final int GUI_ENCHANTER = 22;
+    public static final int GUI_MOB_MAGNET = 23;
     public final WandManager wandManager = new WandManager();
 
     // Capability-based player data accessors
@@ -114,6 +115,13 @@ public class CommonProxy implements IGuiHandler {
                 return tile instanceof thaumcraft.common.tiles.tinkerer.TileEnchanter
                         ? new thaumcraft.common.container.ContainerEnchanter(player.inventory,
                                 (thaumcraft.common.tiles.tinkerer.TileEnchanter) tile)
+                        : null;
+            }
+            case GUI_MOB_MAGNET: {
+                TileEntity tile = world.getTileEntity(pos);
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileMobMagnet
+                        ? new thaumcraft.common.container.ContainerMobMagnet(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
                         : null;
             }
             case GUI_THAUMONOMICON: return null;

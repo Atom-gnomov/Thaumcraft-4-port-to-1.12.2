@@ -500,13 +500,45 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void mobMagnetIsTheSecondVariant() throws IOException {
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockMagnet.java");
+        assertTrue("the variant must live in metadata bit 1, as in the original",
+                block.contains("PropertyBool.create(\"mob\")")
+                        && block.contains("(meta & 2) == 2 ? new TileMobMagnet() : new TileMagnet()"));
+        assertTrue("the mob variant opens its screen", block.contains("GUI_MOB_MAGNET"));
+
+        String magnet = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMagnet.java");
+        assertTrue("the item magnet must expose the hooks the mob variant overrides",
+                magnet.contains("protected Class<? extends Entity> getTargetClass()")
+                        && magnet.contains("protected boolean isTarget("));
+
+        String mob = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMobMagnet.java");
+        assertTrue("mob magnet must extend the item magnet and pull living things, never players",
+                mob.contains("extends TileMagnet") && mob.contains("EntityLivingBase.class")
+                        && mob.contains("entity instanceof EntityPlayer"));
+        assertTrue("the adult/baby switch must match the original's flag",
+                mob.contains("adult == ((EntityAgeable) entity).isChild()"));
+        assertTrue("a soul mould in the slot must narrow it to one kind",
+                mob.contains("ItemSoulMould.matches"));
+
+        assertTrue("mob magnet must have a container and screen",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/container/ContainerMobMagnet.java"))
+                        && Files.exists(Paths.get("src/main/java/thaumcraft/client/gui/GuiMobMagnet.java"))
+                        && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/gui/mob_magnet.png")));
+        assertTrue("soul mould ships",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/ItemSoulMould.java"))
+                        && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/soul_mould.png")));
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
         for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
                 "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator",
-                "AnimationTablet", "Enchanter"}) {
+                "AnimationTablet", "Enchanter",
+                "MobMagnet", "SoulMould"}) {
             assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
@@ -533,6 +565,7 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "tile.thaumcraft.transvector_dislocator.name",
                 "tile.thaumcraft.animation_tablet.name",
                 "tile.thaumcraft.enchanter.name",
+                "item.thaumcraft.soul_mould.name",
         };
         for (String key : keys) {
             assertTrue(key + " missing from en_us.lang", en.contains(key + "="));

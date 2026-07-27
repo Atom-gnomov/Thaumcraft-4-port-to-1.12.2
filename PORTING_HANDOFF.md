@@ -26,8 +26,22 @@ Working doc for continuing the adoption of upstream **FOREVA**
 5. **Test & compare to baseline** (see below). Only *new* failures matter.
 6. **Ship** (see release process).
 
+### Version scheme (since 1.1.1.0)
+
+Four components, `A.B.C.D`, each one less significant than the last:
+
+| | Meaning | Bump when |
+| --- | --- | --- |
+| **A** | Milestone of the port as a whole | A release the whole port is judged by |
+| **B** | Line of work | `0` = TC4-parity core / FOREVA adoption, `1` = Thaumic Tinkerer module |
+| **C** | Feature or pass within that line | A new device, system or content set lands |
+| **D** | Follow-up on an already-shipped feature | Bugfix, assets, localisation, guard-only changes |
+
+The flat `1.0.x` numbering ran to **1.0.59** and stays as history; core-side work
+continues from `1.0.60.0` under the same rules.
+
 ### Release process
-1. Bump `version` in `mod/build.gradle` (patch = fixes).
+1. Bump `version` in `mod/build.gradle` (see the scheme above).
 2. Add a `## [x.y.z]` entry at the **top** of `CHANGELOG.md` (below the pinned
    `[1.0.15]` block; entries are newest-first from there).
 3. Build: `cd mod && ./gradlew.bat build -x test --console=plain -q`.

@@ -116,6 +116,22 @@ public class ConfigTinkerer {
                 'I', new ItemStack(Items.IRON_INGOT),
                 'R', new ItemStack(Blocks.REDSTONE_BLOCK)));
 
+        // Mob magnet: the item magnet re-tuned onto living things.
+        ConfigResearch.recipes.put("MobMagnet", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GRATE", new ItemStack(ConfigBlocks.blockMagnet, 1, 2),
+                new AspectList().add(Aspect.AIR, 20).add(Aspect.MOTION, 20).add(Aspect.BEAST, 10),
+                " F ", "FMF", " F ",
+                'M', new ItemStack(ConfigBlocks.blockMagnet, 1, 0),
+                'F', new ItemStack(Items.ROTTEN_FLESH)));
+
+        // Soul mould: keys machines to one kind of creature.
+        ConfigResearch.recipes.put("SoulMould", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GRATE", new ItemStack(ConfigItems.itemSoulMould),
+                new AspectList().add(Aspect.SOUL, 15).add(Aspect.BEAST, 10).add(Aspect.CRAFT, 5),
+                "CTC", "T T", "CTC",
+                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
+                'C', new ItemStack(Items.CLAY_BALL)));
+
         // Transvector interface + its connector: remote block proxying.
         ConfigResearch.recipes.put("TransvectorInterface", ThaumcraftApi.addArcaneCraftingRecipe(
                 "MIRROR", new ItemStack(ConfigBlocks.blockTransvectorInterface),

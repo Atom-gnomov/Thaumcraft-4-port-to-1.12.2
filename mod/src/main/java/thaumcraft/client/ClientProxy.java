@@ -1042,7 +1042,8 @@ public class ClientProxy extends CommonProxy {
                 "half=bottom,seamless=false");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockStairsDarkQuartz), 0,
                 "facing=east,half=bottom,shape=straight");
-        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "pulling=true");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "mob=false,pulling=true");
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 2, "mob=true,pulling=true");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorDislocator), 0,
@@ -1323,6 +1324,15 @@ public class ClientProxy extends CommonProxy {
             return null;
         }
         switch (ID) {
+            case GUI_MOB_MAGNET:
+            {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.TileMobMagnet
+                        ? new thaumcraft.client.gui.GuiMobMagnet(player.inventory,
+                                (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
+                        : null;
+            }
             case GUI_ENCHANTER:
             {
                 net.minecraft.tileentity.TileEntity tile =

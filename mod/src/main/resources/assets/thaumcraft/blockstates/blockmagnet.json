@@ -1,6 +1,16 @@
 {
   "variants": {
-    "pulling=true": { "model": "thaumcraft:blockmagnet_pull" },
-    "pulling=false": { "model": "thaumcraft:blockmagnet_push" }
+    "mob=true,pulling=true": {
+      "model": "thaumcraft:blockmagnet_mob_pull"
+    },
+    "mob=false,pulling=true": {
+      "model": "thaumcraft:blockmagnet_pull"
+    },
+    "mob=true,pulling=false": {
+      "model": "thaumcraft:blockmagnet_mob_push"
+    },
+    "mob=false,pulling=false": {
+      "model": "thaumcraft:blockmagnet_push"
+    }
   }
 }

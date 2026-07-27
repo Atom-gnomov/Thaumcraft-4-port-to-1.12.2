@@ -133,6 +133,8 @@ public class Thaumcraft {
         // Init world generator
         worldGen = new ThaumcraftWorldGenerator();
         GameRegistry.registerWorldGenerator(worldGen, 0);
+        GameRegistry.registerWorldGenerator(
+                new thaumcraft.common.lib.world.dim.bedrock.OreClusterGenerator(), 10);
 
         // Init biomes (creates biome instances, must happen before registry event)
         ThaumcraftWorldGenerator.initBiomes();
@@ -149,10 +151,23 @@ public class Thaumcraft {
 
         // Register dimension
         registerOuterLandsDimension();
+        registerBedrockDimension();
 
         // Register entity renderers (must be called in preInit for Forge 1.12.2
         // RenderingRegistry.registerEntityRenderingHandler(Class, IRenderFactory))
         proxy.registerEntityRenders();
+    }
+
+    /** Thaumic Tinkerer's Bedrock dimension: a solid world reached through bedrock. */
+    private void registerBedrockDimension() {
+        if (DimensionManager.isDimensionRegistered(Config.dimensionBedrockId)) {
+            throw new IllegalStateException(
+                    "Thaumic Tinkerer Bedrock dimension id already registered: " + Config.dimensionBedrockId);
+        }
+        DimensionType bedrock = DimensionType.register(
+                "BEDROCK", "_bedrock", Config.dimensionBedrockId,
+                thaumcraft.common.lib.world.dim.bedrock.WorldProviderBedrock.class, false);
+        DimensionManager.registerDimension(Config.dimensionBedrockId, bedrock);
     }
 
     private void registerOuterLandsDimension() {

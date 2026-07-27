@@ -616,6 +616,41 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void bedrockDimension() throws IOException {
+        String gen = read("src/main/java/thaumcraft/common/lib/world/dim/bedrock/ChunkGeneratorBedrock.java");
+        assertTrue("the world must be solid bedrock for all 256 layers, as the original built it",
+                gen.contains("y < 256") && gen.contains("Blocks.BEDROCK.getDefaultState()"));
+
+        String ore = read("src/main/java/thaumcraft/common/lib/world/dim/bedrock/OreClusterGenerator.java");
+        assertTrue("cluster numbers must stay the original's: 200 attempts, veins to 20, y 6..250",
+                ore.contains("ATTEMPTS = 200") && ore.contains("MAX_VEIN = 20")
+                        && ore.contains("MIN_Y = 6") && ore.contains("Y_RANGE = 245"));
+        assertTrue("veins are cut into bedrock only",
+                ore.contains("input.getBlock() == Blocks.BEDROCK"));
+        assertTrue("clusters only generate in this dimension",
+                ore.contains("world.provider instanceof WorldProviderBedrock"));
+
+        String freq = read("src/main/java/thaumcraft/common/lib/world/dim/bedrock/OreFrequency.java");
+        for (String sample : new String[]{"\"oreCoal\", 2648", "\"oreIron\", 1503",
+                "\"oreDiamond\", 67", "\"oreInfusedOrder\", 31", "\"oreVinteum\", 392"}) {
+            assertTrue("frequency preserved: " + sample, freq.contains(sample));
+        }
+        assertTrue("the original's blacklist is kept", freq.contains("oreFirestone"));
+
+        String portal = read("src/main/java/thaumcraft/common/blocks/tinkerer/kami/BlockBedrockPortal.java");
+        assertTrue("the portal must catch entities that fall through it",
+                portal.contains("public void onEntityCollision("));
+        assertTrue("entering clears the arrival pocket at 251..253, as in the original",
+                portal.contains("y = 251; y <= 253"));
+        assertTrue("only from a surface world, server side",
+                portal.contains("world.provider.isSurfaceWorld()") && portal.contains("world.isRemote"));
+
+        String tc = read("src/main/java/thaumcraft/common/Thaumcraft.java");
+        assertTrue("dimension and its worldgen must both be registered",
+                tc.contains("registerBedrockDimension()") && tc.contains("OreClusterGenerator()"));
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {

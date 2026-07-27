@@ -89,6 +89,7 @@ public class ConfigBlocks {
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
     public static BlockEnchanter blockEnchanter;
+    public static thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal blockBedrockPortal;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
     public static BlockTaintFibresItem blockTaintFibresItem;
@@ -205,6 +206,11 @@ public class ConfigBlocks {
         blockEnchanter = (BlockEnchanter) new BlockEnchanter()
                 .setRegistryName("thaumcraft", legacyPath("blockEnchanter"))
                 .setTranslationKey("thaumcraft.enchanter");
+
+        blockBedrockPortal = (thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal)
+                new thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal()
+                        .setRegistryName("thaumcraft", legacyPath("blockBedrockPortal"))
+                        .setTranslationKey("thaumcraft.bedrock_portal");
 
         blockCosmeticOpaque = (BlockCosmeticOpaque) new BlockCosmeticOpaque()
                 .setRegistryName("thaumcraft", legacyPath("blockCosmeticOpaque"))
@@ -387,6 +393,7 @@ public class ConfigBlocks {
                 blockTransvectorDislocator,
                 blockAnimationTablet,
                 blockEnchanter,
+                blockBedrockPortal,
                 blockCosmeticOpaque,
                 blockTaint,
                 blockTaintFibres,

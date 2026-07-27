@@ -1043,7 +1043,20 @@ public class ClientProxy extends CommonProxy {
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockStairsDarkQuartz), 0,
                 "facing=east,half=bottom,shape=straight");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "mob=false,pulling=true");
-        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 2, "mob=true,pulling=true");
+        // Item damage 1 is the mob magnet — the original's ItemBlockMagnet numbering.
+        registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 1, "mob=true,pulling=true");
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorPickAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorpickadv_" + mode), "inventory"));
+        }
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorAxeAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichoraxeadv_" + mode), "inventory"));
+        }
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorShovelAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorshoveladv_" + mode), "inventory"));
+        }
         for (int meta = 0; meta < thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES.length; meta++) {
             ModelLoader.setCustomModelResourceLocation(ConfigItems.itemKamiResource, meta,
                     new ModelResourceLocation(new ResourceLocation("thaumcraft",

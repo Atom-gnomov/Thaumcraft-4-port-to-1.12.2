@@ -32,9 +32,9 @@ public class BlockTransvectorDislocator extends BlockContainer {
     public static final PropertyBool POWERED = PropertyBool.create("powered");
 
     public BlockTransvectorDislocator() {
-        super(Material.ROCK);
+        super(Material.IRON);
         this.setHardness(3.0F);
-        this.setResistance(12.0F);
+        this.setResistance(10.0F);
         this.setSoundType(SoundType.STONE);
         this.setCreativeTab(Thaumcraft.tabTC);
         this.setDefaultState(this.blockState.getBaseState()

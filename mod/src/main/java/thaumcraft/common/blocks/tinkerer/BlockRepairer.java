@@ -33,9 +33,9 @@ public class BlockRepairer extends BlockContainer {
 
     public BlockRepairer() {
         super(Material.IRON);
-        this.setHardness(3.0F);
-        this.setResistance(8.0F);
-        this.setSoundType(SoundType.METAL);
+        this.setHardness(5.0F);
+        this.setResistance(10.0F);
+        this.setSoundType(SoundType.STONE);
         this.setCreativeTab(Thaumcraft.tabTC);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN));
     }

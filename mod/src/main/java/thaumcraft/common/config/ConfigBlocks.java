@@ -499,7 +499,7 @@ public class ConfigBlocks {
                 .setRegistryName(blockSlabDarkQuartz.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockStairsDarkQuartz)
                 .setRegistryName(blockStairsDarkQuartz.getRegistryName()));
-        registry.register(new net.minecraft.item.ItemBlock(blockMagnet)
+        registry.register(new thaumcraft.common.blocks.ItemBlocks.BlockMagnetItem(blockMagnet)
                 .setRegistryName(blockMagnet.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockRepairer)
                 .setRegistryName(blockRepairer.getRegistryName()));

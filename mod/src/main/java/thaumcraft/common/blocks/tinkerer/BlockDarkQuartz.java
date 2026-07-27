@@ -25,7 +25,7 @@ public class BlockDarkQuartz extends Block {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, 0));
         this.setHardness(0.8F);
-        this.setResistance(6.0F);
+        this.setResistance(10.0F);
         this.setSoundType(net.minecraft.block.SoundType.STONE);
         this.setCreativeTab(Thaumcraft.tabTC);
     }

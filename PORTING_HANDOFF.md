@@ -12,6 +12,72 @@ Working doc for continuing the adoption of upstream **FOREVA**
 
 ---
 
+## THE RULE: never invent a value. Read the original. (mandatory)
+
+This is the first rule of this repo and it outranks every convenience below it.
+It exists because it was repeatedly broken: recipes, block hardness, item
+names and tool behaviour were filled in "by analogy" instead of being read out
+of the source, and every one of those had to be found and undone later.
+
+**Local copies of both originals live outside the repo and are permanent:**
+
+| What | Where |
+| --- | --- |
+| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `C:/Users/gorba/tc4/tt-original-1.7.10` |
+| JDK 8 (Temurin 8u492) used to build | `C:/Users/gorba/tc4/tools/jdk8u492-b09` |
+
+Re-clone TT if it is ever missing:
+
+```bash
+git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer C:/Users/gorba/tc4/tt-original-1.7.10
+```
+
+### The loop, every single time
+
+1. **Look it up in [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md).** It holds
+   all 84 registerable Thaumic Tinkerer objects with their recipe, aspects,
+   instability, constructor constants and research node, extracted verbatim.
+2. **Not there, or you need behaviour rather than values? Open the original.**
+   `C:/Users/gorba/tc4/tt-original-1.7.10/src/main/java/thaumic/tinkerer/...`
+   Read the whole class, not the method you think you need.
+3. **Transcribe.** Metadata indices, aspect amounts, instability, hardness and
+   resistance carry over unchanged — the meta index is the ground truth even
+   when the port happens to call that subtype something else.
+4. **Write what you found back into `TT_OBJECT_REFERENCE.md`** if it was not
+   already there, so the next pass does not repeat the lookup.
+
+### Where names and strings come from
+
+The original ships **its own English *and* Russian** language files:
+
+```
+tt-original-1.7.10/src/main/resources/assets/ttinkerer/lang/en_US.lang
+tt-original-1.7.10/src/main/resources/assets/ttinkerer/lang/ru_RU.lang
+```
+
+Never write a display name or translate one by hand. The magnet is a *Kinetic
+Attractor* / *Кинетический притяжатель*, not a "Magnet"; the repairer is a
+*Thaumic Restorer*; the funnel is an *Essentia Funnel*. All of that was invented
+once and had to be corrected against these two files.
+
+### Reproduce the original's bugs too
+
+1:1 means 1:1. `ToolHandler.removeBlocksInIteration` compares absolute
+coordinates against loop offsets, which punches holes in the dug shape near the
+world origin; `removeBlockWithDrops` accepts `silk`/`fortune` and never reads
+them. Both are transcribed as-is in
+`thaumcraft.common.items.tinkerer.kami.tool.KamiToolHandler`, with a comment
+saying why. Do not "fix" what you find — note it and keep it.
+
+### What to do when a 1:1 port is blocked
+
+Do **not** substitute, simplify, or approximate. Register nothing, and record
+the blocker in `THAUMIC_TINKERER_PLAN.md`'s deviation register with the exact
+missing prerequisite. An absent recipe is honest; an invented one is a lie that
+takes a full audit to find.
+
+---
+
 ## Adoption workflow (proven this session)
 
 1. **Diff** our file vs FOREVA's: `diff mod/src/main/java/<path> <foreva>/src/main/java/<path>`.

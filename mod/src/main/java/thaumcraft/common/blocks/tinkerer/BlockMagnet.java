@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
@@ -33,11 +34,15 @@ public class BlockMagnet extends BlockContainer {
     /** Second metadata bit in the original: 0 = item magnet, 1 = mob magnet. */
     public static final PropertyBool MOB = PropertyBool.create("mob");
 
+    /** The original's {@code setBlockBounds(0.0625, 0, 0.0625, 0.9375, 2F / 16F, 0.9375)}. */
+    private static final AxisAlignedBB SHAPE =
+            new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 2.0D / 16.0D, 0.9375D);
+
     public BlockMagnet() {
         super(Material.IRON);
-        this.setHardness(3.0F);
-        this.setResistance(8.0F);
-        this.setSoundType(SoundType.METAL);
+        this.setHardness(1.7F);
+        this.setResistance(1.0F);
+        this.setSoundType(SoundType.WOOD);
         this.setCreativeTab(Thaumcraft.tabTC);
         this.setDefaultState(this.blockState.getBaseState()
                 .withProperty(PULLING, true)
@@ -51,10 +56,26 @@ public class BlockMagnet extends BlockContainer {
     }
 
     @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+
+    @Override
     public void getSubBlocks(net.minecraft.creativetab.CreativeTabs tab,
                              net.minecraft.util.NonNullList<ItemStack> list) {
         list.add(new ItemStack(this, 1, 0));
-        list.add(new ItemStack(this, 1, 2));
+        list.add(new ItemStack(this, 1, 1));
     }
 
     @Override
@@ -98,7 +119,8 @@ public class BlockMagnet extends BlockContainer {
 
     @Override
     public int damageDropped(IBlockState state) {
-        // Drops as the attracting variant, but keeps which magnet it is.
-        return state.getValue(MOB) ? 2 : 0;
+        // The original's table: block metas 0/1 drop item damage 0, metas 2/3
+        // drop item damage 1. So the toggle is forgotten, the variant is kept.
+        return state.getValue(MOB) ? 1 : 0;
     }
 }

@@ -262,9 +262,9 @@ public class ThaumicTinkererFociStaticGuardTest {
     @Test
     public void magnetBlockAndTileAreRegistered() throws IOException {
         String cfg = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
-        assertTrue("blockMagnet registered + in getAllBlocks + ItemBlock",
+        assertTrue("blockMagnet registered + in getAllBlocks + its own metadata ItemBlock",
                 cfg.contains("blockMagnet;") && cfg.contains("blockMagnet,")
-                        && cfg.contains("new net.minecraft.item.ItemBlock(blockMagnet)"));
+                        && cfg.contains("BlockMagnetItem(blockMagnet)"));
         assertTrue("TileMagnet registered in TILE_REGISTRATIONS",
                 cfg.contains("new TileRegistration(TileMagnet.class, \"TileMagnet\")"));
 
@@ -748,6 +748,106 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("slab and stairs are named",
                 en.contains("tile.thaumcraft.slab_dark_quartz.name=")
                         && en.contains("tile.thaumcraft.stairs_dark_quartz.name="));
+    }
+
+    /**
+     * The 1.1.5.0 audit put every block back on the original's numbers. These
+     * are the ones that had drifted; pinning them stops the drift recurring.
+     * All values are from {@code TT_OBJECT_REFERENCE.md}.
+     */
+    @Test
+    public void blockConstantsMatchTheOriginal() throws IOException {
+        String blocks = "src/main/java/thaumcraft/common/blocks/tinkerer/";
+
+        String quartz = read(blocks + "BlockDarkQuartz.java");
+        assertTrue("dark quartz: 0.8 / 10.0",
+                quartz.contains("setHardness(0.8F)") && quartz.contains("setResistance(10.0F)"));
+
+        String funnel = read(blocks + "BlockFunnel.java");
+        assertTrue("funnel is stone, not iron",
+                funnel.contains("super(Material.ROCK)") && funnel.contains("SoundType.STONE"));
+        assertTrue("funnel is a 1/8-block plate", funnel.contains("1.0D / 8.0D"));
+
+        String magnet = read(blocks + "BlockMagnet.java");
+        assertTrue("magnet: 1.7 / 1.0, wood",
+                magnet.contains("setHardness(1.7F)") && magnet.contains("setResistance(1.0F)")
+                        && magnet.contains("SoundType.WOOD"));
+        assertTrue("magnet is a thin plate inset on x/z",
+                magnet.contains("new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 2.0D / 16.0D, 0.9375D)"));
+        assertTrue("mob magnet drops as item damage 1, as ItemBlockMagnet expects",
+                magnet.contains("state.getValue(MOB) ? 1 : 0"));
+
+        String repairer = read(blocks + "BlockRepairer.java");
+        assertTrue("repairer: 5.0 / 10.0",
+                repairer.contains("setHardness(5.0F)") && repairer.contains("setResistance(10.0F)"));
+
+        String enchanter = read(blocks + "BlockEnchanter.java");
+        assertTrue("enchanter: 5.0 / 2000.0",
+                enchanter.contains("setHardness(5.0F)") && enchanter.contains("setResistance(2000.0F)"));
+        assertTrue("enchanter stands 0.75 tall", enchanter.contains("1.0D, 0.75D, 1.0D"));
+
+        for (String f : new String[]{"BlockTransvectorInterface.java", "BlockTransvectorDislocator.java"}) {
+            String s = read(blocks + f);
+            assertTrue(f + ": iron, resistance 10",
+                    s.contains("super(Material.IRON)") && s.contains("setResistance(10.0F)"));
+        }
+
+        String tablet = read(blocks + "BlockAnimationTablet.java");
+        assertTrue("animation tablet: iron, 50.0, metal",
+                tablet.contains("super(Material.IRON)") && tablet.contains("setResistance(50.0F)")
+                        && tablet.contains("SoundType.METAL"));
+    }
+
+    /**
+     * Display names come from the original's own en_US/ru_RU files. A handful
+     * were invented before 1.1.5.0; these are the corrected ones.
+     */
+    @Test
+    public void namesComeFromTheOriginalsLangFiles() throws IOException {
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        String[][] pairs = {
+                {"tile.thaumcraft.magnet.name=Kinetic Attractor", "tile.thaumcraft.magnet.name=Кинетический притяжатель"},
+                {"tile.thaumcraft.mobMagnet.name=Corporeal Attractor", "tile.thaumcraft.mobMagnet.name=Материальный притяжатель"},
+                {"tile.thaumcraft.repairer.name=Thaumic Restorer", "tile.thaumcraft.repairer.name=Таум-восстановитель"},
+                {"tile.thaumcraft.funnel.name=Essentia Funnel", "tile.thaumcraft.funnel.name=Воронка для эссенции"},
+                {"tile.thaumcraft.animation_tablet.name=Dynamism Tablet", "tile.thaumcraft.animation_tablet.name=Динамическая дощечка"},
+                {"item.thaumcraft.cat_amulet.name=Feline Amulet", "item.thaumcraft.cat_amulet.name=Кошачий амулет"},
+                {"item.thaumcraft.focus_smelt.name=Wand Focus: Efreet's Flame", "item.thaumcraft.focus_smelt.name=Набалдашник: Пламя ифрита"},
+                {"tile.thaumcraft.dark_quartz.0.name=Block of Smokey Quartz", "tile.thaumcraft.dark_quartz.0.name=Блок закоптившегося кварца"},
+        };
+        for (String[] pair : pairs) {
+            assertTrue("en: " + pair[0], en.contains(pair[0]));
+            assertTrue("ru: " + pair[1], ru.contains(pair[1]));
+        }
+    }
+
+    /**
+     * Each advanced tool has its own third mode in the original — they are not
+     * three copies of the pickaxe's bore.
+     */
+    @Test
+    public void advancedToolsKeepTheirOwnThirdMode() throws IOException {
+        String tools = "src/main/java/thaumcraft/common/items/tinkerer/kami/tool/";
+
+        assertTrue("pickaxe mode 2 bores ten blocks along the line of sight",
+                read(tools + "ItemIchorPickAdv.java").contains("xo >= 0 ? 0 : -10"));
+        assertTrue("shovel mode 2 is a column of the struck block only",
+                read(tools + "ItemIchorShovelAdv.java")
+                        .contains("0, -8, 0, 1, 8, 1,\n                        state.getBlock()"));
+        String axe = read(tools + "ItemIchorAxeAdv.java");
+        assertTrue("axe mode 2 fells the tree and gathers the drops",
+                axe.contains("BlockUtils.breakFurthestBlock") && axe.contains("Utils.isWoodLog"));
+
+        String handler = read(tools + "KamiToolHandler.java");
+        assertTrue("the original's absolute-vs-offset guard is kept verbatim",
+                handler.contains("hit.getX() != x1 && hit.getY() != y1 && hit.getZ() != z1"));
+
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        assertTrue("mode names are the original's, and differ per tool",
+                en.contains("tc.kami.mode.pick.2=Line Mode")
+                        && en.contains("tc.kami.mode.shovel.2=Column Mode")
+                        && en.contains("tc.kami.mode.axe.2=Tree Mode"));
     }
 
     private static String read(String path) throws IOException {

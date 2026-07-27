@@ -263,6 +263,56 @@ public class ConfigTinkerer {
         kamiTool("IchorSword", ConfigItems.itemIchorSword, Aspect.AIR, " I ", " I ", " R ");
     }
 
+    /**
+     * Advanced KAMI tools — infusions on the plain tool at instability 15.
+     * Aspect lists and the twelve-component ring are the original's, taken from
+     * each tool's {@code getRecipeItem}.
+     */
+    public static void registerKamiAdvancedToolRecipes() {
+        advTool("IchorPickAdv", ConfigItems.itemIchorPickAdv, ConfigItems.itemIchorPick,
+                new AspectList().add(Aspect.FIRE, 50).add(Aspect.MINE, 64).add(Aspect.METAL, 32)
+                        .add(Aspect.EARTH, 32).add(Aspect.HARVEST, 32).add(Aspect.GREED, 16)
+                        .add(Aspect.SENSES, 16),
+                ConfigItems.itemPickElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
+
+        advTool("IchorAxeAdv", ConfigItems.itemIchorAxeAdv, ConfigItems.itemIchorAxe,
+                new AspectList().add(Aspect.WATER, 50).add(Aspect.MINE, 64).add(Aspect.TOOL, 32)
+                        .add(Aspect.TREE, 32).add(Aspect.HARVEST, 32).add(Aspect.CROP, 16)
+                        .add(Aspect.SENSES, 16),
+                ConfigItems.itemAxeElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
+
+        advTool("IchorShovelAdv", ConfigItems.itemIchorShovelAdv, ConfigItems.itemIchorShovel,
+                new AspectList().add(Aspect.EARTH, 50).add(Aspect.MINE, 64).add(Aspect.TOOL, 32)
+                        .add(Aspect.EARTH, 32).add(Aspect.HARVEST, 32).add(Aspect.TRAP, 16)
+                        .add(Aspect.SENSES, 16),
+                ConfigItems.itemShovelElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
+    }
+
+    /**
+     * The shared shape of an advanced-tool infusion: ichorium and ichor, the
+     * matching elemental tool and focus either side of a themed reagent, three
+     * nuggets, a diamond, and ichorcloth to close the ring.
+     */
+    private static void advTool(String key, net.minecraft.item.Item result, net.minecraft.item.Item base,
+                                AspectList aspects, net.minecraft.item.Item elemental,
+                                net.minecraft.item.Item focus, ItemStack reagent) {
+        ConfigResearch.recipes.put(key, ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSION", new ItemStack(result), 15, aspects, new ItemStack(base),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(elemental),
+                        new ItemStack(focus),
+                        reagent,
+                        new ItemStack(ConfigItems.itemNugget, 1, 21),
+                        new ItemStack(ConfigItems.itemNugget, 1, 16),
+                        new ItemStack(ConfigItems.itemNugget, 1, 31),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(focus),
+                        new ItemStack(elemental),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)}));
+    }
+
     private static void kamiTool(String key, net.minecraft.item.Item tool, Aspect aspect, String... pattern) {
         Object[] recipe = new Object[pattern.length + 4];
         System.arraycopy(pattern, 0, recipe, 0, pattern.length);

@@ -1044,6 +1044,12 @@ public class ClientProxy extends CommonProxy {
                 "facing=east,half=bottom,shape=straight");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 0, "mob=false,pulling=true");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockMagnet), 2, "mob=true,pulling=true");
+        for (int meta = 0; meta < thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES.length; meta++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemKamiResource, meta,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft",
+                            "kamiresource_" + thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES[meta]),
+                            "inventory"));
+        }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorDislocator), 0,

@@ -7,6 +7,7 @@ import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.config.research.ConfigResearch;
+import thaumcraft.common.items.tinkerer.kami.ItemKamiResource;
 
 /**
  * Registration for the Thaumic Tinkerer content module (reimplemented for
@@ -185,6 +186,77 @@ public class ConfigTinkerer {
                 'T', new ItemStack(ConfigItems.itemResource, 1, 2),
                 'Q', new ItemStack(Items.QUARTZ),
                 'A', new ItemStack(Items.IRON_INGOT)));
+    }
+
+    /**
+     * KAMI resources — the endgame tier. Recipes are the original's, pattern for
+     * pattern and aspect for aspect ({@code ItemKamiResource.getRecipeItem}).
+     * The two shards are not craftable: they drop from mobs (see
+     * {@code DimensionalShardDropHandler}).
+     */
+    public static void registerKamiRecipes() {
+        ItemStack ichor = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR);
+        ItemStack cloth = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH);
+        ItemStack ichorium = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM);
+
+        // Ichor: infusion on a nether star, instability 7.
+        ConfigResearch.recipes.put("Ichor", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSION",
+                new ItemStack(ConfigItems.itemKamiResource, 8, ItemKamiResource.ICHOR), 7,
+                new AspectList().add(Aspect.MAN, 32).add(Aspect.LIGHT, 32).add(Aspect.SOUL, 64),
+                new ItemStack(Items.NETHER_STAR),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 8, ItemKamiResource.ENDER_SHARD),
+                        new ItemStack(Items.ENDER_EYE),
+                        new ItemStack(ConfigItems.itemKamiResource, 8, ItemKamiResource.NETHER_SHARD)}));
+
+        // Ichorcloth: 3 per craft, 125 of every primal.
+        ConfigResearch.recipes.put("IchorCloth", ThaumcraftApi.addArcaneCraftingRecipe(
+                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 3, ItemKamiResource.ICHORCLOTH),
+                allPrimals(125),
+                "CCC", "III", "DDD",
+                'C', new ItemStack(ConfigItems.itemResource, 1, 7),
+                'I', ichor,
+                'D', new ItemStack(Items.DIAMOND)));
+
+        // Ichorium ingot: 100 of every primal.
+        ConfigResearch.recipes.put("Ichorium", ThaumcraftApi.addArcaneCraftingRecipe(
+                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
+                allPrimals(100),
+                " T ", "IDI", " I ",
+                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
+                'I', ichor,
+                'D', new ItemStack(Items.DIAMOND)));
+
+        // Ichor cap: 2 per craft, on charged thaumium caps.
+        ConfigResearch.recipes.put("IchorCap", ThaumcraftApi.addArcaneCraftingRecipe(
+                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 2, ItemKamiResource.ICHOR_CAP),
+                allPrimals(100),
+                "ICI", " M ", "ICI",
+                'M', ichorium,
+                'I', ichor,
+                'C', new ItemStack(ConfigItems.itemWandCap, 1, 2)));
+
+        // Ichorcloth rod: infusion on a greatwood rod, instability 9.
+        ConfigResearch.recipes.put("IchorclothRod", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSION",
+                new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH_ROD), 9,
+                new AspectList().add(Aspect.MAGIC, 100).add(Aspect.LIGHT, 32).add(Aspect.TOOL, 32),
+                new ItemStack(ConfigItems.itemWandRod, 1, 2),
+                new ItemStack[]{
+                        ichor.copy(), cloth.copy(),
+                        new ItemStack(ConfigItems.itemResource, 1, 14),
+                        new ItemStack(Items.GHAST_TEAR),
+                        new ItemStack(ConfigItems.itemResource, 1, 14),
+                        cloth.copy()}));
+    }
+
+    /** The original priced KAMI crafts at the same amount of every primal. */
+    private static AspectList allPrimals(int amount) {
+        return new AspectList()
+                .add(Aspect.FIRE, amount).add(Aspect.EARTH, amount).add(Aspect.WATER, amount)
+                .add(Aspect.AIR, amount).add(Aspect.ORDER, amount).add(Aspect.ENTROPY, amount);
     }
 
     /** Standard TC4 focus recipe frame: shard corners, quartz edges, theme item centre. */

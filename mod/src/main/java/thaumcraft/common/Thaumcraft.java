@@ -123,6 +123,8 @@ public class Thaumcraft {
         MinecraftForge.EVENT_BUS.register(new EventHandlerEntity());
         MinecraftForge.EVENT_BUS.register(runicEventHandler);
         MinecraftForge.EVENT_BUS.register(new ServerTickEventsFML());
+        MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.tinkerer.kami.DimensionalShardDropHandler());
         MinecraftForge.TERRAIN_GEN_BUS.register(new EventHandlerWorld());
 
         // Init network

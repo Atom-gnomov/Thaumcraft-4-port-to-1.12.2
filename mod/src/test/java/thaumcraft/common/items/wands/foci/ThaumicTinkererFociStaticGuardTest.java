@@ -531,6 +531,49 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/soul_mould.png")));
     }
 
+    @Test
+    public void kamiTierFoundation() throws IOException {
+        String res = read("src/main/java/thaumcraft/common/items/tinkerer/kami/ItemKamiResource.java");
+        assertTrue("subtype order is load-bearing and must match the original",
+                res.contains("\"ichor\", \"ichorcloth\", \"ichorium\", \"ichor_nugget\"")
+                        && res.contains("\"ichor_cap\", \"ichorcloth_rod\", \"nether_shard\", \"ender_shard\""));
+        assertTrue("KAMI is the endgame tier — epic rarity, as in the original",
+                res.contains("EnumRarity.EPIC"));
+
+        String drops = read("src/main/java/thaumcraft/common/lib/tinkerer/kami/DimensionalShardDropHandler.java");
+        assertTrue("shard chances must stay 1/32 ender and 1/16 nether",
+                drops.contains("1.0D / 32.0D") && drops.contains("1.0D / 16.0D"));
+        assertTrue("shards only drop in their own dimension, to a player kill",
+                drops.contains("DimensionType.THE_END.getId()") && drops.contains("DimensionType.NETHER.getId()")
+                        && drops.contains("getTrueSource() instanceof EntityPlayer"));
+        assertTrue("the handler must be registered on the event bus",
+                read("src/main/java/thaumcraft/common/Thaumcraft.java")
+                        .contains("DimensionalShardDropHandler()"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("ichor is an infusion on a nether star at instability 7 with the original's aspects",
+                rec.contains("Items.NETHER_STAR") && rec.contains("Aspect.SOUL, 64")
+                        && rec.contains("Aspect.MAN, 32"));
+        assertTrue("ichorcloth rod keeps instability 9 and its aspect list",
+                rec.contains("Aspect.MAGIC, 100") && rec.contains("Aspect.TOOL, 32"));
+        assertTrue("crafts are priced at the same amount of every primal, as the original did",
+                rec.contains("allPrimals(125)") && rec.contains("allPrimals(100)"));
+        assertTrue("KAMI recipes must be registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiRecipes()"));
+
+        String lang = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        for (String name : new String[]{"ichor", "ichorcloth", "ichorium", "ichor_nugget",
+                "ichor_cap", "ichorcloth_rod", "nether_shard", "ender_shard"}) {
+            String key = "item.thaumcraft.kami." + name + ".name";
+            assertTrue("en lang " + key, lang.contains(key + "="));
+            assertTrue("ru lang " + key, ru.contains(key + "="));
+            assertTrue("texture " + name,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/kami_" + name + ".png")));
+        }
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {

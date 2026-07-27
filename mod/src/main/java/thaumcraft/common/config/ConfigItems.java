@@ -85,6 +85,7 @@ public class ConfigItems {
     public static ItemPlacementMirror itemPlacementMirror;
     public static ItemTransvectorConnector itemTransvectorConnector;
     public static ItemSoulMould itemSoulMould;
+    public static thaumcraft.common.items.tinkerer.kami.ItemKamiResource itemKamiResource;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
@@ -391,6 +392,12 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SoulMould"))
                 .setTranslationKey("thaumcraft.soul_mould");
         allItems.add(itemSoulMould);
+
+        itemKamiResource = (thaumcraft.common.items.tinkerer.kami.ItemKamiResource)
+                new thaumcraft.common.items.tinkerer.kami.ItemKamiResource()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("KamiResource"))
+                        .setTranslationKey("thaumcraft.kami");
+        allItems.add(itemKamiResource);
 
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))

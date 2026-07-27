@@ -1651,3 +1651,7 @@ item.thaumcraft.kami.ichor_cap.name=Ихориевый набалдашник
 item.thaumcraft.kami.ichorcloth_rod.name=Стержень из ихоровой ткани
 item.thaumcraft.kami.nether_shard.name=Осколок Ада
 item.thaumcraft.kami.ender_shard.name=Осколок Края
+item.thaumcraft.kami.ichor_pick.name=Ихориевая кирка
+item.thaumcraft.kami.ichor_axe.name=Ихориевый топор
+item.thaumcraft.kami.ichor_shovel.name=Ихориевая лопата
+item.thaumcraft.kami.ichor_sword.name=Ихориевый меч

@@ -86,6 +86,10 @@ public class ConfigItems {
     public static ItemTransvectorConnector itemTransvectorConnector;
     public static ItemSoulMould itemSoulMould;
     public static thaumcraft.common.items.tinkerer.kami.ItemKamiResource itemKamiResource;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPick itemIchorPick;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe itemIchorAxe;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel itemIchorShovel;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword itemIchorSword;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
@@ -398,6 +402,30 @@ public class ConfigItems {
                         .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("KamiResource"))
                         .setTranslationKey("thaumcraft.kami");
         allItems.add(itemKamiResource);
+
+        itemIchorPick = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPick)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorPick()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorPick"))
+                        .setTranslationKey("thaumcraft.kami.ichor_pick");
+        allItems.add(itemIchorPick);
+
+        itemIchorAxe = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorAxe"))
+                        .setTranslationKey("thaumcraft.kami.ichor_axe");
+        allItems.add(itemIchorAxe);
+
+        itemIchorShovel = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorShovel"))
+                        .setTranslationKey("thaumcraft.kami.ichor_shovel");
+        allItems.add(itemIchorShovel);
+
+        itemIchorSword = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorSword"))
+                        .setTranslationKey("thaumcraft.kami.ichor_sword");
+        allItems.add(itemIchorSword);
 
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))

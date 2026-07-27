@@ -252,6 +252,28 @@ public class ConfigTinkerer {
                         cloth.copy()}));
     }
 
+    /**
+     * KAMI tools. Each is a plain arcane craft on a greatwood rod, priced at 75
+     * of a single primal — the original's {@code getRecipeItem} on each tool.
+     */
+    public static void registerKamiToolRecipes() {
+        kamiTool("IchorPick", ConfigItems.itemIchorPick, Aspect.FIRE, "III", " R ", " R ");
+        kamiTool("IchorAxe", ConfigItems.itemIchorAxe, Aspect.WATER, "II ", "IR ", " R ");
+        kamiTool("IchorShovel", ConfigItems.itemIchorShovel, Aspect.EARTH, " I ", " R ", " R ");
+        kamiTool("IchorSword", ConfigItems.itemIchorSword, Aspect.AIR, " I ", " I ", " R ");
+    }
+
+    private static void kamiTool(String key, net.minecraft.item.Item tool, Aspect aspect, String... pattern) {
+        Object[] recipe = new Object[pattern.length + 4];
+        System.arraycopy(pattern, 0, recipe, 0, pattern.length);
+        recipe[pattern.length] = 'R';
+        recipe[pattern.length + 1] = new ItemStack(ConfigItems.itemWandRod, 1, 2);
+        recipe[pattern.length + 2] = 'I';
+        recipe[pattern.length + 3] = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM);
+        ConfigResearch.recipes.put(key, ThaumcraftApi.addArcaneCraftingRecipe(
+                "INFUSION", new ItemStack(tool), new AspectList().add(aspect, 75), recipe));
+    }
+
     /** The original priced KAMI crafts at the same amount of every primal. */
     private static AspectList allPrimals(int amount) {
         return new AspectList()

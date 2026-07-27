@@ -344,6 +344,9 @@ public class Thaumcraft {
         new WandCap("gold", 1.0f, new ItemStack(ConfigItems.itemWandCap, 1, 1), 3);
         new WandCap("thaumium", 0.9f, new ItemStack(ConfigItems.itemWandCap, 1, 2), 6);
         new WandCap("void", 0.8f, new ItemStack(ConfigItems.itemWandCap, 1, 7), 9);
+        // KAMI wand parts (Thaumic Tinkerer): ichor cap, ichorcloth rod.
+        new thaumcraft.common.items.tinkerer.kami.wand.CapIchor();
+        new thaumcraft.common.items.tinkerer.kami.wand.RodIchorcloth();
         new WandRod("wood", 25, new ItemStack(Items.STICK), 1);
         new WandRod("greatwood", 50, new ItemStack(ConfigItems.itemWandRod, 1, 0), 3);
         new WandRod("obsidian", 75, new ItemStack(ConfigItems.itemWandRod, 1, 1), 6, new WandRodPrimalOnUpdate(Aspect.EARTH));

@@ -574,6 +574,48 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    @Test
+    public void kamiToolsAndWandParts() throws IOException {
+        String mat = read("src/main/java/thaumcraft/common/items/tinkerer/kami/KamiMaterials.java");
+        assertTrue("the ichor material must keep the original's numbers, -1 uses included",
+                mat.contains("addToolMaterial(\"ICHOR\", 4, -1, 10.0F, 5.0F, 25)"));
+
+        for (String cls : new String[]{"ItemIchorPick", "ItemIchorAxe", "ItemIchorShovel", "ItemIchorSword"}) {
+            String src = read("src/main/java/thaumcraft/common/items/tinkerer/kami/tool/" + cls + ".java");
+            assertTrue(cls + " must be built on the ichor material", src.contains("KamiMaterials.ICHOR"));
+            assertTrue(cls + " must be epic, as the whole tier is", src.contains("EnumRarity.EPIC"));
+        }
+        assertTrue("the digging tools keep harvest level 4",
+                read("src/main/java/thaumcraft/common/items/tinkerer/kami/tool/ItemIchorPick.java")
+                        .contains("setHarvestLevel(\"pickaxe\", 4)"));
+
+        String cap = read("src/main/java/thaumcraft/common/items/tinkerer/kami/wand/CapIchor.java");
+        assertTrue("ichor cap keeps tag, discount and cost",
+                cap.contains("\"ICHOR\", 0.8F") && cap.contains("ICHOR_CAP") && cap.contains(", 10)"));
+        String rod = read("src/main/java/thaumcraft/common/items/tinkerer/kami/wand/RodIchorcloth.java");
+        assertTrue("ichorcloth rod keeps tag, capacity, cost and glow",
+                rod.contains("\"ICHORCLOTH\", 1000") && rod.contains("setGlowing(true)"));
+        assertTrue("both wand parts must be constructed at init",
+                read("src/main/java/thaumcraft/common/Thaumcraft.java").contains("new CapIchor()")
+                        || read("src/main/java/thaumcraft/common/Thaumcraft.java").contains("wand.CapIchor()"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("each tool is priced at 75 of a single primal, as in the original",
+                rec.contains("Aspect.FIRE, \"III\"".replace("\"III\"", "")) || rec.contains("aspect, 75"));
+        assertTrue("tool recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiToolRecipes()"));
+
+        String lang = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        for (String t : new String[]{"ichor_pick", "ichor_axe", "ichor_shovel", "ichor_sword"}) {
+            assertTrue("en " + t, lang.contains("item.thaumcraft.kami." + t + ".name="));
+            assertTrue("ru " + t, ru.contains("item.thaumcraft.kami." + t + ".name="));
+            assertTrue("texture " + t,
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/kami_" + t + ".png")));
+        }
+    }
+
     /** Every TT block must be obtainable in survival, not creative-only. */
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {

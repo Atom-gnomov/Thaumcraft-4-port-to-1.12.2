@@ -423,6 +423,7 @@ public class ConfigRecipes {
         ConfigTinkerer.registerUtilityItemRecipes();
         ConfigTinkerer.registerBlockRecipes();
         ConfigTinkerer.registerKamiRecipes();
+        ConfigTinkerer.registerKamiToolRecipes();
     }
 
     private static void initializeInfusionWandRecipeBaseline() {

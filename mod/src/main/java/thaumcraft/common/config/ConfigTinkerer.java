@@ -19,68 +19,127 @@ import thaumcraft.common.items.tinkerer.kami.ItemKamiResource;
  */
 public class ConfigTinkerer {
 
-    /** Wand foci from Thaumic Tinkerer, gated behind existing thematically-related focus research. */
+    /**
+     * The seven wand foci, transcribed from the original's own
+     * {@code getRecipeItem()} - shape, aspects, instability and components
+     * unchanged. Five are infusions upstream and two are arcane crafts.
+     *
+     * <p>The research keys are the original's (FOCUS_SMELT and friends). The
+     * Thaumic Tinkerer research branch is not ported yet, so these recipes are
+     * registered but stay locked until it is; that is the original's gate, not
+     * a substitute for it.</p>
+     */
     public static void registerFociRecipes() {
-        arcane("FocusSmelt", "FOCUSFIRE", ConfigItems.focusSmelt,
-                new AspectList().add(Aspect.FIRE, 20).add(Aspect.ORDER, 10),
-                Items.BLAZE_POWDER, 1);
-        arcane("FocusTelekinesis", "FOCUSEXCAVATION", ConfigItems.focusTelekinesis,
-                new AspectList().add(Aspect.AIR, 15).add(Aspect.ORDER, 10),
-                Items.ENDER_PEARL, 0);
-        arcane("FocusFlight", "FOCUSSHOCK", ConfigItems.focusFlight,
-                new AspectList().add(Aspect.AIR, 20).add(Aspect.ENERGY, 10),
-                Items.FEATHER, 0);
-        arcane("FocusHeal", "FOCUSFROST", ConfigItems.focusHeal,
-                new AspectList().add(Aspect.WATER, 15).add(Aspect.ORDER, 15),
-                Items.GHAST_TEAR, 2);
-        arcane("FocusDeflect", "FOCUSWARDING", ConfigItems.focusDeflect,
-                new AspectList().add(Aspect.AIR, 10).add(Aspect.ORDER, 20),
-                Items.IRON_INGOT, 4);
-        arcane("FocusDislocation", "FOCUSPORTABLEHOLE", ConfigItems.focusDislocation,
-                new AspectList().add(Aspect.ENTROPY, 15).add(Aspect.ORDER, 15),
-                Items.ENDER_PEARL, 5);
-        arcane("FocusEnderChest", "FOCUSPORTABLEHOLE", ConfigItems.focusEnderChest,
-                new AspectList().add(Aspect.ENTROPY, 10).add(Aspect.ORDER, 20),
-                Items.ENDER_EYE, 5);
-    }
+        // FOCUS_SMELT: arcane, "FNE" - fire focus, nitor, excavation focus.
+        ConfigResearch.recipes.put("FocusSmelt", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_SMELT", new ItemStack(ConfigItems.focusSmelt),
+                new AspectList().add(Aspect.FIRE, 10).add(Aspect.ORDER, 5).add(Aspect.ENTROPY, 6),
+                "FNE",
+                'F', new ItemStack(ConfigItems.focusFire),
+                'N', new ItemStack(ConfigItems.itemResource, 1, 1),
+                'E', new ItemStack(ConfigItems.focusExcavation)));
 
-    /** Thaumic Tinkerer utility items, gated behind existing thematically-related research. */
-    public static void registerUtilityItemRecipes() {
-        ConfigResearch.recipes.put("PlacementMirror", ThaumcraftApi.addArcaneCraftingRecipe(
-                "MIRROR", new ItemStack(ConfigItems.itemPlacementMirror),
-                new AspectList().add(Aspect.AIR, 15).add(Aspect.ORDER, 15).add(Aspect.EXCHANGE, 5),
-                "GQG", "QMQ", "GQG",
-                'M', new ItemStack(Items.QUARTZ),
-                'Q', new ItemStack(Blocks.GLASS_PANE),
-                'G', new ItemStack(Items.GOLD_NUGGET)));
+        ConfigResearch.recipes.put("FocusTelekinesis", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_TELEKINESIS", new ItemStack(ConfigItems.focusTelekinesis), 5,
+                new AspectList().add(Aspect.MOTION, 10).add(Aspect.AIR, 20)
+                        .add(Aspect.ENTROPY, 20).add(Aspect.MIND, 10),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(Items.QUARTZ), new ItemStack(Items.QUARTZ),
+                        new ItemStack(Items.QUARTZ), new ItemStack(Items.QUARTZ),
+                        new ItemStack(Items.IRON_INGOT), new ItemStack(Items.GOLD_INGOT),
+                        new ItemStack(ConfigItems.itemShard, 1, 0)}));
 
-        ConfigResearch.recipes.put("CleansingTalisman", ThaumcraftApi.addArcaneCraftingRecipe(
-                "BATHSALTS", new ItemStack(ConfigItems.itemCleansingTalisman),
-                new AspectList().add(Aspect.WATER, 15).add(Aspect.ORDER, 15),
-                " G ", "GSG", " G ",
-                'S', new ItemStack(ConfigItems.itemShard, 1, 2),
-                'G', new ItemStack(Items.GOLD_INGOT)));
+        ConfigResearch.recipes.put("FocusFlight", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_FLIGHT", new ItemStack(ConfigItems.focusFlight), 3,
+                new AspectList().add(Aspect.AIR, 15).add(Aspect.MOTION, 20).add(Aspect.TRAVEL, 10),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(Items.QUARTZ), new ItemStack(Items.QUARTZ),
+                        new ItemStack(Items.QUARTZ), new ItemStack(Items.QUARTZ),
+                        new ItemStack(Items.FEATHER), new ItemStack(Items.FEATHER),
+                        new ItemStack(ConfigItems.itemShard, 1, 0)}));
 
-        ConfigResearch.recipes.put("XpTalisman", ThaumcraftApi.addArcaneCraftingRecipe(
-                "ENCHANT", new ItemStack(ConfigItems.itemXpTalisman),
-                new AspectList().add(Aspect.ORDER, 20).add(Aspect.MAGIC, 10),
-                " G ", "GXG", " G ",
-                'X', new ItemStack(Items.EXPERIENCE_BOTTLE),
-                'G', new ItemStack(Items.GOLD_INGOT)));
+        ConfigResearch.recipes.put("FocusHeal", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_HEAL", new ItemStack(ConfigItems.focusHeal), 4,
+                new AspectList().add(Aspect.HEAL, 10).add(Aspect.SOUL, 10).add(Aspect.LIFE, 15),
+                new ItemStack(ConfigItems.focusPech),
+                new ItemStack[]{
+                        new ItemStack(Items.GOLDEN_CARROT),
+                        new ItemStack(Items.GOLD_NUGGET), new ItemStack(Items.GOLD_NUGGET),
+                        new ItemStack(Items.GOLD_NUGGET)}));
 
-        ConfigResearch.recipes.put("CatAmulet", ThaumcraftApi.addArcaneCraftingRecipe(
-                "BOOTSTRAVELLER", new ItemStack(ConfigItems.itemCatAmulet),
-                new AspectList().add(Aspect.AIR, 20).add(Aspect.MOTION, 10),
-                " G ", "GFG", " G ",
-                'F', new ItemStack(Items.FEATHER),
-                'G', new ItemStack(Items.GOLD_INGOT)));
+        // Centre is the flight focus itself; mirror glass and a warding stone around it.
+        ConfigResearch.recipes.put("FocusDeflect", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_DEFLECT", new ItemStack(ConfigItems.focusDeflect), 5,
+                new AspectList().add(Aspect.AIR, 15).add(Aspect.ARMOR, 5).add(Aspect.ORDER, 20),
+                new ItemStack(ConfigItems.focusFlight),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemResource, 1, 10),
+                        new ItemStack(ConfigItems.itemResource, 1, 10),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 4)}));
+
+        ConfigResearch.recipes.put("FocusDislocation", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_DISLOCATION", new ItemStack(ConfigItems.focusDislocation), 8,
+                new AspectList().add(Aspect.ELDRITCH, 20).add(Aspect.DARKNESS, 10)
+                        .add(Aspect.VOID, 25).add(Aspect.MAGIC, 20).add(Aspect.TAINT, 5),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(Items.QUARTZ), new ItemStack(Items.QUARTZ),
+                        new ItemStack(Items.QUARTZ), new ItemStack(Items.QUARTZ),
+                        new ItemStack(ConfigItems.itemResource, 1, 6),
+                        new ItemStack(ConfigItems.itemResource, 1, 6),
+                        new ItemStack(ConfigItems.itemResource, 1, 6),
+                        new ItemStack(Items.DIAMOND)}));
+
+        // FOCUS_ENDER_CHEST: arcane, a vertical column of mirror, eye and hole focus.
+        ConfigResearch.recipes.put("FocusEnderChest", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_ENDER_CHEST", new ItemStack(ConfigItems.focusEnderChest),
+                new AspectList().add(Aspect.ORDER, 10).add(Aspect.ENTROPY, 10),
+                "M", "E", "P",
+                'M', new ItemStack(ConfigBlocks.blockMirror),
+                'E', new ItemStack(Items.ENDER_EYE),
+                'P', new ItemStack(ConfigItems.focusPortableHole)));
     }
 
     /**
-     * Thaumic Tinkerer blocks. Until 1.0.46 the dark quartz and the funnel were
-     * creative-only (no recipe at all); they are craftable from here on, together
-     * with the magnet.
+     * Thaumic Tinkerer's utility items.
+     *
+     * <p>Only the Feline Amulet can be registered: the other three need items
+     * this port does not have yet, and the rule is to register nothing rather
+     * than substitute. The blockers are listed in
+     * THAUMIC_TINKERER_PLAN.md's deviation register:</p>
+     *
+     * <ul>
+     *   <li><b>Talisman of Remedium</b> - CLEANSING_TALISMAN, instability 5,
+     *       HEAL 10 + TOOL 10 + MAN 20 + LIFE 10, on an ender pearl with four
+     *       dark quartz gems, a ghast tear and nitor. Needs the dark quartz
+     *       <i>gem</i> item; only the block exists here.</li>
+     *   <li><b>Talisman of Withhold</b> - XP_TALISMAN, instability 6,
+     *       GREED 20 + EXCHANGE 10 + BEAST 10 + MECHANISM 5, on a gold ingot
+     *       with quartz, a dark quartz gem, a zombie brain and a diamond.
+     *       Same missing gem.</li>
+     *   <li><b>Worldshaper's Looking Glass</b> - PLACEMENT_MIRROR, instability
+     *       12, CRAFT 65 + CRYSTAL 32 + MAGIC 50 + MIND 32, on a block talisman
+     *       with ichor, a dropper, a diamond, glass, blaze powder and a second
+     *       ichor. Needs the Block Talisman.</li>
+     * </ul>
      */
+    public static void registerUtilityItemRecipes() {
+        // CAT_AMULET: every component exists here, so it ports whole.
+        ConfigResearch.recipes.put("CatAmulet", ThaumcraftApi.addInfusionCraftingRecipe(
+                "CAT_AMULET", new ItemStack(ConfigItems.itemCatAmulet), 8,
+                new AspectList().add(Aspect.DARKNESS, 16).add(Aspect.ORDER, 32).add(Aspect.MIND, 16),
+                new ItemStack(Blocks.QUARTZ_BLOCK),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.GOLD_INGOT),
+                        new ItemStack(Items.DYE, 1, 3),
+                        new ItemStack(Blocks.LEAVES, 1, 3),
+                        new ItemStack(Items.FISH)}));
+    }
+
     public static void registerBlockRecipes() {
         // Dark quartz: plain -> chiseled -> pillar, mirroring vanilla quartz shapes.
         ConfigResearch.recipes.put("DarkQuartz", ThaumcraftApi.addArcaneCraftingRecipe(

@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -137,9 +138,19 @@ public class ThaumicTinkererFociStaticGuardTest {
             assertTrue(c + " source must exist as a tinkerer item",
                     Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/" + c + ".java")));
         }
-        for (String key : recipeKeys) {
-            assertTrue("recipe " + key, rec.contains("\"" + key + "\"") && rec.contains("ConfigItems.item" + key));
+        // Only the Feline Amulet can be built here: the other three need items
+        // this port lacks, and the rule is to register nothing rather than
+        // substitute. Their blockers must stay written down instead.
+        assertTrue("Feline Amulet recipe, transcribed from CAT_AMULET",
+                rec.contains("\"CAT_AMULET\"") && rec.contains("ConfigItems.itemCatAmulet"));
+        for (String blocked : new String[]{"PlacementMirror", "CleansingTalisman", "XpTalisman"}) {
+            assertFalse(blocked + " must not register an invented recipe",
+                    rec.contains("ConfigResearch.recipes.put(\"" + blocked + "\""));
         }
+        assertTrue("the three blockers must be documented in ConfigTinkerer",
+                rec.contains("CLEANSING_TALISMAN") && rec.contains("XP_TALISMAN")
+                        && rec.contains("PLACEMENT_MIRROR")
+                        && rec.contains("Block Talisman"));
         for (String key : langKeys) {
             assertTrue("lang " + key, lang.contains("item.thaumcraft." + key + ".name="));
         }

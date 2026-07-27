@@ -1,7 +1,7 @@
 # Очередь портирования Thaumic Tinkerer
 Сгенерировано из `TT_OBJECT_REFERENCE.md` и дерева исходников — не заполнять руками, перегенерировать при изменениях.
 
-**Состояние: портировано 34 из 82 объектов каталога, осталось 48.**
+**Состояние: портировано 35 из 82 объектов каталога, осталось 47.**
 
 Порядок — по зависимостям: объект появляется после всего, что ему нужно. «Связи» — компоненты рецепта, которые сами являются объектами TT.
 
@@ -23,10 +23,10 @@
 | 14 | `ItemBloodSword` | инфузия | 6 | — | — |
 | 15 | `ItemBrightNitor` | верстак | — | — | — |
 | 16 | `ItemConnector` | аркан | — | — | — |
-| 17 | `ItemDarkQuartz` | верстак | — | — | — |
-| 18 | `ItemFocusShadowbeam` | инфузия | 12 | — | `ItemFocusDeflect`, `ItemKamiResource` |
-| 19 | `ItemFocusXPDrain` | инфузия | 12 | — | `ItemKamiResource`, `ItemXPTalisman` |
-| 20 | `ItemGas` | верстак | — | — | `BlockGaseousLight`, `BlockGaseousShadow` |
+| 17 | `ItemFocusShadowbeam` | инфузия | 12 | — | `ItemFocusDeflect`, `ItemKamiResource` |
+| 18 | `ItemFocusXPDrain` | инфузия | 12 | — | `ItemKamiResource`, `ItemXPTalisman` |
+| 19 | `ItemGas` | верстак | — | — | `BlockGaseousLight`, `BlockGaseousShadow` |
+| 20 | `ItemGasRemover` | аркан | — | — | `ItemDarkQuartz` |
 | 21 | `ItemGemBoots` | инфузия | 13 | — | `ItemKamiResource` |
 | 22 | `ItemGemChest` | инфузия | 13 | — | `ItemFocusDeflect`, `ItemFocusFlight`, `ItemKamiResource` |
 | 23 | `ItemGemHelm` | инфузия | 13 | — | — |
@@ -49,12 +49,11 @@
 | 40 | `BlockFireIgnis` | верстак | — | `ItemBrightNitor` | — |
 | 41 | `BlockFireOrder` | верстак | — | `ItemBrightNitor` | — |
 | 42 | `BlockFireWater` | верстак | — | `ItemBrightNitor` | — |
-| 43 | `ItemGasRemover` | аркан | — | `ItemDarkQuartz` | — |
-| 44 | `ItemGemLegs` | инфузия | 13 | `ItemBrightNitor` | `ItemFocusSmelt`, `ItemKamiResource` |
-| 45 | `ItemInfusedPotion` | верстак | — | `ItemInfusedGrain` | — |
-| 46 | `BlockSummon` | аркан | — | `BlockSummon` | — |
-| 47 | `ItemFocusRecall` | инфузия | — | `ItemFocusRecall`, `ItemSkyPearl` | `ItemKamiResource` |
-| 48 | `ItemSkyPearl` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
+| 43 | `ItemGemLegs` | инфузия | 13 | `ItemBrightNitor` | `ItemFocusSmelt`, `ItemKamiResource` |
+| 44 | `ItemInfusedPotion` | верстак | — | `ItemInfusedGrain` | — |
+| 45 | `BlockSummon` | аркан | — | `BlockSummon` | — |
+| 46 | `ItemFocusRecall` | инфузия | — | `ItemFocusRecall`, `ItemSkyPearl` | `ItemKamiResource` |
+| 47 | `ItemSkyPearl` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
 
 ---
 
@@ -211,15 +210,7 @@
 - **Аспекты:** ORDER 2
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemConnector`
 
-### 17. `ItemDarkQuartz`
-
-- **Файл оригинала:** `common/item/quartz/ItemDarkQuartz.java`
-- **Наследует:** `ItemBase`
-- **Имя регистрации:** `"darkQuartzItem"`
-- **Рецепт:** верстак
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemDarkQuartz`
-
-### 18. `ItemFocusShadowbeam`
+### 17. `ItemFocusShadowbeam`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusShadowbeam.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -230,7 +221,7 @@
 - **Использует уже портированное:** `ItemFocusDeflect`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusShadowbeam`
 
-### 19. `ItemFocusXPDrain`
+### 18. `ItemFocusXPDrain`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusXPDrain.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -241,7 +232,7 @@
 - **Использует уже портированное:** `ItemKamiResource`, `ItemXPTalisman`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusXPDrain`
 
-### 20. `ItemGas`
+### 19. `ItemGas`
 
 - **Файл оригинала:** `common/item/ItemGas.java`
 - **Наследует:** `ItemBase`
@@ -251,6 +242,17 @@
 - **Родитель в дереве исследований:** `GASEOUS_LIGHT`
 - **Использует уже портированное:** `BlockGaseousLight`, `BlockGaseousShadow`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGas`
+
+### 20. `ItemGasRemover`
+
+- **Файл оригинала:** `common/item/ItemGasRemover.java`
+- **Наследует:** `ItemBase`
+- **Имя регистрации:** `"gasRemover"`
+- **Рецепт:** аркан
+- **Аспекты:** AIR 2, ORDER 2
+- **Родитель в дереве исследований:** `GASEOUS_SHADOW`
+- **Использует уже портированное:** `ItemDarkQuartz`
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGasRemover`
 
 ### 21. `ItemGemBoots`
 
@@ -467,18 +469,7 @@
 - **Блокируется:** `ItemBrightNitor`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockFireWater`
 
-### 43. `ItemGasRemover`
-
-- **Файл оригинала:** `common/item/ItemGasRemover.java`
-- **Наследует:** `ItemBase`
-- **Имя регистрации:** `"gasRemover"`
-- **Рецепт:** аркан
-- **Аспекты:** AIR 2, ORDER 2
-- **Родитель в дереве исследований:** `GASEOUS_SHADOW`
-- **Блокируется:** `ItemDarkQuartz`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGasRemover`
-
-### 44. `ItemGemLegs`
+### 43. `ItemGemLegs`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemGemLegs.java`
 - **Наследует:** `ItemIchorclothArmorAdv`
@@ -490,7 +481,7 @@
 - **Использует уже портированное:** `ItemFocusSmelt`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemLegs`
 
-### 45. `ItemInfusedPotion`
+### 44. `ItemInfusedPotion`
 
 - **Файл оригинала:** `common/item/ItemInfusedPotion.java`
 - **Наследует:** `ItemPotion`, реализует `ITTinkererItem`
@@ -506,7 +497,7 @@
 - **Блокируется:** `ItemInfusedGrain`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedPotion`
 
-### 46. `BlockSummon`
+### 45. `BlockSummon`
 
 - **Файл оригинала:** `common/block/BlockSummon.java`
 - **Наследует:** `Block`, реализует `ITTinkererBlock`
@@ -517,7 +508,7 @@
 - **Блокируется:** `BlockSummon`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockSummon`
 
-### 47. `ItemFocusRecall`
+### 46. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -529,7 +520,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusRecall`
 
-### 48. `ItemSkyPearl`
+### 47. `ItemSkyPearl`
 
 - **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
 - **Наследует:** `ItemKamiBase`

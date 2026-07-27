@@ -262,6 +262,8 @@ public class Thaumcraft {
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         log.info("Registering recipes");
         ConfigRecipes.registerSpecialRecipes(event.getRegistry());
+        // Thaumic Tinkerer's own bench recipes, kept out of the audited corpus.
+        thaumcraft.common.config.ConfigTinkerer.registerBenchRecipes(event.getRegistry());
     }
 
     @SubscribeEvent

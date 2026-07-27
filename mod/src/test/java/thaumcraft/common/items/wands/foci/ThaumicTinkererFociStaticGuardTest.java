@@ -143,14 +143,21 @@ public class ThaumicTinkererFociStaticGuardTest {
         // substitute. Their blockers must stay written down instead.
         assertTrue("Feline Amulet recipe, transcribed from CAT_AMULET",
                 rec.contains("\"CAT_AMULET\"") && rec.contains("ConfigItems.itemCatAmulet"));
-        for (String blocked : new String[]{"PlacementMirror", "CleansingTalisman", "XpTalisman"}) {
-            assertFalse(blocked + " must not register an invented recipe",
-                    rec.contains("ConfigResearch.recipes.put(\"" + blocked + "\""));
-        }
-        assertTrue("the three blockers must be documented in ConfigTinkerer",
-                rec.contains("CLEANSING_TALISMAN") && rec.contains("XP_TALISMAN")
-                        && rec.contains("PLACEMENT_MIRROR")
-                        && rec.contains("Block Talisman"));
+        // Both talismans were unblocked by the smokey quartz gem and now carry
+        // the original's own infusions.
+        assertTrue("Talisman of Remedium infuses on an ender pearl with four gems",
+                rec.contains("\"CLEANSING_TALISMAN\"")
+                        && rec.contains("add(Aspect.HEAL, 10).add(Aspect.TOOL, 10)")
+                        && rec.contains("ConfigItems.itemDarkQuartz"));
+        assertTrue("Talisman of Withhold infuses on a gold ingot",
+                rec.contains("\"XP_TALISMAN\"")
+                        && rec.contains("add(Aspect.GREED, 20).add(Aspect.EXCHANGE, 10)"));
+        // The looking glass still needs the Block Talisman, so it registers
+        // nothing and its recipe stays written down instead.
+        assertFalse("PlacementMirror must not register an invented recipe",
+                rec.contains("ConfigResearch.recipes.put(\"PlacementMirror\""));
+        assertTrue("its blocker must stay documented in ConfigTinkerer",
+                rec.contains("PLACEMENT_MIRROR") && rec.contains("Block Talisman"));
         for (String key : langKeys) {
             assertTrue("lang " + key, lang.contains("item.thaumcraft." + key + ".name="));
         }

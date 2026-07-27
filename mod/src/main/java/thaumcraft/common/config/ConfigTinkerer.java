@@ -106,25 +106,11 @@ public class ConfigTinkerer {
     /**
      * Thaumic Tinkerer's utility items.
      *
-     * <p>Only the Feline Amulet can be registered: the other three need items
-     * this port does not have yet, and the rule is to register nothing rather
-     * than substitute. The blockers are listed in
-     * THAUMIC_TINKERER_PLAN.md's deviation register:</p>
-     *
-     * <ul>
-     *   <li><b>Talisman of Remedium</b> - CLEANSING_TALISMAN, instability 5,
-     *       HEAL 10 + TOOL 10 + MAN 20 + LIFE 10, on an ender pearl with four
-     *       dark quartz gems, a ghast tear and nitor. Needs the dark quartz
-     *       <i>gem</i> item; only the block exists here.</li>
-     *   <li><b>Talisman of Withhold</b> - XP_TALISMAN, instability 6,
-     *       GREED 20 + EXCHANGE 10 + BEAST 10 + MECHANISM 5, on a gold ingot
-     *       with quartz, a dark quartz gem, a zombie brain and a diamond.
-     *       Same missing gem.</li>
-     *   <li><b>Worldshaper's Looking Glass</b> - PLACEMENT_MIRROR, instability
-     *       12, CRAFT 65 + CRYSTAL 32 + MAGIC 50 + MIND 32, on a block talisman
-     *       with ichor, a dropper, a diamond, glass, blaze powder and a second
-     *       ichor. Needs the Block Talisman.</li>
-     * </ul>
+     * <p>The Worldshaper's Looking Glass still registers nothing: upstream it
+     * infuses on a Block Talisman, which this port does not have yet. Its full
+     * recipe is PLACEMENT_MIRROR, instability 12, CRAFT 65 + CRYSTAL 32 +
+     * MAGIC 50 + MIND 32, on the talisman with ichor, a dropper, a diamond,
+     * glass, blaze powder and a second ichor.</p>
      */
     public static void registerUtilityItemRecipes() {
         // CAT_AMULET: every component exists here, so it ports whole.
@@ -138,6 +124,53 @@ public class ConfigTinkerer {
                         new ItemStack(Items.DYE, 1, 3),
                         new ItemStack(Blocks.LEAVES, 1, 3),
                         new ItemStack(Items.FISH)}));
+
+        // CLEANSING_TALISMAN: unblocked by the smokey quartz gem.
+        ConfigResearch.recipes.put("CleansingTalisman", ThaumcraftApi.addInfusionCraftingRecipe(
+                "CLEANSING_TALISMAN", new ItemStack(ConfigItems.itemCleansingTalisman), 5,
+                new AspectList().add(Aspect.HEAL, 10).add(Aspect.TOOL, 10)
+                        .add(Aspect.MAN, 20).add(Aspect.LIFE, 10),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemDarkQuartz),
+                        new ItemStack(ConfigItems.itemDarkQuartz),
+                        new ItemStack(ConfigItems.itemDarkQuartz),
+                        new ItemStack(ConfigItems.itemDarkQuartz),
+                        new ItemStack(Items.GHAST_TEAR),
+                        new ItemStack(ConfigItems.itemResource, 1, 1)}));
+
+        // XP_TALISMAN: likewise. Meta 5 of itemResource is the zombie brain.
+        ConfigResearch.recipes.put("XpTalisman", ThaumcraftApi.addInfusionCraftingRecipe(
+                "XP_TALISMAN", new ItemStack(ConfigItems.itemXpTalisman), 6,
+                new AspectList().add(Aspect.GREED, 20).add(Aspect.EXCHANGE, 10)
+                        .add(Aspect.BEAST, 10).add(Aspect.MECHANISM, 5),
+                new ItemStack(Items.GOLD_INGOT),
+                new ItemStack[]{
+                        new ItemStack(Items.QUARTZ),
+                        new ItemStack(ConfigItems.itemDarkQuartz),
+                        new ItemStack(ConfigItems.itemResource, 1, 5),
+                        new ItemStack(Items.DIAMOND)}));
+    }
+
+    /**
+     * Thaumic Tinkerer's plain workbench recipes. The original registered the
+     * smokey quartz gem twice, once with coal and once with charcoal, both
+     * giving eight from a ring of nether quartz.
+     */
+    public static void registerBenchRecipes(net.minecraftforge.registries.IForgeRegistry<
+            net.minecraft.item.crafting.IRecipe> registry) {
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigItems.itemDarkQuartz, 8),
+                "QQQ", "QCQ", "QQQ",
+                'Q', new ItemStack(Items.QUARTZ),
+                'C', new ItemStack(Items.COAL, 1, 0))
+                .setRegistryName("thaumcraft", "darkquartz_coal"));
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigItems.itemDarkQuartz, 8),
+                "QQQ", "QCQ", "QQQ",
+                'Q', new ItemStack(Items.QUARTZ),
+                'C', new ItemStack(Items.COAL, 1, 1))
+                .setRegistryName("thaumcraft", "darkquartz_charcoal"));
     }
 
     public static void registerBlockRecipes() {

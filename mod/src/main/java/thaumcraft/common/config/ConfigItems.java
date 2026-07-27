@@ -96,6 +96,7 @@ public class ConfigItems {
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
+    public static ItemDarkQuartz itemDarkQuartz;
 
     // Basic items
     public static ItemShard itemShard;
@@ -462,6 +463,11 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CatAmulet"))
                 .setTranslationKey("thaumcraft.cat_amulet");
         allItems.add(itemCatAmulet);
+
+        itemDarkQuartz = (ItemDarkQuartz) new ItemDarkQuartz()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("DarkQuartz"))
+                .setTranslationKey("thaumcraft.dark_quartz");
+        allItems.add(itemDarkQuartz);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

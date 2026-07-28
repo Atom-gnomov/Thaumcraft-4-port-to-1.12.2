@@ -400,6 +400,15 @@ public class ConfigTinkerer {
                 'I', new ItemStack(Items.IRON_INGOT),
                 'C', new ItemStack(ConfigItems.itemGolemCore, 1, 100)));
 
+        // REVEALING_HELM: goggles onto a thaumium helm, five of every primal.
+        ConfigResearch.recipes.put("RevealingHelm", ThaumcraftApi.addArcaneCraftingRecipe(
+                "REVEALING_HELM", new ItemStack(ConfigItems.itemRevealingHelm),
+                new AspectList().add(Aspect.EARTH, 5).add(Aspect.FIRE, 5).add(Aspect.WATER, 5)
+                        .add(Aspect.AIR, 5).add(Aspect.ORDER, 5).add(Aspect.ENTROPY, 5),
+                "GH",
+                'G', new ItemStack(ConfigItems.itemGoggles),
+                'H', new ItemStack(ConfigItems.itemHelmThaumium)));
+
         // REPAIRER: infusion on a block of thaumium, one of everything around it.
         ConfigResearch.recipes.put("Repairer", ThaumcraftApi.addInfusionCraftingRecipe(
                 "REPAIRER", new ItemStack(ConfigBlocks.blockRepairer), 8,

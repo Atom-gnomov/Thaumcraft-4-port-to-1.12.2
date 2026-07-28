@@ -60,7 +60,10 @@ public class EnchantmentTinkerer extends Enchantment {
     private final Kind kind;
 
     public EnchantmentTinkerer(Kind kind) {
-        super(Rarity.RARE, kind.type, kind.slots);
+        // Upstream passes weight 0 — never rolled randomly. The lowest
+        // weight this version can express is VERY_RARE (1); the table is
+        // closed off anyway by canApplyAtEnchantingTable below.
+        super(Rarity.VERY_RARE, kind.type, kind.slots);
         this.kind = kind;
         this.setName(kind.name);
         this.setRegistryName("thaumcraft", kind.name.toLowerCase(java.util.Locale.ROOT));

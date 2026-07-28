@@ -15,9 +15,13 @@ import thaumcraft.common.blocks.tinkerer.BlockMagnet;
  * 1.12.2.
  *
  * <p>Faithful to the original behaviour: the block only works while it receives
- * redstone power, the reach is {@code signal / 2} blocks, items are moved at a
- * fixed 0.25 speed, and items already within one block of the centre are left
- * alone so an attracting magnet does not jitter its own pile.</p>
+ * redstone power, the reach is {@code signal / 2} blocks rounded down — a lever
+ * beside it reaches seven, not seven and a half — items are moved at a fixed
+ * 0.25 speed, and items already within one block of the centre are left alone
+ * so an attracting magnet does not jitter its own pile.</p>
+ *
+ * <p>The original's research text says 7.5 blocks. The code does not: that
+ * division is between two ints. The code is what runs.</p>
  */
 public class TileMagnet extends TileThaumcraft implements ITickable {
 
@@ -34,14 +38,15 @@ public class TileMagnet extends TileThaumcraft implements ITickable {
         }
 
         boolean pulling = isPulling();
-        double range = redstone / 2.0D;
+        // Integer division upstream: signal 7 reaches 3 blocks, not 3.5.
+        double range = redstone / 2;
         double cx = pos.getX() + 0.5D;
         double cy = pos.getY() + 0.5D;
         double cz = pos.getZ() + 0.5D;
 
         AxisAlignedBB box = new AxisAlignedBB(
                 cx - range, pos.getY(), cz - range,
-                cx + range, pos.getY() + range + 1.0D, cz + range);
+                cx + range, pos.getY() + 0.5D + range, cz + range);
         List<? extends Entity> items = world.getEntitiesWithinAABB(getTargetClass(), box);
 
         for (Entity item : items) {

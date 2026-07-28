@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 47 из 84 объектов каталога, осталось 37.**
+**Состояние: портировано 48 из 84 объектов каталога, осталось 36.**
 
 Порядок — по зависимостям: объект появляется после всего, что ему нужно.
 «Связи» — компоненты рецепта, которые сами являются объектами TT.
@@ -49,11 +49,10 @@
 | 30 | `ItemMobDisplay` | нет рецепта | — | — | — |
 | 31 | `ItemModFocus` | нет рецепта | — | — | — |
 | 32 | `ItemModKamiFocus` | нет рецепта | — | — | — |
-| 33 | `ItemRevealingHelm` | аркан | — | — | — |
-| 34 | `ItemShareBook` | верстак | — | — | — |
-| 35 | `ItemSkyPearl` | инфузия | — | — | `ItemKamiResource` |
-| 36 | `ItemFocusRecall` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
-| 37 | `ItemInfusedPotion` | тигель | — | `ItemInfusedGrain` | — |
+| 33 | `ItemShareBook` | верстак | — | — | — |
+| 34 | `ItemSkyPearl` | инфузия | — | — | `ItemKamiResource` |
+| 35 | `ItemFocusRecall` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
+| 36 | `ItemInfusedPotion` | тигель | — | `ItemInfusedGrain` | — |
 
 ---
 
@@ -378,17 +377,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
 
-### 33. `ItemRevealingHelm`
-
-- **Файл оригинала:** `common/item/ItemRevealingHelm.java`
-- **Наследует:** `ItemArmor`, реализует `IRepairable, IRevealer, IGoggles, IVisDiscountGear, ITTinkererItem`
-- **Имя регистрации:** `"revealingHelm"`
-- **Рецепт:** аркан
-- **Аспекты:** EARTH 5, FIRE 5, WATER 5, AIR 5, ORDER 5, ENTROPY 5
-- **Родитель в дереве исследований:** `GOGGLES`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemRevealingHelm`
-
-### 34. `ItemShareBook`
+### 33. `ItemShareBook`
 
 - **Файл оригинала:** `common/item/ItemShareBook.java`
 - **Наследует:** `ItemBase`
@@ -396,7 +385,7 @@
 - **Рецепт:** верстак
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemShareBook`
 
-### 35. `ItemSkyPearl`
+### 34. `ItemSkyPearl`
 
 - **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
 - **Наследует:** `ItemKamiBase`
@@ -406,7 +395,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
 
-### 36. `ItemFocusRecall`
+### 35. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -418,7 +407,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusRecall`
 
-### 37. `ItemInfusedPotion`
+### 36. `ItemInfusedPotion`
 
 - **Файл оригинала:** `common/item/ItemInfusedPotion.java`
 - **Наследует:** `ItemPotion`, реализует `ITTinkererItem`

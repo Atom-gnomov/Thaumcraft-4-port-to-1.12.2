@@ -327,7 +327,11 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && tile.contains("public void update()")
                         && tile.contains("EntityItem")
                         && tile.contains("getRedstonePower"));
-        assertTrue("reach must stay the original signal/2", tile.contains("redstone / 2.0D"));
+        // Reach is pinned in auditedNumbersMatchTheOriginal(). This assertion
+        // used to require `redstone / 2.0D`, which was the drift rather than
+        // the original — a guard written from the port instead of the source
+        // cements the mistake it was meant to catch.
+        assertTrue("reach must stay the original signal/2", tile.contains("redstone / 2"));
 
         assertTrue("magnet blockstate ships",
                 Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockmagnet.json")));
@@ -1171,6 +1175,112 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("nitor named in both languages",
                 en.contains("item.thaumcraft.bright_nitor.name=Hyperenergetic Nitor")
                         && ru.contains("item.thaumcraft.bright_nitor.name="));
+    }
+
+    /**
+     * Numbers the second audit pass (1.1.11.0) found drifting. Each of these
+     * was a plausible-looking substitution that changed what the game does.
+     */
+    @Test
+    public void auditedNumbersMatchTheOriginal() throws IOException {
+        // The enchanter's curve truncates upstream; rounding made a base of 4
+        // cost 5 at level one.
+        String costs = read("src/main/java/thaumcraft/common/lib/tinkerer/EnchantmentCosts.java");
+        assertTrue("cost curve must truncate, not round",
+                costs.contains("(int) (base.getAmount(aspect) * factor)"));
+        assertFalse("Math.round must not come back", costs.contains("Math.round"));
+
+        // The magnet's reach is whole blocks, and its box half a block shorter
+        // than we had it.
+        String magnet = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMagnet.java");
+        assertTrue("reach is integer division", magnet.contains("double range = redstone / 2;"));
+        assertFalse("no floating-point reach", magnet.contains("redstone / 2.0D"));
+        assertTrue("pull box tops out at half a block above centre plus range",
+                magnet.contains("pos.getY() + 0.5D + range"));
+
+        // Upstream registers its enchantments at weight 0; the lowest this
+        // version can express is VERY_RARE.
+        String ench = read("src/main/java/thaumcraft/common/lib/enchantment/tinkerer/"
+                + "EnchantmentTinkerer.java");
+        assertTrue("enchantments take the lowest expressible weight",
+                ench.contains("super(Rarity.VERY_RARE, kind.type, kind.slots)"));
+        assertTrue("and stay off the enchanting table",
+                ench.contains("canApplyAtEnchantingTable"));
+    }
+
+    /**
+     * The fourteen base costs and the fourteen max levels, checked against the
+     * original's EnchantmentManager and its Enchantment* classes. These read as
+     * arbitrary numbers, which is exactly why they need pinning.
+     */
+    @Test
+    public void tinkererEnchantmentTablesMatchTheOriginal() throws IOException {
+        String costs = read("src/main/java/thaumcraft/common/lib/tinkerer/EnchantmentCosts.java");
+        String[][] bases = {
+                {"ascentBoost", "aspects(Aspect.ENTROPY, 8, Aspect.AIR, 10)"},
+                {"slowFall", "aspects(Aspect.ORDER, 8, Aspect.AIR, 10)"},
+                {"autoSmelt", "aspects(Aspect.ENTROPY, 20, Aspect.FIRE, 30)"},
+                {"finalStrike", "aspects(Aspect.ENTROPY, 16, Aspect.FIRE, 16)"},
+                {"tunnel", "aspects(Aspect.EARTH, 16, Aspect.ORDER, 16)"},
+                {"shatter", "aspects(Aspect.EARTH, 16, Aspect.ENTROPY, 16)"},
+                {"shockwave", "aspects(Aspect.EARTH, 16, Aspect.AIR, 16)"},
+                {"pounce", "aspects(Aspect.EARTH, 16, Aspect.AIR, 16)"},
+        };
+        for (String[] pair : bases) {
+            assertTrue(pair[0] + " base cost",
+                    costs.contains("ModEnchantmentsTinkerer." + pair[0] + ", " + pair[1]));
+        }
+
+        String ench = read("src/main/java/thaumcraft/common/lib/enchantment/tinkerer/"
+                + "EnchantmentTinkerer.java");
+        String[][] levels = {
+                {"ASCENT_BOOST", "4", "ARMOR_LEGS"},
+                {"SLOW_FALL", "3", "ARMOR_FEET"},
+                {"AUTO_SMELT", "1", "DIGGER"},
+                {"DESINTEGRATE", "1", "DIGGER"},
+                {"QUICK_DRAW", "2", "BOW"},
+                {"VAMPIRISM", "2", "WEAPON"},
+                {"POUNCE", "5", "ARMOR_LEGS"},
+                {"SHOCKWAVE", "5", "ARMOR_FEET"},
+        };
+        for (String[] row : levels) {
+            assertTrue(row[0] + " max level and slot",
+                    ench.contains(row[0] + "(\"") && ench.contains(", " + row[1]
+                            + ", EnumEnchantmentType." + row[2]));
+        }
+    }
+
+    /** Goggles built into a thaumium helm, at the goggles' own discount. */
+    @Test
+    public void revealingHelmIsGogglesOnAThaumiumHelm() throws IOException {
+        String helm = read("src/main/java/thaumcraft/common/items/tinkerer/ItemRevealingHelm.java");
+        assertTrue("thaumium material, render index 2, head slot",
+                helm.contains("ThaumcraftApi.armorMatThaumium, 2, EntityEquipmentSlot.HEAD"));
+        assertTrue("500 durability", helm.contains("setMaxDamage(500)"));
+        assertTrue("reveals nodes and popups, and discounts five percent",
+                helm.contains("implements IRepairable, IRevealer, IGoggles, IVisDiscountGear")
+                        && helm.contains("return 5;"));
+        assertTrue("mended with thaumium ingots",
+                helm.contains("new ItemStack(ConfigItems.itemResource, 1, 2)"));
+
+        assertTrue("recipe is goggles beside a thaumium helm, five of every primal",
+                read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("\"GH\"")
+                        && read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("ConfigItems.itemHelmThaumium"));
+        assertTrue("registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemRevealingHelm)"));
+        for (String asset : new String[]{"textures/items/revealing_helm.png",
+                "textures/models/revealing_helm.png", "models/item/revealinghelm.json"}) {
+            assertTrue(asset + " ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/" + asset)));
+        }
+        assertTrue("named in both languages",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang")
+                        .contains("item.thaumcraft.revealing_helm.name=Helmet of Revealing")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("item.thaumcraft.revealing_helm.name="));
     }
 
     private static String read(String path) throws IOException {

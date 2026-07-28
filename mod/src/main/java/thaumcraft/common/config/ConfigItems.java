@@ -102,6 +102,9 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.ItemProtoclay itemProtoclay;
     public static thaumcraft.common.items.tinkerer.ItemBrightNitor itemBrightNitor;
     public static thaumcraft.common.items.tinkerer.ItemSpellCloth itemSpellCloth;
+    public static thaumcraft.common.items.tinkerer.ItemGas itemGaseousLight;
+    public static thaumcraft.common.items.tinkerer.ItemGas itemGaseousShadow;
+    public static thaumcraft.common.items.tinkerer.ItemGasRemover itemGasRemover;
     public static thaumcraft.common.items.tinkerer.ItemRevealingHelm itemRevealingHelm;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothHelm;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothChest;
@@ -512,6 +515,24 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SpellCloth"))
                 .setTranslationKey("thaumcraft.spell_cloth");
         allItems.add(itemSpellCloth);
+
+        itemGaseousLight = (thaumcraft.common.items.tinkerer.ItemGas)
+                new thaumcraft.common.items.tinkerer.ItemGas(ConfigBlocks.blockGaseousLight)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GaseousLightItem"))
+                .setTranslationKey("thaumcraft.gaseous_light_item");
+        allItems.add(itemGaseousLight);
+
+        itemGaseousShadow = (thaumcraft.common.items.tinkerer.ItemGas)
+                new thaumcraft.common.items.tinkerer.ItemGas(ConfigBlocks.blockGaseousShadow)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GaseousShadowItem"))
+                .setTranslationKey("thaumcraft.gaseous_shadow_item");
+        allItems.add(itemGaseousShadow);
+
+        itemGasRemover = (thaumcraft.common.items.tinkerer.ItemGasRemover)
+                new thaumcraft.common.items.tinkerer.ItemGasRemover()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GasRemover"))
+                .setTranslationKey("thaumcraft.gas_remover");
+        allItems.add(itemGasRemover);
 
         itemRevealingHelm = (thaumcraft.common.items.tinkerer.ItemRevealingHelm)
                 new thaumcraft.common.items.tinkerer.ItemRevealingHelm()

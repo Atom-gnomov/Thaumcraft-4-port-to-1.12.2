@@ -1727,3 +1727,6 @@ tile.thaumcraft.gaseous_light.name=Светящийся газ
 tile.thaumcraft.gaseous_shadow.name=Газ темноты
 tile.thaumcraft.nitor_gas.name=Свет нитора
 item.thaumcraft.kami.ichorcloth_legs_gem.name=Пылающие шаровары
+item.thaumcraft.gaseous_light_item.name=Светящийся газ
+item.thaumcraft.gaseous_shadow_item.name=Газ темноты
+item.thaumcraft.gas_remover.name=Рассеиватель газа

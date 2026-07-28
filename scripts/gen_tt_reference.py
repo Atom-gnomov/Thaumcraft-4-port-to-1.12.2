@@ -37,21 +37,7 @@ def fmt(body, consts, indent='  '):
     return ('\n' + indent).join(x.strip() for x in out if x.strip())
 
 
-GROUPS = [
-    ('Ресурсы и базовые блоки', lambda f: '/quartz/' in f or 'DarkQuartz' in f),
-    ('Механизмы (блоки)', lambda f: f.startswith('common/block/') and '/kami/' not in f
-        and '/quartz/' not in f and '/fire/' not in f),
-    ('Элементальные костры', lambda f: '/fire/' in f),
-    ('Трансвекторы', lambda f: 'transvector' in f or 'Connector' in f),
-    ('Фокусы палочки', lambda f: '/foci/' in f and '/kami/' not in f),
-    ('Предметы', lambda f: f.startswith('common/item/') and '/kami/' not in f
-        and '/foci/' not in f and '/quartz/' not in f),
-    ('KAMI — ресурсы и предметы', lambda f: '/kami/' in f and '/tool/' not in f
-        and '/armor/' not in f and '/foci/' not in f),
-    ('KAMI — броня', lambda f: '/kami/armor/' in f),
-    ('KAMI — инструменты', lambda f: '/kami/tool/' in f),
-    ('KAMI — фокусы', lambda f: '/kami/foci/' in f),
-]
+GROUPS = tt.GROUPS
 
 HEADER = '''# Каталог объектов Thaumic Tinkerer 1.7.10 — исходные значения
 

@@ -242,6 +242,25 @@ def components(entry):
     return sorted(names)
 
 
+# --- how the objects are grouped for human reading ------------------------
+
+GROUPS = [
+    (u'Ресурсы и базовые блоки', lambda f: '/quartz/' in f or 'DarkQuartz' in f),
+    (u'Механизмы (блоки)', lambda f: f.startswith('common/block/') and '/kami/' not in f
+        and '/quartz/' not in f and '/fire/' not in f),
+    (u'Элементальные костры', lambda f: '/fire/' in f),
+    (u'Трансвекторы', lambda f: 'transvector' in f or 'Connector' in f),
+    (u'Фокусы палочки', lambda f: '/foci/' in f and '/kami/' not in f),
+    (u'Предметы', lambda f: f.startswith('common/item/') and '/kami/' not in f
+        and '/foci/' not in f and '/quartz/' not in f),
+    (u'KAMI — ресурсы и предметы', lambda f: '/kami/' in f and '/tool/' not in f
+        and '/armor/' not in f and '/foci/' not in f),
+    (u'KAMI — броня', lambda f: '/kami/armor/' in f),
+    (u'KAMI — инструменты', lambda f: '/kami/tool/' in f),
+    (u'KAMI — фокусы', lambda f: '/kami/foci/' in f),
+]
+
+
 # --- which objects this port already has ----------------------------------
 
 # Original class name -> the class this port implements it as, where the two

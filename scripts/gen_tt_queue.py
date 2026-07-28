@@ -12,6 +12,8 @@ import os
 
 import tt_common as tt
 
+GROUPS = tt.GROUPS
+
 
 def order(entries, have):
     """Dependency order: an object follows everything its recipe consumes."""
@@ -86,6 +88,40 @@ def main():
             ', '.join('`%s`' % c for c in present) or '—'))
 
     w('')
+    w('---')
+    w('')
+    w('## Уже перенесено')
+    w('')
+    w('Полный список того, что в моде есть. Считается по дереву исходников, а не')
+    w('по памяти: объект считается перенесённым, когда в порту существует класс с')
+    w('его именем (или тем, на которое он был переименован — таблица переименований')
+    w('живёт в `scripts/tt_common.py`).')
+    w('')
+    done_list = [e for e in entries if tt.is_ported(e['cls'], have)]
+    for title, pred in GROUPS:
+        members = [e for e in done_list if pred(e['file'])]
+        if not members:
+            continue
+        for e in members:
+            done_list = [x for x in done_list if x is not e]
+        w('**%s** — %d' % (title, len(members)))
+        w('')
+        for e in members:
+            name = tt.resolve(e['name'] or '', consts)
+            name = name.replace('return ', '').rstrip(';').replace('\n', ' ').strip()
+            port = tt.RENAMES.get(e['cls'], e['cls'])
+            w('- `%s`%s — %s' % (
+                e['cls'],
+                '' if port == e['cls'] else ' → у нас `%s`' % port,
+                name or '—'))
+        w('')
+    if done_list:
+        w('**Прочее** — %d' % len(done_list))
+        w('')
+        for e in done_list:
+            w('- `%s`' % e['cls'])
+        w('')
+
     w('---')
     w('')
     w('## Свойства каждого объекта')

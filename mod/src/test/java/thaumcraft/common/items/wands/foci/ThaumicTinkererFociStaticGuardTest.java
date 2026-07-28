@@ -1617,6 +1617,41 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("item.thaumcraft.kami.ichorcloth_legs_gem.name="));
     }
 
+    /** The gases in a bottle, and the thing that clears them away. */
+    @Test
+    public void gasItemsMatchTheOriginal() throws IOException {
+        String gas = read("src/main/java/thaumcraft/common/items/tinkerer/ItemGas.java");
+        assertTrue("one class, each instance carrying the block it releases",
+                gas.contains("private final Block released"));
+        assertTrue("released a block above the head at spread 4",
+                gas.contains("RELEASE_SPREAD = 4")
+                        && gas.contains("(int) player.posY + 1"));
+        assertTrue("the bottle is spent before the air check, as upstream",
+                gas.indexOf("stack.shrink(1)") < gas.indexOf("if (air) {"));
+
+        String remover = read("src/main/java/thaumcraft/common/items/tinkerer/ItemGasRemover.java");
+        assertTrue("clears gases within three blocks on sneak-right-click",
+                remover.contains("RANGE = 3") && remover.contains("player.isSneaking()"));
+        assertTrue("upstream's off-centre sweep is kept",
+                remover.contains("x < xs + RANGE"));
+        assertTrue("and puffs each one out as it goes",
+                remover.contains("placeParticle(world, pos)"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        for (String field : new String[]{"itemGaseousLight", "itemGaseousShadow", "itemGasRemover"}) {
+            assertTrue(field + " registered", cfg.contains("allItems.add(" + field + ")"));
+        }
+        assertTrue("both bottles boil out of an empty phial",
+                rec.contains("\"GASEOUS_LIGHT\"") && rec.contains("\"GASEOUS_SHADOW\"")
+                        && rec.contains("add(Aspect.LIGHT, 16).add(Aspect.AIR, 10).add(Aspect.MOTION, 8)"));
+        assertTrue("the dissipator needs one of each gas",
+                rec.contains("\"GAS_REMOVER\"") && rec.contains("\"DDD\", \"T G\", \"QQQ\""));
+        assertTrue("gas recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerGasRecipes()"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

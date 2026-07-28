@@ -200,6 +200,33 @@ public class ConfigTinkerer {
                         new ItemStack(Items.DIAMOND)}));
     }
 
+
+    /**
+     * The gases in a bottle and the thing that clears them away. Both bottles
+     * boil out of an empty phial; the dissipator is an arcane craft that needs
+     * one of each gas in it.
+     */
+    public static void registerGasRecipes() {
+        ConfigResearch.recipes.put("GaseousLight", ThaumcraftApi.addCrucibleRecipe(
+                "GASEOUS_LIGHT", new ItemStack(ConfigItems.itemGaseousLight),
+                new ItemStack(ConfigItems.itemEssence, 1, 0),
+                new AspectList().add(Aspect.LIGHT, 16).add(Aspect.AIR, 10).add(Aspect.MOTION, 8)));
+
+        ConfigResearch.recipes.put("GaseousShadow", ThaumcraftApi.addCrucibleRecipe(
+                "GASEOUS_SHADOW", new ItemStack(ConfigItems.itemGaseousShadow),
+                new ItemStack(ConfigItems.itemEssence, 1, 0),
+                new AspectList().add(Aspect.DARKNESS, 16).add(Aspect.AIR, 10).add(Aspect.MOTION, 8)));
+
+        ConfigResearch.recipes.put("GasRemover", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GAS_REMOVER", new ItemStack(ConfigItems.itemGasRemover),
+                new AspectList().add(Aspect.AIR, 2).add(Aspect.ORDER, 2),
+                "DDD", "T G", "QQQ",
+                'D', new ItemStack(ConfigItems.itemDarkQuartz),
+                'T', new ItemStack(ConfigItems.itemGaseousLight),
+                'G', new ItemStack(ConfigItems.itemGaseousShadow),
+                'Q', new ItemStack(Items.QUARTZ)));
+    }
+
     /**
      * Hyperenergetic Nitor and the six imbued fires — all crucible recipes
      * upstream, every one of them boiled out of a single nitor.

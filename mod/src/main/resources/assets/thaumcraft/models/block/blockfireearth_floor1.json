@@ -1,0 +1,7 @@
+{
+  "parent": "block/fire_floor",
+  "textures": {
+    "particle": "thaumcraft:blocks/fire_earth_layer_1",
+    "fire": "thaumcraft:blocks/fire_earth_layer_1"
+  }
+}

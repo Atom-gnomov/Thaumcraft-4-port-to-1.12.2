@@ -422,6 +422,7 @@ public class ConfigRecipes {
         ConfigTinkerer.registerFociRecipes();
         ConfigTinkerer.registerUtilityItemRecipes();
         ConfigTinkerer.registerBlockRecipes();
+        ConfigTinkerer.registerFireRecipes();
         ConfigTinkerer.registerKamiRecipes();
         ConfigTinkerer.registerKamiToolRecipes();
         ConfigTinkerer.registerKamiAdvancedToolRecipes();

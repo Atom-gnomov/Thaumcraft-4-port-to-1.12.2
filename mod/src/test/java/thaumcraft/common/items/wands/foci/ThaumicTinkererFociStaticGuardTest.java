@@ -985,6 +985,116 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("GuiIchorPouch"));
     }
 
+    private static final String[] FIRES = {
+            "Air", "Water", "Earth", "Ignis", "Order", "Chaos"
+    };
+
+    /** Every imbued fire is one Hyperenergetic Nitor in a crucible. */
+    @Test
+    public void imbuedFiresAreCrucibleRecipesOnTheNitor() throws IOException {
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("Hyperenergetic Nitor boils out of plain nitor",
+                rec.contains("\"BRIGHT_NITOR\"")
+                        && rec.contains("add(Aspect.ENERGY, 25).add(Aspect.LIGHT, 25)")
+                        && rec.contains("new ItemStack(ConfigItems.itemResource, 1, 1)"));
+        for (String key : new String[]{"FIRE_AER", "FIRE_AQUA", "FIRE_TERRA",
+                "FIRE_IGNIS", "FIRE_ORDO", "FIRE_PERDITIO"}) {
+            assertTrue(key + " registered", rec.contains("\"" + key + "\""));
+        }
+        // Ignis is the only one without MAGIC, and the only one at FIRE 10.
+        assertTrue("Ignis keeps its odd cost",
+                rec.contains("add(Aspect.FIRE, 10).add(Aspect.AIR, 5)"));
+        assertTrue("fire recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerFireRecipes()"));
+    }
+
+    /** The transmutation tables are the original's, pair for pair. */
+    @Test
+    public void imbuedFiresKeepTheirTransmutations() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/blocks/tinkerer/fire/BlockFire";
+        assertTrue("Aer dries wood to sand and freezes water into a cake",
+                read(dir + "Air.java").contains("Blocks.LOG, Blocks.SAND")
+                        && read(dir + "Air.java").contains("Blocks.WATER, Blocks.CAKE"));
+        assertTrue("Aqua sets lava to obsidian, flowing lava too",
+                read(dir + "Water.java").contains("Blocks.LAVA, Blocks.OBSIDIAN")
+                        && read(dir + "Water.java").contains("Blocks.FLOWING_LAVA, Blocks.OBSIDIAN"));
+        assertTrue("Terra turns a spawner into iron and nether brick back to planks",
+                read(dir + "Earth.java").contains("Blocks.MOB_SPAWNER, Blocks.IRON_BLOCK")
+                        && read(dir + "Earth.java").contains("Blocks.NETHER_BRICK, Blocks.PLANKS"));
+        assertTrue("Ignis drags the Nether up and maps the yellow flower to itself",
+                read(dir + "Ignis.java").contains("Blocks.GRASS, Blocks.NETHERRACK")
+                        && read(dir + "Ignis.java").contains("Blocks.YELLOW_FLOWER, Blocks.YELLOW_FLOWER"));
+        String order = read(dir + "Order.java");
+        assertTrue("Ordo perfects ore into blocks and sweeps the ore dictionary",
+                order.contains("Blocks.DIAMOND_ORE, Blocks.DIAMOND_BLOCK")
+                        && order.contains("getOreDictionaryOres()")
+                        && order.contains("regionMatches(5, ore, 3, 10)"));
+        assertTrue("Ordo succeeds one time in three", order.contains("return 3;"));
+        String chaos = read(dir + "Chaos.java");
+        assertTrue("Perditio eats the other five and ticks every tick",
+                chaos.contains("ConfigBlocks.blockFireAir, Blocks.FIRE")
+                        && chaos.contains("return 1;"));
+    }
+
+    /** Base behaviour, including the two quirks kept on purpose. */
+    @Test
+    public void imbuedFireBaseKeepsTheOriginalsQuirks() throws IOException {
+        String base = read("src/main/java/thaumcraft/common/blocks/tinkerer/fire/BlockFireBase.java");
+        assertTrue("dies unless something it works on is beside it",
+                base.contains("isNeighborTarget(world, pos)"));
+        assertTrue("ticks every 200 by default", base.contains("return 200;"));
+        assertTrue("treats its targets as tinder and its results as fireproof",
+                base.contains("return 100;") && base.contains("return 0;"));
+        assertTrue("the swapped-argument quirk is kept and explained",
+                base.contains("new BlockPos(x, b, a)")
+                        && base.contains("is not a typo here"));
+        assertTrue("the yes/no encouragement survey is kept",
+                base.contains("isNeighborTarget(world, pos) ? 100 : 0"));
+    }
+
+    /** Registration, assets and names for the whole chain. */
+    @Test
+    public void imbuedFiresAreRegisteredWithAssets() throws IOException {
+        String blocks = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        String[] keys = {"fire_air", "fire_water", "fire_earth",
+                "fire_ignis", "fire_order", "fire_chaos"};
+
+        assertTrue("itemBrightNitor registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemBrightNitor)"));
+        for (int i = 0; i < FIRES.length; i++) {
+            String field = "blockFire" + FIRES[i];
+            assertTrue(field + " registered and listed",
+                    blocks.contains(field + ";") && blocks.contains("                " + field + ","));
+            String stem = field.toLowerCase();
+            assertTrue(stem + " blockstate",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/"
+                            + stem + ".json")));
+            // Vanilla fire needs floor, side, side_alt, up and up_alt, twice over.
+            for (String shape : new String[]{"floor", "side", "side_alt", "up", "up_alt"}) {
+                for (int layer = 0; layer < 2; layer++) {
+                    assertTrue(stem + " " + shape + layer,
+                            Files.exists(Paths.get("src/main/resources/assets/thaumcraft/models/block/"
+                                    + stem + "_" + shape + layer + ".json")));
+                }
+            }
+            for (int layer = 0; layer < 2; layer++) {
+                assertTrue(keys[i] + " animated layer " + layer,
+                        Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/"
+                                + keys[i] + "_layer_" + layer + ".png.mcmeta")));
+            }
+            assertTrue(keys[i] + " named in both languages",
+                    en.contains("tile.thaumcraft." + keys[i] + ".name=")
+                            && ru.contains("tile.thaumcraft." + keys[i] + ".name="));
+        }
+        assertTrue("nitor named in both languages",
+                en.contains("item.thaumcraft.bright_nitor.name=Hyperenergetic Nitor")
+                        && ru.contains("item.thaumcraft.bright_nitor.name="));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

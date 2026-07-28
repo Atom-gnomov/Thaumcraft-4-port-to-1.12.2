@@ -1,0 +1,7 @@
+{
+  "parent": "block/fire_up_alt",
+  "textures": {
+    "particle": "thaumcraft:blocks/fire_water_layer_0",
+    "fire": "thaumcraft:blocks/fire_water_layer_0"
+  }
+}

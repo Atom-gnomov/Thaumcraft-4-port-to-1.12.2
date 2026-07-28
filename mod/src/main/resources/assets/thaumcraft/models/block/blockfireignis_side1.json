@@ -1,0 +1,7 @@
+{
+  "parent": "block/fire_side",
+  "textures": {
+    "particle": "thaumcraft:blocks/fire_ignis_layer_1",
+    "fire": "thaumcraft:blocks/fire_ignis_layer_1"
+  }
+}

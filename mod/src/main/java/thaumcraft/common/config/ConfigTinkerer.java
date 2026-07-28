@@ -201,6 +201,38 @@ public class ConfigTinkerer {
     }
 
     /**
+     * Hyperenergetic Nitor and the six imbued fires — all crucible recipes
+     * upstream, every one of them boiled out of a single nitor.
+     */
+    public static void registerFireRecipes() {
+        ConfigResearch.recipes.put("BrightNitor", ThaumcraftApi.addCrucibleRecipe(
+                "BRIGHT_NITOR", new ItemStack(ConfigItems.itemBrightNitor),
+                new ItemStack(ConfigItems.itemResource, 1, 1),
+                new AspectList().add(Aspect.ENERGY, 25).add(Aspect.LIGHT, 25)
+                        .add(Aspect.AIR, 10).add(Aspect.FIRE, 10)));
+
+        fire("FIRE_AER", ConfigBlocks.blockFireAir,
+                new AspectList().add(Aspect.FIRE, 5).add(Aspect.MAGIC, 5).add(Aspect.AIR, 5));
+        fire("FIRE_AQUA", ConfigBlocks.blockFireWater,
+                new AspectList().add(Aspect.FIRE, 5).add(Aspect.MAGIC, 5).add(Aspect.WATER, 5));
+        fire("FIRE_TERRA", ConfigBlocks.blockFireEarth,
+                new AspectList().add(Aspect.FIRE, 5).add(Aspect.MAGIC, 5).add(Aspect.EARTH, 5));
+        // Ignis is the odd one: no MAGIC, and twice the FIRE.
+        fire("FIRE_IGNIS", ConfigBlocks.blockFireIgnis,
+                new AspectList().add(Aspect.FIRE, 10).add(Aspect.AIR, 5));
+        fire("FIRE_ORDO", ConfigBlocks.blockFireOrder,
+                new AspectList().add(Aspect.FIRE, 5).add(Aspect.MAGIC, 5).add(Aspect.ORDER, 5));
+        fire("FIRE_PERDITIO", ConfigBlocks.blockFireChaos,
+                new AspectList().add(Aspect.FIRE, 5).add(Aspect.MAGIC, 5).add(Aspect.ENTROPY, 5));
+    }
+
+    /** Every imbued fire is one Hyperenergetic Nitor in the crucible. */
+    private static void fire(String key, net.minecraft.block.Block block, AspectList aspects) {
+        ConfigResearch.recipes.put(key, ThaumcraftApi.addCrucibleRecipe(
+                key, new ItemStack(block), new ItemStack(ConfigItems.itemBrightNitor), aspects));
+    }
+
+    /**
      * Thaumic Tinkerer's plain workbench recipes. The original registered the
      * smokey quartz gem twice, once with coal and once with charcoal, both
      * giving eight from a ring of nether quartz.

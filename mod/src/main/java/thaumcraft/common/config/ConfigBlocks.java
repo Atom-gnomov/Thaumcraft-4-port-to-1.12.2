@@ -92,6 +92,8 @@ public class ConfigBlocks {
     public static BlockPlatform blockPlatform;
     public static BlockForcefield blockForcefield;
     public static BlockSummon blockSummon;
+    public static BlockMobilizer blockMobilizer;
+    public static BlockMobilizerRelay blockMobilizerRelay;
     /** One per primal, indexed by {@link thaumcraft.common.items.tinkerer.PrimalCrop}. */
     public static BlockInfusedGrain[] blockInfusedGrain = new BlockInfusedGrain[4];
     public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight blockGaseousLight;
@@ -379,6 +381,14 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainAqua"))
                 .setTranslationKey("thaumcraft.infused_grain_aqua");
 
+        blockMobilizer = (BlockMobilizer) new BlockMobilizer()
+                .setRegistryName("thaumcraft", legacyPath("blockMobilizer"))
+                .setTranslationKey("thaumcraft.mobilizer");
+
+        blockMobilizerRelay = (BlockMobilizerRelay) new BlockMobilizerRelay()
+                .setRegistryName("thaumcraft", legacyPath("blockMobilizerRelay"))
+                .setTranslationKey("thaumcraft.mobilizer_relay");
+
         blockSummon = (BlockSummon) new BlockSummon()
                 .setRegistryName("thaumcraft", legacyPath("blockSummon"))
                 .setTranslationKey("thaumcraft.summon");
@@ -514,6 +524,8 @@ public class ConfigBlocks {
                 blockInfusedGrain[1],
                 blockInfusedGrain[2],
                 blockInfusedGrain[3],
+                blockMobilizer,
+                blockMobilizerRelay,
                 blockSummon,
                 blockForcefield,
                 blockPlatform,
@@ -595,6 +607,10 @@ public class ConfigBlocks {
                 .setRegistryName(blockLootUrn.getRegistryName()));
         registry.register(new BlockLootItem(blockLootCrate)
                 .setRegistryName(blockLootCrate.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockMobilizer)
+                .setRegistryName(blockMobilizer.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockMobilizerRelay)
+                .setRegistryName(blockMobilizerRelay.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockSummon)
                 .setRegistryName(blockSummon.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockPlatform)
@@ -712,6 +728,8 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileMobilizer.class, "TileMobilizer"),
+            new TileRegistration(TileMobilizerRelay.class, "TileMobilizerRelay"),
             new TileRegistration(TileSummon.class, "TileSummon"),
             new TileRegistration(TileForcefield.class, "TileForcefield"),
             new TileRegistration(TileCamo.class, "TileCamo"),

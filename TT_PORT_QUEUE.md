@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 68 из 79, осталось 11.**
+**Состояние: портировано 70 из 79, осталось 9.**
 
 В каталоге 84 объектов; 5 из них вычеркнуты как недостижимые и в счёт
 не идут — см. «Вычеркнуто» в конце.
@@ -20,17 +20,15 @@
 
 | # | Объект | Рецепт | Неста­бильность | Регистрация | Зависит от (ещё нет) | Использует (уже есть) |
 |---|---|---|---|---|---|---|
-| 1 | `BlockMobilizer` | инфузия | 4 | всегда | — | — |
-| 2 | `BlockMobilizerRelay` | аркан | — | всегда | — | — |
-| 3 | `BlockWarpGate` | инфузия | 8 | по конфигу enableKami | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
-| 4 | `ItemBlockFire` | нет рецепта | — | всегда | — | — |
-| 5 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
-| 6 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
-| 7 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
-| 8 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
-| 9 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
-| 10 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
-| 11 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
+| 1 | `BlockWarpGate` | инфузия | 8 | по конфигу enableKami | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
+| 2 | `ItemBlockFire` | нет рецепта | — | всегда | — | — |
+| 3 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
+| 4 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
+| 5 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
+| 6 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
+| 7 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
+| 8 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
+| 9 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
 
 ---
 
@@ -50,7 +48,7 @@
 - `ItemDarkQuartzBlock` → у нас `BlockDarkQuartzItem` — "darkQuartz"
 - `ItemDarkQuartzSlab` → у нас `BlockDarkQuartzSlab` — "darkQuartzSlab"
 
-**Механизмы (блоки)** — 12
+**Механизмы (блоки)** — 14
 
 - `BlockAnimationTablet` — "animationTablet"
 - `BlockEnchanter` — "enchanter"
@@ -62,6 +60,8 @@
 - `BlockPlatform` — "platform"
 - `BlockRepairer` — "repairer"
 - `BlockSummon` — "spawner"
+- `BlockMobilizer` — "Levitational Locomotive"
+- `BlockMobilizerRelay` — "Levitational Locomotive Relay"
 - `BlockTransvectorDislocator` — "dislocator"
 - `BlockTransvectorInterface` — "interface"
 
@@ -140,27 +140,7 @@
 
 ## Свойства каждого объекта
 
-### 1. `BlockMobilizer`
-
-- **Файл оригинала:** `common/block/mobilizer/BlockMobilizer.java`
-- **Наследует:** `BlockMod`
-- **Имя регистрации:** `"Levitational Locomotive"`
-- **Рецепт:** инфузия
-- **Нестабильность:** 4
-- **Аспекты:** MOTION 15, ORDER 20, MAGIC 15
-- **Родитель в дереве исследований:** `MAGNETS`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockMobilizer`
-
-### 2. `BlockMobilizerRelay`
-
-- **Файл оригинала:** `common/block/mobilizer/BlockMobilizerRelay.java`
-- **Наследует:** `BlockMod`
-- **Имя регистрации:** `"Levitational Locomotive Relay"`
-- **Рецепт:** аркан
-- **Аспекты:** AIR 20, ORDER 5, EARTH 15
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockMobilizerRelay`
-
-### 3. `BlockWarpGate`
+### 1. `BlockWarpGate`
 
 - **Файл оригинала:** `common/block/kami/BlockWarpGate.java`
 - **Наследует:** `BlockModContainer`
@@ -173,7 +153,7 @@
 - **Использует уже портированное:** `BlockTransvectorDislocator`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockWarpGate`
 
-### 4. `ItemBlockFire`
+### 2. `ItemBlockFire`
 
 - **Файл оригинала:** `common/item/ItemBlockFire.java`
 - **Наследует:** `ItemBlock`, реализует `ITTinkererItem`
@@ -181,7 +161,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBlockFire`
 
-### 5. `ItemFocusShadowbeam`
+### 3. `ItemFocusShadowbeam`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusShadowbeam.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -193,7 +173,7 @@
 - **Использует уже портированное:** `ItemFocusDeflect`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusShadowbeam`
 
-### 6. `ItemFocusXPDrain`
+### 4. `ItemFocusXPDrain`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusXPDrain.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -205,7 +185,7 @@
 - **Использует уже портированное:** `ItemKamiResource`, `ItemXPTalisman`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusXPDrain`
 
-### 7. `ItemIchorSwordAdv`
+### 5. `ItemIchorSwordAdv`
 
 - **Файл оригинала:** `common/item/kami/tool/ItemIchorSwordAdv.java`
 - **Наследует:** `ItemIchorSword`, реализует `IAdvancedTool`
@@ -217,7 +197,7 @@
 - **Использует уже портированное:** `ItemIchorSword`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorSwordAdv`
 
-### 8. `ItemModFocus`
+### 6. `ItemModFocus`
 
 - **Файл оригинала:** `common/item/foci/ItemModFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -225,7 +205,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModFocus`
 
-### 9. `ItemModKamiFocus`
+### 7. `ItemModKamiFocus`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemModKamiFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -234,7 +214,7 @@
 - **Регистрация:** по конфигу enableKami
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
 
-### 10. `ItemSkyPearl`
+### 8. `ItemSkyPearl`
 
 - **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
 - **Наследует:** `ItemKamiBase`
@@ -244,7 +224,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
 
-### 11. `ItemFocusRecall`
+### 9. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`

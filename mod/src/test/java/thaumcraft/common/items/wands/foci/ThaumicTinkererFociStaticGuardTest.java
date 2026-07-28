@@ -1876,6 +1876,55 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && cfg.contains("allItems.add(itemInfusedInkwell)"));
     }
 
+    /**
+     * The Levitational Locomotive runs the track two relays define, carrying
+     * whatever stands on it.
+     */
+    @Test
+    public void levitationalLocomotiveMatchesTheOriginal() throws IOException {
+        String loco = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMobilizer.java");
+        assertTrue("looks ahead on tick 0 of 100 and steps on tick 1",
+                loco.contains("PERIOD = 100") && loco.contains("phase == 0")
+                        && loco.contains("phase == 1"));
+        assertTrue("turns round at the end of the track",
+                loco.contains("this.movementDirection.getOpposite()"));
+        assertTrue("redstone holds it", loco.contains("isBlockPowered(this.pos)"));
+        assertTrue("drops stone ahead so the passenger cannot fall through",
+                loco.contains("Blocks.STONE.getDefaultState(), 0"));
+        assertTrue("bedrock is never carried", loco.contains("block == Blocks.BEDROCK"));
+        assertTrue("a tile passenger is carried by hand so its contents survive",
+                loco.contains("passenger.writeToNBT(new NBTTagCompound())")
+                        && loco.contains("TileEntity.create(this.world, saved)"));
+        assertTrue("a ghost tile from a broken block stops working",
+                loco.contains("if (this.dead)")
+                        && read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockMobilizer.java")
+                        .contains(").dead = true"));
+
+        String relay = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMobilizerRelay.java");
+        assertTrue("relays pair within 32 blocks and re-check every 40 ticks",
+                relay.contains("SEARCH = 32") && relay.contains("CADENCE = 40"));
+        assertTrue("a pairing only counts while both ends agree",
+                relay.contains("public void verifyPartner()"));
+        assertTrue("and it points the locomotive along the axis they share",
+                relay.contains("EnumFacing.EAST : EnumFacing.NORTH"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("the locomotive infuses on a lifter at instability 4",
+                rec.contains("\"Mobilizer\"") && rec.contains("ConfigBlocks.blockLifter")
+                        && rec.contains("add(Aspect.MOTION, 15).add(Aspect.ORDER, 20)"));
+        assertTrue("the relay is the magnet's shape round glass",
+                rec.contains("\"WFW\", \"SIs\", \"WFW\"") && rec.contains("Blocks.GLASS"));
+        assertTrue("registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerMobilizerRecipes()"));
+
+        String blocks = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        for (String field : new String[]{"blockMobilizer", "blockMobilizerRelay"}) {
+            assertTrue(field + " registered and listed",
+                    blocks.contains(field + ";") && blocks.contains("                " + field + ","));
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

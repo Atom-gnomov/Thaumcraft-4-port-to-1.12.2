@@ -1759,3 +1759,5 @@ ttmisc.shareTome.sync=Исследования выучены.
 ttmisc.shareTome.notOnline=Игрок, записи которого здесь записаны, не в сети.
 ttmisc.shareTome.noAssign=Не привязан
 ttmisc.shareTome.playerName=Привязан к исследованиям %s .
+tile.thaumcraft.mobilizer.name=Левитатор
+tile.thaumcraft.mobilizer_relay.name=Стрелка левитатора

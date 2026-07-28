@@ -204,6 +204,34 @@ public class ConfigTinkerer {
 
 
 
+
+    /**
+     * The Levitational Locomotive and its relay. The locomotive is infused on
+     * a Thaumcraft lifter; the relay is an arcane craft sharing the magnet's
+     * shape but built round glass rather than a focus.
+     */
+    public static void registerMobilizerRecipes() {
+        ConfigResearch.recipes.put("Mobilizer", ThaumcraftApi.addInfusionCraftingRecipe(
+                "LEVITATOR", new ItemStack(ConfigBlocks.blockMobilizer), 4,
+                new AspectList().add(Aspect.MOTION, 15).add(Aspect.ORDER, 20).add(Aspect.MAGIC, 15),
+                new ItemStack(ConfigBlocks.blockLifter),
+                new ItemStack[]{
+                        new ItemStack(Items.IRON_INGOT),
+                        new ItemStack(Items.FEATHER),
+                        new ItemStack(Items.IRON_INGOT),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1)}));
+
+        ConfigResearch.recipes.put("MobilizerRelay", ThaumcraftApi.addArcaneCraftingRecipe(
+                "LEVITATOR", new ItemStack(ConfigBlocks.blockMobilizerRelay),
+                new AspectList().add(Aspect.AIR, 20).add(Aspect.ORDER, 5).add(Aspect.EARTH, 15),
+                "WFW", "SIs", "WFW",
+                'I', new ItemStack(Items.IRON_INGOT),
+                's', new ItemStack(ConfigItems.itemShard, 1, 3),
+                'S', new ItemStack(ConfigItems.itemShard, 1, 0),
+                'W', new ItemStack(ConfigBlocks.blockMagicalLog),
+                'F', new ItemStack(Blocks.GLASS)));
+    }
+
     /**
      * Two odds and ends: the tome that copies research between players, and
      * scribing tools with more than twice the ink.

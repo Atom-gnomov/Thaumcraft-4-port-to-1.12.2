@@ -9,49 +9,56 @@
 «Связи» — компоненты рецепта, которые сами являются объектами TT.
 Точные значения любого объекта — в [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md).
 
+> **Колонка «Регистрация» — читать первой.** `НЕ РЕГИСТРИРУЕТСЯ` значит, что
+> `shouldRegister()` в оригинале возвращает `false` и объекта в игре нет
+> вообще (`BlockRPlacer`). «Только с X» — он появляется лишь при
+> установленном моде X (аспектализатор и голем-соединитель просят
+> ComputerCraft). Портировать такое «просто по таблице» значит добавить в
+> игру то, чего в оригинале нет.
+
 > **Осторожно: таблица знает только про зависимости по рецепту.**
 > Поведенческие связи она не видит, и их надо проверять глазами по
 > исходнику. Пример: `ItemSkyPearl` числится свободным, но настраивается
 > только кликом по `BlockWarpGate` — без портала это мёртвый предмет.
 > Перед тем как брать объект, прочитай его класс целиком.
 
-| # | Объект | Рецепт | Неста­бильность | Зависит от (ещё нет) | Использует (уже есть) |
-|---|---|---|---|---|---|
-| 1 | `BlockAspectAnalyzer` | аркан | — | — | — |
-| 2 | `BlockForcefield` | нет рецепта | — | — | — |
-| 3 | `BlockGas` | нет рецепта | — | — | — |
-| 4 | `BlockGolemConnector` | аркан | — | — | — |
-| 5 | `BlockInfusedGrain` | нет рецепта | — | — | — |
-| 6 | `BlockMobilizer` | инфузия | 4 | — | — |
-| 7 | `BlockMobilizerRelay` | аркан | — | — | — |
-| 8 | `BlockRPlacer` | аркан | — | — | — |
-| 9 | `BlockSummon` | аркан | — | — | — |
-| 10 | `BlockWarpGate` | инфузия | 8 | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
-| 11 | `ItemBlockFire` | нет рецепта | — | — | — |
-| 12 | `ItemBlockWarpGate` | нет рецепта | — | — | — |
-| 13 | `ItemBloodSword` | инфузия | 6 | — | — |
-| 14 | `ItemFocusShadowbeam` | инфузия | 12 | — | `ItemFocusDeflect`, `ItemKamiResource` |
-| 15 | `ItemFocusXPDrain` | инфузия | 12 | — | `ItemKamiResource`, `ItemXPTalisman` |
-| 16 | `ItemGas` | тигель | — | `BlockGaseousLight`, `BlockGaseousShadow` | — |
-| 17 | `ItemGasRemover` | аркан | — | — | `ItemDarkQuartz` |
-| 18 | `ItemGemBoots` | инфузия | 13 | — | `ItemKamiResource` |
-| 19 | `ItemGemChest` | инфузия | 13 | — | `ItemFocusDeflect`, `ItemFocusFlight`, `ItemKamiResource` |
-| 20 | `ItemGemHelm` | инфузия | 13 | — | `ItemCleansingTalisman`, `ItemKamiResource` |
-| 21 | `ItemGemLegs` | инфузия | 13 | — | `ItemBrightNitor`, `ItemFocusSmelt`, `ItemKamiResource` |
-| 22 | `ItemIchorSwordAdv` | инфузия | 15 | — | `ItemIchorSword`, `ItemKamiResource` |
-| 23 | `ItemIchorclothArmor` | аркан | — | — | `ItemKamiResource` |
-| 24 | `ItemIchorclothArmorAdv` | нет рецепта | — | — | — |
-| 25 | `ItemInfusedGrain` | нет рецепта | — | — | — |
-| 26 | `ItemInfusedInkwell` | инфузия + верстак | 2 | — | — |
-| 27 | `ItemInfusedSeeds` | инфузия | 5 | — | — |
-| 28 | `ItemMobAspect` | инфузия + верстак | 4 | — | — |
-| 29 | `ItemMobDisplay` | нет рецепта | — | — | — |
-| 30 | `ItemModFocus` | нет рецепта | — | — | — |
-| 31 | `ItemModKamiFocus` | нет рецепта | — | — | — |
-| 32 | `ItemShareBook` | верстак | — | — | — |
-| 33 | `ItemSkyPearl` | инфузия | — | — | `ItemKamiResource` |
-| 34 | `ItemFocusRecall` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
-| 35 | `ItemInfusedPotion` | тигель | — | `ItemInfusedGrain` | — |
+| # | Объект | Рецепт | Неста­бильность | Регистрация | Зависит от (ещё нет) | Использует (уже есть) |
+|---|---|---|---|---|---|---|
+| 1 | `BlockAspectAnalyzer` | аркан | — | только с ComputerCraft | — | — |
+| 2 | `BlockForcefield` | нет рецепта | — | всегда | — | — |
+| 3 | `BlockGas` | нет рецепта | — | всегда | — | — |
+| 4 | `BlockGolemConnector` | аркан | — | только с ComputerCraft | — | — |
+| 5 | `BlockInfusedGrain` | нет рецепта | — | всегда | — | — |
+| 6 | `BlockMobilizer` | инфузия | 4 | всегда | — | — |
+| 7 | `BlockMobilizerRelay` | аркан | — | всегда | — | — |
+| 8 | `BlockRPlacer` | аркан | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 9 | `BlockSummon` | аркан | — | всегда | — | — |
+| 10 | `BlockWarpGate` | инфузия | 8 | по конфигу enableKami | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
+| 11 | `ItemBlockFire` | нет рецепта | — | всегда | — | — |
+| 12 | `ItemBlockWarpGate` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 13 | `ItemBloodSword` | инфузия | 6 | всегда | — | — |
+| 14 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
+| 15 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
+| 16 | `ItemGas` | тигель | — | всегда | `BlockGaseousLight`, `BlockGaseousShadow` | — |
+| 17 | `ItemGasRemover` | аркан | — | всегда | — | `ItemDarkQuartz` |
+| 18 | `ItemGemBoots` | инфузия | 13 | всегда | — | `ItemKamiResource` |
+| 19 | `ItemGemChest` | инфузия | 13 | всегда | — | `ItemFocusDeflect`, `ItemFocusFlight`, `ItemKamiResource` |
+| 20 | `ItemGemHelm` | инфузия | 13 | всегда | — | `ItemCleansingTalisman`, `ItemKamiResource` |
+| 21 | `ItemGemLegs` | инфузия | 13 | всегда | — | `ItemBrightNitor`, `ItemFocusSmelt`, `ItemKamiResource` |
+| 22 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
+| 23 | `ItemIchorclothArmor` | аркан | — | по конфигу enableKami | — | `ItemKamiResource` |
+| 24 | `ItemIchorclothArmorAdv` | нет рецепта | — | всегда | — | — |
+| 25 | `ItemInfusedGrain` | нет рецепта | — | всегда | — | — |
+| 26 | `ItemInfusedInkwell` | инфузия + верстак | 2 | всегда | — | — |
+| 27 | `ItemInfusedSeeds` | инфузия | 5 | всегда | — | — |
+| 28 | `ItemMobAspect` | инфузия + верстак | 4 | всегда | — | — |
+| 29 | `ItemMobDisplay` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 30 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
+| 31 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
+| 32 | `ItemShareBook` | верстак | — | всегда | — | — |
+| 33 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
+| 34 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
+| 35 | `ItemInfusedPotion` | тигель | — | всегда | `ItemInfusedGrain` | — |
 
 ---
 
@@ -65,6 +72,7 @@
 - **Рецепт:** аркан
 - **Аспекты:** ORDER 1, ENTROPY 1
 - **Родитель в дереве исследований:** `PERIPHERALS`
+- **Регистрация:** только с ComputerCraft
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockAspectAnalyzer`
 
 ### 2. `BlockForcefield`
@@ -91,6 +99,7 @@
 - **Рецепт:** аркан
 - **Аспекты:** AIR 20, ORDER 5, ENTROPY 15
 - **Родитель в дереве исследований:** `PERIPHERALS`
+- **Регистрация:** только с ComputerCraft
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockGolemConnector`
 
 ### 5. `BlockInfusedGrain`
@@ -129,6 +138,7 @@
 - **Рецепт:** аркан
 - **Аспекты:** AIR 20, ORDER 5, EARTH 15, ENTROPY 5
 - **Родитель в дереве исследований:** `ANIMATION_TABLET`
+- **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockRPlacer`
 
 ### 9. `BlockSummon`
@@ -150,6 +160,7 @@
 - **Нестабильность:** 8
 - **Аспекты:** TRAVEL 64, ELDRITCH 50, FLIGHT 50
 - **Родитель в дереве исследований:** `ICHORCLOTH_CHEST_GEM`
+- **Регистрация:** по конфигу enableKami
 - **Использует уже портированное:** `BlockTransvectorDislocator`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockWarpGate`
 
@@ -167,6 +178,7 @@
 - **Наследует:** `ItemBlock`, реализует `ITTinkererItem`
 - **Имя регистрации:** `"warpGate"`
 - **Рецепт:** нет рецепта
+- **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBlockWarpGate`
 
 ### 13. `ItemBloodSword`
@@ -294,6 +306,7 @@
 - **Рецепт:** аркан
 - **Аспекты:** WATER 75
 - **Родитель в дереве исследований:** `ICHOR_CLOTH`
+- **Регистрация:** по конфигу enableKami
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorclothArmor`
 
@@ -348,6 +361,7 @@
 - **Наследует:** `ItemBase`
 - **Имя регистрации:** `"mobDisplay"`
 - **Рецепт:** нет рецепта
+- **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobDisplay`
 
 ### 30. `ItemModFocus`
@@ -364,6 +378,7 @@
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
 - **Имя регистрации:** —
 - **Рецепт:** нет рецепта
+- **Регистрация:** по конфигу enableKami
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
 
 ### 32. `ItemShareBook`

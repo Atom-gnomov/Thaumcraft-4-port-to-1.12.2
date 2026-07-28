@@ -204,6 +204,28 @@ def research_parent(research, consts):
     return first.strip('"') or None
 
 
+def gate(entry):
+    """A short label for a shouldRegister() that is not plain `return true`.
+
+    Returns None when the object is registered unconditionally.
+    """
+    body = entry.get('shouldRegister')
+    if not body:
+        return None
+    body = ' '.join(body.split())
+    if body == 'return true;':
+        return None
+    if body == 'return false;':
+        return 'НЕ РЕГИСТРИРУЕТСЯ'
+    m = re.search(r'isModLoaded\("(\w+)"\)', body)
+    if m:
+        return 'только с %s' % m.group(1)
+    m = re.search(r'ConfigHandler\.(\w+)', body)
+    if m:
+        return 'по конфигу %s' % m.group(1)
+    return body
+
+
 def components(entry):
     """TT classes this object's recipe consumes, itself excluded.
 

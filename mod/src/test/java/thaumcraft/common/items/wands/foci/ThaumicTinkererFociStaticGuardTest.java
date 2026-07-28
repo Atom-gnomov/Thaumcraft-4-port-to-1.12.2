@@ -1293,8 +1293,14 @@ public class ThaumicTinkererFociStaticGuardTest {
         String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileCamo.java");
         assertTrue("stores the block by registry name and its metadata",
                 tile.contains("TAG_CAMO = \"camo\"") && tile.contains("TAG_CAMO_META = \"camoMeta\""));
-        assertTrue("syncs to the client", tile.contains("getUpdatePacket")
-                && tile.contains("markBlockRangeForRenderUpdate"));
+        // Packet plumbing comes from TileThaumcraft's readCustomNBT/writeCustomNBT;
+        // only the redraw on arrival is this tile's own business.
+        assertTrue("built on the port's tile base",
+                tile.contains("extends TileThaumcraft")
+                        && tile.contains("public void writeCustomNBT")
+                        && tile.contains("public void readCustomNBT"));
+        assertTrue("a new disguise redraws the chunk",
+                tile.contains("markBlockRangeForRenderUpdate"));
 
         String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockCamo.java");
         assertTrue("exposes the disguise as an unlisted property",
@@ -1348,6 +1354,36 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("tile.thaumcraft.platform.name=Ethereal Platform")
                         && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
                         .contains("tile.thaumcraft.platform.name="));
+    }
+
+    /**
+     * Both transvector devices are camouflaged upstream, which is what lets
+     * them hide in a wall. Register item 3 closed in 1.1.13.0.
+     */
+    @Test
+    public void transvectorsAreCamouflaged() throws IOException {
+        String blocks = "src/main/java/thaumcraft/common/blocks/tinkerer/";
+        assertTrue("interface extends BlockCamo",
+                read(blocks + "BlockTransvectorInterface.java")
+                        .contains("extends BlockCamo"));
+        String dislocator = read(blocks + "BlockTransvectorDislocator.java");
+        assertTrue("dislocator extends BlockCamo", dislocator.contains("extends BlockCamo"));
+        assertTrue("its own facing and powered stay listed, camo goes around them",
+                dislocator.contains("listedProperties()")
+                        && dislocator.contains("{FACING, POWERED}"));
+        assertTrue("a wand re-aims it before camo gets the click",
+                dislocator.contains("instanceof ItemWandCasting")
+                        && dislocator.contains("state.withProperty(FACING, side)")
+                        && dislocator.contains("super.onBlockActivated("));
+
+        assertTrue("the shared tile base is a camo tile",
+                read("src/main/java/thaumcraft/common/tiles/tinkerer/TileTransvector.java")
+                        .contains("extends TileCamo"));
+        assertTrue("all three devices get the wrapping model",
+                read("src/main/java/thaumcraft/client/ClientModelRegistry.java")
+                        .contains("\"blocktransvectorinterface\"")
+                        && read("src/main/java/thaumcraft/client/ClientModelRegistry.java")
+                        .contains("\"blocktransvectordislocator\""));
     }
 
     private static String read(String path) throws IOException {

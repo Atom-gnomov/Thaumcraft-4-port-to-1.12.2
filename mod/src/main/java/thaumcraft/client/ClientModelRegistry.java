@@ -117,20 +117,27 @@ public final class ClientModelRegistry {
         replaceCamoModels(event);
     }
 
+    /** The blocks that can be disguised, by the name their blockstate uses. */
+    private static final java.util.Set<String> CAMO_BLOCKS = new java.util.HashSet<>(
+            java.util.Arrays.asList("blockplatform", "blocktransvectorinterface",
+                    "blocktransvectordislocator"));
+
     /**
      * Wraps every camouflaged device's model so it can draw as the block it is
-     * disguised as. Both the world model and the inventory one, since the
-     * blockstate names them separately.
+     * disguised as. Their blockstates name a different number of variants each
+     * — one for the interface, twelve for the dislocator — so this walks the
+     * baked registry rather than listing variants by hand.
      */
     private static void replaceCamoModels(ModelBakeEvent event) {
-        for (String name : new String[]{"blockplatform"}) {
-            for (String variant : new String[]{"normal", "inventory"}) {
-                ModelResourceLocation key = new ModelResourceLocation(
-                        new ResourceLocation("thaumcraft", name), variant);
-                IBakedModel delegate = event.getModelRegistry().getObject(key);
-                if (delegate != null) {
-                    event.getModelRegistry().putObject(key, new CamoBakedModel(delegate));
-                }
+        for (ModelResourceLocation key : new java.util.ArrayList<>(
+                event.getModelRegistry().getKeys())) {
+            if (!"thaumcraft".equals(key.getNamespace())
+                    || !CAMO_BLOCKS.contains(key.getPath())) {
+                continue;
+            }
+            IBakedModel delegate = event.getModelRegistry().getObject(key);
+            if (delegate != null && !(delegate instanceof CamoBakedModel)) {
+                event.getModelRegistry().putObject(key, new CamoBakedModel(delegate));
             }
         }
     }

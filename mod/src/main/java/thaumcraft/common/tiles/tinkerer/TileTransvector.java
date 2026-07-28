@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import thaumcraft.api.TileThaumcraft;
 
 /**
  * Shared base for the transvector devices — reimplemented from Thaumic Tinkerer
@@ -18,8 +17,11 @@ import thaumcraft.api.TileThaumcraft;
  * into a chunk that is not loaded returns {@code null} instead of forcing the
  * chunk to load, so a linked device cannot keep terrain resident or fire
  * world-gen from a tick.</p>
+ *
+ * <p>Extends {@link TileCamo} as upstream does, so both transvector devices can
+ * be disguised as the block they stand among.</p>
  */
-public abstract class TileTransvector extends TileThaumcraft {
+public abstract class TileTransvector extends TileCamo {
 
     private static final String TAG_TARGET = "target";
     private static final String TAG_LINKED = "linked";

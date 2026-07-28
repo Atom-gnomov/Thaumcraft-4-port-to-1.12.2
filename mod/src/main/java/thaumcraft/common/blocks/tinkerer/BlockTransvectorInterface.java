@@ -1,6 +1,5 @@
 package thaumcraft.common.blocks.tinkerer;
 
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -15,9 +14,12 @@ import thaumcraft.common.tiles.tinkerer.TileTransvectorInterface;
  * (pixlepix/nekosune, originally Vazkii) for 1.12.2. Stands in for another
  * block nearby; link it with the Transvector Connector.
  *
+ * <p>Camouflaged as upstream is, so it can be hidden in a wall — right-click
+ * with a block to take its face. See {@link BlockCamo}.</p>
+ *
  * @see TileTransvectorInterface
  */
-public class BlockTransvectorInterface extends BlockContainer {
+public class BlockTransvectorInterface extends BlockCamo {
 
     public BlockTransvectorInterface() {
         super(Material.IRON);

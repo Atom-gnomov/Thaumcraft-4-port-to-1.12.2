@@ -6,8 +6,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import thaumcraft.api.TileThaumcraft;
 
 /**
  * Holds the block a camouflaged device is disguised as — ported from Thaumic
@@ -16,8 +18,11 @@ import net.minecraft.util.ResourceLocation;
  * <p>The original stored the block's registry name and its metadata, and so
  * does this. Nothing is written until a disguise is actually set, so an
  * undisguised device carries no extra NBT.</p>
+ *
+ * <p>Upstream this is the base of the transvector tiles as well, and it is here
+ * too — see {@link TileTransvector}.</p>
  */
-public class TileCamo extends TileEntity {
+public class TileCamo extends TileThaumcraft {
 
     private static final String TAG_CAMO = "camo";
     private static final String TAG_CAMO_META = "camoMeta";
@@ -57,7 +62,9 @@ public class TileCamo extends TileEntity {
         }
     }
 
+    @Override
     public void writeCustomNBT(NBTTagCompound tag) {
+        super.writeCustomNBT(tag);
         if (this.camo != null) {
             ResourceLocation name = Block.REGISTRY.getNameForObject(this.camo);
             if (name != null) {
@@ -67,51 +74,26 @@ public class TileCamo extends TileEntity {
         }
     }
 
+    @Override
     public void readCustomNBT(NBTTagCompound tag) {
+        super.readCustomNBT(tag);
         String name = tag.getString(TAG_CAMO);
         this.camo = name.isEmpty() ? null : Block.REGISTRY.getObject(new ResourceLocation(name));
         this.camoMeta = tag.getInteger(TAG_CAMO_META);
     }
 
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        writeCustomNBT(tag);
-        return tag;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        readCustomNBT(tag);
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag() {
-        NBTTagCompound tag = super.getUpdateTag();
-        writeCustomNBT(tag);
-        return tag;
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound tag = new NBTTagCompound();
-        writeCustomNBT(tag);
-        return new SPacketUpdateTileEntity(this.pos, -999, tag);
-    }
-
+    /** A new disguise has to redraw the chunk, not just update the tile. */
     @Override
     public void onDataPacket(NetworkManager manager, SPacketUpdateTileEntity packet) {
-        readCustomNBT(packet.getNbtCompound());
+        super.onDataPacket(manager, packet);
         if (this.world != null && this.world.isRemote) {
             this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
         }
     }
 
+    /** Keep the tile across a state change so the disguise survives it. */
     @Override
-    public boolean shouldRefresh(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos,
-                                 IBlockState oldState, IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 }

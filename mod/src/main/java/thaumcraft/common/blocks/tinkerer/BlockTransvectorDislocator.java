@@ -1,6 +1,5 @@
 package thaumcraft.common.blocks.tinkerer;
 
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -8,13 +7,18 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.tinkerer.TileTransvectorDislocator;
 
 /**
@@ -26,7 +30,7 @@ import thaumcraft.common.tiles.tinkerer.TileTransvectorDislocator;
  *
  * @see TileTransvectorDislocator
  */
-public class BlockTransvectorDislocator extends BlockContainer {
+public class BlockTransvectorDislocator extends BlockCamo {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
     public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -45,6 +49,22 @@ public class BlockTransvectorDislocator extends BlockContainer {
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileTransvectorDislocator();
+    }
+
+    /**
+     * A wand re-aims it at the face clicked; anything else falls through to
+     * BlockCamo, which is exactly the original's order.
+     */
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
+                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        ItemStack held = player.getHeldItem(hand);
+        if (!held.isEmpty() && held.getItem() instanceof ItemWandCasting) {
+            world.setBlockState(pos, state.withProperty(FACING, side), 3);
+            world.playSound(null, pos, TCSounds.TOOL, SoundCategory.BLOCKS, 0.6F, 1.0F);
+            return true;
+        }
+        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
     }
 
     @Override
@@ -82,9 +102,13 @@ public class BlockTransvectorDislocator extends BlockContainer {
                 .withProperty(POWERED, false);
     }
 
+    /**
+     * Facing and powered are this block's own; BlockCamo adds the unlisted
+     * disguise property around them.
+     */
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING, POWERED);
+    protected net.minecraft.block.properties.IProperty<?>[] listedProperties() {
+        return new net.minecraft.block.properties.IProperty<?>[]{FACING, POWERED};
     }
 
     @Override

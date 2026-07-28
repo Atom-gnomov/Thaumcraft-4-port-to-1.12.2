@@ -45,18 +45,46 @@ public class TinkererResearchStaticGuardTest {
                 Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/misc/r_enchanting.png")));
     }
 
-    /** The original's TTResearchItem kept the module's strings under its own keys. */
+    /**
+     * The original's TTResearchItem kept the module's strings under its own
+     * keys — and <em>translated</em> them. Returning the raw key here puts
+     * "ttresearch.name.FOCUS_SMELT" on the page instead of its name.
+     */
     @Test
-    public void entriesReadTheModulesOwnStrings() throws IOException {
+    public void entriesReadAndTranslateTheModulesOwnStrings() throws IOException {
         String src = read("src/main/java/thaumcraft/common/config/research/TinkererResearchItem.java");
-        assertTrue("names come from ttresearch.name",
-                src.contains("return \"ttresearch.name.\" + this.key;"));
-        assertTrue("hover lore comes from ttresearch.lore",
-                src.contains("return \"ttresearch.lore.\" + this.key;"));
-        assertTrue("text pages are prefixed, recipe pages are left alone",
-                normalize(src).contains(
-                        "if (page != null && page.text != null && page.recipe == null) "
-                                + "{ page.text = \"ttresearch.page.\" + this.key + \".\" + page.text; }"));
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        assertTrue("names come from ttresearch.name, translated",
+                src.contains("return I18n.translateToLocal(\"ttresearch.name.\" + this.key);"));
+        assertTrue("hover lore is the [TT] prefix plus ttresearch.lore, translated",
+                src.contains("return I18n.translateToLocal(getPrefix())"
+                        + " + I18n.translateToLocal(\"ttresearch.lore.\" + this.key);"));
+        assertTrue("the prefix key is the original's", src.contains("return \"ttresearch.prefix\";"));
+        assertTrue("and it is defined in both languages, with its trailing space",
+                en.contains("ttresearch.prefix=[TT] \n") && ru.contains("ttresearch.prefix=[TT] \n"));
+        assertTrue("only text pages get the key prefix",
+                normalize(src).contains("if (page.type == PageType.TEXT)"
+                        + " { page.text = \"ttresearch.page.\" + this.key + \".\" + page.text; }"));
+    }
+
+    /**
+     * The half of {@code setPages} that is easiest to drop: an entry showing an
+     * infusion recipe gains INFUSION as a hidden parent. Without it the
+     * module's infused items offer themselves before the player has an altar.
+     */
+    @Test
+    public void infusionPagesAddTheHiddenInfusionParent() throws IOException {
+        String src = normalize(read("src/main/java/thaumcraft/common/config/research/TinkererResearchItem.java"));
+        assertTrue("the check is on the page type",
+                src.contains("if (checkInfusion() && page.type == PageType.INFUSION_CRAFTING) {"));
+        assertTrue("first hidden parent when there were none",
+                src.contains("this.parentsHidden = new String[]{\"INFUSION\"};"));
+        assertTrue("otherwise INFUSION goes in front of the existing ones",
+                src.contains("newParents[0] = \"INFUSION\";")
+                        && src.contains("newParents[i + 1] = this.parentsHidden[i];"));
+        assertTrue("subclasses can opt out, as the original's KAMI entries do",
+                src.contains("boolean checkInfusion() { return true; }"));
     }
 
     /**

@@ -1440,6 +1440,51 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("ConfigTinkerer.registerKamiArmorRecipes()"));
     }
 
+    /**
+     * The ichor tools and wand parts, checked against the original in
+     * 1.1.15.0. Only the axe had drifted; the rest is pinned so the audit does
+     * not have to be repeated.
+     */
+    @Test
+    public void ichorToolsAndWandPartsMatchTheOriginal() throws IOException {
+        String tools = "src/main/java/thaumcraft/common/items/tinkerer/kami/tool/";
+
+        // ItemAxe's damage argument is the total, not an increment on the
+        // material — every other tool class adds the material itself. 8.0 is
+        // upstream's 3.0 + 5.0, and a vanilla diamond axe for comparison.
+        assertTrue("the axe hits for the original's 8.0, not 5.0",
+                read(tools + "ItemIchorAxe.java")
+                        .contains("super(KamiMaterials.ICHOR, 8.0F, -3.0F)"));
+
+        // The other three take the material alone, so their totals come from
+        // this version's own tool constructors and sit correctly among its
+        // other tools. Not something to "correct" back to the 1.7.10 figures.
+        for (String tool : new String[]{"ItemIchorPick", "ItemIchorShovel", "ItemIchorSword"}) {
+            assertTrue(tool + " takes the material alone",
+                    read(tools + tool + ".java").contains("super(KamiMaterials.ICHOR)"));
+        }
+        for (String[] pair : new String[][]{{"ItemIchorPick", "pickaxe"},
+                {"ItemIchorAxe", "axe"}, {"ItemIchorShovel", "shovel"}}) {
+            assertTrue(pair[0] + " harvests at level 4",
+                    read(tools + pair[0] + ".java")
+                            .contains("setHarvestLevel(\"" + pair[1] + "\", 4)"));
+        }
+
+        assertTrue("the tool material is the original's, unbreakable at -1 uses",
+                read("src/main/java/thaumcraft/common/items/tinkerer/kami/KamiMaterials.java")
+                        .contains("addToolMaterial(\"ICHOR\", 4, -1, 10.0F, 5.0F, 25)"));
+
+        String wand = "src/main/java/thaumcraft/common/items/tinkerer/kami/wand/";
+        assertTrue("the cap discounts to 0.8 and is repaired with the ichor cap",
+                read(wand + "CapIchor.java")
+                        .contains("super(\"ICHOR\", 0.8F,")
+                        && read(wand + "CapIchor.java").contains("ItemKamiResource.ICHOR_CAP"));
+        assertTrue("the rod holds 1000 vis and glows",
+                read(wand + "RodIchorcloth.java")
+                        .contains("super(\"ICHORCLOTH\", 1000,")
+                        && read(wand + "RodIchorcloth.java").contains("setGlowing(true)"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

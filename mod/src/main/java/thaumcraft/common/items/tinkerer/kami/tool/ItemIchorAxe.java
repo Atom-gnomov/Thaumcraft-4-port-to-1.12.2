@@ -15,8 +15,16 @@ import thaumcraft.common.lib.CreativeTabThaumcraft;
  */
 public class ItemIchorAxe extends ItemAxe {
 
+    /**
+     * The damage argument of {@code ItemAxe(material, damage, speed)} is the
+     * <em>total</em>, not an increment on the material — unlike every other
+     * tool class, whose {@code ItemTool} constructor adds the material's own
+     * attack damage. Upstream's axe came out at {@code 3.0F + 5.0F = 8.0F}, so
+     * that is the figure passed here; a vanilla diamond axe is 8.0F too. This
+     * read 5.0F until 1.1.15.0, which made the KAMI axe weaker than diamond.
+     */
     public ItemIchorAxe() {
-        super(KamiMaterials.ICHOR, 5.0F, -3.0F);
+        super(KamiMaterials.ICHOR, 8.0F, -3.0F);
         this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
         this.setHarvestLevel("axe", 4);
     }

@@ -204,6 +204,16 @@ def research_parent(research, consts):
     return first.strip('"') or None
 
 
+def is_excluded(entry):
+    """Whether this object is out of scope rather than merely unported.
+
+    Either upstream never registers it, or it only appears alongside a mod this
+    port does not carry. Both are decisions, not backlog.
+    """
+    g = gate(entry)
+    return bool(g) and (g == u'НЕ РЕГИСТРИРУЕТСЯ' or g.startswith(u'только с'))
+
+
 def gate(entry):
     """A short label for a shouldRegister() that is not plain `return true`.
 

@@ -40,9 +40,12 @@ def main():
     entries = tt.extract()
     have = tt.ported_classes()
 
-    todo = [e for e in entries if not tt.is_ported(e['cls'], have)]
-    done = len(entries) - len(todo)
-    todo = order(todo, have)
+    ported = [e for e in entries if tt.is_ported(e['cls'], have)]
+    rest = [e for e in entries if e not in ported]
+    excluded = [e for e in rest if tt.is_excluded(e)]
+    todo = order([e for e in rest if e not in excluded], have)
+    done = len(ported)
+    scope = len(entries) - len(excluded)
 
     L = []
     w = L.append
@@ -51,20 +54,17 @@ def main():
     w('(`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,')
     w('перегенерировать после каждого захода.')
     w('')
-    w('**Состояние: портировано %d из %d объектов каталога, осталось %d.**'
-      % (done, len(entries), len(todo)))
+    w('**Состояние: портировано %d из %d, осталось %d.**' % (done, scope, len(todo)))
+    w('')
+    w('В каталоге %d объектов; %d из них вычеркнуты как недостижимые и в счёт'
+      % (len(entries), len(excluded)))
+    w('не идут — см. «Вычеркнуто» в конце.')
     w('')
     w('Порядок — по зависимостям: объект появляется после всего, что ему нужно.')
     w('«Связи» — компоненты рецепта, которые сами являются объектами TT.')
     w('Точные значения любого объекта — в [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md).')
     w('')
-    w('> **Колонка «Регистрация» — читать первой.** `НЕ РЕГИСТРИРУЕТСЯ` значит, что')
-    w('> `shouldRegister()` в оригинале возвращает `false` и объекта в игре нет')
-    w('> вообще (`BlockRPlacer`). «Только с X» — он появляется лишь при')
-    w('> установленном моде X (аспектализатор и голем-соединитель просят')
-    w('> ComputerCraft). Портировать такое «просто по таблице» значит добавить в')
-    w('> игру то, чего в оригинале нет.')
-    w('')
+
     w('> **Осторожно: таблица знает только про зависимости по рецепту.**')
     w('> Поведенческие связи она не видит, и их надо проверять глазами по')
     w('> исходнику. Пример: `ItemSkyPearl` числится свободным, но настраивается')
@@ -154,9 +154,28 @@ def main():
         w('- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `%s`' % e['cls'])
         w('')
 
+    w('---')
+    w('')
+    w('## Вычеркнуто')
+    w('')
+    w('Эти объекты не портируются и в счёт не входят. Решение принято сознательно,')
+    w('а не по недосмотру, поэтому список висит здесь, а не пропадает.')
+    w('')
+    for e in sorted(excluded, key=lambda x: x['cls']):
+        g = tt.gate(e)
+        if g == u'НЕ РЕГИСТРИРУЕТСЯ':
+            why = (u'`shouldRegister()` в оригинале возвращает `false` — объекта нет '
+                   u'в игре и с оригиналом')
+        else:
+            why = (u'%s; этого мода в порту нет, и добавлять объект «просто так» '
+                   u'значило бы дать игроку то, чего оригинал не даёт' % g)
+        w('- ~~`%s`~~ — %s' % (e['cls'], why))
+    w('')
+
     out = os.path.join(tt.REPO, 'TT_PORT_QUEUE.md')
     io.open(out, 'w', encoding='utf-8', newline='\n').write('\n'.join(L))
-    print('wrote %s — %d ported, %d remaining' % (out, done, len(todo)))
+    print('wrote %s — %d ported, %d remaining, %d struck out'
+          % (out, done, len(todo), len(excluded)))
 
 
 if __name__ == '__main__':

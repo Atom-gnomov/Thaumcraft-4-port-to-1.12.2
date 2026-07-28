@@ -90,6 +90,7 @@ public class ConfigBlocks {
     public static BlockAnimationTablet blockAnimationTablet;
     public static BlockEnchanter blockEnchanter;
     public static BlockPlatform blockPlatform;
+    public static BlockForcefield blockForcefield;
     public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight blockGaseousLight;
     public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow blockGaseousShadow;
     public static thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas blockNitorGas;
@@ -355,6 +356,10 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockNitorGas"))
                 .setTranslationKey("thaumcraft.nitor_gas");
 
+        blockForcefield = (BlockForcefield) new BlockForcefield()
+                .setRegistryName("thaumcraft", legacyPath("blockForcefield"))
+                .setTranslationKey("thaumcraft.forcefield");
+
         blockPlatform = (BlockPlatform) new BlockPlatform()
                 .setRegistryName("thaumcraft", legacyPath("blockPlatform"))
                 .setTranslationKey("thaumcraft.platform");
@@ -478,6 +483,7 @@ public class ConfigBlocks {
                 blockGaseousLight,
                 blockGaseousShadow,
                 blockNitorGas,
+                blockForcefield,
                 blockPlatform,
                 blockFireAir,
                 blockFireWater,
@@ -672,6 +678,7 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileForcefield.class, "TileForcefield"),
             new TileRegistration(TileCamo.class, "TileCamo"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileMobMagnet.class, "TileMobMagnet"),

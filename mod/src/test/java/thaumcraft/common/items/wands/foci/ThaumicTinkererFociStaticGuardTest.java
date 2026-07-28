@@ -1652,6 +1652,57 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("ConfigTinkerer.registerGasRecipes()"));
     }
 
+    /**
+     * The four primal potions do nothing while held — everything happens when
+     * the drinker strikes something, except Aqua, which works on its holder.
+     */
+    @Test
+    public void primalPotionsMatchTheOriginal() throws IOException {
+        String potions = read("src/main/java/thaumcraft/common/lib/tinkerer/ModPotionsTinkerer.java");
+        assertTrue("all four last three minutes", potions.contains("DURATION = 3600"));
+        assertTrue("and have no per-tick effect of their own",
+                potions.contains("public boolean isReady(int duration, int amplifier)")
+                        && potions.contains("return false;"));
+
+        String handler = read("src/main/java/thaumcraft/common/lib/tinkerer/TinkererPotionHandler.java");
+        assertTrue("a struck target is affected for twenty ticks, every fifth",
+                handler.contains("HIT_DURATION = 20") && handler.contains("CADENCE = 5"));
+        assertTrue("Aer throws the target about",
+                handler.contains("target.setVelocity("));
+        assertTrue("Ignis sets it alight in a sphere of thirty wisps",
+                handler.contains("target.setFire(6)") && handler.contains("i < 30")
+                        && handler.contains("r = 2.5D"));
+        assertTrue("Terra raises a five-by-five wall on the closer axis",
+                handler.contains("Math.abs(target.posZ - player.posZ) < Math.abs(target.posX - player.posX)")
+                        && handler.contains("ConfigBlocks.blockForcefield"));
+        assertTrue("Aqua sets nearby lava to obsidian on its holder's tick",
+                handler.contains("Blocks.LAVA || block == Blocks.FLOWING_LAVA")
+                        && handler.contains("Blocks.OBSIDIAN.getDefaultState()"));
+
+        // 1.7.10 had two event buses; 1.12.2 has one, so registering on both
+        // would double every effect.
+        String mod = read("src/main/java/thaumcraft/common/Thaumcraft.java");
+        assertTrue("the potion handler is registered exactly once",
+                mod.contains("ModPotionsTinkerer.register(event.getRegistry())"));
+        assertFalse("never on FMLCommonHandler's bus as well",
+                mod.contains("FMLCommonHandler.instance().bus().register(\n"
+                        + "                new thaumcraft.common.lib.tinkerer.TinkererPotionHandler())"));
+
+        String field = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockForcefield.java");
+        assertTrue("the forcefield is invisible, solid and dropless",
+                field.contains("EnumBlockRenderType.INVISIBLE")
+                        && field.contains("public boolean isFullCube")
+                        && field.contains("public void getDrops("));
+        assertTrue("and lasts sixty ticks",
+                read("src/main/java/thaumcraft/common/tiles/tinkerer/TileForcefield.java")
+                        .contains("ticks = 60"));
+        assertTrue("registered with its tile",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("blockForcefield;")
+                        && read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("TileRegistration(TileForcefield.class, \"TileForcefield\")"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

@@ -29,7 +29,8 @@ public class ConfigBlockItemModelCoverageTest {
      * an item the mod does not have.</p>
      */
     private static final Set<String> NO_ITEM_FORM = new HashSet<>(java.util.Arrays.asList(
-            "blockgaseouslight", "blockgaseousshadow", "blocknitorgas"));
+            "blockgaseouslight", "blockgaseousshadow", "blocknitorgas",
+            "blockforcefield"));
 
     @Test
     public void everyConfigBlockRegistryPathHasItemModelJson() throws IOException {

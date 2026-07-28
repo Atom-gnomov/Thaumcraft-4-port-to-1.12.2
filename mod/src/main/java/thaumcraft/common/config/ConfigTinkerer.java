@@ -203,6 +203,25 @@ public class ConfigTinkerer {
 
 
 
+
+    /**
+     * Two odds and ends: the tome that copies research between players, and
+     * scribing tools with more than twice the ink.
+     *
+     * <p>The tome is bench work upstream, gated behind its own config flag —
+     * this port always registers it, which is that flag's default.</p>
+     */
+    public static void registerScribeRecipes() {
+        ConfigResearch.recipes.put("InfusedInkwell", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSED_INKWELL", new ItemStack(ConfigItems.itemInfusedInkwell), 2,
+                new AspectList().add(Aspect.VOID, 8).add(Aspect.DARKNESS, 8),
+                new ItemStack(ConfigItems.itemInkwell),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigBlocks.blockJar),
+                        new ItemStack(ConfigItems.itemResource, 1, 3)}));
+    }
+
     /**
      * The necromancy set: the blade that takes creatures apart, the souls it
      * yields, and the tablet that puts them back together.
@@ -441,6 +460,23 @@ public class ConfigTinkerer {
         registry.register(new thaumcraft.common.items.tinkerer.SpellClothRecipe(
                 ConfigItems.itemSpellCloth)
                 .setRegistryName("thaumcraft", "spellcloth_disenchant"));
+
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigItems.itemShareBook),
+                " S ", "PTP", " P ",
+                'S', new ItemStack(ConfigItems.itemInkwell),
+                'T', new ItemStack(ConfigItems.itemThaumonomicon),
+                'P', new ItemStack(Items.PAPER))
+                .setRegistryName("thaumcraft", "sharebook"));
+
+        // Re-inking the infused tools: a ring of ink sacs round the worn ones.
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigItems.itemInfusedInkwell),
+                "QQQ", "QCQ", "QQQ",
+                'Q', new ItemStack(Items.DYE, 1, 0),
+                'C', new ItemStack(ConfigItems.itemInfusedInkwell, 1,
+                        net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE))
+                .setRegistryName("thaumcraft", "infusedinkwell_refill"));
 
         // Nine plain souls press into one condensed, per aspect.
         for (int i = 0; i < thaumcraft.common.items.tinkerer.SoulAspects.count(); i++) {

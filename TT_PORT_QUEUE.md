@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 66 из 79, осталось 13.**
+**Состояние: портировано 68 из 79, осталось 11.**
 
 В каталоге 84 объектов; 5 из них вычеркнуты как недостижимые и в счёт
 не идут — см. «Вычеркнуто» в конце.
@@ -27,12 +27,10 @@
 | 5 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
 | 6 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
 | 7 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
-| 8 | `ItemInfusedInkwell` | инфузия + верстак | 2 | всегда | — | — |
-| 9 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
-| 10 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
-| 11 | `ItemShareBook` | верстак | — | всегда | — | — |
-| 12 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
-| 13 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
+| 8 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
+| 9 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
+| 10 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
+| 11 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
 
 ---
 
@@ -90,7 +88,7 @@
 - `ItemFocusSmelt` → у нас `FocusSmelt` — "focusSmelt"
 - `ItemFocusTelekinesis` → у нас `FocusTelekinesis` — "focusTelekinesis"
 
-**Предметы** — 14
+**Предметы** — 16
 
 - `ItemBlockMagnet` → у нас `BlockMagnetItem` — "magnet"
 - `ItemBloodSword` — "bloodSword"
@@ -99,10 +97,12 @@
 - `ItemGas` — setBlock == ThaumicTinkerer.registry.getFirstBlockFromClass(BlockGaseousShadow.class) ? "gaseousShadowItem" : "gaseousLightItem"
 - `ItemGasRemover` — "gasRemover"
 - `ItemInfusedGrain` — "infusedGrain"
+- `ItemInfusedInkwell` — "infusedInkwell"
 - `ItemInfusedPotion` — "infusedPotion"
 - `ItemInfusedSeeds` — "infusedSeeds"
 - `ItemMobAspect` — "mobAspect"
 - `ItemRevealingHelm` — "revealingHelm"
+- `ItemShareBook` — "shareBook"
 - `ItemSoulMould` — "soulMould"
 - `ItemSpellCloth` — "spellCloth"
 - `ItemXPTalisman` → у нас `ItemXpTalisman` — "xpTalisman"
@@ -217,17 +217,7 @@
 - **Использует уже портированное:** `ItemIchorSword`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorSwordAdv`
 
-### 8. `ItemInfusedInkwell`
-
-- **Файл оригинала:** `common/item/ItemInfusedInkwell.java`
-- **Наследует:** `ItemBase`, реализует `IScribeTools`
-- **Имя регистрации:** `"infusedInkwell"`
-- **Рецепт:** инфузия + верстак
-- **Нестабильность:** 2
-- **Аспекты:** VOID 8, DARKNESS 8
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedInkwell`
-
-### 9. `ItemModFocus`
+### 8. `ItemModFocus`
 
 - **Файл оригинала:** `common/item/foci/ItemModFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -235,7 +225,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModFocus`
 
-### 10. `ItemModKamiFocus`
+### 9. `ItemModKamiFocus`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemModKamiFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -244,15 +234,7 @@
 - **Регистрация:** по конфигу enableKami
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
 
-### 11. `ItemShareBook`
-
-- **Файл оригинала:** `common/item/ItemShareBook.java`
-- **Наследует:** `ItemBase`
-- **Имя регистрации:** `"shareBook"`
-- **Рецепт:** верстак
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemShareBook`
-
-### 12. `ItemSkyPearl`
+### 10. `ItemSkyPearl`
 
 - **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
 - **Наследует:** `ItemKamiBase`
@@ -262,7 +244,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
 
-### 13. `ItemFocusRecall`
+### 11. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`

@@ -1838,6 +1838,44 @@ public class ThaumicTinkererFociStaticGuardTest {
                 cfg.contains("addToolMaterial(\"TT_BLOOD\", 0, 950, 0.0F, 0.0F"));
     }
 
+    /** The tome copies research between players; the tools just hold more ink. */
+    @Test
+    public void tomeAndInkwellMatchTheOriginal() throws IOException {
+        String tome = read("src/main/java/thaumcraft/common/items/tinkerer/ItemShareBook.java");
+        assertTrue("binds on first right-click and records what it saw",
+                tome.contains("UNASSIGNED = \"[none]\"") && tome.contains("writeResearch(stack, name)"));
+        assertTrue("falls back to its own copy when the owner is away",
+                tome.contains("storedResearch(stack)"));
+        assertTrue("grants every recorded research to whoever reads it",
+                tome.contains("ResearchManager.addResearch(player, key)"));
+        assertTrue("its contents reach the client for the tooltip",
+                tome.contains("public boolean getShareTag()"));
+
+        String ink = read("src/main/java/thaumcraft/common/items/tinkerer/ItemInfusedInkwell.java");
+        assertTrue("800 uses, against the ordinary tools' 350",
+                ink.contains("USES = 800"));
+        assertTrue("and stays out of the creative tab, as upstream",
+                !ink.contains("setCreativeTab"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("the tome is bench work round a Thaumonomicon",
+                rec.contains("\" S \", \"PTP\", \" P \"")
+                        && rec.contains("ConfigItems.itemThaumonomicon"));
+        assertTrue("the tools infuse from ordinary ones at instability 2",
+                rec.contains("\"INFUSED_INKWELL\"")
+                        && rec.contains("add(Aspect.VOID, 8).add(Aspect.DARKNESS, 8)"));
+        assertTrue("and are re-inked with a ring of ink sacs",
+                rec.contains("infusedinkwell_refill"));
+        assertTrue("registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerScribeRecipes()"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        assertTrue("both registered",
+                cfg.contains("allItems.add(itemShareBook)")
+                        && cfg.contains("allItems.add(itemInfusedInkwell)"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

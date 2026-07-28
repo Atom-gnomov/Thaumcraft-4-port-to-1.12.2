@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertTrue;
 
@@ -137,6 +139,135 @@ public class TinkererResearchStaticGuardTest {
                         + " -6, -2, 2, new ItemStack(ConfigItems.focusEnderChest))"
                         + ".setParents(\"FOCUS_DEFLECT\").setConcealed()"
                         + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"FocusEnderChest\"))"));
+    }
+
+    /**
+     * The dark quartz trunk and its branch, from each object's
+     * {@code getResearchItem()}. Dark quartz itself is the way into the tab:
+     * a stub, auto-unlocked and round, with no aspects and no complexity.
+     */
+    @Test
+    public void darkQuartzBranchMatchesTheOriginal() throws IOException {
+        String src = normalize(source());
+        assertTrue("dark quartz is the auto-unlocked stub with six bench pages", src.contains(
+                "new TinkererResearchItem(\"DARK_QUARTZ\", new AspectList(),"
+                        + " -2, 2, 0, new ItemStack(ConfigItems.itemDarkQuartz))"
+                        + ".setStub().setAutoUnlock().setRound()"
+                        + ".setPages(new ResearchPage(\"0\"), benchRecipePage(\"DARK_QUARTZ0\"),"
+                        + " benchRecipePage(\"DARK_QUARTZ1\"), benchRecipePage(\"DARK_QUARTZ2\"),"
+                        + " benchRecipePage(\"DARK_QUARTZ3\"), benchRecipePage(\"DARK_QUARTZ4\"),"
+                        + " benchRecipePage(\"DARK_QUARTZ5\"))"));
+        assertTrue("transvector interface, two recipes across three text pages", src.contains(
+                "new TinkererResearchItem(\"INTERFACE\", new AspectList()"
+                        + ".add(Aspect.ENTROPY, 4).add(Aspect.ORDER, 4),"
+                        + " -4, 2, 1, new ItemStack(ConfigBlocks.blockTransvectorInterface))"
+                        + ".setParents(\"DARK_QUARTZ\")"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"TransvectorInterface\"),"
+                        + " new ResearchPage(\"1\"), arcaneRecipePage(\"TransvectorConnector\"),"
+                        + " new ResearchPage(\"2\"))"));
+        assertTrue("magnets carry the soul mould's crucible page", src.contains(
+                "new TinkererResearchItem(\"MAGNETS\", new AspectList()"
+                        + ".add(Aspect.MECHANISM, 2).add(Aspect.MOTION, 1).add(Aspect.SENSES, 1),"
+                        + " -6, 3, 3, new ItemStack(ConfigBlocks.blockMagnet))"
+                        + ".setParents(\"INTERFACE\").setConcealed()"
+                        + ".setPages(new ResearchPage(\"0\"), new ResearchPage(\"1\"),"
+                        + " arcaneRecipePage(\"Magnet\"), arcaneRecipePage(\"MobMagnet\"),"
+                        + " crucibleRecipePage(\"SoulMould\"))"));
+        assertTrue("the dislocator keeps Thaumcraft's MIRROR as a hidden parent", src.contains(
+                "new TinkererResearchItem(\"DISLOCATOR\", new AspectList()"
+                        + ".add(Aspect.TRAVEL, 2).add(Aspect.MECHANISM, 1).add(Aspect.ELDRITCH, 1),"
+                        + " -6, 1, 3, new ItemStack(ConfigBlocks.blockTransvectorDislocator))"
+                        + ".setConcealed().setParents(\"INTERFACE\").setParentsHidden(\"MIRROR\")"
+                        + ".setPages(new ResearchPage(\"0\"),"
+                        + " arcaneRecipePage(\"TransvectorDislocator\")).setSecondary()"));
+        assertTrue("animation tablet", src.contains(
+                "new TinkererResearchItem(\"ANIMATION_TABLET\", new AspectList()"
+                        + ".add(Aspect.MECHANISM, 2).add(Aspect.METAL, 1)"
+                        + ".add(Aspect.MOTION, 1).add(Aspect.ENERGY, 1),"
+                        + " -8, 2, 4, new ItemStack(ConfigBlocks.blockAnimationTablet))"
+                        + ".setParents(\"MAGNETS\")"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"AnimationTablet\"))"));
+        assertTrue("the levitator's key is LEVITATOR, not MOBILIZER", src.contains(
+                "new TinkererResearchItem(\"LEVITATOR\", new AspectList()"
+                        + ".add(Aspect.MOTION, 2).add(Aspect.ORDER, 2),"
+                        + " -7, 5, 3, new ItemStack(ConfigBlocks.blockMobilizer))"
+                        + ".setParents(\"MAGNETS\")"
+                        + ".setPages(new ResearchPage(\"0\"), infusionPage(\"Mobilizer\"),"
+                        + " arcaneRecipePage(\"MobilizerRelay\")).setSecondary()"));
+        assertTrue("cleansing talisman", src.contains(
+                "new TinkererResearchItem(\"CLEANSING_TALISMAN\", new AspectList()"
+                        + ".add(Aspect.HEAL, 2).add(Aspect.ORDER, 1).add(Aspect.POISON, 1),"
+                        + " -3, 4, 3, new ItemStack(ConfigItems.itemCleansingTalisman))"
+                        + ".setSecondary().setParents(\"DARK_QUARTZ\")"
+                        + ".setPages(new ResearchPage(\"0\"), infusionPage(\"CleansingTalisman\"))"));
+        assertTrue("blood sword, with its second text page after the recipe", src.contains(
+                "new TinkererResearchItem(\"BLOOD_SWORD\", new AspectList()"
+                        + ".add(Aspect.HUNGER, 2).add(Aspect.WEAPON, 1)"
+                        + ".add(Aspect.FLESH, 1).add(Aspect.SOUL, 1),"
+                        + " -4, 6, 3, new ItemStack(ConfigItems.itemBloodSword))"
+                        + ".setParents(\"CLEANSING_TALISMAN\")"
+                        + ".setPages(new ResearchPage(\"0\"), infusionPage(\"BloodSword\"),"
+                        + " new ResearchPage(\"1\")).setSecondary()"));
+        assertTrue("summoning, arcane then bench then infusion", src.contains(
+                "new TinkererResearchItem(\"SUMMON\", new AspectList()"
+                        + ".add(Aspect.WEAPON, 1).add(Aspect.BEAST, 3).add(Aspect.MAGIC, 3),"
+                        + " -5, 8, 3, new ItemStack(ConfigBlocks.blockSummon))"
+                        + ".setParents(\"BLOOD_SWORD\")"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"SUMMON0\"),"
+                        + " benchRecipePage(\"SUMMON1\"), infusionPage(\"SUMMON\"),"
+                        + " new ResearchPage(\"1\"))"));
+        assertTrue("aether platform", src.contains(
+                "new TinkererResearchItem(\"PLATFORM\", new AspectList()"
+                        + ".add(Aspect.SENSES, 2).add(Aspect.TREE, 1).add(Aspect.MOTION, 1),"
+                        + " -2, 6, 3, new ItemStack(ConfigBlocks.blockPlatform))"
+                        + ".setConcealed().setParents(\"CLEANSING_TALISMAN\")"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"Platform\")).setSecondary()"));
+    }
+
+    /**
+     * Upstream's recipe wrappers take (mapKey, researchGate) and the two differ
+     * for a handful of objects. Getting them the wrong way round gates a recipe
+     * behind a key no entry declares, which is exactly how the summoning block
+     * became uncraftable.
+     */
+    @Test
+    public void recipesGatedOnTheKeyTheOriginalGatesThemOn() throws IOException {
+        String recipes = normalize(read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java"));
+        assertTrue("the summoning block is gated on SUMMON and stored under SUMMON0",
+                recipes.contains("ConfigResearch.recipes.put(\"SUMMON0\","
+                        + " ThaumcraftApi.addArcaneCraftingRecipe( \"SUMMON\","
+                        + " new ItemStack(ConfigBlocks.blockSummon),"));
+        assertTrue("both magnets are gated on MAGNETS, not on their own names",
+                recipes.contains("\"MAGNETS\", new ItemStack(ConfigBlocks.blockMagnet),")
+                        && recipes.contains("\"MAGNETS\", new ItemStack(ConfigBlocks.blockMagnet, 1, 1),"));
+        assertTrue("the relay is gated on the levitator's key",
+                recipes.contains("\"LEVITATOR\", new ItemStack(ConfigBlocks.blockMobilizerRelay),"));
+        assertTrue("both transvector recipes are gated on INTERFACE",
+                recipes.contains("\"INTERFACE\", new ItemStack(ConfigBlocks.blockTransvectorInterface),")
+                        && recipes.contains("\"INTERFACE\", new ItemStack(ConfigItems.itemTransvectorConnector),"));
+    }
+
+    /**
+     * Every key a page asks for must be a key some recipe was filed under.
+     * The lookups are strict, so a typo here is a crash at world load rather
+     * than a wrong page — this test turns that into a red build instead.
+     */
+    @Test
+    public void everyRecipePageKeyIsRegistered() throws IOException {
+        String research = source();
+        String recipes = normalize(read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java"));
+        Matcher pages = Pattern.compile(
+                "(?:arcaneRecipePage|infusionPage|benchRecipePage|crucibleRecipePage)\\(\"([^\"]+)\"\\)")
+                .matcher(research);
+        int checked = 0;
+        while (pages.find()) {
+            String key = pages.group(1);
+            boolean filed = recipes.contains("ConfigResearch.recipes.put(\"" + key + "\",")
+                    || recipes.matches(".*bench\\([^)]*, \"" + Pattern.quote(key) + "\",.*");
+            assertTrue("no recipe is filed under " + key + ", so its page would throw", filed);
+            checked++;
+        }
+        assertTrue("the entries must actually reference recipes", checked >= 20);
     }
 
     /** A missing recipe handle must throw rather than quietly become a text page. */

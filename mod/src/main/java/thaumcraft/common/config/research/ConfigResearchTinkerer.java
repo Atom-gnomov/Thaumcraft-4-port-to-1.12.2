@@ -6,6 +6,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchPage;
+import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 
 /**
@@ -35,6 +36,119 @@ public final class ConfigResearchTinkerer {
 
     public static void initResearch() {
         registerFoci();
+        registerDarkQuartzBranch();
+    }
+
+    /**
+     * The dark quartz trunk and everything hanging off it. Dark quartz itself
+     * is a stub: auto-unlocked, round, no aspects and no complexity — the way
+     * into the tab rather than something to research.
+     */
+    private static void registerDarkQuartzBranch() {
+        new TinkererResearchItem("DARK_QUARTZ",
+                new AspectList(),
+                -2, 2, 0, new ItemStack(ConfigItems.itemDarkQuartz))
+                .setStub().setAutoUnlock().setRound()
+                .setPages(new ResearchPage("0"),
+                        benchRecipePage("DARK_QUARTZ0"),
+                        benchRecipePage("DARK_QUARTZ1"),
+                        benchRecipePage("DARK_QUARTZ2"),
+                        benchRecipePage("DARK_QUARTZ3"),
+                        benchRecipePage("DARK_QUARTZ4"),
+                        benchRecipePage("DARK_QUARTZ5"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("INTERFACE",
+                new AspectList().add(Aspect.ENTROPY, 4).add(Aspect.ORDER, 4),
+                -4, 2, 1, new ItemStack(ConfigBlocks.blockTransvectorInterface))
+                .setParents("DARK_QUARTZ")
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("TransvectorInterface"),
+                        new ResearchPage("1"),
+                        arcaneRecipePage("TransvectorConnector"),
+                        new ResearchPage("2"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("MAGNETS",
+                new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.MOTION, 1).add(Aspect.SENSES, 1),
+                -6, 3, 3, new ItemStack(ConfigBlocks.blockMagnet))
+                .setParents("INTERFACE").setConcealed()
+                .setPages(new ResearchPage("0"), new ResearchPage("1"),
+                        arcaneRecipePage("Magnet"),
+                        arcaneRecipePage("MobMagnet"),
+                        crucibleRecipePage("SoulMould"))
+                .registerResearchItem();
+
+        // The hidden MIRROR parent is Thaumcraft's own — the dislocator is a
+        // mirror trick, and upstream keeps it behind that research too.
+        new TinkererResearchItem("DISLOCATOR",
+                new AspectList().add(Aspect.TRAVEL, 2).add(Aspect.MECHANISM, 1).add(Aspect.ELDRITCH, 1),
+                -6, 1, 3, new ItemStack(ConfigBlocks.blockTransvectorDislocator))
+                .setConcealed().setParents("INTERFACE").setParentsHidden("MIRROR")
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("TransvectorDislocator"))
+                .setSecondary()
+                .registerResearchItem();
+
+        new TinkererResearchItem("ANIMATION_TABLET",
+                new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.METAL, 1)
+                        .add(Aspect.MOTION, 1).add(Aspect.ENERGY, 1),
+                -8, 2, 4, new ItemStack(ConfigBlocks.blockAnimationTablet))
+                .setParents("MAGNETS")
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("AnimationTablet"))
+                .registerResearchItem();
+
+        // Upstream's KEY_MOBILIZER is the string "LEVITATOR", and its strings
+        // and recipe gate follow the key, not the class name.
+        new TinkererResearchItem("LEVITATOR",
+                new AspectList().add(Aspect.MOTION, 2).add(Aspect.ORDER, 2),
+                -7, 5, 3, new ItemStack(ConfigBlocks.blockMobilizer))
+                .setParents("MAGNETS")
+                .setPages(new ResearchPage("0"),
+                        infusionPage("Mobilizer"),
+                        arcaneRecipePage("MobilizerRelay"))
+                .setSecondary()
+                .registerResearchItem();
+
+        new TinkererResearchItem("CLEANSING_TALISMAN",
+                new AspectList().add(Aspect.HEAL, 2).add(Aspect.ORDER, 1).add(Aspect.POISON, 1),
+                -3, 4, 3, new ItemStack(ConfigItems.itemCleansingTalisman))
+                .setSecondary().setParents("DARK_QUARTZ")
+                .setPages(new ResearchPage("0"),
+                        infusionPage("CleansingTalisman"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("BLOOD_SWORD",
+                new AspectList().add(Aspect.HUNGER, 2).add(Aspect.WEAPON, 1)
+                        .add(Aspect.FLESH, 1).add(Aspect.SOUL, 1),
+                -4, 6, 3, new ItemStack(ConfigItems.itemBloodSword))
+                .setParents("CLEANSING_TALISMAN")
+                .setPages(new ResearchPage("0"),
+                        infusionPage("BloodSword"),
+                        new ResearchPage("1"))
+                .setSecondary()
+                .registerResearchItem();
+
+        new TinkererResearchItem("SUMMON",
+                new AspectList().add(Aspect.WEAPON, 1).add(Aspect.BEAST, 3).add(Aspect.MAGIC, 3),
+                -5, 8, 3, new ItemStack(ConfigBlocks.blockSummon))
+                .setParents("BLOOD_SWORD")
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("SUMMON0"),
+                        benchRecipePage("SUMMON1"),
+                        infusionPage("SUMMON"),
+                        new ResearchPage("1"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("PLATFORM",
+                new AspectList().add(Aspect.SENSES, 2).add(Aspect.TREE, 1).add(Aspect.MOTION, 1),
+                -2, 6, 3, new ItemStack(ConfigBlocks.blockPlatform))
+                .setConcealed().setParents("CLEANSING_TALISMAN")
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("Platform"))
+                .setSecondary()
+                .registerResearchItem();
     }
 
     /**
@@ -112,5 +226,15 @@ public final class ConfigResearchTinkerer {
     /** The original's ResearchHelper.infusionPage. */
     private static ResearchPage infusionPage(String recipeKey) {
         return new ResearchPage(ConfigResearch.recipeInfusion(recipeKey));
+    }
+
+    /** The original's ResearchHelper.recipePage — a plain bench recipe. */
+    private static ResearchPage benchRecipePage(String recipeKey) {
+        return new ResearchPage(ConfigResearch.recipeI(recipeKey));
+    }
+
+    /** The original's ResearchHelper.crucibleRecipePage. */
+    private static ResearchPage crucibleRecipePage(String recipeKey) {
+        return new ResearchPage(ConfigResearch.recipeCrucible(recipeKey));
     }
 }

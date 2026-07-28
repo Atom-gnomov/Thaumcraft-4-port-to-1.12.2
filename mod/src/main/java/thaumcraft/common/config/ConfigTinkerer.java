@@ -259,8 +259,11 @@ public class ConfigTinkerer {
      * infused — so the loop below writes twenty-two recipes.</p>
      */
     public static void registerNecromancyRecipes() {
-        ConfigResearch.recipes.put("Summon", ThaumcraftApi.addArcaneCraftingRecipe(
-                "SUMMON0", new ItemStack(ConfigBlocks.blockSummon),
+        // Upstream's wrapper takes (mapKey, researchGate): the block is stored
+        // under SUMMON0 but gated behind SUMMON. Gating it on SUMMON0 — a key
+        // no entry declares — is what made it uncraftable.
+        ConfigResearch.recipes.put("SUMMON0", ThaumcraftApi.addArcaneCraftingRecipe(
+                "SUMMON", new ItemStack(ConfigBlocks.blockSummon),
                 new AspectList().add(Aspect.ORDER, 50).add(Aspect.ENTROPY, 50),
                 "WWW", "SSS",
                 'S', new ItemStack(Blocks.STONE),
@@ -286,7 +289,7 @@ public class ConfigTinkerer {
                     new ItemStack(ConfigItems.itemMobAspect, 1, i),
                     new AspectList().add(aspect, 8));
 
-            ConfigResearch.recipes.put("SoulAspectInfused" + i,
+            thaumcraft.api.crafting.InfusionRecipe soulInfusion =
                     ThaumcraftApi.addInfusionCraftingRecipe(
                             "SUMMON", new ItemStack(ConfigItems.itemMobAspect, 1, stride * 2 + i), 4,
                             new AspectList().add(aspect, 10),
@@ -299,7 +302,12 @@ public class ConfigTinkerer {
                                     new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
                                     new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
                                     new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
-                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i)}));
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i)});
+            ConfigResearch.recipes.put("SoulAspectInfused" + i, soulInfusion);
+            // Upstream keys every one of these SUMMON too, so its research page
+            // shows whichever was registered last; this handle keeps that page
+            // the same, while the per-aspect one stays for anything specific.
+            ConfigResearch.recipes.put("SUMMON", soulInfusion);
         }
     }
 
@@ -437,47 +445,52 @@ public class ConfigTinkerer {
      */
     public static void registerBenchRecipes(net.minecraftforge.registries.IForgeRegistry<
             net.minecraft.item.crafting.IRecipe> registry) {
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigItems.itemDarkQuartz, 8),
-                "QQQ", "QCQ", "QQQ",
-                'Q', new ItemStack(Items.QUARTZ),
-                'C', new ItemStack(Items.COAL, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_coal"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigItems.itemDarkQuartz, 8),
-                "QQQ", "QCQ", "QQQ",
-                'Q', new ItemStack(Items.QUARTZ),
-                'C', new ItemStack(Items.COAL, 1, 1))
-                .setRegistryName("thaumcraft", "darkquartz_charcoal"));
+        // The keys are the original's: its research entry shows one page per
+        // DARK_QUARTZ0..5. Upstream registers both gem recipes under the same
+        // key, so the map keeps the charcoal one and that is the page shown —
+        // reproduced here rather than tidied.
+        registry.register(bench("darkquartz_coal", "DARK_QUARTZ0",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigItems.itemDarkQuartz, 8),
+                        "QQQ", "QCQ", "QQQ",
+                        'Q', new ItemStack(Items.QUARTZ),
+                        'C', new ItemStack(Items.COAL, 1, 0))));
+        registry.register(bench("darkquartz_charcoal", "DARK_QUARTZ0",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigItems.itemDarkQuartz, 8),
+                        "QQQ", "QCQ", "QQQ",
+                        'Q', new ItemStack(Items.QUARTZ),
+                        'C', new ItemStack(Items.COAL, 1, 1))));
 
         // The blocks: four gems make one, two blocks make two pillars, and two
         // slabs make one chiseled block. All bench recipes upstream.
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0),
-                "QQ", "QQ",
-                'Q', new ItemStack(ConfigItems.itemDarkQuartz))
-                .setRegistryName("thaumcraft", "darkquartz_block"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
-                "Q", "Q",
-                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_pillar"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
-                "Q", "Q",
-                'Q', new ItemStack(ConfigBlocks.blockSlabDarkQuartz))
-                .setRegistryName("thaumcraft", "darkquartz_chiseled"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockSlabDarkQuartz, 6),
-                "QQQ",
-                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_slab"));
-        // Stairs are registered both ways round, as upstream does.
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
-                "  Q", " QQ", "QQQ",
-                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_stairs"));
+        registry.register(bench("darkquartz_block", "DARK_QUARTZ1",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0),
+                        "QQ", "QQ",
+                        'Q', new ItemStack(ConfigItems.itemDarkQuartz))));
+        registry.register(bench("darkquartz_pillar", "DARK_QUARTZ3",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
+                        "Q", "Q",
+                        'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))));
+        registry.register(bench("darkquartz_chiseled", "DARK_QUARTZ4",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
+                        "Q", "Q",
+                        'Q', new ItemStack(ConfigBlocks.blockSlabDarkQuartz))));
+        registry.register(bench("darkquartz_slab", "DARK_QUARTZ2",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockSlabDarkQuartz, 6),
+                        "QQQ",
+                        'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))));
+        // Stairs are registered both ways round, as upstream does — but only
+        // the first carries the research key there, so only it gets a page.
+        registry.register(bench("darkquartz_stairs", "DARK_QUARTZ5",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
+                        "  Q", " QQ", "QQQ",
+                        'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))));
         registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
                 new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
                 "Q  ", "QQ ", "QQQ",
@@ -506,15 +519,30 @@ public class ConfigTinkerer {
                         net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE))
                 .setRegistryName("thaumcraft", "infusedinkwell_refill"));
 
-        // Nine plain souls press into one condensed, per aspect.
+        // Nine plain souls press into one condensed, per aspect. Upstream keys
+        // every one of them SUMMON1, so the summoning research shows whichever
+        // was registered last; keeping the single key keeps that page the same.
         for (int i = 0; i < thaumcraft.common.items.tinkerer.SoulAspects.count(); i++) {
             int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
-            registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
-                    "XXX", "XXX", "XXX",
-                    'X', new ItemStack(ConfigItems.itemMobAspect, 1, i))
-                    .setRegistryName("thaumcraft", "soulaspect_condense_" + i));
+            registry.register(bench("soulaspect_condense_" + i, "SUMMON1",
+                    new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                            new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                            "XXX", "XXX", "XXX",
+                            'X', new ItemStack(ConfigItems.itemMobAspect, 1, i))));
         }
+    }
+
+    /**
+     * Registers a bench recipe under its Forge name and keeps a handle under
+     * the research key the original used, so a Thaumonomicon page can show it.
+     * Reusing a key overwrites, exactly as upstream's registry does.
+     */
+    private static net.minecraft.item.crafting.IRecipe bench(
+            String registryName, String researchKey,
+            net.minecraftforge.oredict.ShapedOreRecipe recipe) {
+        recipe.setRegistryName("thaumcraft", registryName);
+        ConfigResearch.recipes.put(researchKey, recipe);
+        return recipe;
     }
 
     /**

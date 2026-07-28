@@ -6,8 +6,18 @@
 ## Бо́льшую часть контента TT нельзя получить в выживании
 
 **Severity: блокирует модуль.** Найдено аудитом 2026-07-28, после 1.1.23.0.
-**Частично закрыто в 1.1.25.0:** ветка фокусов перенесена, вкладка
-`TT_CATEGORY` зарегистрирована, 7 фокусов достижимы. Остальное — ниже.
+**Частично закрыто:** вкладка `TT_CATEGORY` и ветка фокусов — в 1.1.25.0,
+ствол `DARK_QUARTZ` со всем поддеревом — в 1.1.26.0. Остальное — ниже.
+
+**Отдельная ловушка, найденная в 1.1.26.0.** Обёртки рецептов оригинала берут
+`(ключ_карты, гейт_исследования)`, и у части объектов это **разные** строки:
+`MAGNET`/`MAGNETS`, `MOB_MAGNET`/`MAGNETS`, `INTERFACE1`/`INTERFACE`,
+`RELAY`/`LEVITATOR`, `SUMMON0`/`SUMMON`, `ICHOR_AXE`|`PICK`|`SHOVEL`|`SWORD` →
+`ICHOR_TOOLS`, `ICHORCLOTH_HELM`|`CHEST`|`LEGS`|`BOOTS` → `ICHORCLOTH_ARMOR`.
+Взять первый аргумент за гейт — значит повесить рецепт на ключ, которого нет
+ни в одной записи. Так и было с блоком призыва (гейт `SUMMON0`), починено.
+**Ихориевые инструменты ещё не сверены** — при их исследованиях проверить, что
+все четыре гейтятся на `ICHOR_TOOLS`, а не каждый на своё имя.
 
 `ShapedArcaneRecipe.matches` и `InfusionRecipe.matches` начинаются с проверки
 
@@ -20,19 +30,21 @@ if (this.research.length() > 0 && !ThaumcraftApiHelper.isResearchComplete(player
 записи Таумономикона. Ветка исследований Thaumic Tinkerer не портирована, то
 есть **таких записей нет ни для одного ключа TT**.
 
-Гейтом закрыт 51 рецепт `ConfigTinkerer`. После 1.1.25.0 достижимы 16 из них:
-9 висят на ключах, которые есть в самом TC4, ещё 7 — на семи новых записях
-фокусов. Оставшиеся **35 рецептов висят на 30 ключах оригинала**, для которых
-записи Таумономикона по-прежнему нет, то есть эти рецепты не сработают никогда:
+Гейтом закрыт 51 рецепт `ConfigTinkerer`. После 1.1.26.0 достижимы 27 из них.
+Оставшиеся **24 рецепта висят на 21 ключе оригинала**, для которых записи
+Таумономикона нет, то есть эти рецепты не сработают никогда:
 
 ```
-ANIMATION_TABLET  BLOCK_TALISMAN  BLOOD_SWORD  CAT_AMULET  CLEANSING_TALISMAN
-DISLOCATOR  ENCHANTER  FUNNEL  GAS_REMOVER  ICHORCLOTH_ARMOR (x4)
-ICHORCLOTH_BOOTS_GEM  ICHORCLOTH_CHEST_GEM  ICHORCLOTH_HELM_GEM
-ICHORCLOTH_LEGS_GEM  ICHOR_POUCH  INFUSED_INKWELL  INTERFACE (x2)
-MAGNETS (x2)  PLACEMENT_MIRROR  PLATFORM  POTIONS0  POTIONS1  POTIONS2
-POTIONS3  PROTOCLAY  REPAIRER  REVEALING_HELM  SUMMON  SUMMON0  XP_TALISMAN
+BLOCK_TALISMAN  CAT_AMULET  ENCHANTER  FUNNEL  GAS_REMOVER
+ICHORCLOTH_ARMOR (x4)  ICHORCLOTH_BOOTS_GEM  ICHORCLOTH_CHEST_GEM
+ICHORCLOTH_HELM_GEM  ICHORCLOTH_LEGS_GEM  ICHOR_POUCH  INFUSED_INKWELL
+PLACEMENT_MIRROR  POTIONS0  POTIONS1  POTIONS2  POTIONS3  PROTOCLAY
+REPAIRER  REVEALING_HELM  XP_TALISMAN
 ```
+
+Половина из них — ярус KAMI (`ICHOR*`, `BLOCK_TALISMAN`, `PROTOCLAY`,
+`PLACEMENT_MIRROR`, `XP_TALISMAN`, `CAT_AMULET`); он закрывается вместе со
+своим гейтом, см. следующий пункт.
 
 Пересчитать список: `ConfigTinkerer` даёт ключи первым аргументом
 `addArcaneCraftingRecipe`/`addInfusionCraftingRecipe`, наличие записи —
@@ -85,11 +97,11 @@ POTIONS3  PROTOCLAY  REPAIRER  REVEALING_HELM  SUMMON  SUMMON0  XP_TALISMAN
                                               → FOCUS_DISLOCATION      готово
                                 → FOCUS_DEFLECT → FOCUS_HEAL           готово
                                                 → FOCUS_ENDER_CHEST    готово
-DARK_QUARTZ → INTERFACE → MAGNETS → ANIMATION_TABLET → REMOTE_PLACER
-            │           │        └→ MOBILIZER
-            │           └→ DISLOCATOR
-            └→ CLEANSING_TALISMAN → BLOOD_SWORD → SUMMON
-                                  └→ PLATFORM
+DARK_QUARTZ → INTERFACE → MAGNETS → ANIMATION_TABLET → REMOTE_PLACER   ← нет
+            │           │        └→ LEVITATOR                          готово
+            │           └→ DISLOCATOR                                  готово
+            └→ CLEANSING_TALISMAN → BLOOD_SWORD → SUMMON               готово
+                                  └→ PLATFORM                          готово
 "NITOR" → GASEOUS_LIGHT → GASEOUS_SHADOW
                         └→ BRIGHT_NITOR → FIRE_{AER,AQUA,IGNIS,ORDO,
                                        │    PERDITIO,TERRA} → POTIONS
@@ -100,10 +112,18 @@ SPELL_CLOTH → ENCHANTER → 14 записей ENCHANT_* (см. TT_OBJECT_REFER
 PERIPHERALS → ASPECT_ANALYZER, GOLEMCONNECTOR
 ```
 
-То есть следующие корни — `DARK_QUARTZ`, `GASEOUS_LIGHT`, `SPELL_CLOTH`: без
-них ни одно из их поддеревьев не встанет. Обратите внимание, что сами эти
-корни в списке висячих ключей выше не значатся — рецептов на них нет, они
-существуют только как узлы дерева, и портировать их всё равно нужно.
+Следующие корни — `GASEOUS_LIGHT` и `SPELL_CLOTH`: без них ни одно из их
+поддеревьев не встанет. Обратите внимание, что сами эти корни в списке висячих
+ключей выше не значатся — рецептов на них нет, они существуют только как узлы
+дерева, и портировать их всё равно нужно.
+
+Два замечания по именам, чтобы не повторять чужие ошибки:
+
+- **Ключ ≠ имя класса.** `LibResearch.KEY_MOBILIZER` — это строка
+  `"LEVITATOR"`. Ключ всегда брать из `LibResearch`, а не из названия класса.
+- **`REMOTE_PLACER` пока пропущен**: сам объект (`BlockRPlacer`) в порт не
+  перенесён, а запись без рецепта упала бы на строгом lookup. Его исследование
+  ставить одновременно с блоком.
 
 ## KAMI лежит в общем наборе предметов, без своего гейта
 

@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 49 из 84 объектов каталога, осталось 35.**
+**Состояние: портировано 50 из 84 объектов каталога, осталось 34.**
 
 Порядок — по зависимостям: объект появляется после всего, что ему нужно.
 «Связи» — компоненты рецепта, которые сами являются объектами TT.
@@ -46,19 +46,18 @@
 | 20 | `ItemGemHelm` | инфузия | 13 | всегда | — | `ItemCleansingTalisman`, `ItemKamiResource` |
 | 21 | `ItemGemLegs` | инфузия | 13 | всегда | — | `ItemBrightNitor`, `ItemFocusSmelt`, `ItemKamiResource` |
 | 22 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
-| 23 | `ItemIchorclothArmor` | аркан | — | по конфигу enableKami | — | `ItemKamiResource` |
-| 24 | `ItemIchorclothArmorAdv` | нет рецепта | — | всегда | — | — |
-| 25 | `ItemInfusedGrain` | нет рецепта | — | всегда | — | — |
-| 26 | `ItemInfusedInkwell` | инфузия + верстак | 2 | всегда | — | — |
-| 27 | `ItemInfusedSeeds` | инфузия | 5 | всегда | — | — |
-| 28 | `ItemMobAspect` | инфузия + верстак | 4 | всегда | — | — |
-| 29 | `ItemMobDisplay` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
-| 30 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
-| 31 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
-| 32 | `ItemShareBook` | верстак | — | всегда | — | — |
-| 33 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
-| 34 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
-| 35 | `ItemInfusedPotion` | тигель | — | всегда | `ItemInfusedGrain` | — |
+| 23 | `ItemIchorclothArmorAdv` | нет рецепта | — | всегда | — | — |
+| 24 | `ItemInfusedGrain` | нет рецепта | — | всегда | — | — |
+| 25 | `ItemInfusedInkwell` | инфузия + верстак | 2 | всегда | — | — |
+| 26 | `ItemInfusedSeeds` | инфузия | 5 | всегда | — | — |
+| 27 | `ItemMobAspect` | инфузия + верстак | 4 | всегда | — | — |
+| 28 | `ItemMobDisplay` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 29 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
+| 30 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
+| 31 | `ItemShareBook` | верстак | — | всегда | — | — |
+| 32 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
+| 33 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
+| 34 | `ItemInfusedPotion` | тигель | — | всегда | `ItemInfusedGrain` | — |
 
 ---
 
@@ -298,19 +297,7 @@
 - **Использует уже портированное:** `ItemIchorSword`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorSwordAdv`
 
-### 23. `ItemIchorclothArmor`
-
-- **Файл оригинала:** `common/item/kami/armor/ItemIchorclothArmor.java`
-- **Наследует:** —
-- **Имя регистрации:** `switch (armorType) { case 3: "ichorclothBoots"; case 2: "ichorclothLegs"; case 1: "ichorclothChest"; case 0: "ichorclothHelm"; default: "INVAlID ARMOR TYPE"; }`
-- **Рецепт:** аркан
-- **Аспекты:** WATER 75
-- **Родитель в дереве исследований:** `ICHOR_CLOTH`
-- **Регистрация:** по конфигу enableKami
-- **Использует уже портированное:** `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorclothArmor`
-
-### 24. `ItemIchorclothArmorAdv`
+### 23. `ItemIchorclothArmorAdv`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemIchorclothArmorAdv.java`
 - **Наследует:** `ItemIchorclothArmor`
@@ -318,7 +305,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorclothArmorAdv`
 
-### 25. `ItemInfusedGrain`
+### 24. `ItemInfusedGrain`
 
 - **Файл оригинала:** `common/item/ItemInfusedGrain.java`
 - **Наследует:** `ItemBase`
@@ -326,7 +313,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedGrain`
 
-### 26. `ItemInfusedInkwell`
+### 25. `ItemInfusedInkwell`
 
 - **Файл оригинала:** `common/item/ItemInfusedInkwell.java`
 - **Наследует:** `ItemBase`, реализует `IScribeTools`
@@ -336,7 +323,7 @@
 - **Аспекты:** VOID 8, DARKNESS 8
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedInkwell`
 
-### 27. `ItemInfusedSeeds`
+### 26. `ItemInfusedSeeds`
 
 - **Файл оригинала:** `common/item/ItemInfusedSeeds.java`
 - **Наследует:** `ItemSeeds`, реализует `ITTinkererItem`
@@ -346,7 +333,7 @@
 - **Аспекты:** CROP 32, HARVEST 32
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedSeeds`
 
-### 28. `ItemMobAspect`
+### 27. `ItemMobAspect`
 
 - **Файл оригинала:** `common/item/ItemMobAspect.java`
 - **Наследует:** `ItemBase`
@@ -355,7 +342,7 @@
 - **Нестабильность:** 4
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobAspect`
 
-### 29. `ItemMobDisplay`
+### 28. `ItemMobDisplay`
 
 - **Файл оригинала:** `common/item/ItemMobDisplay.java`
 - **Наследует:** `ItemBase`
@@ -364,7 +351,7 @@
 - **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobDisplay`
 
-### 30. `ItemModFocus`
+### 29. `ItemModFocus`
 
 - **Файл оригинала:** `common/item/foci/ItemModFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -372,7 +359,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModFocus`
 
-### 31. `ItemModKamiFocus`
+### 30. `ItemModKamiFocus`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemModKamiFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -381,7 +368,7 @@
 - **Регистрация:** по конфигу enableKami
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
 
-### 32. `ItemShareBook`
+### 31. `ItemShareBook`
 
 - **Файл оригинала:** `common/item/ItemShareBook.java`
 - **Наследует:** `ItemBase`
@@ -389,7 +376,7 @@
 - **Рецепт:** верстак
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemShareBook`
 
-### 33. `ItemSkyPearl`
+### 32. `ItemSkyPearl`
 
 - **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
 - **Наследует:** `ItemKamiBase`
@@ -399,7 +386,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
 
-### 34. `ItemFocusRecall`
+### 33. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -411,7 +398,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusRecall`
 
-### 35. `ItemInfusedPotion`
+### 34. `ItemInfusedPotion`
 
 - **Файл оригинала:** `common/item/ItemInfusedPotion.java`
 - **Наследует:** `ItemPotion`, реализует `ITTinkererItem`

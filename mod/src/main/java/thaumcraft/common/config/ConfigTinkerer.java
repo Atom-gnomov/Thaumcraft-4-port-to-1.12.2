@@ -507,6 +507,37 @@ public class ConfigTinkerer {
     }
 
     /**
+     * Ichorcloth armour. Four arcane crafts from ichorcloth alone, each priced
+     * at 75 of a single primal — a different one per piece, which is the
+     * original's own pattern.
+     */
+    public static void registerKamiArmorRecipes() {
+        ConfigResearch.recipes.put("IchorclothHelm", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothHelm),
+                new AspectList().add(Aspect.WATER, 75),
+                "CCC", "C C",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+
+        ConfigResearch.recipes.put("IchorclothChest", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothChest),
+                new AspectList().add(Aspect.AIR, 75),
+                "C C", "CCC", "CCC",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+
+        ConfigResearch.recipes.put("IchorclothLegs", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothLegs),
+                new AspectList().add(Aspect.FIRE, 75),
+                "CCC", "C C", "C C",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+
+        ConfigResearch.recipes.put("IchorclothBoots", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothBoots),
+                new AspectList().add(Aspect.EARTH, 75),
+                "C C", "C C",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+    }
+
+    /**
      * KAMI tools. Each is a plain arcane craft on a greatwood rod, priced at 75
      * of a single primal — the original's {@code getRecipeItem} on each tool.
      */

@@ -1714,3 +1714,7 @@ tile.thaumcraft.fire_order.name=Пропитанный Ordo огонь
 tile.thaumcraft.fire_chaos.name=Пропитанный Perditio огонь
 item.thaumcraft.revealing_helm.name=Шлем открытия
 tile.thaumcraft.platform.name=Эфирная платформа
+item.thaumcraft.kami.ichorcloth_helm.name=Ихоровый капюшон
+item.thaumcraft.kami.ichorcloth_chest.name=Ихоровая роба
+item.thaumcraft.kami.ichorcloth_legs.name=Ихоровые шаровары
+item.thaumcraft.kami.ichorcloth_boots.name=Ихоровые сапоги

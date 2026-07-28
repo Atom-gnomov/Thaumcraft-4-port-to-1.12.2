@@ -1386,6 +1386,60 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("\"blocktransvectordislocator\""));
     }
 
+    /**
+     * The KAMI tier's cloth: never wears, absorbs by its own rating, and each
+     * piece is one primal's worth of ichorcloth.
+     */
+    @Test
+    public void ichorclothArmourMatchesTheOriginal() throws IOException {
+        String armour = read("src/main/java/thaumcraft/common/items/tinkerer/kami/armor/"
+                + "ItemIchorclothArmor.java");
+        assertTrue("absorbs at the original's reduction x 0.0425, priority 0, no cap",
+                armour.contains("this.damageReduceAmount * 0.0425D")
+                        && armour.contains("ArmorProperties(0,")
+                        && armour.contains("Integer.MAX_VALUE"));
+        assertTrue("never wears — damageArmor is deliberately empty",
+                armour.contains("public void damageArmor(EntityLivingBase entity, ItemStack stack, "
+                        + "DamageSource source, int damage, int slot) {\n    }"));
+        assertTrue("boots discount three percent, the rest four",
+                armour.contains("armorType == EntityEquipmentSlot.FEET ? 3 : 4"));
+        assertTrue("legs take the second sheet",
+                armour.contains("slot == EntityEquipmentSlot.LEGS"));
+
+        String mats = read("src/main/java/thaumcraft/common/items/tinkerer/kami/KamiMaterials.java");
+        assertTrue("the original's reduction numbers, reordered for this version's slot order",
+                mats.contains("new int[]{3, 6, 8, 3}") && mats.contains("20,"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String[][] pieces = {
+                {"itemIchorclothHelm", "IchorclothHelm", "Aspect.WATER", "ichorcloth_helm"},
+                {"itemIchorclothChest", "IchorclothChest", "Aspect.AIR", "ichorcloth_chest"},
+                {"itemIchorclothLegs", "IchorclothLegs", "Aspect.FIRE", "ichorcloth_legs"},
+                {"itemIchorclothBoots", "IchorclothBoots", "Aspect.EARTH", "ichorcloth_boots"},
+        };
+        for (String[] piece : pieces) {
+            assertTrue(piece[0] + " registered", cfg.contains("allItems.add(" + piece[0] + ")"));
+            assertTrue(piece[1] + " recipe at 75 of its own primal",
+                    rec.contains("\"" + piece[1] + "\"")
+                            && rec.contains("add(" + piece[2] + ", 75)"));
+            assertTrue(piece[3] + " named",
+                    en.contains("item.thaumcraft.kami." + piece[3] + ".name="));
+            assertTrue(piece[3] + " icon ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/"
+                            + piece[3] + ".png")));
+        }
+        for (String sheet : new String[]{"ichor1", "ichor2"}) {
+            assertTrue(sheet + " armour sheet ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/models/"
+                            + sheet + ".png")));
+        }
+        assertTrue("armour recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiArmorRecipes()"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

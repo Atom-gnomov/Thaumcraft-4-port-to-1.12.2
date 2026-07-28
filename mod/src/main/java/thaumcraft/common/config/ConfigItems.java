@@ -103,6 +103,10 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.ItemBrightNitor itemBrightNitor;
     public static thaumcraft.common.items.tinkerer.ItemSpellCloth itemSpellCloth;
     public static thaumcraft.common.items.tinkerer.ItemRevealingHelm itemRevealingHelm;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothHelm;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothChest;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothLegs;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothBoots;
 
     // Basic items
     public static ItemShard itemShard;
@@ -510,6 +514,34 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("RevealingHelm"))
                 .setTranslationKey("thaumcraft.revealing_helm");
         allItems.add(itemRevealingHelm);
+
+        itemIchorclothHelm = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.HEAD)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothHelm"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_helm");
+        allItems.add(itemIchorclothHelm);
+
+        itemIchorclothChest = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.CHEST)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothChest"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_chest");
+        allItems.add(itemIchorclothChest);
+
+        itemIchorclothLegs = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.LEGS)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothLegs"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_legs");
+        allItems.add(itemIchorclothLegs);
+
+        itemIchorclothBoots = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.FEET)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothBoots"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_boots");
+        allItems.add(itemIchorclothBoots);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

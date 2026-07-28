@@ -1714,3 +1714,7 @@ tile.thaumcraft.fire_order.name=Ordo Imbued Fire
 tile.thaumcraft.fire_chaos.name=Perditio Imbued Fire
 item.thaumcraft.revealing_helm.name=Helmet of Revealing
 tile.thaumcraft.platform.name=Ethereal Platform
+item.thaumcraft.kami.ichorcloth_helm.name=Ichorcloth Cowl
+item.thaumcraft.kami.ichorcloth_chest.name=Ichorcloth Robe
+item.thaumcraft.kami.ichorcloth_legs.name=Ichorcloth Leggings
+item.thaumcraft.kami.ichorcloth_boots.name=Ichorcloth Boots

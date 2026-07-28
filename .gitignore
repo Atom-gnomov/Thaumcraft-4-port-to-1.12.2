@@ -39,3 +39,7 @@ eclipse/
 
 # ─── Misc ───
 *.log
+
+# Python bytecode from the doc generators in scripts/
+__pycache__/
+*.pyc

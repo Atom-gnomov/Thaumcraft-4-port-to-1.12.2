@@ -31,7 +31,7 @@ import thaumcraft.common.lib.utils.Utils;
  * furthest log inward and then draws every dropped item within ten blocks
  * across and sixty-four up back to the stump. Sneak right-click cycles them.</p>
  */
-public class ItemIchorAxeAdv extends ItemIchorAxe {
+public class ItemIchorAxeAdv extends ItemIchorAxe implements IAdvancedTool {
 
     public ItemIchorAxeAdv() {
         super();
@@ -101,6 +101,11 @@ public class ItemIchorAxeAdv extends ItemIchorAxe {
         return super.onItemRightClick(world, player, hand);
     }
 
+    @Override
+    public String getType() {
+        return "axe";
+    }
+
     /** Damage is the mode here, so the tool must never be treated as worn. */
     @Override
     public boolean isDamageable() {
@@ -115,6 +120,6 @@ public class ItemIchorAxeAdv extends ItemIchorAxe {
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag) {
-        tooltip.add(KamiToolHandler.getToolModeStr("axe", stack));
+        tooltip.add(KamiToolHandler.getToolModeStr(getType(), stack));
     }
 }

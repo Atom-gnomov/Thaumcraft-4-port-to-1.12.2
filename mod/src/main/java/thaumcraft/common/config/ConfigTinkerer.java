@@ -104,15 +104,63 @@ public class ConfigTinkerer {
     }
 
     /**
-     * Thaumic Tinkerer's utility items.
-     *
-     * <p>The Worldshaper's Looking Glass still registers nothing: upstream it
-     * infuses on a Block Talisman, which this port does not have yet. Its full
-     * recipe is PLACEMENT_MIRROR, instability 12, CRAFT 65 + CRYSTAL 32 +
-     * MAGIC 50 + MIND 32, on the talisman with ichor, a dropper, a diamond,
-     * glass, blaze powder and a second ichor.</p>
+     * Thaumic Tinkerer's utility items. Every one of them registers its real
+     * recipe as of 1.1.8.0, when the Black Hole Ring closed the last gap.
      */
     public static void registerUtilityItemRecipes() {
+        // BLOCK_TALISMAN: the KAMI ring, infused on the portable hole focus.
+        ConfigResearch.recipes.put("BlockTalisman", ThaumcraftApi.addInfusionCraftingRecipe(
+                "BLOCK_TALISMAN", new ItemStack(ConfigItems.itemBlockTalisman), 9,
+                new AspectList().add(Aspect.VOID, 65).add(Aspect.DARKNESS, 32)
+                        .add(Aspect.MAGIC, 50).add(Aspect.ELDRITCH, 32),
+                new ItemStack(ConfigItems.focusPortableHole),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Blocks.ENDER_CHEST),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemResource, 1, 11),
+                        new ItemStack(ConfigBlocks.blockJar, 1, 3)}));
+
+        // ICHOR_POUCH: the focus pouch grown to thirteen by nine.
+        ConfigResearch.recipes.put("IchorPouch", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHOR_POUCH", new ItemStack(ConfigItems.itemIchorPouch), 9,
+                new AspectList().add(Aspect.VOID, 64).add(Aspect.MAN, 32).add(Aspect.CLOTH, 32)
+                        .add(Aspect.ELDRITCH, 32).add(Aspect.AIR, 64),
+                new ItemStack(ConfigItems.itemFocusPouch),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH),
+                        new ItemStack(ConfigItems.focusPortableHole),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH),
+                        new ItemStack(ConfigBlocks.blockChestHungry),
+                        new ItemStack(ConfigBlocks.blockJar, 1, 3)}));
+
+        // PROTOCLAY: swaps the awakened tools for you, so it follows them.
+        ConfigResearch.recipes.put("Protoclay", ThaumcraftApi.addInfusionCraftingRecipe(
+                "PROTOCLAY", new ItemStack(ConfigItems.itemProtoclay), 4,
+                new AspectList().add(Aspect.MINE, 16).add(Aspect.TOOL, 16),
+                new ItemStack(Items.CLAY_BALL),
+                new ItemStack[]{
+                        new ItemStack(Blocks.DIRT),
+                        new ItemStack(Blocks.STONE),
+                        new ItemStack(Blocks.LOG),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ENDER_SHARD)}));
+
+        // PLACEMENT_MIRROR: unblocked by the ring above.
+        ConfigResearch.recipes.put("PlacementMirror", ThaumcraftApi.addInfusionCraftingRecipe(
+                "PLACEMENT_MIRROR", new ItemStack(ConfigItems.itemPlacementMirror), 12,
+                new AspectList().add(Aspect.CRAFT, 65).add(Aspect.CRYSTAL, 32)
+                        .add(Aspect.MAGIC, 50).add(Aspect.MIND, 32),
+                new ItemStack(ConfigItems.itemBlockTalisman),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Blocks.DROPPER),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(Blocks.GLASS),
+                        new ItemStack(Items.BLAZE_POWDER),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR)}));
+
         // CAT_AMULET: every component exists here, so it ports whole.
         ConfigResearch.recipes.put("CatAmulet", ThaumcraftApi.addInfusionCraftingRecipe(
                 "CAT_AMULET", new ItemStack(ConfigItems.itemCatAmulet), 8,

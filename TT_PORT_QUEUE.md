@@ -1,9 +1,19 @@
 # Очередь портирования Thaumic Tinkerer
-Сгенерировано из `TT_OBJECT_REFERENCE.md` и дерева исходников — не заполнять руками, перегенерировать при изменениях.
+Сгенерировано скриптом `scripts/gen_tt_queue.py` из исходников оригинала
+(`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
+перегенерировать после каждого захода.
 
-**Состояние: портировано 35 из 82 объектов каталога, осталось 47.**
+**Состояние: портировано 39 из 84 объектов каталога, осталось 45.**
 
-Порядок — по зависимостям: объект появляется после всего, что ему нужно. «Связи» — компоненты рецепта, которые сами являются объектами TT.
+Порядок — по зависимостям: объект появляется после всего, что ему нужно.
+«Связи» — компоненты рецепта, которые сами являются объектами TT.
+Точные значения любого объекта — в [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md).
+
+> **Осторожно: таблица знает только про зависимости по рецепту.**
+> Поведенческие связи она не видит, и их надо проверять глазами по
+> исходнику. Пример: `ItemSkyPearl` числится свободным, но настраивается
+> только кликом по `BlockWarpGate` — без портала это мёртвый предмет.
+> Перед тем как брать объект, прочитай его класс целиком.
 
 | # | Объект | Рецепт | Неста­бильность | Зависит от (ещё нет) | Использует (уже есть) |
 |---|---|---|---|---|---|
@@ -16,44 +26,42 @@
 | 7 | `BlockMobilizerRelay` | аркан | — | — | — |
 | 8 | `BlockPlatform` | аркан | — | — | — |
 | 9 | `BlockRPlacer` | аркан | — | — | — |
-| 10 | `BlockWarpGate` | инфузия | 8 | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
-| 11 | `ItemBlockFire` | нет рецепта | — | — | — |
-| 12 | `ItemBlockTalisman` | инфузия | 9 | — | `ItemKamiResource` |
+| 10 | `BlockSummon` | аркан | — | — | — |
+| 11 | `BlockWarpGate` | инфузия | 8 | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
+| 12 | `ItemBlockFire` | нет рецепта | — | — | — |
 | 13 | `ItemBlockWarpGate` | нет рецепта | — | — | — |
 | 14 | `ItemBloodSword` | инфузия | 6 | — | — |
-| 15 | `ItemBrightNitor` | верстак | — | — | — |
-| 16 | `ItemConnector` | аркан | — | — | — |
-| 17 | `ItemFocusShadowbeam` | инфузия | 12 | — | `ItemFocusDeflect`, `ItemKamiResource` |
-| 18 | `ItemFocusXPDrain` | инфузия | 12 | — | `ItemKamiResource`, `ItemXPTalisman` |
-| 19 | `ItemGas` | верстак | — | — | `BlockGaseousLight`, `BlockGaseousShadow` |
-| 20 | `ItemGasRemover` | аркан | — | — | `ItemDarkQuartz` |
-| 21 | `ItemGemBoots` | инфузия | 13 | — | `ItemKamiResource` |
-| 22 | `ItemGemChest` | инфузия | 13 | — | `ItemFocusDeflect`, `ItemFocusFlight`, `ItemKamiResource` |
-| 23 | `ItemGemHelm` | инфузия | 13 | — | — |
-| 24 | `ItemIchorPouch` | инфузия | 9 | — | `ItemKamiResource` |
-| 25 | `ItemIchorSwordAdv` | инфузия | 15 | — | `ItemIchorSword`, `ItemKamiResource` |
-| 26 | `ItemIchorclothArmor` | аркан | — | — | — |
-| 27 | `ItemIchorclothArmorAdv` | нет рецепта | — | — | — |
-| 28 | `ItemInfusedGrain` | нет рецепта | — | — | — |
-| 29 | `ItemInfusedInkwell` | инфузия | — | — | — |
-| 30 | `ItemInfusedSeeds` | инфузия | — | — | — |
-| 31 | `ItemMobAspect` | инфузия | — | — | — |
-| 32 | `ItemMobDisplay` | нет рецепта | — | — | — |
-| 33 | `ItemProtoclay` | инфузия | 4 | — | `ItemKamiResource` |
-| 34 | `ItemRevealingHelm` | аркан | — | — | — |
-| 35 | `ItemShareBook` | верстак | — | — | — |
-| 36 | `ItemSpellCloth` | верстак | — | — | — |
-| 37 | `BlockFireAir` | верстак | — | `ItemBrightNitor` | — |
-| 38 | `BlockFireChaos` | верстак | — | `ItemBrightNitor` | — |
-| 39 | `BlockFireEarth` | верстак | — | `ItemBrightNitor` | — |
-| 40 | `BlockFireIgnis` | верстак | — | `ItemBrightNitor` | — |
-| 41 | `BlockFireOrder` | верстак | — | `ItemBrightNitor` | — |
-| 42 | `BlockFireWater` | верстак | — | `ItemBrightNitor` | — |
-| 43 | `ItemGemLegs` | инфузия | 13 | `ItemBrightNitor` | `ItemFocusSmelt`, `ItemKamiResource` |
-| 44 | `ItemInfusedPotion` | верстак | — | `ItemInfusedGrain` | — |
-| 45 | `BlockSummon` | аркан | — | `BlockSummon` | — |
-| 46 | `ItemFocusRecall` | инфузия | — | `ItemFocusRecall`, `ItemSkyPearl` | `ItemKamiResource` |
-| 47 | `ItemSkyPearl` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
+| 15 | `ItemBrightNitor` | тигель | — | — | — |
+| 16 | `ItemFocusShadowbeam` | инфузия | 12 | — | `ItemFocusDeflect`, `ItemKamiResource` |
+| 17 | `ItemFocusXPDrain` | инфузия | 12 | — | `ItemKamiResource`, `ItemXPTalisman` |
+| 18 | `ItemGas` | тигель | — | `BlockGaseousLight`, `BlockGaseousShadow` | — |
+| 19 | `ItemGasRemover` | аркан | — | — | `ItemDarkQuartz` |
+| 20 | `ItemGemBoots` | инфузия | 13 | — | `ItemKamiResource` |
+| 21 | `ItemGemChest` | инфузия | 13 | — | `ItemFocusDeflect`, `ItemFocusFlight`, `ItemKamiResource` |
+| 22 | `ItemGemHelm` | инфузия | 13 | — | `ItemCleansingTalisman`, `ItemKamiResource` |
+| 23 | `ItemIchorSwordAdv` | инфузия | 15 | — | `ItemIchorSword`, `ItemKamiResource` |
+| 24 | `ItemIchorclothArmor` | аркан | — | — | `ItemKamiResource` |
+| 25 | `ItemIchorclothArmorAdv` | нет рецепта | — | — | — |
+| 26 | `ItemInfusedGrain` | нет рецепта | — | — | — |
+| 27 | `ItemInfusedInkwell` | инфузия + верстак | 2 | — | — |
+| 28 | `ItemInfusedSeeds` | инфузия | 5 | — | — |
+| 29 | `ItemMobAspect` | инфузия + верстак | 4 | — | — |
+| 30 | `ItemMobDisplay` | нет рецепта | — | — | — |
+| 31 | `ItemModFocus` | нет рецепта | — | — | — |
+| 32 | `ItemModKamiFocus` | нет рецепта | — | — | — |
+| 33 | `ItemRevealingHelm` | аркан | — | — | — |
+| 34 | `ItemShareBook` | верстак | — | — | — |
+| 35 | `ItemSkyPearl` | инфузия | — | — | `ItemKamiResource` |
+| 36 | `ItemSpellCloth` | тигель | — | — | — |
+| 37 | `BlockFireAir` | тигель | — | `ItemBrightNitor` | — |
+| 38 | `BlockFireChaos` | тигель | — | `ItemBrightNitor` | — |
+| 39 | `BlockFireEarth` | тигель | — | `ItemBrightNitor` | — |
+| 40 | `BlockFireIgnis` | тигель | — | `ItemBrightNitor` | — |
+| 41 | `BlockFireOrder` | тигель | — | `ItemBrightNitor` | — |
+| 42 | `BlockFireWater` | тигель | — | `ItemBrightNitor` | — |
+| 43 | `ItemFocusRecall` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
+| 44 | `ItemGemLegs` | инфузия | 13 | `ItemBrightNitor` | `ItemFocusSmelt`, `ItemKamiResource` |
+| 45 | `ItemInfusedPotion` | тигель | — | `ItemInfusedGrain` | — |
 
 ---
 
@@ -81,7 +89,7 @@
 
 - **Файл оригинала:** `common/block/BlockGas.java`
 - **Наследует:** `BlockMod`, реализует `ITTinkererBlock`
-- **Имя регистрации:** `—`
+- **Имя регистрации:** —
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockGas`
 
@@ -108,7 +116,8 @@
 - **Файл оригинала:** `common/block/mobilizer/BlockMobilizer.java`
 - **Наследует:** `BlockMod`
 - **Имя регистрации:** `"Levitational Locomotive"`
-- **Рецепт:** инфузия, нестабильность 4
+- **Рецепт:** инфузия
+- **Нестабильность:** 4
 - **Аспекты:** MOTION 15, ORDER 20, MAGIC 15
 - **Родитель в дереве исследований:** `MAGNETS`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockMobilizer`
@@ -142,36 +151,35 @@
 - **Родитель в дереве исследований:** `ANIMATION_TABLET`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockRPlacer`
 
-### 10. `BlockWarpGate`
+### 10. `BlockSummon`
+
+- **Файл оригинала:** `common/block/BlockSummon.java`
+- **Наследует:** `Block`, реализует `ITTinkererBlock`
+- **Имя регистрации:** `"spawner"`
+- **Рецепт:** аркан
+- **Аспекты:** ORDER 50, ENTROPY 50
+- **Родитель в дереве исследований:** `BLOOD_SWORD`
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockSummon`
+
+### 11. `BlockWarpGate`
 
 - **Файл оригинала:** `common/block/kami/BlockWarpGate.java`
 - **Наследует:** `BlockModContainer`
 - **Имя регистрации:** `"warpGate"`
-- **Рецепт:** инфузия, нестабильность 8
+- **Рецепт:** инфузия
+- **Нестабильность:** 8
 - **Аспекты:** TRAVEL 64, ELDRITCH 50, FLIGHT 50
 - **Родитель в дереве исследований:** `ICHORCLOTH_CHEST_GEM`
 - **Использует уже портированное:** `BlockTransvectorDislocator`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockWarpGate`
 
-### 11. `ItemBlockFire`
+### 12. `ItemBlockFire`
 
 - **Файл оригинала:** `common/item/ItemBlockFire.java`
 - **Наследует:** `ItemBlock`, реализует `ITTinkererItem`
 - **Имя регистрации:** `((ITTinkererBlock) field_150939_a).getBlockName()`
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBlockFire`
-
-### 12. `ItemBlockTalisman`
-
-- **Файл оригинала:** `common/item/kami/ItemBlockTalisman.java`
-- **Наследует:** `ItemKamiBase`, реализует `IBauble`
-- **Имя регистрации:** `"blockTalisman"`
-- **Рецепт:** инфузия, нестабильность 9
-- **Аспекты:** VOID 65, DARKNESS 32, MAGIC 50, ELDRITCH 32
-- **Родитель в дереве исследований:** `ICHOR_PICK_GEM,
-  ICHOR_SHOVEL_GEM`
-- **Использует уже портированное:** `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBlockTalisman`
 
 ### 13. `ItemBlockWarpGate`
 
@@ -184,9 +192,10 @@
 ### 14. `ItemBloodSword`
 
 - **Файл оригинала:** `common/item/ItemBloodSword.java`
-- **Наследует:** `ItemSword`
+- **Наследует:** `ItemSword`, реализует `IRepairable, ITTinkererItem`
 - **Имя регистрации:** `"bloodSword"`
-- **Рецепт:** инфузия, нестабильность 6
+- **Рецепт:** инфузия
+- **Нестабильность:** 6
 - **Аспекты:** HUNGER 20, DARKNESS 5, SOUL 10, MAN 6
 - **Родитель в дереве исследований:** `CLEANSING_TALISMAN`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBloodSword`
@@ -196,54 +205,47 @@
 - **Файл оригинала:** `common/item/ItemBrightNitor.java`
 - **Наследует:** `ItemBase`
 - **Имя регистрации:** `"brightNitor"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** ENERGY 25, LIGHT 25, AIR 10, FIRE 10
 - **Родитель в дереве исследований:** `GASEOUS_LIGHT`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBrightNitor`
 
-### 16. `ItemConnector`
-
-- **Файл оригинала:** `common/item/ItemConnector.java`
-- **Наследует:** `ItemBase`
-- **Имя регистрации:** `"connector"`
-- **Рецепт:** аркан
-- **Аспекты:** ORDER 2
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemConnector`
-
-### 17. `ItemFocusShadowbeam`
+### 16. `ItemFocusShadowbeam`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusShadowbeam.java`
 - **Наследует:** `ItemModKamiFocus`
 - **Имя регистрации:** `"focusShadowbeam"`
-- **Рецепт:** инфузия, нестабильность 12
+- **Рецепт:** инфузия
+- **Нестабильность:** 12
 - **Аспекты:** DARKNESS 65, ELDRITCH 32, MAGIC 50, WEAPON 32
 - **Родитель в дереве исследований:** `ROD_ICHORCLOTH`
 - **Использует уже портированное:** `ItemFocusDeflect`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusShadowbeam`
 
-### 18. `ItemFocusXPDrain`
+### 17. `ItemFocusXPDrain`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusXPDrain.java`
 - **Наследует:** `ItemModKamiFocus`
 - **Имя регистрации:** `"focusXPDrain"`
-- **Рецепт:** инфузия, нестабильность 12
+- **Рецепт:** инфузия
+- **Нестабильность:** 12
 - **Аспекты:** MIND 65, TAINT 16, MAGIC 50, AURA 32
 - **Родитель в дереве исследований:** `ROD_ICHORCLOTH`
 - **Использует уже портированное:** `ItemKamiResource`, `ItemXPTalisman`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusXPDrain`
 
-### 19. `ItemGas`
+### 18. `ItemGas`
 
 - **Файл оригинала:** `common/item/ItemGas.java`
 - **Наследует:** `ItemBase`
-- **Имя регистрации:** `setBlock == <BlockGaseousShadow> ? "gaseousShadowItem" : "gaseousLightItem"`
-- **Рецепт:** верстак
-- **Аспекты:** LIGHT 16, AIR 10, MOTION 8, DARKNESS 16, AIR 10, MOTION 8
+- **Имя регистрации:** `setBlock == ThaumicTinkerer.registry.getFirstBlockFromClass(BlockGaseousShadow.class) ? "gaseousShadowItem" : "gaseousLightItem"`
+- **Рецепт:** тигель
+- **Аспекты:** LIGHT 16, AIR 10, MOTION 8
 - **Родитель в дереве исследований:** `GASEOUS_LIGHT`
-- **Использует уже портированное:** `BlockGaseousLight`, `BlockGaseousShadow`
+- **Блокируется:** `BlockGaseousLight`, `BlockGaseousShadow`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGas`
 
-### 20. `ItemGasRemover`
+### 19. `ItemGasRemover`
 
 - **Файл оригинала:** `common/item/ItemGasRemover.java`
 - **Наследует:** `ItemBase`
@@ -254,76 +256,74 @@
 - **Использует уже портированное:** `ItemDarkQuartz`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGasRemover`
 
-### 21. `ItemGemBoots`
+### 20. `ItemGemBoots`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemGemBoots.java`
 - **Наследует:** `ItemIchorclothArmorAdv`
 - **Имя регистрации:** `"ichorclothBootsGem"`
-- **Рецепт:** инфузия, нестабильность 13
+- **Рецепт:** инфузия
+- **Нестабильность:** 13
 - **Аспекты:** EARTH 50, ARMOR 32, MINE 32, MOTION 32, LIGHT 64, PLANT 16, TRAVEL 16
 - **Родитель в дереве исследований:** `ICHORCLOTH_ARMOR`
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemBoots`
 
-### 22. `ItemGemChest`
+### 21. `ItemGemChest`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemGemChest.java`
 - **Наследует:** `ItemIchorclothArmorAdv`
 - **Имя регистрации:** `"ichorclothChestGem"`
-- **Рецепт:** инфузия, нестабильность 13
+- **Рецепт:** инфузия
+- **Нестабильность:** 13
 - **Аспекты:** AIR 50, ARMOR 32, FLIGHT 32, ORDER 32, LIGHT 64, ELDRITCH 16, SENSES 16
 - **Родитель в дереве исследований:** `ICHORCLOTH_ARMOR`
 - **Использует уже портированное:** `ItemFocusDeflect`, `ItemFocusFlight`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemChest`
 
-### 23. `ItemGemHelm`
+### 22. `ItemGemHelm`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemGemHelm.java`
+- **Наследует:** —
 - **Имя регистрации:** `"ichorclothHelmGem"`
-- **Рецепт:** инфузия, нестабильность 13
+- **Рецепт:** инфузия
+- **Нестабильность:** 13
 - **Аспекты:** WATER 50, ARMOR 32, HUNGER 32, AURA 32, LIGHT 64, FLESH 16, MIND 16
+- **Родитель в дереве исследований:** `ICHORCLOTH_ARMOR`
+- **Использует уже портированное:** `ItemCleansingTalisman`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemHelm`
 
-### 24. `ItemIchorPouch`
-
-- **Файл оригинала:** `common/item/kami/ItemIchorPouch.java`
-- **Наследует:** `ItemFocusPouch`
-- **Имя регистрации:** `"ichorPouch"`
-- **Рецепт:** инфузия, нестабильность 9
-- **Аспекты:** VOID 64, MAN 32, CLOTH 32, ELDRITCH 32, AIR 64
-- **Родитель в дереве исследований:** `ICHOR_CLOTH`
-- **Использует уже портированное:** `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorPouch`
-
-### 25. `ItemIchorSwordAdv`
+### 23. `ItemIchorSwordAdv`
 
 - **Файл оригинала:** `common/item/kami/tool/ItemIchorSwordAdv.java`
 - **Наследует:** `ItemIchorSword`, реализует `IAdvancedTool`
 - **Имя регистрации:** `"ichorSwordGem"`
-- **Рецепт:** инфузия, нестабильность 15
+- **Рецепт:** инфузия
+- **Нестабильность:** 15
 - **Аспекты:** AIR 50, HUNGER 64, SOUL 32, WEAPON 32, ENERGY 32, ORDER 16, CRYSTAL 16
 - **Родитель в дереве исследований:** `ICHOR_TOOLS`
 - **Использует уже портированное:** `ItemIchorSword`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorSwordAdv`
 
-### 26. `ItemIchorclothArmor`
+### 24. `ItemIchorclothArmor`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemIchorclothArmor.java`
+- **Наследует:** —
 - **Имя регистрации:** `switch (armorType) { case 3: "ichorclothBoots"; case 2: "ichorclothLegs"; case 1: "ichorclothChest"; case 0: "ichorclothHelm"; default: "INVAlID ARMOR TYPE"; }`
 - **Рецепт:** аркан
-- **Аспекты:** WATER 75, AIR 75, FIRE 75, EARTH 75
+- **Аспекты:** WATER 75
 - **Родитель в дереве исследований:** `ICHOR_CLOTH`
+- **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorclothArmor`
 
-### 27. `ItemIchorclothArmorAdv`
+### 25. `ItemIchorclothArmorAdv`
 
 - **Файл оригинала:** `common/item/kami/armor/ItemIchorclothArmorAdv.java`
 - **Наследует:** `ItemIchorclothArmor`
-- **Имя регистрации:** `—`
+- **Имя регистрации:** —
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorclothArmorAdv`
 
-### 28. `ItemInfusedGrain`
+### 26. `ItemInfusedGrain`
 
 - **Файл оригинала:** `common/item/ItemInfusedGrain.java`
 - **Наследует:** `ItemBase`
@@ -331,33 +331,36 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedGrain`
 
-### 29. `ItemInfusedInkwell`
+### 27. `ItemInfusedInkwell`
 
 - **Файл оригинала:** `common/item/ItemInfusedInkwell.java`
 - **Наследует:** `ItemBase`, реализует `IScribeTools`
 - **Имя регистрации:** `"infusedInkwell"`
-- **Рецепт:** инфузия
+- **Рецепт:** инфузия + верстак
+- **Нестабильность:** 2
 - **Аспекты:** VOID 8, DARKNESS 8
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedInkwell`
 
-### 30. `ItemInfusedSeeds`
+### 28. `ItemInfusedSeeds`
 
 - **Файл оригинала:** `common/item/ItemInfusedSeeds.java`
 - **Наследует:** `ItemSeeds`, реализует `ITTinkererItem`
 - **Имя регистрации:** `"infusedSeeds"`
 - **Рецепт:** инфузия
-- **Аспекты:** CROP 32, HARVEST 32, CROP 32, HARVEST 32, CROP 32, HARVEST 32, CROP 32, HARVEST 32
+- **Нестабильность:** 5
+- **Аспекты:** CROP 32, HARVEST 32
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedSeeds`
 
-### 31. `ItemMobAspect`
+### 29. `ItemMobAspect`
 
 - **Файл оригинала:** `common/item/ItemMobAspect.java`
 - **Наследует:** `ItemBase`
 - **Имя регистрации:** `"mobAspect"`
-- **Рецепт:** инфузия
+- **Рецепт:** инфузия + верстак
+- **Нестабильность:** 4
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobAspect`
 
-### 32. `ItemMobDisplay`
+### 30. `ItemMobDisplay`
 
 - **Файл оригинала:** `common/item/ItemMobDisplay.java`
 - **Наследует:** `ItemBase`
@@ -365,28 +368,33 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobDisplay`
 
-### 33. `ItemProtoclay`
+### 31. `ItemModFocus`
 
-- **Файл оригинала:** `common/item/kami/ItemProtoclay.java`
-- **Наследует:** `ItemKamiBase`
-- **Имя регистрации:** `"protoclay"`
-- **Рецепт:** инфузия, нестабильность 4
-- **Аспекты:** MINE 16, TOOL 16
-- **Родитель в дереве исследований:** `ICHOR_PICK_GEM`
-- **Использует уже портированное:** `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemProtoclay`
+- **Файл оригинала:** `common/item/foci/ItemModFocus.java`
+- **Наследует:** `ItemBase`, реализует `IWandFocus`
+- **Имя регистрации:** —
+- **Рецепт:** нет рецепта
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModFocus`
 
-### 34. `ItemRevealingHelm`
+### 32. `ItemModKamiFocus`
+
+- **Файл оригинала:** `common/item/kami/foci/ItemModKamiFocus.java`
+- **Наследует:** `ItemBase`, реализует `IWandFocus`
+- **Имя регистрации:** —
+- **Рецепт:** нет рецепта
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
+
+### 33. `ItemRevealingHelm`
 
 - **Файл оригинала:** `common/item/ItemRevealingHelm.java`
-- **Наследует:** `ItemArmor`
+- **Наследует:** `ItemArmor`, реализует `IRepairable, IRevealer, IGoggles, IVisDiscountGear, ITTinkererItem`
 - **Имя регистрации:** `"revealingHelm"`
 - **Рецепт:** аркан
 - **Аспекты:** EARTH 5, FIRE 5, WATER 5, AIR 5, ORDER 5, ENTROPY 5
 - **Родитель в дереве исследований:** `GOGGLES`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemRevealingHelm`
 
-### 35. `ItemShareBook`
+### 34. `ItemShareBook`
 
 - **Файл оригинала:** `common/item/ItemShareBook.java`
 - **Наследует:** `ItemBase`
@@ -394,12 +402,22 @@
 - **Рецепт:** верстак
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemShareBook`
 
+### 35. `ItemSkyPearl`
+
+- **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
+- **Наследует:** `ItemKamiBase`
+- **Имя регистрации:** `"skyPearl"`
+- **Рецепт:** инфузия
+- **Аспекты:** TRAVEL 32, ELDRITCH 32, FLIGHT 32, AIR 16
+- **Использует уже портированное:** `ItemKamiResource`
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
+
 ### 36. `ItemSpellCloth`
 
 - **Файл оригинала:** `common/item/ItemSpellCloth.java`
 - **Наследует:** `ItemBase`
 - **Имя регистрации:** `"spellCloth"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** MAGIC 10, ENTROPY 6, EXCHANGE 4
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSpellCloth`
 
@@ -408,7 +426,7 @@
 - **Файл оригинала:** `common/block/fire/BlockFireAir.java`
 - **Наследует:** `BlockFireBase`
 - **Имя регистрации:** `"fireAir"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** FIRE 5, MAGIC 5, AIR 5
 - **Родитель в дереве исследований:** `BRIGHT_NITOR`
 - **Блокируется:** `ItemBrightNitor`
@@ -419,7 +437,7 @@
 - **Файл оригинала:** `common/block/fire/BlockFireChaos.java`
 - **Наследует:** `BlockFireBase`
 - **Имя регистрации:** `"fireChaos"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** FIRE 5, MAGIC 5, ENTROPY 5
 - **Родитель в дереве исследований:** `BRIGHT_NITOR`
 - **Блокируется:** `ItemBrightNitor`
@@ -430,7 +448,7 @@
 - **Файл оригинала:** `common/block/fire/BlockFireEarth.java`
 - **Наследует:** `BlockFireBase`
 - **Имя регистрации:** `"fireEarth"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** FIRE 5, MAGIC 5, EARTH 5
 - **Родитель в дереве исследований:** `BRIGHT_NITOR`
 - **Блокируется:** `ItemBrightNitor`
@@ -441,7 +459,7 @@
 - **Файл оригинала:** `common/block/fire/BlockFireIgnis.java`
 - **Наследует:** `BlockFireBase`
 - **Имя регистрации:** `"fireFire"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** FIRE 10, AIR 5
 - **Родитель в дереве исследований:** `BRIGHT_NITOR`
 - **Блокируется:** `ItemBrightNitor`
@@ -452,7 +470,7 @@
 - **Файл оригинала:** `common/block/fire/BlockFireOrder.java`
 - **Наследует:** `BlockFireBase`
 - **Имя регистрации:** `"fireOrder"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** FIRE 5, MAGIC 5, ORDER 5
 - **Родитель в дереве исследований:** `BRIGHT_NITOR`
 - **Блокируется:** `ItemBrightNitor`
@@ -463,52 +481,13 @@
 - **Файл оригинала:** `common/block/fire/BlockFireWater.java`
 - **Наследует:** `BlockFireBase`
 - **Имя регистрации:** `"fireWater"`
-- **Рецепт:** верстак
+- **Рецепт:** тигель
 - **Аспекты:** FIRE 5, MAGIC 5, WATER 5
 - **Родитель в дереве исследований:** `BRIGHT_NITOR`
 - **Блокируется:** `ItemBrightNitor`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockFireWater`
 
-### 43. `ItemGemLegs`
-
-- **Файл оригинала:** `common/item/kami/armor/ItemGemLegs.java`
-- **Наследует:** `ItemIchorclothArmorAdv`
-- **Имя регистрации:** `"ichorclothLegsGem"`
-- **Рецепт:** инфузия, нестабильность 13
-- **Аспекты:** FIRE 50, ARMOR 32, HEAL 32, ENERGY 32, LIGHT 64, GREED 16, ELDRITCH 16
-- **Родитель в дереве исследований:** `ICHORCLOTH_ARMOR`
-- **Блокируется:** `ItemBrightNitor`
-- **Использует уже портированное:** `ItemFocusSmelt`, `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemLegs`
-
-### 44. `ItemInfusedPotion`
-
-- **Файл оригинала:** `common/item/ItemInfusedPotion.java`
-- **Наследует:** `ItemPotion`, реализует `ITTinkererItem`
-- **Имя регистрации:** `"infusedPotion"`
-- **Рецепт:** верстак
-- **Аспекты:** AURA 5, AIR 5, AURA 5, FIRE 5, AURA 5, EARTH 5, AURA 5, WATER 5
-- **Родитель в дереве исследований:** `FIRE_PERDITIO,
-  FIRE_ORDO,
-  FIRE_IGNIS,
-  FIRE_TERRA,
-  FIRE_AER,
-  FIRE_AQUA`
-- **Блокируется:** `ItemInfusedGrain`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedPotion`
-
-### 45. `BlockSummon`
-
-- **Файл оригинала:** `common/block/BlockSummon.java`
-- **Наследует:** `Block`, реализует `ITTinkererBlock`
-- **Имя регистрации:** `"spawner"`
-- **Рецепт:** аркан
-- **Аспекты:** ORDER 50, ENTROPY 50
-- **Родитель в дереве исследований:** `BLOOD_SWORD`
-- **Блокируется:** `BlockSummon`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockSummon`
-
-### 46. `ItemFocusRecall`
+### 43. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -516,17 +495,30 @@
 - **Рецепт:** инфузия
 - **Аспекты:** TRAVEL 100, ELDRITCH 64, MAGIC 50
 - **Родитель в дереве исследований:** `WARP_GATE`
-- **Блокируется:** `ItemFocusRecall`, `ItemSkyPearl`
+- **Блокируется:** `ItemSkyPearl`
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusRecall`
 
-### 47. `ItemSkyPearl`
+### 44. `ItemGemLegs`
 
-- **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
-- **Наследует:** `ItemKamiBase`
-- **Имя регистрации:** `"skyPearl"`
+- **Файл оригинала:** `common/item/kami/armor/ItemGemLegs.java`
+- **Наследует:** `ItemIchorclothArmorAdv`
+- **Имя регистрации:** `"ichorclothLegsGem"`
 - **Рецепт:** инфузия
-- **Аспекты:** TRAVEL 32, ELDRITCH 32, FLIGHT 32, AIR 16
-- **Блокируется:** `ItemSkyPearl`
-- **Использует уже портированное:** `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
+- **Нестабильность:** 13
+- **Аспекты:** FIRE 50, ARMOR 32, HEAL 32, ENERGY 32, LIGHT 64, GREED 16, ELDRITCH 16
+- **Родитель в дереве исследований:** `ICHORCLOTH_ARMOR`
+- **Блокируется:** `ItemBrightNitor`
+- **Использует уже портированное:** `ItemFocusSmelt`, `ItemKamiResource`
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemLegs`
+
+### 45. `ItemInfusedPotion`
+
+- **Файл оригинала:** `common/item/ItemInfusedPotion.java`
+- **Наследует:** `ItemPotion`, реализует `ITTinkererItem`
+- **Имя регистрации:** `"infusedPotion"`
+- **Рецепт:** тигель
+- **Аспекты:** AURA 5, AIR 5
+- **Родитель в дереве исследований:** `FIRE_PERDITIO`
+- **Блокируется:** `ItemInfusedGrain`
+- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedPotion`

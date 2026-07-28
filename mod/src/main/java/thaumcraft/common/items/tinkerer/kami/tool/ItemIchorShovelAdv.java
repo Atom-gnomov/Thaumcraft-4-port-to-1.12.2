@@ -27,7 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * eight below to seven above and takes only blocks of the same kind as the one
  * struck. Sneak right-click cycles them.</p>
  */
-public class ItemIchorShovelAdv extends ItemIchorShovel {
+public class ItemIchorShovelAdv extends ItemIchorShovel implements IAdvancedTool {
 
     public ItemIchorShovelAdv() {
         super();
@@ -84,6 +84,11 @@ public class ItemIchorShovelAdv extends ItemIchorShovel {
         return super.onItemRightClick(world, player, hand);
     }
 
+    @Override
+    public String getType() {
+        return "shovel";
+    }
+
     /** Damage is the mode here, so the tool must never be treated as worn. */
     @Override
     public boolean isDamageable() {
@@ -98,6 +103,6 @@ public class ItemIchorShovelAdv extends ItemIchorShovel {
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag) {
-        tooltip.add(KamiToolHandler.getToolModeStr("shovel", stack));
+        tooltip.add(KamiToolHandler.getToolModeStr(getType(), stack));
     }
 }

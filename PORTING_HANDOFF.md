@@ -12,6 +12,21 @@ Working doc for continuing the adoption of upstream **FOREVA**
 
 ---
 
+## Before you touch anything: claim it
+
+More than one agent works on this repo at once, on different machines and in
+different working copies. [`WORK_CLAIMS.md`](WORK_CLAIMS.md) is the only thing
+stopping two of them editing the same file. Read it, add your line, push it —
+**before** you start, not after.
+
+Two habits that follow from that:
+
+- **Never `git add -A`.** A shared working copy can hold another agent's
+  uncommitted work; stage your own paths explicitly.
+- **Never force-push without `--force-with-lease`.**
+
+---
+
 ## THE RULE: never invent a value. Read the original. (mandatory)
 
 This is the first rule of this repo and it outranks every convenience below it.
@@ -19,17 +34,25 @@ It exists because it was repeatedly broken: recipes, block hardness, item
 names and tool behaviour were filled in "by analogy" instead of being read out
 of the source, and every one of those had to be found and undone later.
 
-**Local copies of both originals live outside the repo and are permanent:**
+**Local copies of both originals live outside the repo and are permanent.**
+Paths are given relative to the repo root, because this work happens on more
+than one machine — never hard-code a home directory into these docs.
 
 | What | Where |
 | --- | --- |
-| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `C:/Users/gorba/tc4/tt-original-1.7.10` |
-| JDK 8 (Temurin 8u492) used to build | `C:/Users/gorba/tc4/tools/jdk8u492-b09` |
+| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tt-original-1.7.10` |
+| JDK 8 (Temurin 8u492) used to build | `../tools/jdk8u492-b09` |
 
-Re-clone TT if it is ever missing:
+Re-clone TT if it is ever missing (run from the repo root):
 
 ```bash
-git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer C:/Users/gorba/tc4/tt-original-1.7.10
+git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer ../tt-original-1.7.10
+```
+
+Build with that JDK rather than the system default, which is a JRE:
+
+```bash
+cd mod && ./gradlew build -x test -Dorg.gradle.java.home=../../tools/jdk8u492-b09 --console=plain
 ```
 
 ### The loop, every single time
@@ -38,7 +61,7 @@ git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer C:/Users
    all 84 registerable Thaumic Tinkerer objects with their recipe, aspects,
    instability, constructor constants and research node, extracted verbatim.
 2. **Not there, or you need behaviour rather than values? Open the original.**
-   `C:/Users/gorba/tc4/tt-original-1.7.10/src/main/java/thaumic/tinkerer/...`
+   `../tt-original-1.7.10/src/main/java/thaumic/tinkerer/...`
    Read the whole class, not the method you think you need.
 3. **Transcribe.** Metadata indices, aspect amounts, instability, hardness and
    resistance carry over unchanged — the meta index is the ground truth even

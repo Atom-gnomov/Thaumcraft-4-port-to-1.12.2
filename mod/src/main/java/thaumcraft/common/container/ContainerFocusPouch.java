@@ -9,6 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import thaumcraft.api.wands.ItemFocusBasic;
+import thaumcraft.common.items.tinkerer.kami.ItemIchorPouch;
 import thaumcraft.common.items.wands.ItemFocusPouch;
 
 public class ContainerFocusPouch extends Container {
@@ -119,28 +120,38 @@ public class ContainerFocusPouch extends Container {
         }
     }
 
+    /**
+     * The Bottomless Pouch is an ItemFocusPouch by inheritance but holds 117
+     * slots, not 18 — this screen must never adopt one or it would save away
+     * everything past the eighteenth slot.
+     */
+    private static boolean isPlainPouch(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() instanceof ItemFocusPouch
+                && !(stack.getItem() instanceof ItemIchorPouch);
+    }
+
     private static ItemStack findPouch(InventoryPlayer inventory, int slot) {
         if (inventory == null) return ItemStack.EMPTY;
         ItemStack main = inventory.player.getHeldItemMainhand();
-        if (!main.isEmpty() && main.getItem() instanceof ItemFocusPouch) return main;
+        if (isPlainPouch(main)) return main;
         ItemStack off = inventory.player.getHeldItemOffhand();
-        if (!off.isEmpty() && off.getItem() instanceof ItemFocusPouch) return off;
+        if (isPlainPouch(off)) return off;
         if (slot >= 0 && slot < inventory.mainInventory.size()) {
             ItemStack stack = inventory.mainInventory.get(slot);
-            if (!stack.isEmpty() && stack.getItem() instanceof ItemFocusPouch) return stack;
+            if (isPlainPouch(stack)) return stack;
         }
         ItemStack current = inventory.getCurrentItem();
-        if (!current.isEmpty() && current.getItem() instanceof ItemFocusPouch) return current;
+        if (isPlainPouch(current)) return current;
         return ItemStack.EMPTY;
     }
 
     private static int findPouchSlot(InventoryPlayer inventory) {
         if (inventory == null) return -1;
         ItemStack held = inventory.player.getHeldItemMainhand();
-        if (!held.isEmpty() && held.getItem() instanceof ItemFocusPouch) return inventory.currentItem;
+        if (isPlainPouch(held)) return inventory.currentItem;
         for (int i = 0; i < inventory.mainInventory.size(); i++) {
             ItemStack stack = inventory.mainInventory.get(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ItemFocusPouch) return i;
+            if (isPlainPouch(stack)) return i;
         }
         return -1;
     }

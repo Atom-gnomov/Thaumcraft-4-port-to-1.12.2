@@ -30,7 +30,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * <p>The pickaxe is the only advanced tool that reacts to bedrock — striking it
  * at the bottom of a surface world opens the Bedrock dimension's portal.</p>
  */
-public class ItemIchorPickAdv extends ItemIchorPick {
+public class ItemIchorPickAdv extends ItemIchorPick implements IAdvancedTool {
 
     public ItemIchorPickAdv() {
         super();
@@ -93,6 +93,11 @@ public class ItemIchorPickAdv extends ItemIchorPick {
         return super.onItemRightClick(world, player, hand);
     }
 
+    @Override
+    public String getType() {
+        return "pick";
+    }
+
     /** Damage is the mode here, so the tool must never be treated as worn. */
     @Override
     public boolean isDamageable() {
@@ -107,6 +112,6 @@ public class ItemIchorPickAdv extends ItemIchorPick {
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag) {
-        tooltip.add(KamiToolHandler.getToolModeStr("pick", stack));
+        tooltip.add(KamiToolHandler.getToolModeStr(getType(), stack));
     }
 }

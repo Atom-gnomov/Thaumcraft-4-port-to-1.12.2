@@ -1702,3 +1702,6 @@ ttmisc.rightClick=Right Click
 ttmisc.soulMould.nonAssigned=No Pattern
 ttmisc.soulMould.pattern=Current Pattern: %s
 ttmisc.startEnchant=Start Enchanting
+item.thaumcraft.kami.block_talisman.name=Black Hole Ring
+item.thaumcraft.kami.ichor_pouch.name=Bottomless Pouch
+item.thaumcraft.kami.protoclay.name=Protoclay

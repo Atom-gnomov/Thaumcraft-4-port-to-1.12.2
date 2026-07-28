@@ -140,9 +140,9 @@ mod-id, второй жизненный цикл и API-мост между мо
   beam/bolt, Infusion, VisEnergy, item-model routing). Проверено через stash:
   падали и до работ по TT — наследие adoption рендереров FOREVA 1.0.36–1.0.45.
   `PORTING_HANDOFF.md` при этом утверждает, что набор зелёный.
-- **`mod/gradle.properties` в гите с абсолютным путём чужой машины**
-  (`org.gradle.java.home=C:/Users/Game-On-Dp/...`) — сборка падает у всех
-  остальных. Обходится через `-Dorg.gradle.java.home=<путь>`.
+- ~~**`mod/gradle.properties` в гите с абсолютным путём чужой машины**~~ —
+  закрыто в 1.1.8.0: строка убрана, каждая машина задаёт свой JDK 8 сама
+  (`-Dorg.gradle.java.home=<путь>` или `~/.gradle/gradle.properties`).
 
 ---
 
@@ -210,7 +210,7 @@ mod-id, второй жизненный цикл и API-мост между мо
 до нуля.
 
 > **Откуда брать значения.** Оригинал скачан локально и лежит постоянно в
-> `C:/Users/gorba/tc4/tt-original-1.7.10`. Все 84 регистрируемых объекта
+> `../tt-original-1.7.10` (рядом с репозиторием). Все 84 регистрируемых объекта
 > выписаны дословно в [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md).
 > Порядок работы описан в [`PORTING_HANDOFF.md`](PORTING_HANDOFF.md), раздел
 > «THE RULE: never invent a value». Ничего не выдумывать — ни рецепт, ни

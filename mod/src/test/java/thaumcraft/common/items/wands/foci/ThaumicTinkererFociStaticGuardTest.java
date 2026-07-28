@@ -152,14 +152,43 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("Talisman of Withhold infuses on a gold ingot",
                 rec.contains("\"XP_TALISMAN\"")
                         && rec.contains("add(Aspect.GREED, 20).add(Aspect.EXCHANGE, 10)"));
-        // The looking glass still needs the Block Talisman, so it registers
-        // nothing and its recipe stays written down instead.
-        assertFalse("PlacementMirror must not register an invented recipe",
-                rec.contains("ConfigResearch.recipes.put(\"PlacementMirror\""));
-        assertTrue("its blocker must stay documented in ConfigTinkerer",
-                rec.contains("PLACEMENT_MIRROR") && rec.contains("Block Talisman"));
+        // The Black Hole Ring landed in 1.1.8.0, so the looking glass is no
+        // longer blocked and every utility item now carries a real recipe.
+        assertTrue("Black Hole Ring infuses on the portable hole focus at instability 9",
+                rec.contains("\"BLOCK_TALISMAN\"")
+                        && rec.contains("add(Aspect.VOID, 65).add(Aspect.DARKNESS, 32)")
+                        && rec.contains("ConfigItems.focusPortableHole"));
+        assertTrue("Worldshaper's Looking Glass infuses on the ring at instability 12",
+                rec.contains("\"PLACEMENT_MIRROR\"")
+                        && rec.contains("add(Aspect.CRAFT, 65).add(Aspect.CRYSTAL, 32)")
+                        && rec.contains("ConfigItems.itemBlockTalisman"));
         for (String key : langKeys) {
             assertTrue("lang " + key, lang.contains("item.thaumcraft." + key + ".name="));
+        }
+        assertTrue("itemBlockTalisman registered",
+                cfg.contains("itemBlockTalisman;") && cfg.contains("allItems.add(itemBlockTalisman)"));
+        assertTrue("ItemBlockTalisman lives in the KAMI package",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/kami/"
+                        + "ItemBlockTalisman.java")));
+        assertTrue("Black Hole Ring is named in both languages",
+                lang.contains("item.thaumcraft.kami.block_talisman.name=Black Hole Ring")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("item.thaumcraft.kami.block_talisman.name="));
+        // All three of these switch on and off through item damage 0/1, and the
+        // original ships a separate icon per state.
+        for (String stem : new String[]{"blocktalisman", "cleansingtalisman", "xptalisman"}) {
+            for (int state = 0; state < 2; state++) {
+                assertTrue(stem + " model " + state,
+                        Files.exists(Paths.get("src/main/resources/assets/thaumcraft/models/item/"
+                                + stem + "_" + state + ".json")));
+            }
+        }
+        for (String tex : new String[]{"block_talisman", "cleansing_talisman", "xp_talisman"}) {
+            for (int state = 0; state < 2; state++) {
+                assertTrue(tex + " texture " + state,
+                        Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/"
+                                + tex + "_" + state + ".png")));
+            }
         }
         assertTrue("utility recipes registered at init",
                 read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
@@ -866,6 +895,94 @@ public class ThaumicTinkererFociStaticGuardTest {
                 en.contains("tc.kami.mode.pick.2=Line Mode")
                         && en.contains("tc.kami.mode.shovel.2=Column Mode")
                         && en.contains("tc.kami.mode.axe.2=Tree Mode"));
+    }
+
+    /**
+     * The Bottomless Pouch is the focus pouch grown to 13x9 and worn on the
+     * belt. Its screen and slot geometry are the original's.
+     */
+    @Test
+    public void bottomlessPouchKeepsTheOriginalGeometry() throws IOException {
+        String item = read("src/main/java/thaumcraft/common/items/tinkerer/kami/ItemIchorPouch.java");
+        assertTrue("117 slots, as 13 * 9", item.contains("SLOTS = 13 * 9"));
+        assertTrue("worn on the belt", item.contains("BaubleType.BELT"));
+        assertTrue("extends the plain focus pouch, as upstream",
+                item.contains("extends ItemFocusPouch implements IBauble"));
+
+        String container = read("src/main/java/thaumcraft/common/container/ContainerIchorPouch.java");
+        assertTrue("grid at (12 + col*18, 8 + row*18)",
+                container.contains("12 + col * 18, 8 + row * 18"));
+        assertTrue("player inventory at (48, 177)",
+                container.contains("INV_X = 48") && container.contains("INV_Y = 177"));
+        assertTrue("64 to a slot, and no pouch inside a pouch",
+                container.contains("return 64;")
+                        && container.contains("!(stack.getItem() instanceof ItemFocusPouch)"));
+
+        // The pouch is an ItemFocusPouch by inheritance; the plain screen must
+        // refuse it or it would truncate 117 slots to 18.
+        assertTrue("the plain pouch screen must not adopt the bottomless one",
+                read("src/main/java/thaumcraft/common/container/ContainerFocusPouch.java")
+                        .contains("!(stack.getItem() instanceof ItemIchorPouch)"));
+
+        assertTrue("screen is 256x256 on the original's texture",
+                read("src/main/java/thaumcraft/client/gui/GuiIchorPouch.java")
+                        .contains("this.xSize = 256"));
+        assertTrue("pouch gui texture ships",
+                Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/gui/ichorpouch.png")));
+    }
+
+    /** Protoclay swaps awakened tools by the material about to be struck. */
+    @Test
+    public void protoclaySwapsAwakenedTools() throws IOException {
+        String clay = read("src/main/java/thaumcraft/common/items/tinkerer/kami/ItemProtoclay.java");
+        assertTrue("matches the struck material against the three tool lists",
+                clay.contains("MATERIALS_PICK") && clay.contains("MATERIALS_SHOVEL")
+                        && clay.contains("MATERIALS_AXE"));
+        assertTrue("leaves the sword alone", clay.contains("\"sword\".equals(tool.getType())"));
+        assertTrue("swaps the hotbar slot with the matching tool",
+                clay.contains("player.inventory.currentItem, candidate"));
+
+        String tools = "src/main/java/thaumcraft/common/items/tinkerer/kami/tool/";
+        assertTrue("IAdvancedTool exists", Files.exists(Paths.get(tools + "IAdvancedTool.java")));
+        for (String[] pair : new String[][]{{"ItemIchorPickAdv", "pick"},
+                {"ItemIchorAxeAdv", "axe"}, {"ItemIchorShovelAdv", "shovel"}}) {
+            String src = read(tools + pair[0] + ".java");
+            assertTrue(pair[0] + " declares its type",
+                    src.contains("implements IAdvancedTool")
+                            && src.contains("return \"" + pair[1] + "\";"));
+        }
+    }
+
+    /** Both are KAMI items: registered, named in both languages, and infused. */
+    @Test
+    public void kamiCarryablesAreRegisteredAndCraftable() throws IOException {
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+
+        for (String field : new String[]{"itemIchorPouch", "itemProtoclay"}) {
+            assertTrue(field + " registered",
+                    cfg.contains(field + ";") && cfg.contains("allItems.add(" + field + ")"));
+        }
+        assertTrue("Bottomless Pouch infuses on the focus pouch at instability 9",
+                rec.contains("\"ICHOR_POUCH\"")
+                        && rec.contains("add(Aspect.VOID, 64).add(Aspect.MAN, 32)")
+                        && rec.contains("ConfigItems.itemFocusPouch"));
+        assertTrue("Protoclay infuses on a clay ball at instability 4",
+                rec.contains("\"PROTOCLAY\"")
+                        && rec.contains("add(Aspect.MINE, 16).add(Aspect.TOOL, 16)")
+                        && rec.contains("Items.CLAY_BALL"));
+        assertTrue("names come from the original's lang files",
+                en.contains("item.thaumcraft.kami.ichor_pouch.name=Bottomless Pouch")
+                        && en.contains("item.thaumcraft.kami.protoclay.name=Protoclay")
+                        && ru.contains("item.thaumcraft.kami.ichor_pouch.name=Бездонная сумка")
+                        && ru.contains("item.thaumcraft.kami.protoclay.name=Протоглина"));
+        assertTrue("the pouch screen is wired on both sides, at the original's KAMI id 50",
+                read("src/main/java/thaumcraft/common/CommonProxy.java")
+                        .contains("GUI_ICHOR_POUCH = 50")
+                        && read("src/main/java/thaumcraft/client/ClientProxy.java")
+                        .contains("GuiIchorPouch"));
     }
 
     private static String read(String path) throws IOException {

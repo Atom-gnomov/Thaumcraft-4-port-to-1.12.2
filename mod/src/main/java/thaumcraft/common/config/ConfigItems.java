@@ -97,6 +97,9 @@ public class ConfigItems {
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
     public static ItemDarkQuartz itemDarkQuartz;
+    public static thaumcraft.common.items.tinkerer.kami.ItemBlockTalisman itemBlockTalisman;
+    public static thaumcraft.common.items.tinkerer.kami.ItemIchorPouch itemIchorPouch;
+    public static thaumcraft.common.items.tinkerer.kami.ItemProtoclay itemProtoclay;
 
     // Basic items
     public static ItemShard itemShard;
@@ -468,6 +471,24 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("DarkQuartz"))
                 .setTranslationKey("thaumcraft.dark_quartz");
         allItems.add(itemDarkQuartz);
+
+        itemBlockTalisman = (thaumcraft.common.items.tinkerer.kami.ItemBlockTalisman)
+                new thaumcraft.common.items.tinkerer.kami.ItemBlockTalisman()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("BlockTalisman"))
+                .setTranslationKey("thaumcraft.kami.block_talisman");
+        allItems.add(itemBlockTalisman);
+
+        itemIchorPouch = (thaumcraft.common.items.tinkerer.kami.ItemIchorPouch)
+                new thaumcraft.common.items.tinkerer.kami.ItemIchorPouch()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorPouch"))
+                .setTranslationKey("thaumcraft.kami.ichor_pouch");
+        allItems.add(itemIchorPouch);
+
+        itemProtoclay = (thaumcraft.common.items.tinkerer.kami.ItemProtoclay)
+                new thaumcraft.common.items.tinkerer.kami.ItemProtoclay()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("Protoclay"))
+                .setTranslationKey("thaumcraft.kami.protoclay");
+        allItems.add(itemProtoclay);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

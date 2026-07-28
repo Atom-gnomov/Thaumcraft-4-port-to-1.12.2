@@ -1702,3 +1702,6 @@ ttmisc.rightClick=ПКМ
 ttmisc.soulMould.nonAssigned=Нет образца души
 ttmisc.soulMould.pattern=Текущий образец души: %s
 ttmisc.startEnchant=Начало зачарования
+item.thaumcraft.kami.block_talisman.name=Талисман черной дыры
+item.thaumcraft.kami.ichor_pouch.name=Бездонная сумка
+item.thaumcraft.kami.protoclay.name=Протоглина

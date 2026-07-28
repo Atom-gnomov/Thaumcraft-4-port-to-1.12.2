@@ -1057,6 +1057,16 @@ public class ClientProxy extends CommonProxy {
             ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorShovelAdv, mode,
                     new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorshoveladv_" + mode), "inventory"));
         }
+        for (Object[] pair : new Object[][]{
+                {ConfigItems.itemBlockTalisman, "blocktalisman"},
+                {ConfigItems.itemCleansingTalisman, "cleansingtalisman"},
+                {ConfigItems.itemXpTalisman, "xptalisman"}}) {
+            for (int state = 0; state < 2; state++) {
+                ModelLoader.setCustomModelResourceLocation((Item) pair[0], state,
+                        new ModelResourceLocation(
+                                new ResourceLocation("thaumcraft", pair[1] + "_" + state), "inventory"));
+            }
+        }
         for (int meta = 0; meta < thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES.length; meta++) {
             ModelLoader.setCustomModelResourceLocation(ConfigItems.itemKamiResource, meta,
                     new ModelResourceLocation(new ResourceLocation("thaumcraft",
@@ -1352,6 +1362,8 @@ public class ClientProxy extends CommonProxy {
                                 (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
                         : null;
             }
+            case GUI_ICHOR_POUCH:
+                return new thaumcraft.client.gui.GuiIchorPouch(player.inventory, world);
             case GUI_ENCHANTER:
             {
                 net.minecraft.tileentity.TileEntity tile =

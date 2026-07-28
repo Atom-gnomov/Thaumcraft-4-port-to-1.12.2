@@ -12,6 +12,21 @@ Working doc for continuing the adoption of upstream **FOREVA**
 
 ---
 
+## Before you touch anything: claim it
+
+More than one agent works on this repo at once, on different machines and in
+different working copies. [`WORK_CLAIMS.md`](WORK_CLAIMS.md) is the only thing
+stopping two of them editing the same file. Read it, add your line, push it —
+**before** you start, not after.
+
+Two habits that follow from that:
+
+- **Never `git add -A`.** A shared working copy can hold another agent's
+  uncommitted work; stage your own paths explicitly.
+- **Never force-push without `--force-with-lease`.**
+
+---
+
 ## THE RULE: never invent a value. Read the original. (mandatory)
 
 This is the first rule of this repo and it outranks every convenience below it.

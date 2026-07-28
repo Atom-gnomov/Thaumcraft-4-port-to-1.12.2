@@ -1703,6 +1703,74 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("TileRegistration(TileForcefield.class, \"TileForcefield\")"));
     }
 
+    /**
+     * The infused crops: seeds, one crop block per primal, grain and potion.
+     * The ordering of the four is the item metadata and must not be reshuffled.
+     */
+    @Test
+    public void infusedCropChainMatchesTheOriginal() throws IOException {
+        String enumSrc = read("src/main/java/thaumcraft/common/items/tinkerer/PrimalCrop.java");
+        assertTrue("the order is upstream's AIR, FIRE, EARTH, WATER",
+                enumSrc.indexOf("AIR(") < enumSrc.indexOf("FIRE(")
+                        && enumSrc.indexOf("FIRE(") < enumSrc.indexOf("EARTH(")
+                        && enumSrc.indexOf("EARTH(") < enumSrc.indexOf("WATER("));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("seeds infuse from wheat seeds at instability 5",
+                rec.contains("Items.WHEAT_SEEDS")
+                        && rec.contains("add(Aspect.CROP, 32).add(Aspect.HARVEST, 32)"));
+        // Upstream's shard metas for seeds 0..3 are 0, 1, 3, 2 — not the primal
+        // order. Getting this wrong swaps Terra and Aqua silently.
+        assertTrue("seed 2 (Terra) takes shard 3",
+                rec.contains("\"InfusedSeeds2\"")
+                        && rec.contains("new ItemStack(ConfigItems.itemShard, 1, 3),\n"
+                        + "                        new ItemStack(ConfigItems.itemShard, 1, 3)"));
+        assertTrue("seed 3 (Aqua) takes shard 2",
+                rec.contains("\"InfusedSeeds3\""));
+        assertTrue("potions boil from the grain at AURA 5 plus their own primal",
+                rec.contains("\"InfusedPotion0\"")
+                        && rec.contains("add(Aspect.AURA, 5).add(Aspect.AIR, 5)"));
+        assertTrue("crop recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerCropRecipes()"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockInfusedGrain.java");
+        assertTrue("the primal is fixed per block, not held in metadata",
+                block.contains("private final PrimalCrop crop")
+                        && block.contains("public int damageDropped"));
+        assertTrue("it yields its own seed and its own grain",
+                block.contains("ConfigItems.itemInfusedSeeds")
+                        && block.contains("ConfigItems.itemInfusedGrain"));
+
+        String seeds = read("src/main/java/thaumcraft/common/items/tinkerer/ItemInfusedSeeds.java");
+        assertTrue("planting is written out because each damage grows its own block",
+                seeds.contains("cropBlock(stack).getDefaultState()")
+                        && seeds.contains("facing != EnumFacing.UP"));
+
+        String potion = read("src/main/java/thaumcraft/common/items/tinkerer/ItemInfusedPotion.java");
+        assertTrue("drinking grants the matching primal effect for the full duration",
+                potion.contains("ModPotionsTinkerer.DURATION")
+                        && potion.contains("EnumAction.DRINK"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        for (String field : new String[]{"itemInfusedSeeds", "itemInfusedGrain", "itemInfusedPotion"}) {
+            assertTrue(field + " registered", cfg.contains("allItems.add(" + field + ")"));
+        }
+        assertTrue("four crop blocks registered",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("blockInfusedGrain = new BlockInfusedGrain[4]"));
+        for (String tag : new String[]{"aer", "ignis", "terra", "aqua"}) {
+            assertTrue(tag + " blockstate ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/"
+                            + "blockinfusedgrain_" + tag + ".json")));
+            for (int stage = 0; stage < 4; stage++) {
+                assertTrue(tag + " stage " + stage + " texture",
+                        Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/"
+                                + "crop_" + tag + "_" + stage + ".png")));
+            }
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

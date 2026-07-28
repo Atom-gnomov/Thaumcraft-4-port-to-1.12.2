@@ -201,6 +201,76 @@ public class ConfigTinkerer {
     }
 
 
+
+    /**
+     * The infused crops: four seeds infused from wheat seeds and a matching set
+     * of elemental shards, and the four potions brewed from what they yield.
+     *
+     * <p>The shard metas are upstream's and are deliberately not the primal
+     * order — seeds 0..3 take shards 0, 1, 3, 2. See {@code PrimalCrop}.</p>
+     */
+    public static void registerCropRecipes() {
+        ConfigResearch.recipes.put("InfusedSeeds0", ThaumcraftApi.addInfusionCraftingRecipe(
+                "POTIONS0", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 0), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigItems.itemShard, 1, 0)}));
+
+        ConfigResearch.recipes.put("InfusedSeeds1", ThaumcraftApi.addInfusionCraftingRecipe(
+                "POTIONS1", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 1), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 1),
+                        new ItemStack(ConfigItems.itemShard, 1, 1),
+                        new ItemStack(ConfigItems.itemShard, 1, 1),
+                        new ItemStack(ConfigItems.itemShard, 1, 1)}));
+
+        ConfigResearch.recipes.put("InfusedSeeds2", ThaumcraftApi.addInfusionCraftingRecipe(
+                "POTIONS2", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 2), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 3)}));
+
+        ConfigResearch.recipes.put("InfusedSeeds3", ThaumcraftApi.addInfusionCraftingRecipe(
+                "POTIONS3", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 3), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 2),
+                        new ItemStack(ConfigItems.itemShard, 1, 2),
+                        new ItemStack(ConfigItems.itemShard, 1, 2),
+                        new ItemStack(ConfigItems.itemShard, 1, 2)}));
+
+        ConfigResearch.recipes.put("InfusedPotion0", ThaumcraftApi.addCrucibleRecipe(
+                "POTIONSPOT0", new ItemStack(ConfigItems.itemInfusedPotion, 1, 0),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 0),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.AIR, 5)));
+
+        ConfigResearch.recipes.put("InfusedPotion1", ThaumcraftApi.addCrucibleRecipe(
+                "POTIONSPOT1", new ItemStack(ConfigItems.itemInfusedPotion, 1, 1),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 1),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.FIRE, 5)));
+
+        ConfigResearch.recipes.put("InfusedPotion2", ThaumcraftApi.addCrucibleRecipe(
+                "POTIONSPOT2", new ItemStack(ConfigItems.itemInfusedPotion, 1, 2),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 2),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.EARTH, 5)));
+
+        ConfigResearch.recipes.put("InfusedPotion3", ThaumcraftApi.addCrucibleRecipe(
+                "POTIONSPOT3", new ItemStack(ConfigItems.itemInfusedPotion, 1, 3),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 3),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.WATER, 5)));
+    }
+
     /**
      * The gases in a bottle and the thing that clears them away. Both bottles
      * boil out of an empty phial; the dissipator is an arcane craft that needs

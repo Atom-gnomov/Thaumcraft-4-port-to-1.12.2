@@ -105,6 +105,9 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.ItemGas itemGaseousLight;
     public static thaumcraft.common.items.tinkerer.ItemGas itemGaseousShadow;
     public static thaumcraft.common.items.tinkerer.ItemGasRemover itemGasRemover;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedSeeds itemInfusedSeeds;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedGrain itemInfusedGrain;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedPotion itemInfusedPotion;
     public static thaumcraft.common.items.tinkerer.ItemRevealingHelm itemRevealingHelm;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothHelm;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothChest;
@@ -533,6 +536,24 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GasRemover"))
                 .setTranslationKey("thaumcraft.gas_remover");
         allItems.add(itemGasRemover);
+
+        itemInfusedSeeds = (thaumcraft.common.items.tinkerer.ItemInfusedSeeds)
+                new thaumcraft.common.items.tinkerer.ItemInfusedSeeds()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedSeeds"))
+                .setTranslationKey("thaumcraft.infused_seeds");
+        allItems.add(itemInfusedSeeds);
+
+        itemInfusedGrain = (thaumcraft.common.items.tinkerer.ItemInfusedGrain)
+                new thaumcraft.common.items.tinkerer.ItemInfusedGrain()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedGrain"))
+                .setTranslationKey("thaumcraft.infused_grain");
+        allItems.add(itemInfusedGrain);
+
+        itemInfusedPotion = (thaumcraft.common.items.tinkerer.ItemInfusedPotion)
+                new thaumcraft.common.items.tinkerer.ItemInfusedPotion()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedPotion"))
+                .setTranslationKey("thaumcraft.infused_potion");
+        allItems.add(itemInfusedPotion);
 
         itemRevealingHelm = (thaumcraft.common.items.tinkerer.ItemRevealingHelm)
                 new thaumcraft.common.items.tinkerer.ItemRevealingHelm()

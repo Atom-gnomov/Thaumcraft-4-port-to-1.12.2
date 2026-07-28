@@ -91,6 +91,8 @@ public class ConfigBlocks {
     public static BlockEnchanter blockEnchanter;
     public static BlockPlatform blockPlatform;
     public static BlockForcefield blockForcefield;
+    /** One per primal, indexed by {@link thaumcraft.common.items.tinkerer.PrimalCrop}. */
+    public static BlockInfusedGrain[] blockInfusedGrain = new BlockInfusedGrain[4];
     public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight blockGaseousLight;
     public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow blockGaseousShadow;
     public static thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas blockNitorGas;
@@ -356,6 +358,26 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockNitorGas"))
                 .setTranslationKey("thaumcraft.nitor_gas");
 
+        blockInfusedGrain[0] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.AIR)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainAer"))
+                .setTranslationKey("thaumcraft.infused_grain_aer");
+
+        blockInfusedGrain[1] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.FIRE)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainIgnis"))
+                .setTranslationKey("thaumcraft.infused_grain_ignis");
+
+        blockInfusedGrain[2] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.EARTH)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainTerra"))
+                .setTranslationKey("thaumcraft.infused_grain_terra");
+
+        blockInfusedGrain[3] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.WATER)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainAqua"))
+                .setTranslationKey("thaumcraft.infused_grain_aqua");
+
         blockForcefield = (BlockForcefield) new BlockForcefield()
                 .setRegistryName("thaumcraft", legacyPath("blockForcefield"))
                 .setTranslationKey("thaumcraft.forcefield");
@@ -483,6 +505,10 @@ public class ConfigBlocks {
                 blockGaseousLight,
                 blockGaseousShadow,
                 blockNitorGas,
+                blockInfusedGrain[0],
+                blockInfusedGrain[1],
+                blockInfusedGrain[2],
+                blockInfusedGrain[3],
                 blockForcefield,
                 blockPlatform,
                 blockFireAir,

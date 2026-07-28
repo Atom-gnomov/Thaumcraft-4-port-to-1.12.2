@@ -30,7 +30,11 @@ public class ConfigBlockItemModelCoverageTest {
      */
     private static final Set<String> NO_ITEM_FORM = new HashSet<>(java.util.Arrays.asList(
             "blockgaseouslight", "blockgaseousshadow", "blocknitorgas",
-            "blockforcefield"));
+            "blockforcefield",
+            // Crops are planted from a seed and drop a seed; they are never
+            // held, so upstream gives them no ItemBlock either.
+            "blockinfusedgrainaer", "blockinfusedgrainignis",
+            "blockinfusedgrainterra", "blockinfusedgrainaqua"));
 
     @Test
     public void everyConfigBlockRegistryPathHasItemModelJson() throws IOException {

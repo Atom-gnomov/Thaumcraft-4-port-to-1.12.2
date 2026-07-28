@@ -1073,6 +1073,20 @@ public class ClientProxy extends CommonProxy {
                             "kamiresource_" + thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES[meta]),
                             "inventory"));
         }
+        // The infused crops: one model per primal for each of the three items.
+        for (thaumcraft.common.items.tinkerer.PrimalCrop crop
+                : thaumcraft.common.items.tinkerer.PrimalCrop.values()) {
+            Object[][] families = {
+                    {ConfigItems.itemInfusedSeeds, "infusedseeds"},
+                    {ConfigItems.itemInfusedGrain, "infusedgrain"},
+                    {ConfigItems.itemInfusedPotion, "infusedpotion"},
+            };
+            for (Object[] family : families) {
+                ModelLoader.setCustomModelResourceLocation((Item) family[0], crop.ordinal(),
+                        new ModelResourceLocation(new ResourceLocation("thaumcraft",
+                                family[1] + "_" + crop.getTag()), "inventory"));
+            }
+        }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorDislocator), 0,

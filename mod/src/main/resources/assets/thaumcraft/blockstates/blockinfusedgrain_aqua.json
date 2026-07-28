@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {}
+  },
+  "variants": {
+    "age": {
+      "0": { "model": "thaumcraft:blockinfusedgrain_aqua_0" },
+      "1": { "model": "thaumcraft:blockinfusedgrain_aqua_0" },
+      "2": { "model": "thaumcraft:blockinfusedgrain_aqua_1" },
+      "3": { "model": "thaumcraft:blockinfusedgrain_aqua_1" },
+      "4": { "model": "thaumcraft:blockinfusedgrain_aqua_2" },
+      "5": { "model": "thaumcraft:blockinfusedgrain_aqua_2" },
+      "6": { "model": "thaumcraft:blockinfusedgrain_aqua_3" },
+      "7": { "model": "thaumcraft:blockinfusedgrain_aqua_3" }
+    }
+  }
+}

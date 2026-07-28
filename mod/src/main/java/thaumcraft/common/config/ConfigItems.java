@@ -101,6 +101,7 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.ItemIchorPouch itemIchorPouch;
     public static thaumcraft.common.items.tinkerer.kami.ItemProtoclay itemProtoclay;
     public static thaumcraft.common.items.tinkerer.ItemBrightNitor itemBrightNitor;
+    public static thaumcraft.common.items.tinkerer.ItemSpellCloth itemSpellCloth;
 
     // Basic items
     public static ItemShard itemShard;
@@ -496,6 +497,12 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("BrightNitor"))
                 .setTranslationKey("thaumcraft.bright_nitor");
         allItems.add(itemBrightNitor);
+
+        itemSpellCloth = (thaumcraft.common.items.tinkerer.ItemSpellCloth)
+                new thaumcraft.common.items.tinkerer.ItemSpellCloth()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SpellCloth"))
+                .setTranslationKey("thaumcraft.spell_cloth");
+        allItems.add(itemSpellCloth);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

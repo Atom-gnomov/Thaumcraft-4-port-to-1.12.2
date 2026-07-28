@@ -702,15 +702,93 @@ public class ThaumicTinkererFociStaticGuardTest {
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
-        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
-                "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator",
-                "AnimationTablet", "Enchanter",
-                "MobMagnet", "SoulMould"}) {
-            assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
+        for (String key : new String[]{"Funnel", "Magnet", "MobMagnet", "SoulMould",
+                "SpellCloth", "TransvectorInterface", "TransvectorConnector",
+                "TransvectorDislocator", "AnimationTablet", "Enchanter", "Repairer"}) {
+            assertTrue(key + " must have a recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
                 read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
                         .contains("ConfigTinkerer.registerBlockRecipes()"));
+    }
+
+    /**
+     * The block recipes were invented until 1.1.10.0. These pin what the
+     * original actually specifies — in particular that five of the thirteen
+     * are not arcane crafts at all.
+     */
+    @Test
+    public void blockRecipesMatchTheOriginal() throws IOException {
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+
+        assertTrue("the funnel is a single row of stone, thaumium, stone",
+                rec.contains("\"STS\"")
+                        && rec.contains("add(Aspect.ORDER, 1).add(Aspect.ENTROPY, 1)"));
+        assertTrue("both magnets share the original's shape and cost",
+                rec.contains("\" I \", \"SIs\", \"WFW\"")
+                        && rec.contains("\" G \", \"SGs\", \"WFW\"")
+                        && rec.contains("ConfigItems.focusTelekinesis"));
+        assertTrue("the mob magnet is item damage 1 and falls back to copper",
+                rec.contains("new ItemStack(ConfigBlocks.blockMagnet, 1, 1)")
+                        && rec.contains("oreDictOrStack(new ItemStack(Items.GOLD_INGOT), \"ingotCopper\")"));
+
+        // Not arcane crafts, whatever the method they live in is called.
+        assertTrue("the soul mould is a crucible recipe on an ender pearl",
+                rec.contains("\"SoulMould\", ThaumcraftApi.addCrucibleRecipe")
+                        && rec.contains("add(Aspect.BEAST, 4).add(Aspect.MIND, 8).add(Aspect.SENSES, 8)"));
+        assertTrue("the spell cloth is a crucible recipe on enchanted fabric",
+                rec.contains("\"SpellCloth\", ThaumcraftApi.addCrucibleRecipe"));
+        assertTrue("the enchanter is an infusion at instability 15",
+                rec.contains("\"ENCHANTER\", new ItemStack(ConfigBlocks.blockEnchanter), 15")
+                        && rec.contains("Blocks.ENCHANTING_TABLE")
+                        && rec.contains("ConfigItems.itemSpellCloth"));
+        assertTrue("the restorer is an infusion at instability 8 on thaumium",
+                rec.contains("\"REPAIRER\", new ItemStack(ConfigBlocks.blockRepairer), 8")
+                        && rec.contains("add(Aspect.TOOL, 15).add(Aspect.CRAFT, 20)"));
+
+        assertTrue("the interface is corners of pedestal top with lapis and a pearl",
+                rec.contains("\"BRB\", \"LEL\", \"BRB\"")
+                        && rec.contains("new ItemStack(Items.DYE, 1, 4)"));
+        assertTrue("the binder is iron, a stick and an order shard",
+                rec.contains("\" I \", \" WI\", \"S  \""));
+        assertTrue("the dislocator is a column of glass, interface and comparator",
+                rec.contains("\" M \", \" I \", \" C \"")
+                        && rec.contains("Items.COMPARATOR"));
+        assertTrue("the tablet takes a blank golem core",
+                rec.contains("\"GIG\", \"ICI\"")
+                        && rec.contains("ConfigItems.itemGolemCore, 1, 100"));
+
+        // The whole smokey quartz family is plain bench work upstream.
+        for (String name : new String[]{"darkquartz_block", "darkquartz_pillar",
+                "darkquartz_chiseled", "darkquartz_slab", "darkquartz_stairs",
+                "darkquartz_stairs_mirrored"}) {
+            assertTrue(name + " must be a bench recipe", rec.contains("\"" + name + "\""));
+        }
+        assertFalse("smokey quartz must not be arcane any more",
+                rec.contains("\"ARCANESTONE\""));
+    }
+
+    /** The Spellbinding Cloth and its disenchanting rule. */
+    @Test
+    public void spellClothStripsEnchantments() throws IOException {
+        String item = read("src/main/java/thaumcraft/common/items/tinkerer/ItemSpellCloth.java");
+        assertTrue("thirty-five uses", item.contains("USES = 35"));
+        assertTrue("wears by one and stays in the grid",
+                item.contains("worn.setItemDamage(worn.getItemDamage() + 1)"));
+
+        String recipe = read("src/main/java/thaumcraft/common/items/tinkerer/SpellClothRecipe.java");
+        assertTrue("removes the ench tag", recipe.contains("removeTag(\"ench\")"));
+        assertTrue("refuses items marked INoRemoveEnchant",
+                recipe.contains("instanceof INoRemoveEnchant"));
+        assertTrue("INoRemoveEnchant is carried over as a hook",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/"
+                        + "INoRemoveEnchant.java")));
+        assertTrue("the rule is registered",
+                read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("spellcloth_disenchant"));
+        assertTrue("itemSpellCloth registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemSpellCloth)"));
     }
 
     /** The module ships in both languages — the rest of the mod is fully translated. */

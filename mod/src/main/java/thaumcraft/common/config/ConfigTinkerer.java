@@ -251,113 +251,178 @@ public class ConfigTinkerer {
                 'Q', new ItemStack(Items.QUARTZ),
                 'C', new ItemStack(Items.COAL, 1, 1))
                 .setRegistryName("thaumcraft", "darkquartz_charcoal"));
+
+        // The blocks: four gems make one, two blocks make two pillars, and two
+        // slabs make one chiseled block. All bench recipes upstream.
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0),
+                "QQ", "QQ",
+                'Q', new ItemStack(ConfigItems.itemDarkQuartz))
+                .setRegistryName("thaumcraft", "darkquartz_block"));
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
+                "Q", "Q",
+                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
+                .setRegistryName("thaumcraft", "darkquartz_pillar"));
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
+                "Q", "Q",
+                'Q', new ItemStack(ConfigBlocks.blockSlabDarkQuartz))
+                .setRegistryName("thaumcraft", "darkquartz_chiseled"));
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigBlocks.blockSlabDarkQuartz, 6),
+                "QQQ",
+                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
+                .setRegistryName("thaumcraft", "darkquartz_slab"));
+        // Stairs are registered both ways round, as upstream does.
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
+                "  Q", " QQ", "QQQ",
+                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
+                .setRegistryName("thaumcraft", "darkquartz_stairs"));
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
+                "Q  ", "QQ ", "QQQ",
+                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
+                .setRegistryName("thaumcraft", "darkquartz_stairs_mirrored"));
+
+        // The cloth's own rule: one cloth plus one enchanted item, nothing else.
+        registry.register(new thaumcraft.common.items.tinkerer.SpellClothRecipe(
+                ConfigItems.itemSpellCloth)
+                .setRegistryName("thaumcraft", "spellcloth_disenchant"));
     }
 
+    /**
+     * Thaumic Tinkerer's blocks, transcribed from the original's own
+     * {@code getRecipeItem()}. Only five of them are arcane crafts: the smokey
+     * quartz family is plain bench work (see {@link #registerBenchRecipes}),
+     * the Soul Mould is a crucible recipe, and the Osmotic Enchanter and the
+     * Thaumic Restorer are infusions.
+     */
     public static void registerBlockRecipes() {
-        // Dark quartz: plain -> chiseled -> pillar, mirroring vanilla quartz shapes.
-        ConfigResearch.recipes.put("DarkQuartz", ThaumcraftApi.addArcaneCraftingRecipe(
-                "ARCANESTONE", new ItemStack(ConfigBlocks.blockDarkQuartz, 4, 0),
-                new AspectList().add(Aspect.ENTROPY, 5).add(Aspect.EARTH, 5),
-                "QQ", "QQ",
-                'Q', new ItemStack(Blocks.QUARTZ_BLOCK, 1, 0)));
-
-        ConfigResearch.recipes.put("DarkQuartzChiseled", ThaumcraftApi.addArcaneCraftingRecipe(
-                "ARCANESTONE", new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
-                new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.CRAFT, 3),
-                "D", "D",
-                'D', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0)));
-
-        ConfigResearch.recipes.put("DarkQuartzPillar", ThaumcraftApi.addArcaneCraftingRecipe(
-                "ARCANESTONE", new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
-                new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.CRAFT, 3),
-                "D", "D",
-                'D', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1)));
-
-        // Funnel: hopper-like collector, gated behind the grate (item-flow research).
+        // FUNNEL: a single row — stone, thaumium, stone.
         ConfigResearch.recipes.put("Funnel", ThaumcraftApi.addArcaneCraftingRecipe(
-                "GRATE", new ItemStack(ConfigBlocks.blockFunnel),
-                new AspectList().add(Aspect.AIR, 10).add(Aspect.ORDER, 10).add(Aspect.VOID, 5),
-                "I I", "IHI", " I ",
-                'I', new ItemStack(Items.IRON_INGOT),
-                'H', new ItemStack(Blocks.HOPPER)));
+                "FUNNEL", new ItemStack(ConfigBlocks.blockFunnel),
+                new AspectList().add(Aspect.ORDER, 1).add(Aspect.ENTROPY, 1),
+                "STS",
+                'S', new ItemStack(Blocks.STONE),
+                'T', new ItemStack(ConfigItems.itemResource, 1, 2)));
 
-        // Magnet: redstone-driven item attractor.
+        // MAGNET and MOB_MAGNET share a shape and a cost; the middle column is
+        // iron for one and gold for the other. Both hang off MAGNETS research.
         ConfigResearch.recipes.put("Magnet", ThaumcraftApi.addArcaneCraftingRecipe(
-                "GRATE", new ItemStack(ConfigBlocks.blockMagnet),
-                new AspectList().add(Aspect.AIR, 15).add(Aspect.MOTION, 15).add(Aspect.MAGIC, 5),
-                "III", "IRI", "III",
+                "MAGNETS", new ItemStack(ConfigBlocks.blockMagnet),
+                new AspectList().add(Aspect.AIR, 20).add(Aspect.ORDER, 5)
+                        .add(Aspect.EARTH, 15).add(Aspect.ENTROPY, 5),
+                " I ", "SIs", "WFW",
                 'I', new ItemStack(Items.IRON_INGOT),
-                'R', new ItemStack(Blocks.REDSTONE_BLOCK)));
+                's', new ItemStack(ConfigItems.itemShard, 1, 3),
+                'S', new ItemStack(ConfigItems.itemShard, 1, 0),
+                'W', new ItemStack(ConfigBlocks.blockMagicalLog),
+                'F', new ItemStack(ConfigItems.focusTelekinesis)));
 
-        // Mob magnet: the item magnet re-tuned onto living things.
+        // Item damage 1 is the mob magnet — see BlockMagnetItem.
         ConfigResearch.recipes.put("MobMagnet", ThaumcraftApi.addArcaneCraftingRecipe(
-                "GRATE", new ItemStack(ConfigBlocks.blockMagnet, 1, 2),
-                new AspectList().add(Aspect.AIR, 20).add(Aspect.MOTION, 20).add(Aspect.BEAST, 10),
-                " F ", "FMF", " F ",
-                'M', new ItemStack(ConfigBlocks.blockMagnet, 1, 0),
-                'F', new ItemStack(Items.ROTTEN_FLESH)));
+                "MAGNETS", new ItemStack(ConfigBlocks.blockMagnet, 1, 1),
+                new AspectList().add(Aspect.AIR, 20).add(Aspect.ORDER, 5)
+                        .add(Aspect.EARTH, 15).add(Aspect.ENTROPY, 5),
+                " G ", "SGs", "WFW",
+                'G', oreDictOrStack(new ItemStack(Items.GOLD_INGOT), "ingotCopper"),
+                's', new ItemStack(ConfigItems.itemShard, 1, 3),
+                'S', new ItemStack(ConfigItems.itemShard, 1, 0),
+                'W', new ItemStack(ConfigBlocks.blockMagicalLog),
+                'F', new ItemStack(ConfigItems.focusTelekinesis)));
 
-        // Soul mould: keys machines to one kind of creature.
-        ConfigResearch.recipes.put("SoulMould", ThaumcraftApi.addArcaneCraftingRecipe(
-                "GRATE", new ItemStack(ConfigItems.itemSoulMould),
-                new AspectList().add(Aspect.SOUL, 15).add(Aspect.BEAST, 10).add(Aspect.CRAFT, 5),
-                "CTC", "T T", "CTC",
-                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
-                'C', new ItemStack(Items.CLAY_BALL)));
+        // SOUL_MOULD: a crucible recipe on an ender pearl, not a craft.
+        ConfigResearch.recipes.put("SoulMould", ThaumcraftApi.addCrucibleRecipe(
+                "MAGNETS", new ItemStack(ConfigItems.itemSoulMould),
+                new ItemStack(Items.ENDER_PEARL),
+                new AspectList().add(Aspect.BEAST, 4).add(Aspect.MIND, 8).add(Aspect.SENSES, 8)));
 
-        // Transvector interface + its connector: remote block proxying.
+        // SPELL_CLOTH: a crucible recipe on enchanted fabric. It sits here
+        // because the enchanter below is infused on one.
+        ConfigResearch.recipes.put("SpellCloth", ThaumcraftApi.addCrucibleRecipe(
+                "SPELL_CLOTH", new ItemStack(ConfigItems.itemSpellCloth),
+                new ItemStack(ConfigItems.itemResource, 1, 7),
+                new AspectList().add(Aspect.MAGIC, 10).add(Aspect.ENTROPY, 6)
+                        .add(Aspect.EXCHANGE, 4)));
+
+        // INTERFACE: pedestal-top corners, redstone, lapis and an ender pearl.
         ConfigResearch.recipes.put("TransvectorInterface", ThaumcraftApi.addArcaneCraftingRecipe(
-                "MIRROR", new ItemStack(ConfigBlocks.blockTransvectorInterface),
-                new AspectList().add(Aspect.EXCHANGE, 20).add(Aspect.MAGIC, 15).add(Aspect.VOID, 10),
-                "SQS", "QEQ", "SQS",
-                'S', new ItemStack(ConfigItems.itemShard, 1, 5),
-                'Q', new ItemStack(Items.QUARTZ),
-                'E', new ItemStack(Items.ENDER_EYE)));
+                "INTERFACE", new ItemStack(ConfigBlocks.blockTransvectorInterface),
+                new AspectList().add(Aspect.ORDER, 12).add(Aspect.ENTROPY, 16),
+                "BRB", "LEL", "BRB",
+                'B', new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 6),
+                'E', new ItemStack(Items.ENDER_PEARL),
+                'L', new ItemStack(Items.DYE, 1, 4),
+                'R', new ItemStack(Items.REDSTONE)));
 
-        ConfigResearch.recipes.put("TransvectorDislocator", ThaumcraftApi.addArcaneCraftingRecipe(
-                "MIRROR", new ItemStack(ConfigBlocks.blockTransvectorDislocator),
-                new AspectList().add(Aspect.EXCHANGE, 25).add(Aspect.MOTION, 15).add(Aspect.VOID, 10),
-                "SPS", "PEP", "SPS",
-                'S', new ItemStack(ConfigItems.itemShard, 1, 5),
-                'P', new ItemStack(Blocks.PISTON),
-                'E', new ItemStack(Items.ENDER_EYE)));
-
+        // The binder is the interface research's second recipe page upstream.
         ConfigResearch.recipes.put("TransvectorConnector", ThaumcraftApi.addArcaneCraftingRecipe(
-                "MIRROR", new ItemStack(ConfigItems.itemTransvectorConnector),
-                new AspectList().add(Aspect.EXCHANGE, 10).add(Aspect.MAGIC, 10),
-                "  Q", " R ", "R  ",
-                'Q', new ItemStack(Items.QUARTZ),
-                'R', new ItemStack(Items.BLAZE_ROD)));
+                "INTERFACE", new ItemStack(ConfigItems.itemTransvectorConnector),
+                new AspectList().add(Aspect.ORDER, 2),
+                " I ", " WI", "S  ",
+                'I', new ItemStack(Items.IRON_INGOT),
+                'W', new ItemStack(Items.STICK),
+                'S', new ItemStack(ConfigItems.itemShard, 1, 4)));
 
-        // Osmotic enchanter: vis-powered enchanting, needs the totem/nitor pillars.
-        ConfigResearch.recipes.put("Enchanter", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSIONENCHANTMENT", new ItemStack(ConfigBlocks.blockEnchanter),
-                new AspectList().add(Aspect.MAGIC, 25).add(Aspect.ORDER, 20).add(Aspect.EXCHANGE, 15),
-                "SBS", "TQT", "OOO",
-                'S', new ItemStack(ConfigItems.itemShard, 1, 5),
-                'B', new ItemStack(Items.BOOK),
-                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
-                'Q', new ItemStack(Items.QUARTZ),
-                'O', new ItemStack(Blocks.OBSIDIAN)));
+        // DISLOCATOR: a column of mirror glass, an interface and a comparator.
+        ConfigResearch.recipes.put("TransvectorDislocator", ThaumcraftApi.addArcaneCraftingRecipe(
+                "DISLOCATOR", new ItemStack(ConfigBlocks.blockTransvectorDislocator),
+                new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 5),
+                " M ", " I ", " C ",
+                'M', new ItemStack(ConfigItems.itemResource, 1, 10),
+                'I', new ItemStack(ConfigBlocks.blockTransvectorInterface),
+                'C', new ItemStack(Items.COMPARATOR)));
 
-        // Animation tablet: works a tool against the block it faces.
+        // ENCHANTER: infusion on an enchanting table, five obsidian totems round it.
+        ConfigResearch.recipes.put("Enchanter", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ENCHANTER", new ItemStack(ConfigBlocks.blockEnchanter), 15,
+                new AspectList().add(Aspect.MAGIC, 50).add(Aspect.ENERGY, 20)
+                        .add(Aspect.ELDRITCH, 20).add(Aspect.VOID, 20).add(Aspect.MIND, 10),
+                new ItemStack(Blocks.ENCHANTING_TABLE),
+                new ItemStack[]{
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1),
+                        new ItemStack(ConfigItems.itemResource, 1, 2),
+                        new ItemStack(ConfigItems.itemResource, 1, 2),
+                        new ItemStack(ConfigItems.itemSpellCloth)}));
+
+        // ANIMATION_TABLET: gold, iron and a blank golem core.
         ConfigResearch.recipes.put("AnimationTablet", ThaumcraftApi.addArcaneCraftingRecipe(
-                "GOLEMANCY", new ItemStack(ConfigBlocks.blockAnimationTablet),
-                new AspectList().add(Aspect.MECHANISM, 20).add(Aspect.MOTION, 15).add(Aspect.TOOL, 10),
-                "TQT", "QMQ", "SSS",
-                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
-                'Q', new ItemStack(Items.QUARTZ),
-                'M', new ItemStack(Blocks.PISTON),
-                'S', new ItemStack(Blocks.STONE_SLAB)));
+                "ANIMATION_TABLET", new ItemStack(ConfigBlocks.blockAnimationTablet),
+                new AspectList().add(Aspect.AIR, 25).add(Aspect.ORDER, 15).add(Aspect.FIRE, 10),
+                "GIG", "ICI",
+                'G', new ItemStack(Items.GOLD_INGOT),
+                'I', new ItemStack(Items.IRON_INGOT),
+                'C', new ItemStack(ConfigItems.itemGolemCore, 1, 100)));
 
-        // Repairer: essentia-fed tool mender, gated behind essentia distillation.
-        ConfigResearch.recipes.put("Repairer", ThaumcraftApi.addArcaneCraftingRecipe(
-                "DISTILESSENTIA", new ItemStack(ConfigBlocks.blockRepairer),
-                new AspectList().add(Aspect.TOOL, 20).add(Aspect.CRAFT, 15).add(Aspect.ORDER, 10),
-                "ATA", "TQT", "ATA",
-                'T', new ItemStack(ConfigItems.itemResource, 1, 2),
-                'Q', new ItemStack(Items.QUARTZ),
-                'A', new ItemStack(Items.IRON_INGOT)));
+        // REPAIRER: infusion on a block of thaumium, one of everything around it.
+        ConfigResearch.recipes.put("Repairer", ThaumcraftApi.addInfusionCraftingRecipe(
+                "REPAIRER", new ItemStack(ConfigBlocks.blockRepairer), 8,
+                new AspectList().add(Aspect.TOOL, 15).add(Aspect.CRAFT, 20)
+                        .add(Aspect.ORDER, 10).add(Aspect.MAGIC, 15),
+                new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 4),
+                new ItemStack[]{
+                        new ItemStack(Items.IRON_INGOT),
+                        new ItemStack(Items.GOLD_INGOT),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(Blocks.COBBLESTONE),
+                        new ItemStack(Blocks.PLANKS),
+                        new ItemStack(Items.LEATHER),
+                        new ItemStack(ConfigItems.itemResource, 1, 7),
+                        new ItemStack(ConfigItems.itemResource, 1, 2)}));
+    }
+
+    /**
+     * The original's {@code ThaumicTinkererRecipe.oreDictOrStack}: prefer the
+     * ore-dictionary name when another mod provides it, else the plain stack.
+     */
+    private static Object oreDictOrStack(ItemStack stack, String oreDict) {
+        return net.minecraftforge.oredict.OreDictionary.getOres(oreDict).isEmpty() ? stack : oreDict;
     }
 
     /**

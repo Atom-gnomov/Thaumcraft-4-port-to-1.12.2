@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 46 из 84 объектов каталога, осталось 38.**
+**Состояние: портировано 47 из 84 объектов каталога, осталось 37.**
 
 Порядок — по зависимостям: объект появляется после всего, что ему нужно.
 «Связи» — компоненты рецепта, которые сами являются объектами TT.
@@ -52,9 +52,8 @@
 | 33 | `ItemRevealingHelm` | аркан | — | — | — |
 | 34 | `ItemShareBook` | верстак | — | — | — |
 | 35 | `ItemSkyPearl` | инфузия | — | — | `ItemKamiResource` |
-| 36 | `ItemSpellCloth` | тигель | — | — | — |
-| 37 | `ItemFocusRecall` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
-| 38 | `ItemInfusedPotion` | тигель | — | `ItemInfusedGrain` | — |
+| 36 | `ItemFocusRecall` | инфузия | — | `ItemSkyPearl` | `ItemKamiResource` |
+| 37 | `ItemInfusedPotion` | тигель | — | `ItemInfusedGrain` | — |
 
 ---
 
@@ -407,16 +406,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
 
-### 36. `ItemSpellCloth`
-
-- **Файл оригинала:** `common/item/ItemSpellCloth.java`
-- **Наследует:** `ItemBase`
-- **Имя регистрации:** `"spellCloth"`
-- **Рецепт:** тигель
-- **Аспекты:** MAGIC 10, ENTROPY 6, EXCHANGE 4
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSpellCloth`
-
-### 37. `ItemFocusRecall`
+### 36. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -428,7 +418,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusRecall`
 
-### 38. `ItemInfusedPotion`
+### 37. `ItemInfusedPotion`
 
 - **Файл оригинала:** `common/item/ItemInfusedPotion.java`
 - **Наследует:** `ItemPotion`, реализует `ITTinkererItem`

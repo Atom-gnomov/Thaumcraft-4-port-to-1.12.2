@@ -1,5 +1,7 @@
 package thaumcraft.common.items.tinkerer.kami.armor;
 
+import java.util.HashSet;
+import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
@@ -7,6 +9,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -17,8 +20,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * <p>Haste while worn, a full block of step height (halved when sneaking), a
  * push forward as you walk or fly, a higher jump, no fall damage, and grass
  * springing up from the plain dirt underfoot.</p>
+ *
+ * <p>Step height is a field on the player, not an attribute, so taking the
+ * boots off does not undo it. Upstream keeps a list of who it raised and puts
+ * them back to 0.5 when the boots come off or are switched off; without that
+ * the player walks up full blocks forever afterwards.</p>
  */
 public class ItemGemBoots extends ItemIchorclothArmorAdv {
+
+    /** Players whose step height this raised, so it can be given back. */
+    private static final Set<String> RAISED = new HashSet<>();
 
     public ItemGemBoots() {
         super(EntityEquipmentSlot.FEET);
@@ -51,6 +62,26 @@ public class ItemGemBoots extends ItemIchorclothArmorAdv {
                 && player.world.getBlockState(below).getBlock()
                 .getMetaFromState(player.world.getBlockState(below)) == 0) {
             player.world.setBlockState(below, Blocks.GRASS.getDefaultState(), 2);
+        }
+    }
+
+    /** Client-side bookkeeping that restores step height when the boots go. */
+    @SubscribeEvent
+    public void onLivingUpdate(LivingUpdateEvent event) {
+        if (!(event.getEntityLiving() instanceof EntityPlayer)
+                || !event.getEntityLiving().world.isRemote) {
+            return;
+        }
+        EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+        String name = player.getGameProfile().getName();
+        boolean listed = RAISED.contains(name);
+        boolean wearing = isActive(player);
+
+        if (!listed && wearing) {
+            RAISED.add(name);
+        } else if (listed && !wearing) {
+            RAISED.remove(name);
+            player.stepHeight = 0.5F;
         }
     }
 

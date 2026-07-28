@@ -1502,9 +1502,9 @@ public class ThaumicTinkererFociStaticGuardTest {
                 base.contains("ichorGem2.png") && base.contains("ichorGem1.png"));
 
         String helm = read(dir + "ItemGemHelm.java");
-        assertTrue("the cowl tops air to 300 and holds night vision at 202 ticks",
+        assertTrue("the cowl tops air to 300 and refreshes its effect at 202 ticks",
                 helm.contains("player.setAir(300)")
-                        && helm.contains("NIGHT_VISION_TICKS = 202"));
+                        && helm.contains("REFRESH_TICKS = 202"));
         assertTrue("and reveals nodes", helm.contains("implements IGoggles, IRevealer"));
 
         String chest = read(dir + "ItemGemChest.java");
@@ -1923,6 +1923,28 @@ public class ThaumicTinkererFociStaticGuardTest {
             assertTrue(field + " registered and listed",
                     blocks.contains(field + ";") && blocks.contains("                " + field + ","));
         }
+    }
+
+    /**
+     * Behaviours the awakened armour was missing until the 1.1.24.0 audit.
+     * Each is easy to lose because it sits outside the obvious code path.
+     */
+    @Test
+    public void awakenedArmourKeepsItsQuieterBehaviours() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/items/tinkerer/kami/armor/";
+
+        String helm = read(dir + "ItemGemHelm.java");
+        assertTrue("lava is handled as well as water, and blinds rather than lights",
+                helm.contains("Material.LAVA") && helm.contains("MobEffects.BLINDNESS"));
+        assertTrue("and the cowl feeds its wearer half a heart every four seconds",
+                helm.contains("food > 0 && food < 18")
+                        && helm.contains("player.ticksExisted % 80 == 0")
+                        && helm.contains("player.heal(1.0F)"));
+
+        String boots = read(dir + "ItemGemBoots.java");
+        // Step height is a plain field, so nothing undoes it when the boots go.
+        assertTrue("the boots give the step height back",
+                boots.contains("player.stepHeight = 0.5F") && boots.contains("RAISED"));
     }
 
     private static String read(String path) throws IOException {

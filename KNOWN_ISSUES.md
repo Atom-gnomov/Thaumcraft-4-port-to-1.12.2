@@ -3,9 +3,11 @@
 Список открытых багов/недоделок порта Thaumcraft 4 → 1.12.2 на текущий момент.
 Закрытые пункты переносятся в `CHANGELOG.md` при исправлении, отсюда удаляются.
 
-## Весь контент TT нельзя получить в выживании
+## Бо́льшую часть контента TT нельзя получить в выживании
 
 **Severity: блокирует модуль.** Найдено аудитом 2026-07-28, после 1.1.23.0.
+**Частично закрыто в 1.1.25.0:** ветка фокусов перенесена, вкладка
+`TT_CATEGORY` зарегистрирована, 7 фокусов достижимы. Остальное — ниже.
 
 `ShapedArcaneRecipe.matches` и `InfusionRecipe.matches` начинаются с проверки
 
@@ -18,12 +20,24 @@ if (this.research.length() > 0 && !ThaumcraftApiHelper.isResearchComplete(player
 записи Таумономикона. Ветка исследований Thaumic Tinkerer не портирована, то
 есть **таких записей нет ни для одного ключа TT**.
 
-Из 62 рецептов в `ConfigTinkerer` только 7 привязаны к `INFUSION` —
-единственному ключу из этого списка, который существует в TC4. Остальные 55
-висят на 46 ключах оригинала (`FOCUS_SMELT`, `MAGNETS`, `ENCHANTER`,
-`ICHORCLOTH_ARMOR`, `SUMMON0`, `LEVITATOR`, `BRIGHT_NITOR`, `POTIONS0`…), и ни
-один из них игрок завершить не может. Значит, эти рецепты **не сработают
-никогда**.
+Гейтом закрыт 51 рецепт `ConfigTinkerer`. После 1.1.25.0 достижимы 16 из них:
+9 висят на ключах, которые есть в самом TC4, ещё 7 — на семи новых записях
+фокусов. Оставшиеся **35 рецептов висят на 30 ключах оригинала**, для которых
+записи Таумономикона по-прежнему нет, то есть эти рецепты не сработают никогда:
+
+```
+ANIMATION_TABLET  BLOCK_TALISMAN  BLOOD_SWORD  CAT_AMULET  CLEANSING_TALISMAN
+DISLOCATOR  ENCHANTER  FUNNEL  GAS_REMOVER  ICHORCLOTH_ARMOR (x4)
+ICHORCLOTH_BOOTS_GEM  ICHORCLOTH_CHEST_GEM  ICHORCLOTH_HELM_GEM
+ICHORCLOTH_LEGS_GEM  ICHOR_POUCH  INFUSED_INKWELL  INTERFACE (x2)
+MAGNETS (x2)  PLACEMENT_MIRROR  PLATFORM  POTIONS0  POTIONS1  POTIONS2
+POTIONS3  PROTOCLAY  REPAIRER  REVEALING_HELM  SUMMON  SUMMON0  XP_TALISMAN
+```
+
+Пересчитать список: `ConfigTinkerer` даёт ключи первым аргументом
+`addArcaneCraftingRecipe`/`addInfusionCraftingRecipe`, наличие записи —
+`new TinkererResearchItem("KEY"` в `ConfigResearchTinkerer` либо
+`new ResearchItem("KEY"` в остальных `ConfigResearch*`.
 
 Верстачные рецепты (`ShapedOreRecipe`) исследованиями не гейтятся и работают:
 вся цепочка закоптившегося кварца, том обмена, прессовка аспектов души,
@@ -52,6 +66,45 @@ if (this.research.length() > 0 && !ThaumcraftApiHelper.isResearchComplete(player
 Промежуточных костылей не ставить: временно вернуть чужие ключи TC4 — значит
 вернуться к выдуманному гейту, который уже один раз пришлось убирать.
 
+Порядок работы задан в 1.1.25.0 и повторяется для каждой следующей группы:
+
+1. Взять `getResearchItem()` в оригинале (`tt-original-1.7.10`), не в пересказе.
+2. Дописать группу в `ConfigResearchTinkerer` через `TinkererResearchItem`.
+3. Скопировать `ttresearch.name/lore/page.*` для её ключей из оригинальных
+   `en_US.lang` и `ru_RU.lang` дословно — свои формулировки не сочинять.
+4. Прикрепить страницы рецептов строгими `ConfigResearch.recipeArcane/
+   recipeInfusion` — промах ключа должен падать, а не молча давать текст.
+5. Расширить `TinkererResearchStaticGuardTest`: и запись, и пару «гейт ↔
+   запись» (`everyFocusRecipeGateHasAnEntry`).
+
+Родители ведут на записи соседних групп, поэтому порядок важен. Дерево
+оригинала (`setParents` в `getResearchItem()`, в кавычках — ключи самого TC4):
+
+```
+"FOCUSEXCAVATION" → FOCUS_SMELT → FOCUS_FLIGHT → FOCUS_TELEKINESIS      готово
+                                              → FOCUS_DISLOCATION      готово
+                                → FOCUS_DEFLECT → FOCUS_HEAL           готово
+                                                → FOCUS_ENDER_CHEST    готово
+DARK_QUARTZ → INTERFACE → MAGNETS → ANIMATION_TABLET → REMOTE_PLACER
+            │           │        └→ MOBILIZER
+            │           └→ DISLOCATOR
+            └→ CLEANSING_TALISMAN → BLOOD_SWORD → SUMMON
+                                  └→ PLATFORM
+"NITOR" → GASEOUS_LIGHT → GASEOUS_SHADOW
+                        └→ BRIGHT_NITOR → FIRE_{AER,AQUA,IGNIS,ORDO,
+                                       │    PERDITIO,TERRA} → POTIONS
+                                       └→ FUNNEL → REPAIRER
+SPELL_CLOTH → ENCHANTER → 14 записей ENCHANT_* (см. TT_OBJECT_REFERENCE.md)
+            └→ XP_TALISMAN (второй родитель — "JARBRAIN")
+"GOGGLES" → REVEALING_HELM
+PERIPHERALS → ASPECT_ANALYZER, GOLEMCONNECTOR
+```
+
+То есть следующие корни — `DARK_QUARTZ`, `GASEOUS_LIGHT`, `SPELL_CLOTH`: без
+них ни одно из их поддеревьев не встанет. Обратите внимание, что сами эти
+корни в списке висячих ключей выше не значатся — рецептов на них нет, они
+существуют только как узлы дерева, и портировать их всё равно нужно.
+
 ## Проверено в игре (прогон 1.0.14, 2026-07-20)
 
 Подтверждено игроком как работающее: цвета Волшебного леса, аспекты губки,
@@ -74,18 +127,14 @@ if (this.research.length() > 0 && !ThaumcraftApiHelper.isResearchComplete(player
 
 ## Открыто
 
-- **5 guard-тестов клиентского рендера падают** (найдено при работах по TT,
-  1.0.46): `ArcaneFurnaceVisualShellContractTest`,
+- ~~**5 guard-тестов клиентского рендера падают**~~ — снято в 1.1.25.0.
+  Перепроверено поимённо на текущем дереве: `ArcaneFurnaceVisualShellContractTest`,
   `ClientProxyDedicatedBeamBoltStaticGuardTest`,
   `InfusionRendererFidelityStaticGuardTest`,
-  `VisEnergyRendererFidelityStaticGuardTest`,
-  `ReportedItemModelRoutingContractTest`.
-  Проверено через stash на чистом дереве — падали **до** работ по TT, то есть
-  это наследие adoption рендереров FOREVA 1.0.36–1.0.45. При этом
-  `PORTING_HANDOFF.md` до сих пор утверждает «318 suites, 0 failures».
-  Нужно либо починить рендер, либо обновить guard-контракты под намеренно
-  изменённую реализацию (по правилу из самого PORTING_HANDOFF) — и поправить
-  утверждение о зелёном наборе.
+  `VisEnergyRendererFidelityStaticGuardTest` — по 1 тесту,
+  `ReportedItemModelRoutingContractTest` — 8, все зелёные; полный прогон даёт
+  325 suites / 598 тестов / 0 падений. Когда именно их починили — по истории
+  не установлено, пункт просто протух.
 - ~~**`mod/gradle.properties` закоммичен с абсолютным путём чужой машины**~~ —
   закрыто в 1.1.8.0: строка `org.gradle.java.home` убрана из версионируемого
   файла. Каждая машина указывает свой JDK 8 либо через

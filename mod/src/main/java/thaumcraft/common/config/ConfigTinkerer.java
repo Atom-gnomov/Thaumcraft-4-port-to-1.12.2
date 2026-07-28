@@ -538,6 +538,84 @@ public class ConfigTinkerer {
     }
 
     /**
+     * The awakened armour: each piece is an infusion at instability 13 on its
+     * plain counterpart. Three of the four are here — see the note at the end
+     * for the leggings.
+     */
+    public static void registerKamiAwakenedArmorRecipes() {
+        // ICHORCLOTH_HELM_GEM: the cowl, on the plain cowl.
+        ConfigResearch.recipes.put("IchorclothHelmGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_HELM_GEM", new ItemStack(ConfigItems.itemIchorclothHelmGem), 13,
+                new AspectList().add(Aspect.WATER, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.HUNGER, 32).add(Aspect.AURA, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.FLESH, 16).add(Aspect.MIND, 16),
+                new ItemStack(ConfigItems.itemIchorclothHelm),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(Items.GOLDEN_HELMET),
+                        new ItemStack(ConfigItems.itemGoggles),
+                        new ItemStack(ConfigItems.itemCleansingTalisman),
+                        new ItemStack(Items.FISH),
+                        new ItemStack(Items.CAKE),
+                        new ItemStack(Items.ENDER_EYE)}));
+
+        // ICHORCLOTH_CHEST_GEM: the robes, on the plain robe.
+        ConfigResearch.recipes.put("IchorclothChestGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_CHEST_GEM", new ItemStack(ConfigItems.itemIchorclothChestGem), 13,
+                new AspectList().add(Aspect.AIR, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.FLIGHT, 32).add(Aspect.ORDER, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.ELDRITCH, 16).add(Aspect.SENSES, 16),
+                new ItemStack(ConfigItems.itemIchorclothChest),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(Items.GOLDEN_CHESTPLATE),
+                        new ItemStack(ConfigItems.focusFlight),
+                        new ItemStack(ConfigItems.itemHoverHarness),
+                        new ItemStack(ConfigItems.focusDeflect),
+                        new ItemStack(Items.FEATHER),
+                        new ItemStack(Items.FIREWORKS),
+                        new ItemStack(Items.ARROW)}));
+
+        // ICHORCLOTH_BOOTS_GEM: the boots, on the plain boots.
+        ConfigResearch.recipes.put("IchorclothBootsGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_BOOTS_GEM", new ItemStack(ConfigItems.itemIchorclothBootsGem), 13,
+                new AspectList().add(Aspect.EARTH, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.MINE, 32).add(Aspect.MOTION, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.PLANT, 16).add(Aspect.TRAVEL, 16),
+                new ItemStack(ConfigItems.itemIchorclothBoots),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(Items.GOLDEN_BOOTS),
+                        new ItemStack(Blocks.GRASS),
+                        new ItemStack(ConfigBlocks.blockWoodenDevice, 1, 5),
+                        new ItemStack(ConfigBlocks.blockMetalDevice, 1, 8),
+                        new ItemStack(Items.WHEAT_SEEDS),
+                        new ItemStack(Blocks.WOOL),
+                        new ItemStack(Items.LEAD)}));
+
+        // The Leggings of the Burning Mantle register nothing yet: their tick
+        // lays a trail of BlockNitorGas, which this port does not have. Their
+        // recipe is ICHORCLOTH_LEGS_GEM, instability 13, IGNIS 50 / ARMOR 32 /
+        // SANO 32 / POTENTIA 32 / LUX 64 / LUCRUM 16 / ALIENIS 16 on the plain
+        // leggings with a diamond, two ichor, the primal focus, the
+        // Thaumonomicon, a golden chestplate, a fire-resistance potion, the
+        // smelting focus, hyperenergetic nitor, a lava bucket, a fire charge
+        // and a blaze rod.
+    }
+
+    /**
      * KAMI tools. Each is a plain arcane craft on a greatwood rod, priced at 75
      * of a single primal — the original's {@code getRecipeItem} on each tool.
      */

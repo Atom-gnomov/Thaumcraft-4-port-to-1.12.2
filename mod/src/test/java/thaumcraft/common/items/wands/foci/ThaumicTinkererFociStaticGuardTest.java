@@ -1485,6 +1485,75 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && read(wand + "RodIchorcloth.java").contains("setGlowing(true)"));
     }
 
+    /**
+     * The awakened armour: three of the four pieces, each an infusion at
+     * instability 13 on its plain counterpart, each with its own ability.
+     */
+    @Test
+    public void awakenedArmourMatchesTheOriginal() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/items/tinkerer/kami/armor/";
+
+        String base = read(dir + "ItemIchorclothArmorAdv.java");
+        assertTrue("sneak-right-click toggles the piece through item damage 0/1",
+                base.contains("stack.setItemDamage(~stack.getItemDamage() & 1)"));
+        assertTrue("only pieces that need a tick register on the bus",
+                base.contains("if (ticks()) {") && base.contains("MinecraftForge.EVENT_BUS.register(this)"));
+        assertTrue("the awakened set has its own two sheets",
+                base.contains("ichorGem2.png") && base.contains("ichorGem1.png"));
+
+        String helm = read(dir + "ItemGemHelm.java");
+        assertTrue("the cowl tops air to 300 and holds night vision at 202 ticks",
+                helm.contains("player.setAir(300)")
+                        && helm.contains("NIGHT_VISION_TICKS = 202"));
+        assertTrue("and reveals nodes", helm.contains("implements IGoggles, IRevealer"));
+
+        String chest = read(dir + "ItemGemChest.java");
+        assertTrue("the robes grant flight and remember who they gave it to",
+                chest.contains("PLAYERS_WITH_FLIGHT")
+                        && chest.contains("capabilities.allowFlying = true"));
+        assertTrue("never strips flight from creative",
+                chest.contains("!player.capabilities.isCreativeMode"));
+        assertTrue("and deflects projectiles with the focus's own sweep",
+                chest.contains("FocusDeflect.protectFromProjectiles(player)"));
+
+        String boots = read(dir + "ItemGemBoots.java");
+        assertTrue("the boots give haste, a block of step height and no fall damage",
+                boots.contains("MobEffects.HASTE, 2, 1")
+                        && boots.contains("player.isSneaking() ? 0.5F : 1.0F")
+                        && boots.contains("player.fallDistance = 0.0F"));
+        assertTrue("push forward on foot and in flight, at the original's rates",
+                boots.contains("player.capabilities.isFlying ? 0.075F : 0.15F")
+                        && boots.contains("player.isSprinting() ? 0.05F : 0.04F"));
+        assertTrue("a higher jump", boots.contains("motionY += 0.3D"));
+        assertTrue("and grass from the dirt underfoot",
+                boots.contains("Blocks.GRASS.getDefaultState()"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        for (String key : new String[]{"ICHORCLOTH_HELM_GEM", "ICHORCLOTH_CHEST_GEM",
+                "ICHORCLOTH_BOOTS_GEM"}) {
+            assertTrue(key + " infuses at 13", rec.contains("\"" + key + "\""));
+        }
+        // The leggings need BlockNitorGas for their light trail, so they
+        // register nothing and their recipe stays written down instead.
+        assertFalse("the leggings must not register an invented recipe",
+                rec.contains("ConfigResearch.recipes.put(\"IchorclothLegsGem\""));
+        assertTrue("their blocker stays documented",
+                rec.contains("BlockNitorGas") && rec.contains("ICHORCLOTH_LEGS_GEM"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        for (String[] piece : new String[][]{
+                {"itemIchorclothHelmGem", "Cowl of the Abyssal Depths"},
+                {"itemIchorclothChestGem", "Robes of the Stratosphere"},
+                {"itemIchorclothBootsGem", "Boots of the Horizontal Shield"}}) {
+            assertTrue(piece[0] + " registered", cfg.contains("allItems.add(" + piece[0] + ")"));
+            assertTrue(piece[1] + " named", en.contains("=" + piece[1]));
+        }
+        assertTrue("awakened recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiAwakenedArmorRecipes()"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

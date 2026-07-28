@@ -107,6 +107,9 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothChest;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothLegs;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothBoots;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm itemIchorclothHelmGem;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest itemIchorclothChestGem;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots itemIchorclothBootsGem;
 
     // Basic items
     public static ItemShard itemShard;
@@ -542,6 +545,24 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothBoots"))
                 .setTranslationKey("thaumcraft.kami.ichorcloth_boots");
         allItems.add(itemIchorclothBoots);
+
+        itemIchorclothHelmGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothHelmGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_helm_gem");
+        allItems.add(itemIchorclothHelmGem);
+
+        itemIchorclothChestGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothChestGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_chest_gem");
+        allItems.add(itemIchorclothChestGem);
+
+        itemIchorclothBootsGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothBootsGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_boots_gem");
+        allItems.add(itemIchorclothBootsGem);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

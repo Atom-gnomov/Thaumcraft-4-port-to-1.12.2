@@ -1,0 +1,7 @@
+{
+  "parent": "block/fire_up",
+  "textures": {
+    "particle": "thaumcraft:blocks/fire_ignis_layer_0",
+    "fire": "thaumcraft:blocks/fire_ignis_layer_0"
+  }
+}

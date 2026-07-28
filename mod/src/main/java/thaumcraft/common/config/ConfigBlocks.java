@@ -89,6 +89,13 @@ public class ConfigBlocks {
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
     public static BlockEnchanter blockEnchanter;
+    public static BlockPlatform blockPlatform;
+    public static thaumcraft.common.blocks.tinkerer.fire.BlockFireAir blockFireAir;
+    public static thaumcraft.common.blocks.tinkerer.fire.BlockFireWater blockFireWater;
+    public static thaumcraft.common.blocks.tinkerer.fire.BlockFireEarth blockFireEarth;
+    public static thaumcraft.common.blocks.tinkerer.fire.BlockFireIgnis blockFireIgnis;
+    public static thaumcraft.common.blocks.tinkerer.fire.BlockFireOrder blockFireOrder;
+    public static thaumcraft.common.blocks.tinkerer.fire.BlockFireChaos blockFireChaos;
     public static thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal blockBedrockPortal;
     public static BlockCosmeticOpaqueItem blockCosmeticOpaqueItem;
     public static BlockTaintItem blockTaintItem;
@@ -300,6 +307,40 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockLootCrate"))
                 .setTranslationKey("thaumcraft.loot_crate");
 
+        blockFireAir = (thaumcraft.common.blocks.tinkerer.fire.BlockFireAir)
+                new thaumcraft.common.blocks.tinkerer.fire.BlockFireAir()
+                .setRegistryName("thaumcraft", legacyPath("blockFireAir"))
+                .setTranslationKey("thaumcraft.fire_air");
+
+        blockFireWater = (thaumcraft.common.blocks.tinkerer.fire.BlockFireWater)
+                new thaumcraft.common.blocks.tinkerer.fire.BlockFireWater()
+                .setRegistryName("thaumcraft", legacyPath("blockFireWater"))
+                .setTranslationKey("thaumcraft.fire_water");
+
+        blockFireEarth = (thaumcraft.common.blocks.tinkerer.fire.BlockFireEarth)
+                new thaumcraft.common.blocks.tinkerer.fire.BlockFireEarth()
+                .setRegistryName("thaumcraft", legacyPath("blockFireEarth"))
+                .setTranslationKey("thaumcraft.fire_earth");
+
+        blockFireIgnis = (thaumcraft.common.blocks.tinkerer.fire.BlockFireIgnis)
+                new thaumcraft.common.blocks.tinkerer.fire.BlockFireIgnis()
+                .setRegistryName("thaumcraft", legacyPath("blockFireIgnis"))
+                .setTranslationKey("thaumcraft.fire_ignis");
+
+        blockFireOrder = (thaumcraft.common.blocks.tinkerer.fire.BlockFireOrder)
+                new thaumcraft.common.blocks.tinkerer.fire.BlockFireOrder()
+                .setRegistryName("thaumcraft", legacyPath("blockFireOrder"))
+                .setTranslationKey("thaumcraft.fire_order");
+
+        blockFireChaos = (thaumcraft.common.blocks.tinkerer.fire.BlockFireChaos)
+                new thaumcraft.common.blocks.tinkerer.fire.BlockFireChaos()
+                .setRegistryName("thaumcraft", legacyPath("blockFireChaos"))
+                .setTranslationKey("thaumcraft.fire_chaos");
+
+        blockPlatform = (BlockPlatform) new BlockPlatform()
+                .setRegistryName("thaumcraft", legacyPath("blockPlatform"))
+                .setTranslationKey("thaumcraft.platform");
+
         blockChestHungry = (BlockChestHungry) new BlockChestHungry()
                 .setRegistryName("thaumcraft", legacyPath("blockChestHungry"))
                 .setTranslationKey("thaumcraft.hungry_chest");
@@ -416,6 +457,13 @@ public class ConfigBlocks {
                 blockDoubleSlabStone,
                 blockLootUrn,
                 blockLootCrate,
+                blockPlatform,
+                blockFireAir,
+                blockFireWater,
+                blockFireEarth,
+                blockFireIgnis,
+                blockFireOrder,
+                blockFireChaos,
                 blockChestHungry,
                 blockArcaneDoor,
                 blockLifter,
@@ -488,6 +536,20 @@ public class ConfigBlocks {
                 .setRegistryName(blockLootUrn.getRegistryName()));
         registry.register(new BlockLootItem(blockLootCrate)
                 .setRegistryName(blockLootCrate.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockPlatform)
+                .setRegistryName(blockPlatform.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFireAir)
+                .setRegistryName(blockFireAir.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFireWater)
+                .setRegistryName(blockFireWater.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFireEarth)
+                .setRegistryName(blockFireEarth.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFireIgnis)
+                .setRegistryName(blockFireIgnis.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFireOrder)
+                .setRegistryName(blockFireOrder.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockFireChaos)
+                .setRegistryName(blockFireChaos.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockChestHungry)
                 .setRegistryName(blockChestHungry.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockLifter)
@@ -589,6 +651,7 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileCamo.class, "TileCamo"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileMobMagnet.class, "TileMobMagnet"),
             new TileRegistration(TileRepairer.class, "TileRepairer"),

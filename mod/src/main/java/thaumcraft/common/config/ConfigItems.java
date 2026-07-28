@@ -100,6 +100,9 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.ItemBlockTalisman itemBlockTalisman;
     public static thaumcraft.common.items.tinkerer.kami.ItemIchorPouch itemIchorPouch;
     public static thaumcraft.common.items.tinkerer.kami.ItemProtoclay itemProtoclay;
+    public static thaumcraft.common.items.tinkerer.ItemBrightNitor itemBrightNitor;
+    public static thaumcraft.common.items.tinkerer.ItemSpellCloth itemSpellCloth;
+    public static thaumcraft.common.items.tinkerer.ItemRevealingHelm itemRevealingHelm;
 
     // Basic items
     public static ItemShard itemShard;
@@ -489,6 +492,24 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("Protoclay"))
                 .setTranslationKey("thaumcraft.kami.protoclay");
         allItems.add(itemProtoclay);
+
+        itemBrightNitor = (thaumcraft.common.items.tinkerer.ItemBrightNitor)
+                new thaumcraft.common.items.tinkerer.ItemBrightNitor()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("BrightNitor"))
+                .setTranslationKey("thaumcraft.bright_nitor");
+        allItems.add(itemBrightNitor);
+
+        itemSpellCloth = (thaumcraft.common.items.tinkerer.ItemSpellCloth)
+                new thaumcraft.common.items.tinkerer.ItemSpellCloth()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SpellCloth"))
+                .setTranslationKey("thaumcraft.spell_cloth");
+        allItems.add(itemSpellCloth);
+
+        itemRevealingHelm = (thaumcraft.common.items.tinkerer.ItemRevealingHelm)
+                new thaumcraft.common.items.tinkerer.ItemRevealingHelm()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("RevealingHelm"))
+                .setTranslationKey("thaumcraft.revealing_helm");
+        allItems.add(itemRevealingHelm);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

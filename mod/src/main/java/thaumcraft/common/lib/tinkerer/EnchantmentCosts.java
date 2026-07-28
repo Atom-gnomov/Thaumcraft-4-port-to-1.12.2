@@ -18,6 +18,10 @@ import thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer;
  * {@code level1 × level × (1 + level × 0.2)} — so a level-1 enchant costs 1.2×
  * the base, level 2 costs 2.8×, level 3 4.8×, level 4 7.2× and level 5 10×.</p>
  *
+ * <p>The result is <b>truncated</b>, not rounded. That is upstream's
+ * {@code MiscHelper.multiplyAspectList}, which casts to {@code int}, and it is
+ * visible: a base of 4 costs 4 at level one, not 5.</p>
+ *
  * <p>Thaumic Tinkerer's own fourteen enchantments are included as of 1.0.55,
  * at the original's base costs, alongside the vanilla and Thaumcraft ones.</p>
  */
@@ -140,7 +144,8 @@ public final class EnchantmentCosts {
         double factor = level * (1.0D + level * 0.2D);
         AspectList out = new AspectList();
         for (Aspect aspect : base.getAspectsSorted()) {
-            out.add(aspect, Math.max(1, (int) Math.round(base.getAmount(aspect) * factor)));
+            // Cast, not round — see the note on this class.
+            out.add(aspect, (int) (base.getAmount(aspect) * factor));
         }
         return out;
     }

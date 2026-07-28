@@ -327,7 +327,11 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && tile.contains("public void update()")
                         && tile.contains("EntityItem")
                         && tile.contains("getRedstonePower"));
-        assertTrue("reach must stay the original signal/2", tile.contains("redstone / 2.0D"));
+        // Reach is pinned in auditedNumbersMatchTheOriginal(). This assertion
+        // used to require `redstone / 2.0D`, which was the drift rather than
+        // the original — a guard written from the port instead of the source
+        // cements the mistake it was meant to catch.
+        assertTrue("reach must stay the original signal/2", tile.contains("redstone / 2"));
 
         assertTrue("magnet blockstate ships",
                 Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/blockmagnet.json")));
@@ -702,15 +706,93 @@ public class ThaumicTinkererFociStaticGuardTest {
     @Test
     public void tinkererBlocksAreCraftable() throws IOException {
         String recipes = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
-        for (String key : new String[]{"DarkQuartz", "Funnel", "Magnet", "Repairer",
-                "TransvectorInterface", "TransvectorConnector", "TransvectorDislocator",
-                "AnimationTablet", "Enchanter",
-                "MobMagnet", "SoulMould"}) {
-            assertTrue(key + " must have an arcane recipe", recipes.contains("\"" + key + "\""));
+        for (String key : new String[]{"Funnel", "Magnet", "MobMagnet", "SoulMould",
+                "SpellCloth", "TransvectorInterface", "TransvectorConnector",
+                "TransvectorDislocator", "AnimationTablet", "Enchanter", "Repairer"}) {
+            assertTrue(key + " must have a recipe", recipes.contains("\"" + key + "\""));
         }
         assertTrue("block recipes must be registered at init",
                 read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
                         .contains("ConfigTinkerer.registerBlockRecipes()"));
+    }
+
+    /**
+     * The block recipes were invented until 1.1.10.0. These pin what the
+     * original actually specifies — in particular that five of the thirteen
+     * are not arcane crafts at all.
+     */
+    @Test
+    public void blockRecipesMatchTheOriginal() throws IOException {
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+
+        assertTrue("the funnel is a single row of stone, thaumium, stone",
+                rec.contains("\"STS\"")
+                        && rec.contains("add(Aspect.ORDER, 1).add(Aspect.ENTROPY, 1)"));
+        assertTrue("both magnets share the original's shape and cost",
+                rec.contains("\" I \", \"SIs\", \"WFW\"")
+                        && rec.contains("\" G \", \"SGs\", \"WFW\"")
+                        && rec.contains("ConfigItems.focusTelekinesis"));
+        assertTrue("the mob magnet is item damage 1 and falls back to copper",
+                rec.contains("new ItemStack(ConfigBlocks.blockMagnet, 1, 1)")
+                        && rec.contains("oreDictOrStack(new ItemStack(Items.GOLD_INGOT), \"ingotCopper\")"));
+
+        // Not arcane crafts, whatever the method they live in is called.
+        assertTrue("the soul mould is a crucible recipe on an ender pearl",
+                rec.contains("\"SoulMould\", ThaumcraftApi.addCrucibleRecipe")
+                        && rec.contains("add(Aspect.BEAST, 4).add(Aspect.MIND, 8).add(Aspect.SENSES, 8)"));
+        assertTrue("the spell cloth is a crucible recipe on enchanted fabric",
+                rec.contains("\"SpellCloth\", ThaumcraftApi.addCrucibleRecipe"));
+        assertTrue("the enchanter is an infusion at instability 15",
+                rec.contains("\"ENCHANTER\", new ItemStack(ConfigBlocks.blockEnchanter), 15")
+                        && rec.contains("Blocks.ENCHANTING_TABLE")
+                        && rec.contains("ConfigItems.itemSpellCloth"));
+        assertTrue("the restorer is an infusion at instability 8 on thaumium",
+                rec.contains("\"REPAIRER\", new ItemStack(ConfigBlocks.blockRepairer), 8")
+                        && rec.contains("add(Aspect.TOOL, 15).add(Aspect.CRAFT, 20)"));
+
+        assertTrue("the interface is corners of pedestal top with lapis and a pearl",
+                rec.contains("\"BRB\", \"LEL\", \"BRB\"")
+                        && rec.contains("new ItemStack(Items.DYE, 1, 4)"));
+        assertTrue("the binder is iron, a stick and an order shard",
+                rec.contains("\" I \", \" WI\", \"S  \""));
+        assertTrue("the dislocator is a column of glass, interface and comparator",
+                rec.contains("\" M \", \" I \", \" C \"")
+                        && rec.contains("Items.COMPARATOR"));
+        assertTrue("the tablet takes a blank golem core",
+                rec.contains("\"GIG\", \"ICI\"")
+                        && rec.contains("ConfigItems.itemGolemCore, 1, 100"));
+
+        // The whole smokey quartz family is plain bench work upstream.
+        for (String name : new String[]{"darkquartz_block", "darkquartz_pillar",
+                "darkquartz_chiseled", "darkquartz_slab", "darkquartz_stairs",
+                "darkquartz_stairs_mirrored"}) {
+            assertTrue(name + " must be a bench recipe", rec.contains("\"" + name + "\""));
+        }
+        assertFalse("smokey quartz must not be arcane any more",
+                rec.contains("\"ARCANESTONE\""));
+    }
+
+    /** The Spellbinding Cloth and its disenchanting rule. */
+    @Test
+    public void spellClothStripsEnchantments() throws IOException {
+        String item = read("src/main/java/thaumcraft/common/items/tinkerer/ItemSpellCloth.java");
+        assertTrue("thirty-five uses", item.contains("USES = 35"));
+        assertTrue("wears by one and stays in the grid",
+                item.contains("worn.setItemDamage(worn.getItemDamage() + 1)"));
+
+        String recipe = read("src/main/java/thaumcraft/common/items/tinkerer/SpellClothRecipe.java");
+        assertTrue("removes the ench tag", recipe.contains("removeTag(\"ench\")"));
+        assertTrue("refuses items marked INoRemoveEnchant",
+                recipe.contains("instanceof INoRemoveEnchant"));
+        assertTrue("INoRemoveEnchant is carried over as a hook",
+                Files.exists(Paths.get("src/main/java/thaumcraft/common/items/tinkerer/"
+                        + "INoRemoveEnchant.java")));
+        assertTrue("the rule is registered",
+                read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("spellcloth_disenchant"));
+        assertTrue("itemSpellCloth registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemSpellCloth)"));
     }
 
     /** The module ships in both languages — the rest of the mod is fully translated. */
@@ -983,6 +1065,289 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("GUI_ICHOR_POUCH = 50")
                         && read("src/main/java/thaumcraft/client/ClientProxy.java")
                         .contains("GuiIchorPouch"));
+    }
+
+    private static final String[] FIRES = {
+            "Air", "Water", "Earth", "Ignis", "Order", "Chaos"
+    };
+
+    /** Every imbued fire is one Hyperenergetic Nitor in a crucible. */
+    @Test
+    public void imbuedFiresAreCrucibleRecipesOnTheNitor() throws IOException {
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("Hyperenergetic Nitor boils out of plain nitor",
+                rec.contains("\"BRIGHT_NITOR\"")
+                        && rec.contains("add(Aspect.ENERGY, 25).add(Aspect.LIGHT, 25)")
+                        && rec.contains("new ItemStack(ConfigItems.itemResource, 1, 1)"));
+        for (String key : new String[]{"FIRE_AER", "FIRE_AQUA", "FIRE_TERRA",
+                "FIRE_IGNIS", "FIRE_ORDO", "FIRE_PERDITIO"}) {
+            assertTrue(key + " registered", rec.contains("\"" + key + "\""));
+        }
+        // Ignis is the only one without MAGIC, and the only one at FIRE 10.
+        assertTrue("Ignis keeps its odd cost",
+                rec.contains("add(Aspect.FIRE, 10).add(Aspect.AIR, 5)"));
+        assertTrue("fire recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerFireRecipes()"));
+    }
+
+    /** The transmutation tables are the original's, pair for pair. */
+    @Test
+    public void imbuedFiresKeepTheirTransmutations() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/blocks/tinkerer/fire/BlockFire";
+        assertTrue("Aer dries wood to sand and freezes water into a cake",
+                read(dir + "Air.java").contains("Blocks.LOG, Blocks.SAND")
+                        && read(dir + "Air.java").contains("Blocks.WATER, Blocks.CAKE"));
+        assertTrue("Aqua sets lava to obsidian, flowing lava too",
+                read(dir + "Water.java").contains("Blocks.LAVA, Blocks.OBSIDIAN")
+                        && read(dir + "Water.java").contains("Blocks.FLOWING_LAVA, Blocks.OBSIDIAN"));
+        assertTrue("Terra turns a spawner into iron and nether brick back to planks",
+                read(dir + "Earth.java").contains("Blocks.MOB_SPAWNER, Blocks.IRON_BLOCK")
+                        && read(dir + "Earth.java").contains("Blocks.NETHER_BRICK, Blocks.PLANKS"));
+        assertTrue("Ignis drags the Nether up and maps the yellow flower to itself",
+                read(dir + "Ignis.java").contains("Blocks.GRASS, Blocks.NETHERRACK")
+                        && read(dir + "Ignis.java").contains("Blocks.YELLOW_FLOWER, Blocks.YELLOW_FLOWER"));
+        String order = read(dir + "Order.java");
+        assertTrue("Ordo perfects ore into blocks and sweeps the ore dictionary",
+                order.contains("Blocks.DIAMOND_ORE, Blocks.DIAMOND_BLOCK")
+                        && order.contains("getOreDictionaryOres()")
+                        && order.contains("regionMatches(5, ore, 3, 10)"));
+        assertTrue("Ordo succeeds one time in three", order.contains("return 3;"));
+        String chaos = read(dir + "Chaos.java");
+        assertTrue("Perditio eats the other five and ticks every tick",
+                chaos.contains("ConfigBlocks.blockFireAir, Blocks.FIRE")
+                        && chaos.contains("return 1;"));
+    }
+
+    /** Base behaviour, including the two quirks kept on purpose. */
+    @Test
+    public void imbuedFireBaseKeepsTheOriginalsQuirks() throws IOException {
+        String base = read("src/main/java/thaumcraft/common/blocks/tinkerer/fire/BlockFireBase.java");
+        assertTrue("dies unless something it works on is beside it",
+                base.contains("isNeighborTarget(world, pos)"));
+        assertTrue("ticks every 200 by default", base.contains("return 200;"));
+        assertTrue("treats its targets as tinder and its results as fireproof",
+                base.contains("return 100;") && base.contains("return 0;"));
+        assertTrue("the swapped-argument quirk is kept and explained",
+                base.contains("new BlockPos(x, b, a)")
+                        && base.contains("is not a typo here"));
+        assertTrue("the yes/no encouragement survey is kept",
+                base.contains("isNeighborTarget(world, pos) ? 100 : 0"));
+    }
+
+    /** Registration, assets and names for the whole chain. */
+    @Test
+    public void imbuedFiresAreRegisteredWithAssets() throws IOException {
+        String blocks = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        String[] keys = {"fire_air", "fire_water", "fire_earth",
+                "fire_ignis", "fire_order", "fire_chaos"};
+
+        assertTrue("itemBrightNitor registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemBrightNitor)"));
+        for (int i = 0; i < FIRES.length; i++) {
+            String field = "blockFire" + FIRES[i];
+            assertTrue(field + " registered and listed",
+                    blocks.contains(field + ";") && blocks.contains("                " + field + ","));
+            String stem = field.toLowerCase();
+            assertTrue(stem + " blockstate",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/"
+                            + stem + ".json")));
+            // Vanilla fire needs floor, side, side_alt, up and up_alt, twice over.
+            for (String shape : new String[]{"floor", "side", "side_alt", "up", "up_alt"}) {
+                for (int layer = 0; layer < 2; layer++) {
+                    assertTrue(stem + " " + shape + layer,
+                            Files.exists(Paths.get("src/main/resources/assets/thaumcraft/models/block/"
+                                    + stem + "_" + shape + layer + ".json")));
+                }
+            }
+            for (int layer = 0; layer < 2; layer++) {
+                assertTrue(keys[i] + " animated layer " + layer,
+                        Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/"
+                                + keys[i] + "_layer_" + layer + ".png.mcmeta")));
+            }
+            assertTrue(keys[i] + " named in both languages",
+                    en.contains("tile.thaumcraft." + keys[i] + ".name=")
+                            && ru.contains("tile.thaumcraft." + keys[i] + ".name="));
+        }
+        assertTrue("nitor named in both languages",
+                en.contains("item.thaumcraft.bright_nitor.name=Hyperenergetic Nitor")
+                        && ru.contains("item.thaumcraft.bright_nitor.name="));
+    }
+
+    /**
+     * Numbers the second audit pass (1.1.11.0) found drifting. Each of these
+     * was a plausible-looking substitution that changed what the game does.
+     */
+    @Test
+    public void auditedNumbersMatchTheOriginal() throws IOException {
+        // The enchanter's curve truncates upstream; rounding made a base of 4
+        // cost 5 at level one.
+        String costs = read("src/main/java/thaumcraft/common/lib/tinkerer/EnchantmentCosts.java");
+        assertTrue("cost curve must truncate, not round",
+                costs.contains("(int) (base.getAmount(aspect) * factor)"));
+        assertFalse("Math.round must not come back", costs.contains("Math.round"));
+
+        // The magnet's reach is whole blocks, and its box half a block shorter
+        // than we had it.
+        String magnet = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMagnet.java");
+        assertTrue("reach is integer division", magnet.contains("double range = redstone / 2;"));
+        assertFalse("no floating-point reach", magnet.contains("redstone / 2.0D"));
+        assertTrue("pull box tops out at half a block above centre plus range",
+                magnet.contains("pos.getY() + 0.5D + range"));
+
+        // Upstream registers its enchantments at weight 0; the lowest this
+        // version can express is VERY_RARE.
+        String ench = read("src/main/java/thaumcraft/common/lib/enchantment/tinkerer/"
+                + "EnchantmentTinkerer.java");
+        assertTrue("enchantments take the lowest expressible weight",
+                ench.contains("super(Rarity.VERY_RARE, kind.type, kind.slots)"));
+        assertTrue("and stay off the enchanting table",
+                ench.contains("canApplyAtEnchantingTable"));
+    }
+
+    /**
+     * The fourteen base costs and the fourteen max levels, checked against the
+     * original's EnchantmentManager and its Enchantment* classes. These read as
+     * arbitrary numbers, which is exactly why they need pinning.
+     */
+    @Test
+    public void tinkererEnchantmentTablesMatchTheOriginal() throws IOException {
+        String costs = read("src/main/java/thaumcraft/common/lib/tinkerer/EnchantmentCosts.java");
+        String[][] bases = {
+                {"ascentBoost", "aspects(Aspect.ENTROPY, 8, Aspect.AIR, 10)"},
+                {"slowFall", "aspects(Aspect.ORDER, 8, Aspect.AIR, 10)"},
+                {"autoSmelt", "aspects(Aspect.ENTROPY, 20, Aspect.FIRE, 30)"},
+                {"finalStrike", "aspects(Aspect.ENTROPY, 16, Aspect.FIRE, 16)"},
+                {"tunnel", "aspects(Aspect.EARTH, 16, Aspect.ORDER, 16)"},
+                {"shatter", "aspects(Aspect.EARTH, 16, Aspect.ENTROPY, 16)"},
+                {"shockwave", "aspects(Aspect.EARTH, 16, Aspect.AIR, 16)"},
+                {"pounce", "aspects(Aspect.EARTH, 16, Aspect.AIR, 16)"},
+        };
+        for (String[] pair : bases) {
+            assertTrue(pair[0] + " base cost",
+                    costs.contains("ModEnchantmentsTinkerer." + pair[0] + ", " + pair[1]));
+        }
+
+        String ench = read("src/main/java/thaumcraft/common/lib/enchantment/tinkerer/"
+                + "EnchantmentTinkerer.java");
+        String[][] levels = {
+                {"ASCENT_BOOST", "4", "ARMOR_LEGS"},
+                {"SLOW_FALL", "3", "ARMOR_FEET"},
+                {"AUTO_SMELT", "1", "DIGGER"},
+                {"DESINTEGRATE", "1", "DIGGER"},
+                {"QUICK_DRAW", "2", "BOW"},
+                {"VAMPIRISM", "2", "WEAPON"},
+                {"POUNCE", "5", "ARMOR_LEGS"},
+                {"SHOCKWAVE", "5", "ARMOR_FEET"},
+        };
+        for (String[] row : levels) {
+            assertTrue(row[0] + " max level and slot",
+                    ench.contains(row[0] + "(\"") && ench.contains(", " + row[1]
+                            + ", EnumEnchantmentType." + row[2]));
+        }
+    }
+
+    /** Goggles built into a thaumium helm, at the goggles' own discount. */
+    @Test
+    public void revealingHelmIsGogglesOnAThaumiumHelm() throws IOException {
+        String helm = read("src/main/java/thaumcraft/common/items/tinkerer/ItemRevealingHelm.java");
+        assertTrue("thaumium material, render index 2, head slot",
+                helm.contains("ThaumcraftApi.armorMatThaumium, 2, EntityEquipmentSlot.HEAD"));
+        assertTrue("500 durability", helm.contains("setMaxDamage(500)"));
+        assertTrue("reveals nodes and popups, and discounts five percent",
+                helm.contains("implements IRepairable, IRevealer, IGoggles, IVisDiscountGear")
+                        && helm.contains("return 5;"));
+        assertTrue("mended with thaumium ingots",
+                helm.contains("new ItemStack(ConfigItems.itemResource, 1, 2)"));
+
+        assertTrue("recipe is goggles beside a thaumium helm, five of every primal",
+                read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("\"GH\"")
+                        && read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("ConfigItems.itemHelmThaumium"));
+        assertTrue("registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemRevealingHelm)"));
+        for (String asset : new String[]{"textures/items/revealing_helm.png",
+                "textures/models/revealing_helm.png", "models/item/revealinghelm.json"}) {
+            assertTrue(asset + " ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/" + asset)));
+        }
+        assertTrue("named in both languages",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang")
+                        .contains("item.thaumcraft.revealing_helm.name=Helmet of Revealing")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("item.thaumcraft.revealing_helm.name="));
+    }
+
+    /**
+     * Camouflage: right-click with a block to wear its face, empty hand to drop
+     * it. 1.7.10 swapped per-face icons; here the disguise travels as an
+     * unlisted property and a baked model draws it.
+     */
+    @Test
+    public void camouflageSystemIsWired() throws IOException {
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileCamo.java");
+        assertTrue("stores the block by registry name and its metadata",
+                tile.contains("TAG_CAMO = \"camo\"") && tile.contains("TAG_CAMO_META = \"camoMeta\""));
+        assertTrue("syncs to the client", tile.contains("getUpdatePacket")
+                && tile.contains("markBlockRangeForRenderUpdate"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockCamo.java");
+        assertTrue("exposes the disguise as an unlisted property",
+                block.contains("IUnlistedProperty<IBlockState> CAMO")
+                        && block.contains("getExtendedState"));
+        assertTrue("only ordinary block models qualify",
+                block.contains("EnumBlockRenderType.MODEL"));
+        assertTrue("a camo block cannot be disguised as another camo block",
+                block.contains("block instanceof BlockCamo"));
+        assertTrue("directional disguises are turned to face the player",
+                block.contains("meta & 12 | 2") && block.contains("meta & 12 | 3"));
+
+        assertTrue("the baked model defers to the disguise's own model",
+                read("src/main/java/thaumcraft/client/renderers/block/CamoBakedModel.java")
+                        .contains("getModelForState(camo)"));
+        assertTrue("and is installed at bake time",
+                read("src/main/java/thaumcraft/client/ClientModelRegistry.java")
+                        .contains("replaceCamoModels(event)"));
+        assertTrue("TileCamo is a registered tile entity",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("new TileRegistration(TileCamo.class, \"TileCamo\")"));
+    }
+
+    /** Solid from above, open from below, and sneaking drops you through. */
+    @Test
+    public void etherealPlatformIsOneWay() throws IOException {
+        String platform = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockPlatform.java");
+        assertTrue("is a camouflaged device", platform.contains("extends BlockCamo"));
+        assertTrue("wood, 2.0 hardness, 5.0 resistance",
+                platform.contains("super(Material.WOOD)")
+                        && platform.contains("setHardness(2.0F)")
+                        && platform.contains("setResistance(5.0F)"));
+        assertTrue("the original's collision rule, players two blocks up and not sneaking",
+                platform.contains("entity.posY > pos.getY() + (player ? 2 : 0)")
+                        && platform.contains("!player || !entity.isSneaking()"));
+        assertTrue("never an obstacle for pathfinding", platform.contains("isPassable"));
+
+        assertTrue("two per craft from silverwood over greatwood planks",
+                read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("new ItemStack(ConfigBlocks.blockPlatform, 2)"));
+        assertTrue("registered and listed",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("blockPlatform;"));
+        for (String asset : new String[]{"blockstates/blockplatform.json",
+                "models/block/blockplatform.json", "textures/blocks/platform.png"}) {
+            assertTrue(asset + " ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/" + asset)));
+        }
+        assertTrue("named in both languages",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang")
+                        .contains("tile.thaumcraft.platform.name=Ethereal Platform")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("tile.thaumcraft.platform.name="));
     }
 
     private static String read(String path) throws IOException {

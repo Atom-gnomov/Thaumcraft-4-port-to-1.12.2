@@ -400,6 +400,14 @@ public class ConfigTinkerer {
                 'I', new ItemStack(Items.IRON_INGOT),
                 'C', new ItemStack(ConfigItems.itemGolemCore, 1, 100)));
 
+        // PLATFORM: two at a time, a silverwood plank over two greatwood ones.
+        ConfigResearch.recipes.put("Platform", ThaumcraftApi.addArcaneCraftingRecipe(
+                "PLATFORM", new ItemStack(ConfigBlocks.blockPlatform, 2),
+                new AspectList().add(Aspect.AIR, 2).add(Aspect.ENTROPY, 4),
+                " S ", "G G",
+                'G', new ItemStack(ConfigBlocks.blockWoodenDevice, 1, 6),
+                'S', new ItemStack(ConfigBlocks.blockWoodenDevice, 1, 7)));
+
         // REVEALING_HELM: goggles onto a thaumium helm, five of every primal.
         ConfigResearch.recipes.put("RevealingHelm", ThaumcraftApi.addArcaneCraftingRecipe(
                 "REVEALING_HELM", new ItemStack(ConfigItems.itemRevealingHelm),

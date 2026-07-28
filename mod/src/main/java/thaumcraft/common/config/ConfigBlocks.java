@@ -89,6 +89,7 @@ public class ConfigBlocks {
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
     public static BlockEnchanter blockEnchanter;
+    public static BlockPlatform blockPlatform;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireAir blockFireAir;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireWater blockFireWater;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireEarth blockFireEarth;
@@ -336,6 +337,10 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockFireChaos"))
                 .setTranslationKey("thaumcraft.fire_chaos");
 
+        blockPlatform = (BlockPlatform) new BlockPlatform()
+                .setRegistryName("thaumcraft", legacyPath("blockPlatform"))
+                .setTranslationKey("thaumcraft.platform");
+
         blockChestHungry = (BlockChestHungry) new BlockChestHungry()
                 .setRegistryName("thaumcraft", legacyPath("blockChestHungry"))
                 .setTranslationKey("thaumcraft.hungry_chest");
@@ -452,6 +457,7 @@ public class ConfigBlocks {
                 blockDoubleSlabStone,
                 blockLootUrn,
                 blockLootCrate,
+                blockPlatform,
                 blockFireAir,
                 blockFireWater,
                 blockFireEarth,
@@ -530,6 +536,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockLootUrn.getRegistryName()));
         registry.register(new BlockLootItem(blockLootCrate)
                 .setRegistryName(blockLootCrate.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockPlatform)
+                .setRegistryName(blockPlatform.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockFireAir)
                 .setRegistryName(blockFireAir.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockFireWater)
@@ -643,6 +651,7 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileCamo.class, "TileCamo"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileMobMagnet.class, "TileMobMagnet"),
             new TileRegistration(TileRepairer.class, "TileRepairer"),

@@ -1283,6 +1283,73 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("item.thaumcraft.revealing_helm.name="));
     }
 
+    /**
+     * Camouflage: right-click with a block to wear its face, empty hand to drop
+     * it. 1.7.10 swapped per-face icons; here the disguise travels as an
+     * unlisted property and a baked model draws it.
+     */
+    @Test
+    public void camouflageSystemIsWired() throws IOException {
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileCamo.java");
+        assertTrue("stores the block by registry name and its metadata",
+                tile.contains("TAG_CAMO = \"camo\"") && tile.contains("TAG_CAMO_META = \"camoMeta\""));
+        assertTrue("syncs to the client", tile.contains("getUpdatePacket")
+                && tile.contains("markBlockRangeForRenderUpdate"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockCamo.java");
+        assertTrue("exposes the disguise as an unlisted property",
+                block.contains("IUnlistedProperty<IBlockState> CAMO")
+                        && block.contains("getExtendedState"));
+        assertTrue("only ordinary block models qualify",
+                block.contains("EnumBlockRenderType.MODEL"));
+        assertTrue("a camo block cannot be disguised as another camo block",
+                block.contains("block instanceof BlockCamo"));
+        assertTrue("directional disguises are turned to face the player",
+                block.contains("meta & 12 | 2") && block.contains("meta & 12 | 3"));
+
+        assertTrue("the baked model defers to the disguise's own model",
+                read("src/main/java/thaumcraft/client/renderers/block/CamoBakedModel.java")
+                        .contains("getModelForState(camo)"));
+        assertTrue("and is installed at bake time",
+                read("src/main/java/thaumcraft/client/ClientModelRegistry.java")
+                        .contains("replaceCamoModels(event)"));
+        assertTrue("TileCamo is a registered tile entity",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("new TileRegistration(TileCamo.class, \"TileCamo\")"));
+    }
+
+    /** Solid from above, open from below, and sneaking drops you through. */
+    @Test
+    public void etherealPlatformIsOneWay() throws IOException {
+        String platform = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockPlatform.java");
+        assertTrue("is a camouflaged device", platform.contains("extends BlockCamo"));
+        assertTrue("wood, 2.0 hardness, 5.0 resistance",
+                platform.contains("super(Material.WOOD)")
+                        && platform.contains("setHardness(2.0F)")
+                        && platform.contains("setResistance(5.0F)"));
+        assertTrue("the original's collision rule, players two blocks up and not sneaking",
+                platform.contains("entity.posY > pos.getY() + (player ? 2 : 0)")
+                        && platform.contains("!player || !entity.isSneaking()"));
+        assertTrue("never an obstacle for pathfinding", platform.contains("isPassable"));
+
+        assertTrue("two per craft from silverwood over greatwood planks",
+                read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java")
+                        .contains("new ItemStack(ConfigBlocks.blockPlatform, 2)"));
+        assertTrue("registered and listed",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("blockPlatform;"));
+        for (String asset : new String[]{"blockstates/blockplatform.json",
+                "models/block/blockplatform.json", "textures/blocks/platform.png"}) {
+            assertTrue(asset + " ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/" + asset)));
+        }
+        assertTrue("named in both languages",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang")
+                        .contains("tile.thaumcraft.platform.name=Ethereal Platform")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("tile.thaumcraft.platform.name="));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

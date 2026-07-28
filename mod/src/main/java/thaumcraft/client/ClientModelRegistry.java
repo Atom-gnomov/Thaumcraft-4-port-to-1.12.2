@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import thaumcraft.client.renderers.block.ArcaneFurnaceBakedModel;
 import thaumcraft.client.renderers.block.AlchemyFurnaceBakedModel;
+import thaumcraft.client.renderers.block.CamoBakedModel;
 import thaumcraft.client.renderers.block.WardedGlassBakedModel;
 import thaumcraft.client.renderers.item.CrystalPerspectiveModel;
 import thaumcraft.client.renderers.item.ThaumometerPerspectiveModel;
@@ -113,6 +114,25 @@ public final class ClientModelRegistry {
         replaceAlchemyFurnaceModel(event);
         replaceArcaneFurnaceModels(event);
         replaceWardedGlassModel(event);
+        replaceCamoModels(event);
+    }
+
+    /**
+     * Wraps every camouflaged device's model so it can draw as the block it is
+     * disguised as. Both the world model and the inventory one, since the
+     * blockstate names them separately.
+     */
+    private static void replaceCamoModels(ModelBakeEvent event) {
+        for (String name : new String[]{"blockplatform"}) {
+            for (String variant : new String[]{"normal", "inventory"}) {
+                ModelResourceLocation key = new ModelResourceLocation(
+                        new ResourceLocation("thaumcraft", name), variant);
+                IBakedModel delegate = event.getModelRegistry().getObject(key);
+                if (delegate != null) {
+                    event.getModelRegistry().putObject(key, new CamoBakedModel(delegate));
+                }
+            }
+        }
     }
 
     private static void replaceWardedGlassModel(ModelBakeEvent event) {

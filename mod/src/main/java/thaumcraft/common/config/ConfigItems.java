@@ -110,6 +110,7 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm itemIchorclothHelmGem;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest itemIchorclothChestGem;
     public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots itemIchorclothBootsGem;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemLegs itemIchorclothLegsGem;
 
     // Basic items
     public static ItemShard itemShard;
@@ -563,6 +564,12 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothBootsGem"))
                 .setTranslationKey("thaumcraft.kami.ichorcloth_boots_gem");
         allItems.add(itemIchorclothBootsGem);
+
+        itemIchorclothLegsGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemLegs)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemLegs()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothLegsGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_legs_gem");
+        allItems.add(itemIchorclothLegsGem);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

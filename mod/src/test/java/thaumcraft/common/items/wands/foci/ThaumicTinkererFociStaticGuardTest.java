@@ -1533,12 +1533,10 @@ public class ThaumicTinkererFociStaticGuardTest {
                 "ICHORCLOTH_BOOTS_GEM"}) {
             assertTrue(key + " infuses at 13", rec.contains("\"" + key + "\""));
         }
-        // The leggings need BlockNitorGas for their light trail, so they
-        // register nothing and their recipe stays written down instead.
-        assertFalse("the leggings must not register an invented recipe",
-                rec.contains("ConfigResearch.recipes.put(\"IchorclothLegsGem\""));
-        assertTrue("their blocker stays documented",
-                rec.contains("BlockNitorGas") && rec.contains("ICHORCLOTH_LEGS_GEM"));
+        // Unblocked in 1.1.17.0 once the gases landed.
+        assertTrue("the leggings infuse at 13 like the rest of the set",
+                rec.contains("\"ICHORCLOTH_LEGS_GEM\"")
+                        && rec.contains("ConfigItems.itemBrightNitor"));
 
         String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
         String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
@@ -1552,6 +1550,71 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("awakened recipes registered at init",
                 read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
                         .contains("ConfigTinkerer.registerKamiAwakenedArmorRecipes()"));
+    }
+
+    /**
+     * The gases: no shape, no drops, air to anything that asks, and a spread
+     * counter in the metadata that blooms outward once and stops.
+     */
+    @Test
+    public void gasesBehaveLikeTheOriginal() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/blocks/tinkerer/gas/";
+
+        String base = read(dir + "BlockGas.java");
+        assertTrue("the spread counter is the metadata",
+                base.contains("PropertyInteger.create(\"spread\", 0, 15)"));
+        assertTrue("seeds all six neighbours at one less, then zeroes itself",
+                base.contains("setAt(world, pos.offset(face), spread - 1)")
+                        && base.contains("state.withProperty(SPREAD, 0)"));
+        assertTrue("counts as air and cannot be collided with or dropped",
+                base.contains("public boolean isAir(") && base.contains("return NULL_AABB;")
+                        && base.contains("canCollideCheck"));
+
+        assertTrue("the light glows at 0.85",
+                read(dir + "BlockGaseousLight.java").contains("setLightLevel(0.85F)"));
+        assertTrue("the shadow swallows light at opacity 215",
+                read(dir + "BlockGaseousShadow.java").contains("setLightOpacity(215)"));
+
+        String nitor = read(dir + "BlockNitorGas.java");
+        assertTrue("nitor light ticks slower in the Nether",
+                nitor.contains("getDimension() == -1 ? 60 : 20"));
+        assertTrue("it looks six blocks out when the leggings laid it, one otherwise",
+                nitor.contains("== FROM_LEGGINGS ? 6 : 1"));
+        assertTrue("and is brighter for it",
+                nitor.contains("== FROM_LEGGINGS ? 15 : 12"));
+        assertTrue("it vanishes when nobody nearby carries the nitor or wears the leggings",
+                nitor.contains("carriesNitor(player) || wearsBurningMantle(player)")
+                        && nitor.contains("world.setBlockToAir(pos)"));
+
+        String blocks = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        for (String field : new String[]{"blockGaseousLight", "blockGaseousShadow", "blockNitorGas"}) {
+            assertTrue(field + " registered and listed",
+                    blocks.contains(field + ";") && blocks.contains("                " + field + ","));
+        }
+    }
+
+    /** Fire heals in the burning mantle, and it lights the way ahead. */
+    @Test
+    public void burningMantleLegsMatchTheOriginal() throws IOException {
+        String legs = read("src/main/java/thaumcraft/common/items/tinkerer/kami/armor/ItemGemLegs.java");
+        assertTrue("fire is cancelled and healed for the same amount",
+                legs.contains("event.getSource().isFireDamage()")
+                        && legs.contains("event.setCanceled(true)")
+                        && legs.contains("player.heal(event.getAmount())"));
+        assertTrue("at the lowest priority, as upstream",
+                legs.contains("EventPriority.LOWEST"));
+        assertTrue("five blocks of trail ahead, plus one overhead",
+                legs.contains("TRAIL_LENGTH = 5"));
+        assertTrue("laid at the spread value that marks it the leggings' work",
+                legs.contains("withProperty(BlockGas.SPREAD, 1)"));
+        assertTrue("registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemIchorclothLegsGem)"));
+        assertTrue("named in both languages",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang")
+                        .contains("Leggings of the Burning Mantle")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("item.thaumcraft.kami.ichorcloth_legs_gem.name="));
     }
 
     private static String read(String path) throws IOException {

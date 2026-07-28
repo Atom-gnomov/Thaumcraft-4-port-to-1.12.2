@@ -1723,3 +1723,7 @@ item.thaumcraft.kami.ichorcloth_chest_gem.name=Robes of the Stratosphere
 item.thaumcraft.kami.ichorcloth_boots_gem.name=Boots of the Horizontal Shield
 ttmisc.awakenedArmor0=Armor Piece Enabled
 ttmisc.awakenedArmor1=Armor Piece Disabled
+tile.thaumcraft.gaseous_light.name=Gaseous Illuminae
+tile.thaumcraft.gaseous_shadow.name=Gaseous Tenebrae
+tile.thaumcraft.nitor_gas.name=Nitor Light
+item.thaumcraft.kami.ichorcloth_legs_gem.name=Leggings of the Burning Mantle

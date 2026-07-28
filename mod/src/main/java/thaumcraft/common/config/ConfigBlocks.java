@@ -90,6 +90,9 @@ public class ConfigBlocks {
     public static BlockAnimationTablet blockAnimationTablet;
     public static BlockEnchanter blockEnchanter;
     public static BlockPlatform blockPlatform;
+    public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight blockGaseousLight;
+    public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow blockGaseousShadow;
+    public static thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas blockNitorGas;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireAir blockFireAir;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireWater blockFireWater;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireEarth blockFireEarth;
@@ -337,6 +340,21 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockFireChaos"))
                 .setTranslationKey("thaumcraft.fire_chaos");
 
+        blockGaseousLight = (thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight)
+                new thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight()
+                .setRegistryName("thaumcraft", legacyPath("blockGaseousLight"))
+                .setTranslationKey("thaumcraft.gaseous_light");
+
+        blockGaseousShadow = (thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow)
+                new thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow()
+                .setRegistryName("thaumcraft", legacyPath("blockGaseousShadow"))
+                .setTranslationKey("thaumcraft.gaseous_shadow");
+
+        blockNitorGas = (thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas)
+                new thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas()
+                .setRegistryName("thaumcraft", legacyPath("blockNitorGas"))
+                .setTranslationKey("thaumcraft.nitor_gas");
+
         blockPlatform = (BlockPlatform) new BlockPlatform()
                 .setRegistryName("thaumcraft", legacyPath("blockPlatform"))
                 .setTranslationKey("thaumcraft.platform");
@@ -457,6 +475,9 @@ public class ConfigBlocks {
                 blockDoubleSlabStone,
                 blockLootUrn,
                 blockLootCrate,
+                blockGaseousLight,
+                blockGaseousShadow,
+                blockNitorGas,
                 blockPlatform,
                 blockFireAir,
                 blockFireWater,

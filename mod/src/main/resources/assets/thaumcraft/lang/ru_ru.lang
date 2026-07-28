@@ -1723,3 +1723,7 @@ item.thaumcraft.kami.ichorcloth_chest_gem.name=Роба стратосферы
 item.thaumcraft.kami.ichorcloth_boots_gem.name=Щитовые сапоги
 ttmisc.awakenedArmor0=Часть брони включена
 ttmisc.awakenedArmor1=Часть брони выключена
+tile.thaumcraft.gaseous_light.name=Светящийся газ
+tile.thaumcraft.gaseous_shadow.name=Газ темноты
+tile.thaumcraft.nitor_gas.name=Свет нитора
+item.thaumcraft.kami.ichorcloth_legs_gem.name=Пылающие шаровары

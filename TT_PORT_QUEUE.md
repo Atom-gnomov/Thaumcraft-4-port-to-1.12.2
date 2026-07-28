@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 54 из 84 объектов каталога, осталось 30.**
+**Состояние: портировано 56 из 84 объектов каталога, осталось 28.**
 
 Порядок — по зависимостям: объект появляется после всего, что ему нужно.
 «Связи» — компоненты рецепта, которые сами являются объектами TT.
@@ -26,34 +26,32 @@
 |---|---|---|---|---|---|---|
 | 1 | `BlockAspectAnalyzer` | аркан | — | только с ComputerCraft | — | — |
 | 2 | `BlockForcefield` | нет рецепта | — | всегда | — | — |
-| 3 | `BlockGas` | нет рецепта | — | всегда | — | — |
-| 4 | `BlockGolemConnector` | аркан | — | только с ComputerCraft | — | — |
-| 5 | `BlockInfusedGrain` | нет рецепта | — | всегда | — | — |
-| 6 | `BlockMobilizer` | инфузия | 4 | всегда | — | — |
-| 7 | `BlockMobilizerRelay` | аркан | — | всегда | — | — |
-| 8 | `BlockRPlacer` | аркан | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
-| 9 | `BlockSummon` | аркан | — | всегда | — | — |
-| 10 | `BlockWarpGate` | инфузия | 8 | по конфигу enableKami | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
-| 11 | `ItemBlockFire` | нет рецепта | — | всегда | — | — |
-| 12 | `ItemBlockWarpGate` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
-| 13 | `ItemBloodSword` | инфузия | 6 | всегда | — | — |
-| 14 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
-| 15 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
-| 16 | `ItemGas` | тигель | — | всегда | `BlockGaseousLight`, `BlockGaseousShadow` | — |
-| 17 | `ItemGasRemover` | аркан | — | всегда | — | `ItemDarkQuartz` |
-| 18 | `ItemGemLegs` | инфузия | 13 | всегда | — | `ItemBrightNitor`, `ItemFocusSmelt`, `ItemKamiResource` |
-| 19 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
-| 20 | `ItemInfusedGrain` | нет рецепта | — | всегда | — | — |
-| 21 | `ItemInfusedInkwell` | инфузия + верстак | 2 | всегда | — | — |
-| 22 | `ItemInfusedSeeds` | инфузия | 5 | всегда | — | — |
-| 23 | `ItemMobAspect` | инфузия + верстак | 4 | всегда | — | — |
-| 24 | `ItemMobDisplay` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
-| 25 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
-| 26 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
-| 27 | `ItemShareBook` | верстак | — | всегда | — | — |
-| 28 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
-| 29 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
-| 30 | `ItemInfusedPotion` | тигель | — | всегда | `ItemInfusedGrain` | — |
+| 3 | `BlockGolemConnector` | аркан | — | только с ComputerCraft | — | — |
+| 4 | `BlockInfusedGrain` | нет рецепта | — | всегда | — | — |
+| 5 | `BlockMobilizer` | инфузия | 4 | всегда | — | — |
+| 6 | `BlockMobilizerRelay` | аркан | — | всегда | — | — |
+| 7 | `BlockRPlacer` | аркан | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 8 | `BlockSummon` | аркан | — | всегда | — | — |
+| 9 | `BlockWarpGate` | инфузия | 8 | по конфигу enableKami | — | `BlockTransvectorDislocator`, `ItemKamiResource` |
+| 10 | `ItemBlockFire` | нет рецепта | — | всегда | — | — |
+| 11 | `ItemBlockWarpGate` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 12 | `ItemBloodSword` | инфузия | 6 | всегда | — | — |
+| 13 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
+| 14 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
+| 15 | `ItemGas` | тигель | — | всегда | — | `BlockGaseousLight`, `BlockGaseousShadow` |
+| 16 | `ItemGasRemover` | аркан | — | всегда | — | `ItemDarkQuartz` |
+| 17 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
+| 18 | `ItemInfusedGrain` | нет рецепта | — | всегда | — | — |
+| 19 | `ItemInfusedInkwell` | инфузия + верстак | 2 | всегда | — | — |
+| 20 | `ItemInfusedSeeds` | инфузия | 5 | всегда | — | — |
+| 21 | `ItemMobAspect` | инфузия + верстак | 4 | всегда | — | — |
+| 22 | `ItemMobDisplay` | нет рецепта | — | НЕ РЕГИСТРИРУЕТСЯ | — | — |
+| 23 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
+| 24 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
+| 25 | `ItemShareBook` | верстак | — | всегда | — | — |
+| 26 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |
+| 27 | `ItemFocusRecall` | инфузия | — | всегда | `ItemSkyPearl` | `ItemKamiResource` |
+| 28 | `ItemInfusedPotion` | тигель | — | всегда | `ItemInfusedGrain` | — |
 
 ---
 
@@ -78,15 +76,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockForcefield`
 
-### 3. `BlockGas`
-
-- **Файл оригинала:** `common/block/BlockGas.java`
-- **Наследует:** `BlockMod`, реализует `ITTinkererBlock`
-- **Имя регистрации:** —
-- **Рецепт:** нет рецепта
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockGas`
-
-### 4. `BlockGolemConnector`
+### 3. `BlockGolemConnector`
 
 - **Файл оригинала:** `common/block/BlockGolemConnector.java`
 - **Наследует:** `BlockCamo`
@@ -97,7 +87,7 @@
 - **Регистрация:** только с ComputerCraft
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockGolemConnector`
 
-### 5. `BlockInfusedGrain`
+### 4. `BlockInfusedGrain`
 
 - **Файл оригинала:** `common/block/BlockInfusedGrain.java`
 - **Наследует:** `BlockCrops`, реализует `ITTinkererBlock`
@@ -105,7 +95,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockInfusedGrain`
 
-### 6. `BlockMobilizer`
+### 5. `BlockMobilizer`
 
 - **Файл оригинала:** `common/block/mobilizer/BlockMobilizer.java`
 - **Наследует:** `BlockMod`
@@ -116,7 +106,7 @@
 - **Родитель в дереве исследований:** `MAGNETS`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockMobilizer`
 
-### 7. `BlockMobilizerRelay`
+### 6. `BlockMobilizerRelay`
 
 - **Файл оригинала:** `common/block/mobilizer/BlockMobilizerRelay.java`
 - **Наследует:** `BlockMod`
@@ -125,7 +115,7 @@
 - **Аспекты:** AIR 20, ORDER 5, EARTH 15
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockMobilizerRelay`
 
-### 8. `BlockRPlacer`
+### 7. `BlockRPlacer`
 
 - **Файл оригинала:** `common/block/BlockRPlacer.java`
 - **Наследует:** `BlockCamo`, реализует `IWandable`
@@ -136,7 +126,7 @@
 - **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockRPlacer`
 
-### 9. `BlockSummon`
+### 8. `BlockSummon`
 
 - **Файл оригинала:** `common/block/BlockSummon.java`
 - **Наследует:** `Block`, реализует `ITTinkererBlock`
@@ -146,7 +136,7 @@
 - **Родитель в дереве исследований:** `BLOOD_SWORD`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockSummon`
 
-### 10. `BlockWarpGate`
+### 9. `BlockWarpGate`
 
 - **Файл оригинала:** `common/block/kami/BlockWarpGate.java`
 - **Наследует:** `BlockModContainer`
@@ -159,7 +149,7 @@
 - **Использует уже портированное:** `BlockTransvectorDislocator`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `BlockWarpGate`
 
-### 11. `ItemBlockFire`
+### 10. `ItemBlockFire`
 
 - **Файл оригинала:** `common/item/ItemBlockFire.java`
 - **Наследует:** `ItemBlock`, реализует `ITTinkererItem`
@@ -167,7 +157,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBlockFire`
 
-### 12. `ItemBlockWarpGate`
+### 11. `ItemBlockWarpGate`
 
 - **Файл оригинала:** `common/item/kami/ItemBlockWarpGate.java`
 - **Наследует:** `ItemBlock`, реализует `ITTinkererItem`
@@ -176,7 +166,7 @@
 - **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBlockWarpGate`
 
-### 13. `ItemBloodSword`
+### 12. `ItemBloodSword`
 
 - **Файл оригинала:** `common/item/ItemBloodSword.java`
 - **Наследует:** `ItemSword`, реализует `IRepairable, ITTinkererItem`
@@ -187,7 +177,7 @@
 - **Родитель в дереве исследований:** `CLEANSING_TALISMAN`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemBloodSword`
 
-### 14. `ItemFocusShadowbeam`
+### 13. `ItemFocusShadowbeam`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusShadowbeam.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -199,7 +189,7 @@
 - **Использует уже портированное:** `ItemFocusDeflect`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusShadowbeam`
 
-### 15. `ItemFocusXPDrain`
+### 14. `ItemFocusXPDrain`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusXPDrain.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -211,7 +201,7 @@
 - **Использует уже портированное:** `ItemKamiResource`, `ItemXPTalisman`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusXPDrain`
 
-### 16. `ItemGas`
+### 15. `ItemGas`
 
 - **Файл оригинала:** `common/item/ItemGas.java`
 - **Наследует:** `ItemBase`
@@ -219,10 +209,10 @@
 - **Рецепт:** тигель
 - **Аспекты:** LIGHT 16, AIR 10, MOTION 8
 - **Родитель в дереве исследований:** `GASEOUS_LIGHT`
-- **Блокируется:** `BlockGaseousLight`, `BlockGaseousShadow`
+- **Использует уже портированное:** `BlockGaseousLight`, `BlockGaseousShadow`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGas`
 
-### 17. `ItemGasRemover`
+### 16. `ItemGasRemover`
 
 - **Файл оригинала:** `common/item/ItemGasRemover.java`
 - **Наследует:** `ItemBase`
@@ -233,19 +223,7 @@
 - **Использует уже портированное:** `ItemDarkQuartz`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGasRemover`
 
-### 18. `ItemGemLegs`
-
-- **Файл оригинала:** `common/item/kami/armor/ItemGemLegs.java`
-- **Наследует:** `ItemIchorclothArmorAdv`
-- **Имя регистрации:** `"ichorclothLegsGem"`
-- **Рецепт:** инфузия
-- **Нестабильность:** 13
-- **Аспекты:** FIRE 50, ARMOR 32, HEAL 32, ENERGY 32, LIGHT 64, GREED 16, ELDRITCH 16
-- **Родитель в дереве исследований:** `ICHORCLOTH_ARMOR`
-- **Использует уже портированное:** `ItemBrightNitor`, `ItemFocusSmelt`, `ItemKamiResource`
-- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemGemLegs`
-
-### 19. `ItemIchorSwordAdv`
+### 17. `ItemIchorSwordAdv`
 
 - **Файл оригинала:** `common/item/kami/tool/ItemIchorSwordAdv.java`
 - **Наследует:** `ItemIchorSword`, реализует `IAdvancedTool`
@@ -257,7 +235,7 @@
 - **Использует уже портированное:** `ItemIchorSword`, `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemIchorSwordAdv`
 
-### 20. `ItemInfusedGrain`
+### 18. `ItemInfusedGrain`
 
 - **Файл оригинала:** `common/item/ItemInfusedGrain.java`
 - **Наследует:** `ItemBase`
@@ -265,7 +243,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedGrain`
 
-### 21. `ItemInfusedInkwell`
+### 19. `ItemInfusedInkwell`
 
 - **Файл оригинала:** `common/item/ItemInfusedInkwell.java`
 - **Наследует:** `ItemBase`, реализует `IScribeTools`
@@ -275,7 +253,7 @@
 - **Аспекты:** VOID 8, DARKNESS 8
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedInkwell`
 
-### 22. `ItemInfusedSeeds`
+### 20. `ItemInfusedSeeds`
 
 - **Файл оригинала:** `common/item/ItemInfusedSeeds.java`
 - **Наследует:** `ItemSeeds`, реализует `ITTinkererItem`
@@ -285,7 +263,7 @@
 - **Аспекты:** CROP 32, HARVEST 32
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemInfusedSeeds`
 
-### 23. `ItemMobAspect`
+### 21. `ItemMobAspect`
 
 - **Файл оригинала:** `common/item/ItemMobAspect.java`
 - **Наследует:** `ItemBase`
@@ -294,7 +272,7 @@
 - **Нестабильность:** 4
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobAspect`
 
-### 24. `ItemMobDisplay`
+### 22. `ItemMobDisplay`
 
 - **Файл оригинала:** `common/item/ItemMobDisplay.java`
 - **Наследует:** `ItemBase`
@@ -303,7 +281,7 @@
 - **Регистрация:** НЕ РЕГИСТРИРУЕТСЯ
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemMobDisplay`
 
-### 25. `ItemModFocus`
+### 23. `ItemModFocus`
 
 - **Файл оригинала:** `common/item/foci/ItemModFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -311,7 +289,7 @@
 - **Рецепт:** нет рецепта
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModFocus`
 
-### 26. `ItemModKamiFocus`
+### 24. `ItemModKamiFocus`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemModKamiFocus.java`
 - **Наследует:** `ItemBase`, реализует `IWandFocus`
@@ -320,7 +298,7 @@
 - **Регистрация:** по конфигу enableKami
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemModKamiFocus`
 
-### 27. `ItemShareBook`
+### 25. `ItemShareBook`
 
 - **Файл оригинала:** `common/item/ItemShareBook.java`
 - **Наследует:** `ItemBase`
@@ -328,7 +306,7 @@
 - **Рецепт:** верстак
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemShareBook`
 
-### 28. `ItemSkyPearl`
+### 26. `ItemSkyPearl`
 
 - **Файл оригинала:** `common/item/kami/ItemSkyPearl.java`
 - **Наследует:** `ItemKamiBase`
@@ -338,7 +316,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemSkyPearl`
 
-### 29. `ItemFocusRecall`
+### 27. `ItemFocusRecall`
 
 - **Файл оригинала:** `common/item/kami/foci/ItemFocusRecall.java`
 - **Наследует:** `ItemModKamiFocus`
@@ -350,7 +328,7 @@
 - **Использует уже портированное:** `ItemKamiResource`
 - **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `ItemFocusRecall`
 
-### 30. `ItemInfusedPotion`
+### 28. `ItemInfusedPotion`
 
 - **Файл оригинала:** `common/item/ItemInfusedPotion.java`
 - **Наследует:** `ItemPotion`, реализует `ITTinkererItem`

@@ -605,14 +605,35 @@ public class ConfigTinkerer {
                         new ItemStack(Blocks.WOOL),
                         new ItemStack(Items.LEAD)}));
 
-        // The Leggings of the Burning Mantle register nothing yet: their tick
-        // lays a trail of BlockNitorGas, which this port does not have. Their
-        // recipe is ICHORCLOTH_LEGS_GEM, instability 13, IGNIS 50 / ARMOR 32 /
-        // SANO 32 / POTENTIA 32 / LUX 64 / LUCRUM 16 / ALIENIS 16 on the plain
-        // leggings with a diamond, two ichor, the primal focus, the
-        // Thaumonomicon, a golden chestplate, a fire-resistance potion, the
-        // smelting focus, hyperenergetic nitor, a lava bucket, a fire charge
-        // and a blaze rod.
+        // ICHORCLOTH_LEGS_GEM: unblocked in 1.1.17.0 by the gases.
+        ConfigResearch.recipes.put("IchorclothLegsGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_LEGS_GEM", new ItemStack(ConfigItems.itemIchorclothLegsGem), 13,
+                new AspectList().add(Aspect.FIRE, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.HEAL, 32).add(Aspect.ENERGY, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.GREED, 16).add(Aspect.ELDRITCH, 16),
+                new ItemStack(ConfigItems.itemIchorclothLegs),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(Items.GOLDEN_CHESTPLATE),
+                        fireResistancePotion(),
+                        new ItemStack(ConfigItems.focusSmelt),
+                        new ItemStack(ConfigItems.itemBrightNitor),
+                        new ItemStack(Items.LAVA_BUCKET),
+                        new ItemStack(Items.FIRE_CHARGE),
+                        new ItemStack(Items.BLAZE_ROD)}));
+    }
+
+    /**
+     * A potion of fire resistance, which upstream wrote as damage 8195 on the
+     * old flat potion item. Potions carry their type in NBT in this version.
+     */
+    private static ItemStack fireResistancePotion() {
+        return net.minecraft.potion.PotionUtils.addPotionToItemStack(
+                new ItemStack(Items.POTIONITEM), net.minecraft.init.PotionTypes.FIRE_RESISTANCE);
     }
 
     /**

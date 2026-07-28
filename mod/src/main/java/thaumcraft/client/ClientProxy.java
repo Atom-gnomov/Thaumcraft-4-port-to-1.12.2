@@ -1073,6 +1073,34 @@ public class ClientProxy extends CommonProxy {
                             "kamiresource_" + thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES[meta]),
                             "inventory"));
         }
+        // Soul aspects: the plain and infused tiers share a face, the
+        // condensed one has its own. The stride between tiers is the
+        // metadata gap upstream left for padding.
+        {
+            String[] souls = {"fire", "magic", "undead", "flesh", "beast",
+                    "poison", "earth", "eldritch", "travel", "metal", "slime"};
+            int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
+            for (int i = 0; i < souls.length; i++) {
+                ModelResourceLocation plain = new ModelResourceLocation(
+                        new ResourceLocation("thaumcraft", "soulaspect" + souls[i]), "inventory");
+                ModelLoader.setCustomModelResourceLocation(ConfigItems.itemMobAspect, i, plain);
+                ModelLoader.setCustomModelResourceLocation(ConfigItems.itemMobAspect,
+                        stride * 2 + i, plain);
+                ModelLoader.setCustomModelResourceLocation(ConfigItems.itemMobAspect, stride + i,
+                        new ModelResourceLocation(new ResourceLocation("thaumcraft",
+                                "soulaspect" + souls[i] + "condensed"), "inventory"));
+            }
+        }
+        // The blade's face follows its harvesting toggle.
+        net.minecraft.client.renderer.block.model.ModelBakery.registerItemVariants(
+                ConfigItems.itemBloodSword,
+                new ModelResourceLocation(new ResourceLocation("thaumcraft", "bloodswordactive"),
+                        "inventory"));
+        ConfigItems.itemBloodSword.addPropertyOverride(
+                new ResourceLocation("thaumcraft", "harvesting"),
+                (stack, world, entity) ->
+                        thaumcraft.common.items.tinkerer.ItemBloodSword.isHarvesting(stack) ? 1.0F : 0.0F);
+
         // The infused crops: one model per primal for each of the three items.
         for (thaumcraft.common.items.tinkerer.PrimalCrop crop
                 : thaumcraft.common.items.tinkerer.PrimalCrop.values()) {

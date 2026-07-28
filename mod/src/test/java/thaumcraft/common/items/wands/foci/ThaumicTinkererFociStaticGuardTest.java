@@ -1771,6 +1771,73 @@ public class ThaumicTinkererFociStaticGuardTest {
         }
     }
 
+    /**
+     * The necromancy set: the blade takes creatures apart into Soul Aspects,
+     * the tablet puts them back together.
+     */
+    @Test
+    public void necromancySetMatchesTheOriginal() throws IOException {
+        String souls = read("src/main/java/thaumcraft/common/items/tinkerer/SoulAspects.java");
+        assertTrue("eleven aspects in upstream's construction order",
+                souls.indexOf("Aspect.FIRE") < souls.indexOf("Aspect.MAGIC")
+                        && souls.indexOf("Aspect.MAGIC") < souls.indexOf("Aspect.UNDEAD")
+                        && souls.indexOf("Aspect.METAL") < souls.indexOf("Aspect.SLIME"));
+        // Upstream spaces the tiers 20 apart although there are only eleven,
+        // as padding so a new aspect would not shift existing metadata.
+        assertTrue("the tier stride is 20, not the count", souls.contains("TIER_STRIDE = 20"));
+
+        String item = read("src/main/java/thaumcraft/common/items/tinkerer/ItemMobAspect.java");
+        assertTrue("three tiers read off the stride",
+                item.contains("damage >= SoulAspects.TIER_STRIDE && damage < SoulAspects.TIER_STRIDE * 2")
+                        && item.contains("stack.getItemDamage() >= SoulAspects.TIER_STRIDE * 2"));
+        assertTrue("infused souls remember the tablet that used them",
+                item.contains("markLastUsedTablet") && item.contains("lastUsedTabletMatches"));
+
+        String blade = read("src/main/java/thaumcraft/common/items/tinkerer/ItemBloodSword.java");
+        assertTrue("hits for the original's flat ten and moves you faster",
+                blade.contains("DAMAGE = 10") && blade.contains("0.25D, 1"));
+        assertTrue("blocking costs three magic damage, swinging costs two",
+                blade.contains("DamageSource.MAGIC, 3") && blade.contains("DamageSource.MAGIC, 2"));
+        assertTrue("and the recoil does not re-enter its own event",
+                blade.contains("handleNext = 3"));
+        assertTrue("harvesting replaces the drops rather than adding to them",
+                blade.contains("event.getDrops().clear()"));
+
+        String table = read("src/main/java/thaumcraft/common/lib/tinkerer/MobAspects.java");
+        assertTrue("the table carries Thaumcraft's own creatures too",
+                table.contains("EntityBrainyZombie") && table.contains("EntityFireBat")
+                        && table.contains("EntityWisp"));
+        assertTrue("and knows which entries can actually be rebuilt",
+                table.contains("isSummonable"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileSummon.java");
+        assertTrue("looks round every 300 ticks, five blocks out",
+                tile.contains("INTERVAL = 300") && tile.contains("RADIUS = 5"));
+        assertTrue("infused souls survive but only fire every 1200",
+                tile.contains("INFUSED_INTERVAL = 1200"));
+        assertTrue("plain souls are spent", tile.contains("setInventorySlotContents(0, ItemStack.EMPTY)"));
+        assertTrue("redstone stops it", tile.contains("isBlockPowered(this.pos)"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("the tablet is an arcane craft on obsidian totems",
+                rec.contains("\"SUMMON0\"")
+                        && rec.contains("add(Aspect.ORDER, 50).add(Aspect.ENTROPY, 50)"));
+        assertTrue("nine plain souls press into one condensed",
+                rec.contains("soulaspect_condense_"));
+        assertTrue("nine condensed infuse into one infused at instability 4",
+                rec.contains("\"SoulAspectInfused\" + i"));
+        assertTrue("necromancy recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerNecromancyRecipes()"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        assertTrue("both items registered",
+                cfg.contains("allItems.add(itemMobAspect)")
+                        && cfg.contains("allItems.add(itemBloodSword)"));
+        assertTrue("the blade keeps upstream's material: 950 uses, no bonus of its own",
+                cfg.contains("addToolMaterial(\"TT_BLOOD\", 0, 950, 0.0F, 0.0F"));
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

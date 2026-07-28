@@ -425,6 +425,7 @@ public class ConfigRecipes {
         ConfigTinkerer.registerFireRecipes();
         ConfigTinkerer.registerGasRecipes();
         ConfigTinkerer.registerCropRecipes();
+        ConfigTinkerer.registerNecromancyRecipes();
         ConfigTinkerer.registerKamiRecipes();
         ConfigTinkerer.registerKamiArmorRecipes();
         ConfigTinkerer.registerKamiAwakenedArmorRecipes();

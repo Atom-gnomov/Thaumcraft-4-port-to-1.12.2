@@ -202,6 +202,60 @@ public class ConfigTinkerer {
 
 
 
+
+    /**
+     * The necromancy set: the blade that takes creatures apart, the souls it
+     * yields, and the tablet that puts them back together.
+     *
+     * <p>Souls come in three tiers {@code SoulAspects.TIER_STRIDE} apart —
+     * nine plain press into one condensed, nine condensed infuse into one
+     * infused — so the loop below writes twenty-two recipes.</p>
+     */
+    public static void registerNecromancyRecipes() {
+        ConfigResearch.recipes.put("Summon", ThaumcraftApi.addArcaneCraftingRecipe(
+                "SUMMON0", new ItemStack(ConfigBlocks.blockSummon),
+                new AspectList().add(Aspect.ORDER, 50).add(Aspect.ENTROPY, 50),
+                "WWW", "SSS",
+                'S', new ItemStack(Blocks.STONE),
+                'W', new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1)));
+
+        ConfigResearch.recipes.put("BloodSword", ThaumcraftApi.addInfusionCraftingRecipe(
+                "BLOOD_SWORD", new ItemStack(ConfigItems.itemBloodSword), 6,
+                new AspectList().add(Aspect.WEAPON, 25).add(Aspect.SOUL, 25)
+                        .add(Aspect.DEATH, 25).add(Aspect.MAGIC, 15),
+                new ItemStack(ConfigItems.itemSwordThaumium),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemResource, 1, 5),
+                        new ItemStack(ConfigItems.itemResource, 1, 5),
+                        new ItemStack(Items.ROTTEN_FLESH),
+                        new ItemStack(Items.BONE),
+                        new ItemStack(Items.SPIDER_EYE)}));
+
+        for (int i = 0; i < thaumcraft.common.items.tinkerer.SoulAspects.count(); i++) {
+            int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
+            thaumcraft.api.aspects.Aspect aspect =
+                    thaumcraft.common.items.tinkerer.SoulAspects.byNumber(i);
+            ThaumcraftApi.registerObjectTag(
+                    new ItemStack(ConfigItems.itemMobAspect, 1, i),
+                    new AspectList().add(aspect, 8));
+
+            ConfigResearch.recipes.put("SoulAspectInfused" + i,
+                    ThaumcraftApi.addInfusionCraftingRecipe(
+                            "SUMMON", new ItemStack(ConfigItems.itemMobAspect, 1, stride * 2 + i), 4,
+                            new AspectList().add(aspect, 10),
+                            new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                            new ItemStack[]{
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i)}));
+        }
+    }
+
     /**
      * The infused crops: four seeds infused from wheat seeds and a matching set
      * of elemental shards, and the four potions brewed from what they yield.
@@ -387,6 +441,16 @@ public class ConfigTinkerer {
         registry.register(new thaumcraft.common.items.tinkerer.SpellClothRecipe(
                 ConfigItems.itemSpellCloth)
                 .setRegistryName("thaumcraft", "spellcloth_disenchant"));
+
+        // Nine plain souls press into one condensed, per aspect.
+        for (int i = 0; i < thaumcraft.common.items.tinkerer.SoulAspects.count(); i++) {
+            int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
+            registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                    "XXX", "XXX", "XXX",
+                    'X', new ItemStack(ConfigItems.itemMobAspect, 1, i))
+                    .setRegistryName("thaumcraft", "soulaspect_condense_" + i));
+        }
     }
 
     /**

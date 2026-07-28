@@ -91,6 +91,7 @@ public class ConfigBlocks {
     public static BlockEnchanter blockEnchanter;
     public static BlockPlatform blockPlatform;
     public static BlockForcefield blockForcefield;
+    public static BlockSummon blockSummon;
     /** One per primal, indexed by {@link thaumcraft.common.items.tinkerer.PrimalCrop}. */
     public static BlockInfusedGrain[] blockInfusedGrain = new BlockInfusedGrain[4];
     public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight blockGaseousLight;
@@ -378,6 +379,10 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainAqua"))
                 .setTranslationKey("thaumcraft.infused_grain_aqua");
 
+        blockSummon = (BlockSummon) new BlockSummon()
+                .setRegistryName("thaumcraft", legacyPath("blockSummon"))
+                .setTranslationKey("thaumcraft.summon");
+
         blockForcefield = (BlockForcefield) new BlockForcefield()
                 .setRegistryName("thaumcraft", legacyPath("blockForcefield"))
                 .setTranslationKey("thaumcraft.forcefield");
@@ -509,6 +514,7 @@ public class ConfigBlocks {
                 blockInfusedGrain[1],
                 blockInfusedGrain[2],
                 blockInfusedGrain[3],
+                blockSummon,
                 blockForcefield,
                 blockPlatform,
                 blockFireAir,
@@ -589,6 +595,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockLootUrn.getRegistryName()));
         registry.register(new BlockLootItem(blockLootCrate)
                 .setRegistryName(blockLootCrate.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockSummon)
+                .setRegistryName(blockSummon.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockPlatform)
                 .setRegistryName(blockPlatform.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockFireAir)
@@ -704,6 +712,7 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileSummon.class, "TileSummon"),
             new TileRegistration(TileForcefield.class, "TileForcefield"),
             new TileRegistration(TileCamo.class, "TileCamo"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),

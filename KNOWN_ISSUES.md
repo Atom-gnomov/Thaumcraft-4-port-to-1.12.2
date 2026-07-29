@@ -30,21 +30,18 @@ if (this.research.length() > 0 && !ThaumcraftApiHelper.isResearchComplete(player
 записи Таумономикона. Ветка исследований Thaumic Tinkerer не портирована, то
 есть **таких записей нет ни для одного ключа TT**.
 
-Гейтом закрыт 51 рецепт `ConfigTinkerer`. После 1.1.26.0 достижимы 27 из них.
-Оставшиеся **24 рецепта висят на 21 ключе оригинала**, для которых записи
-Таумономикона нет, то есть эти рецепты не сработают никогда:
+Гейтом закрыт 51 рецепт `ConfigTinkerer`. После 1.1.27.0 достижимы 37 из них.
+Оставшиеся **14 рецептов висят на 11 ключах**; все, кроме одного, — ярус KAMI:
 
 ```
-BLOCK_TALISMAN  CAT_AMULET  ENCHANTER  FUNNEL  GAS_REMOVER
-ICHORCLOTH_ARMOR (x4)  ICHORCLOTH_BOOTS_GEM  ICHORCLOTH_CHEST_GEM
-ICHORCLOTH_HELM_GEM  ICHORCLOTH_LEGS_GEM  ICHOR_POUCH  INFUSED_INKWELL
-PLACEMENT_MIRROR  POTIONS0  POTIONS1  POTIONS2  POTIONS3  PROTOCLAY
-REPAIRER  REVEALING_HELM  XP_TALISMAN
+KAMI:  BLOCK_TALISMAN  CAT_AMULET  ICHORCLOTH_ARMOR (x4)  ICHOR_POUCH
+       ICHORCLOTH_BOOTS_GEM  ICHORCLOTH_CHEST_GEM  ICHORCLOTH_HELM_GEM
+       ICHORCLOTH_LEGS_GEM  PLACEMENT_MIRROR  PROTOCLAY
+прочее: INFUSED_INKWELL
 ```
 
-Половина из них — ярус KAMI (`ICHOR*`, `BLOCK_TALISMAN`, `PROTOCLAY`,
-`PLACEMENT_MIRROR`, `XP_TALISMAN`, `CAT_AMULET`); он закрывается вместе со
-своим гейтом, см. следующий пункт.
+Ярус KAMI закрывается вместе со своим гейтом, см. следующий пункт.
+`INFUSED_INKWELL` — тупик самого оригинала, см. ниже.
 
 Пересчитать список: `ConfigTinkerer` даёт ключи первым аргументом
 `addArcaneCraftingRecipe`/`addInfusionCraftingRecipe`, наличие записи —
@@ -103,19 +100,23 @@ DARK_QUARTZ → INTERFACE → MAGNETS → ANIMATION_TABLET → REMOTE_PLACER   �
             └→ CLEANSING_TALISMAN → BLOOD_SWORD → SUMMON               готово
                                   └→ PLATFORM                          готово
 "NITOR" → GASEOUS_LIGHT → GASEOUS_SHADOW
-                        └→ BRIGHT_NITOR → FIRE_{AER,AQUA,IGNIS,ORDO,
-                                       │    PERDITIO,TERRA} → POTIONS
-                                       └→ FUNNEL → REPAIRER
-SPELL_CLOTH → ENCHANTER → 14 записей ENCHANT_* (см. TT_OBJECT_REFERENCE.md)
-            └→ XP_TALISMAN (второй родитель — "JARBRAIN")
-"GOGGLES" → REVEALING_HELM
+                        │                                              готово
+                        └→ BRIGHT_NITOR → FIRE_{AER,AQUA,IGNIS,ORDO,     готово
+                                       │    PERDITIO,TERRA}
+                                       │      → INFUSED_POTIONS          готово
+                                       └→ FUNNEL → REPAIRER              готово
+             GASEOUS_SHADOW → GAS_REMOVER                                готово
+SPELL_CLOTH → ENCHANTER                                                  готово
+            │           └→ 14 записей ENCHANT_*                         ← нет
+            └→ XP_TALISMAN (второй родитель — "JARBRAIN")                готово
+"GOGGLES" → REVEALING_HELM                                               готово
 PERIPHERALS → ASPECT_ANALYZER, GOLEMCONNECTOR
 ```
 
-Следующие корни — `GASEOUS_LIGHT` и `SPELL_CLOTH`: без них ни одно из их
-поддеревьев не встанет. Обратите внимание, что сами эти корни в списке висячих
-ключей выше не значатся — рецептов на них нет, они существуют только как узлы
-дерева, и портировать их всё равно нужно.
+Оба оставшихся корня перенесены в 1.1.27.0. Дальше — только ярус KAMI, у
+которого сначала должен появиться свой гейт (следующий пункт), и 14 записей
+`ENCHANT_*`: рецептов за ними нет, но без них ветка чарователя обрывается.
+Иконки у них — `ResourceLocation`, а не предмет, то есть нужны текстуры.
 
 Два замечания по именам, чтобы не повторять чужие ошибки:
 
@@ -124,6 +125,28 @@ PERIPHERALS → ASPECT_ANALYZER, GOLEMCONNECTOR
 - **`REMOTE_PLACER` пока пропущен**: сам объект (`BlockRPlacer`) в порт не
   перенесён, а запись без рецепта упала бы на строгом lookup. Его исследование
   ставить одновременно с блоком.
+
+### Два тупика самого оригинала
+
+Полный перебор обёрток оригинала (обе формы: `(ключ, гейт, …)` и `(ключ, …)`,
+где гейтом становится сам ключ) даёт **девять** гейтов, для которых записи нет
+ни одной. То есть эти рецепты не срабатывают и в TT 2.5:
+
+- **Восемь** — зачарованные семена (`INFUSED_POTIONS0..3`) и настои
+  (`INFUSED_POTIONSPOT0..3`). У них запись есть (`INFUSED_POTIONS`), и её
+  страницы показывают ровно эти восемь рецептов — автор просто не передал
+  второй аргумент. По решению от 2026-07-28 **у нас они гейтятся на
+  `INFUSED_POTIONS`**, то есть работают. Это осознанное отклонение от буквы
+  оригинала в пользу его же намерения.
+- **Девятый — `INFUSED_INKWELL`, и он ещё открыт.** `ItemInfusedInkwell.
+  getResearchItem()` возвращает `null`, записи нет вовсе, а верстачный рецепт
+  (`INFUSED_INKWELL0`) — это **перезаправка** уже имеющейся чернильницы
+  (`'C'` = она сама с wildcard-метой), а не изготовление первой. Значит первую
+  наполненную чернильницу в оригинале получить нельзя. Повесить её не на что:
+  подходящей записи в TT не существует, а придумывать свою — против правила.
+  Решение за владельцем: либо снять гейт совсем (пустая строка исследования —
+  проверка пропускается), либо оставить как в оригинале и признать предмет
+  недоступным.
 
 ## KAMI лежит в общем наборе предметов, без своего гейта
 

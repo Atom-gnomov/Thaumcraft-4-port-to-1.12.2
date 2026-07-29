@@ -224,6 +224,161 @@ public class TinkererResearchStaticGuardTest {
                         + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"Platform\")).setSecondary()"));
     }
 
+    /** The gases, the hyperenergetic nitor, the six fires and what follows them. */
+    @Test
+    public void gaseousLightBranchMatchesTheOriginal() throws IOException {
+        String src = normalize(source());
+        assertTrue("gaseous light hangs off Thaumcraft's own nitor", src.contains(
+                "new TinkererResearchItem(\"GASEOUS_LIGHT\", new AspectList()"
+                        + ".add(Aspect.LIGHT, 2).add(Aspect.AIR, 1),"
+                        + " 0, -3, 1, new ItemStack(ConfigItems.itemGaseousLight))"
+                        + ".setParents(\"NITOR\")"
+                        + ".setPages(new ResearchPage(\"0\"), crucibleRecipePage(\"GaseousLight\"))"));
+        assertTrue("gaseous shadow", src.contains(
+                "new TinkererResearchItem(\"GASEOUS_SHADOW\", new AspectList()"
+                        + ".add(Aspect.DARKNESS, 2).add(Aspect.AIR, 1).add(Aspect.MOTION, 4),"
+                        + " -1, -5, 2, new ItemStack(ConfigItems.itemGaseousShadow))"
+                        + ".setSecondary().setParents(\"GASEOUS_LIGHT\")"
+                        + ".setPages(new ResearchPage(\"0\"), crucibleRecipePage(\"GaseousShadow\"))"));
+        assertTrue("hyperenergetic nitor", src.contains(
+                "new TinkererResearchItem(\"BRIGHT_NITOR\", new AspectList()"
+                        + ".add(Aspect.LIGHT, 2).add(Aspect.FIRE, 1)"
+                        + ".add(Aspect.ENERGY, 1).add(Aspect.AIR, 1),"
+                        + " 1, -5, 2, new ItemStack(ConfigItems.itemBrightNitor))"
+                        + ".setParents(\"GASEOUS_LIGHT\").setConcealed()"
+                        + ".setPages(new ResearchPage(\"0\"), crucibleRecipePage(\"BrightNitor\")).setSecondary()"));
+        assertTrue("every fire hangs off the nitor, concealed and secondary", src.contains(
+                "new TinkererResearchItem(key, tags, col, row, complexity, new ItemStack(block))"
+                        + ".setParents(\"BRIGHT_NITOR\").setConcealed()"
+                        + ".setPages(new ResearchPage(\"0\"), crucibleRecipePage(key)).setSecondary()"));
+        // The six spots and tags, one line each — chaos alone is complexity 3.
+        assertTrue("air fire", src.contains("imbuedFire(\"FIRE_AER\", new AspectList()"
+                + ".add(Aspect.FIRE, 5).add(Aspect.AIR, 5), 3, -7, 2, ConfigBlocks.blockFireAir)"));
+        assertTrue("chaos fire is the deeper one", src.contains(
+                "imbuedFire(\"FIRE_PERDITIO\", new AspectList()"
+                        + ".add(Aspect.FIRE, 5).add(Aspect.ENTROPY, 5), 2, -8, 3, ConfigBlocks.blockFireChaos)"));
+        assertTrue("earth fire", src.contains("imbuedFire(\"FIRE_TERRA\", new AspectList()"
+                + ".add(Aspect.FIRE, 5).add(Aspect.EARTH, 5), 4, -6, 2, ConfigBlocks.blockFireEarth)"));
+        assertTrue("ignis carries no second primal", src.contains(
+                "imbuedFire(\"FIRE_IGNIS\", new AspectList()"
+                        + ".add(Aspect.FIRE, 10), 4, -4, 2, ConfigBlocks.blockFireIgnis)"));
+        assertTrue("order fire", src.contains("imbuedFire(\"FIRE_ORDO\", new AspectList()"
+                + ".add(Aspect.FIRE, 5).add(Aspect.ORDER, 5), 3, -3, 2, ConfigBlocks.blockFireOrder)"));
+        assertTrue("water fire", src.contains("imbuedFire(\"FIRE_AQUA\", new AspectList()"
+                + ".add(Aspect.FIRE, 5).add(Aspect.WATER, 5), 2, -2, 2, ConfigBlocks.blockFireWater)"));
+        assertTrue("infused potions open only behind all six fires", src.contains(
+                "new TinkererResearchItem(\"INFUSED_POTIONS\", new AspectList()"
+                        + ".add(Aspect.WATER, 5).add(Aspect.ENTROPY, 5),"
+                        + " 7, -5, 2, new ItemStack(ConfigItems.itemInfusedPotion))"
+                        + ".setParents(\"FIRE_PERDITIO\", \"FIRE_ORDO\", \"FIRE_IGNIS\","
+                        + " \"FIRE_TERRA\", \"FIRE_AER\", \"FIRE_AQUA\")"
+                        + ".setParentsHidden(\"INFUSION\").setConcealed()"
+                        + ".setPages(new ResearchPage(\"0\"), new ResearchPage(\"1\"),"
+                        + " infusionPages(\"INFUSED_POTIONS\", 4),"));
+        assertTrue("the funnel keeps its hidden distillation parent", src.contains(
+                "new TinkererResearchItem(\"FUNNEL\", new AspectList()"
+                        + ".add(Aspect.TOOL, 1).add(Aspect.TRAVEL, 2),"
+                        + " 0, -7, 1, new ItemStack(ConfigBlocks.blockFunnel))"
+                        + ".setParentsHidden(\"DISTILESSENTIA\").setParents(\"BRIGHT_NITOR\").setConcealed()"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"Funnel\")).setSecondary()"));
+        assertTrue("the restorer keeps both of its hidden parents", src.contains(
+                "new TinkererResearchItem(\"REPAIRER\", new AspectList()"
+                        + ".add(Aspect.TOOL, 2).add(Aspect.CRAFT, 1)"
+                        + ".add(Aspect.ORDER, 1).add(Aspect.MAGIC, 1),"
+                        + " -1, -9, 3, new ItemStack(ConfigBlocks.blockRepairer))"
+                        + ".setConcealed().setParents(\"FUNNEL\").setParentsHidden(\"THAUMIUM\", \"ENCHFABRIC\")"
+                        + ".setPages(new ResearchPage(\"0\"), infusionPage(\"Repairer\"))"));
+    }
+
+    /** The spell cloth, the enchanter, and the two that hang off Thaumcraft. */
+    @Test
+    public void spellClothBranchMatchesTheOriginal() throws IOException {
+        String src = normalize(source());
+        assertTrue("the cloth is a root, hidden behind enchanted fabric", src.contains(
+                "new TinkererResearchItem(\"SPELL_CLOTH\", new AspectList()"
+                        + ".add(Aspect.MAGIC, 2).add(Aspect.CLOTH, 1),"
+                        + " 3, 2, 2, new ItemStack(ConfigItems.itemSpellCloth))"
+                        + ".setParentsHidden(\"ENCHFABRIC\")"
+                        + ".setPages(new ResearchPage(\"0\"), crucibleRecipePage(\"SpellCloth\"))"));
+        assertTrue("the enchanter carries three text pages before its recipe", src.contains(
+                "new TinkererResearchItem(\"ENCHANTER\", new AspectList()"
+                        + ".add(Aspect.MAGIC, 2).add(Aspect.AURA, 1)"
+                        + ".add(Aspect.ELDRITCH, 1).add(Aspect.DARKNESS, 1).add(Aspect.MIND, 1),"
+                        + " 5, 4, 5, new ItemStack(ConfigBlocks.blockEnchanter))"
+                        + ".setParents(\"SPELL_CLOTH\")"
+                        + ".setPages(new ResearchPage(\"0\"), new ResearchPage(\"1\"),"
+                        + " new ResearchPage(\"2\"), infusionPage(\"Enchanter\"))"));
+        assertTrue("the xp talisman's icon is meta 1, and it needs a brain in a jar", src.contains(
+                "new TinkererResearchItem(\"XP_TALISMAN\", new AspectList()"
+                        + ".add(Aspect.GREED, 1).add(Aspect.MAGIC, 1).add(Aspect.MAN, 1),"
+                        + " 4, -1, 2, new ItemStack(ConfigItems.itemXpTalisman, 1, 1))"
+                        + ".setParents(\"JARBRAIN\", \"SPELL_CLOTH\").setConcealed()"
+                        + ".setPages(new ResearchPage(\"0\"), infusionPage(\"XpTalisman\")).setSecondary()"));
+        assertTrue("the gas remover is round and free of complexity", src.contains(
+                "new TinkererResearchItem(\"GAS_REMOVER\", new AspectList()"
+                        + ".add(Aspect.DARKNESS, 2).add(Aspect.LIGHT, 2),"
+                        + " -2, -7, 0, new ItemStack(ConfigItems.itemGasRemover)).setRound()"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"GasRemover\"))"
+                        + ".setParents(\"GASEOUS_SHADOW\")"));
+        assertTrue("the revealing helm sits on Thaumcraft's goggles", src.contains(
+                "new TinkererResearchItem(\"REVEALING_HELM\", new AspectList()"
+                        + ".add(Aspect.AURA, 2).add(Aspect.ARMOR, 1),"
+                        + " 0, 0, 1, new ItemStack(ConfigItems.itemRevealingHelm))"
+                        + ".setParents(\"GOGGLES\").setParentsHidden(\"THAUMIUM\")"
+                        + ".setPages(new ResearchPage(\"0\"), arcaneRecipePage(\"RevealingHelm\"))"));
+    }
+
+    /**
+     * Every parent an entry names must exist, hidden ones included. A hidden
+     * parent that nothing declares locks the entry shut just as firmly as a
+     * missing gate locks a recipe.
+     */
+    @Test
+    public void everyParentExists() throws IOException {
+        String research = source();
+        StringBuilder allResearch = new StringBuilder(research);
+        for (java.io.File f : new java.io.File("src/main/java/thaumcraft/common/config/research")
+                .listFiles()) {
+            if (f.getName().endsWith(".java")) {
+                allResearch.append(read(f.getPath().replace('\\', '/')));
+            }
+        }
+        String pool = allResearch.toString();
+        Matcher parents = Pattern.compile("\\.setParents(?:Hidden)?\\(([^)]*)\\)").matcher(research);
+        int checked = 0;
+        while (parents.find()) {
+            Matcher keys = Pattern.compile("\"([A-Z0-9_]+)\"").matcher(parents.group(1));
+            while (keys.find()) {
+                String key = keys.group(1);
+                boolean declared = pool.contains("new TinkererResearchItem(\"" + key + "\"")
+                        || pool.contains("\"" + key + "\",\n")
+                        || pool.contains("new ResearchItem(\n                \"" + key + "\",")
+                        || pool.contains("imbuedFire(\"" + key + "\"");
+                assertTrue("nothing declares the research " + key, declared);
+                checked++;
+            }
+        }
+        assertTrue("the entries must actually name parents", checked >= 25);
+    }
+
+    /**
+     * Upstream keys the crop and potion recipes after their map slot and forgets
+     * to name the gate, so all eight sit behind keys no entry declares and are
+     * uncraftable in the original. Here they hang off the entry that shows them.
+     */
+    @Test
+    public void infusedCropsAreGatedOnTheEntryThatShowsThem() throws IOException {
+        String recipes = normalize(read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java"));
+        for (int i = 0; i < 4; i++) {
+            assertTrue("seed " + i + " is filed under its own slot but gated on the entry",
+                    recipes.contains("ConfigResearch.recipes.put(\"INFUSED_POTIONS" + i + "\","
+                            + " ThaumcraftApi.addInfusionCraftingRecipe( \"INFUSED_POTIONS\","));
+            assertTrue("potion " + i + " likewise",
+                    recipes.contains("ConfigResearch.recipes.put(\"INFUSED_POTIONSPOT" + i + "\","
+                            + " ThaumcraftApi.addCrucibleRecipe( \"INFUSED_POTIONS\","));
+        }
+    }
+
     /**
      * Upstream's recipe wrappers take (mapKey, researchGate) and the two differ
      * for a handful of objects. Getting them the wrong way round gates a recipe

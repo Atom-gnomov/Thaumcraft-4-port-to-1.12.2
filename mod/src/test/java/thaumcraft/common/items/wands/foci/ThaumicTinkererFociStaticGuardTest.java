@@ -1721,14 +1721,16 @@ public class ThaumicTinkererFociStaticGuardTest {
                         && rec.contains("add(Aspect.CROP, 32).add(Aspect.HARVEST, 32)"));
         // Upstream's shard metas for seeds 0..3 are 0, 1, 3, 2 — not the primal
         // order. Getting this wrong swaps Terra and Aqua silently.
+        // The map keys became the original's own in 1.1.27.0, so the research
+        // entry can show these recipes on its pages.
         assertTrue("seed 2 (Terra) takes shard 3",
-                rec.contains("\"InfusedSeeds2\"")
+                rec.contains("\"INFUSED_POTIONS2\"")
                         && rec.contains("new ItemStack(ConfigItems.itemShard, 1, 3),\n"
                         + "                        new ItemStack(ConfigItems.itemShard, 1, 3)"));
         assertTrue("seed 3 (Aqua) takes shard 2",
-                rec.contains("\"InfusedSeeds3\""));
+                rec.contains("\"INFUSED_POTIONS3\""));
         assertTrue("potions boil from the grain at AURA 5 plus their own primal",
-                rec.contains("\"InfusedPotion0\"")
+                rec.contains("\"INFUSED_POTIONSPOT0\"")
                         && rec.contains("add(Aspect.AURA, 5).add(Aspect.AIR, 5)"));
         assertTrue("crop recipes registered at init",
                 read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")

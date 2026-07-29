@@ -37,6 +37,152 @@ public final class ConfigResearchTinkerer {
     public static void initResearch() {
         registerFoci();
         registerDarkQuartzBranch();
+        registerGaseousLightBranch();
+        registerSpellClothBranch();
+    }
+
+    /**
+     * The spell cloth and what it leads to: the osmotic enchanter, and the
+     * experience talisman off to the side. Rooted in Thaumcraft's enchanted
+     * fabric rather than in anything of Tinkerer's own.
+     */
+    private static void registerSpellClothBranch() {
+        new TinkererResearchItem("SPELL_CLOTH",
+                new AspectList().add(Aspect.MAGIC, 2).add(Aspect.CLOTH, 1),
+                3, 2, 2, new ItemStack(ConfigItems.itemSpellCloth))
+                .setParentsHidden("ENCHFABRIC")
+                .setPages(new ResearchPage("0"),
+                        crucibleRecipePage("SpellCloth"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("ENCHANTER",
+                new AspectList().add(Aspect.MAGIC, 2).add(Aspect.AURA, 1)
+                        .add(Aspect.ELDRITCH, 1).add(Aspect.DARKNESS, 1).add(Aspect.MIND, 1),
+                5, 4, 5, new ItemStack(ConfigBlocks.blockEnchanter))
+                .setParents("SPELL_CLOTH")
+                .setPages(new ResearchPage("0"), new ResearchPage("1"), new ResearchPage("2"),
+                        infusionPage("Enchanter"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("XP_TALISMAN",
+                new AspectList().add(Aspect.GREED, 1).add(Aspect.MAGIC, 1).add(Aspect.MAN, 1),
+                4, -1, 2, new ItemStack(ConfigItems.itemXpTalisman, 1, 1))
+                .setParents("JARBRAIN", "SPELL_CLOTH").setConcealed()
+                .setPages(new ResearchPage("0"),
+                        infusionPage("XpTalisman"))
+                .setSecondary()
+                .registerResearchItem();
+
+        // Two that hang off Thaumcraft's own tree rather than Tinkerer's.
+        new TinkererResearchItem("GAS_REMOVER",
+                new AspectList().add(Aspect.DARKNESS, 2).add(Aspect.LIGHT, 2),
+                -2, -7, 0, new ItemStack(ConfigItems.itemGasRemover))
+                .setRound()
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("GasRemover"))
+                .setParents("GASEOUS_SHADOW")
+                .registerResearchItem();
+
+        new TinkererResearchItem("REVEALING_HELM",
+                new AspectList().add(Aspect.AURA, 2).add(Aspect.ARMOR, 1),
+                0, 0, 1, new ItemStack(ConfigItems.itemRevealingHelm))
+                .setParents("GOGGLES").setParentsHidden("THAUMIUM")
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("RevealingHelm"))
+                .registerResearchItem();
+    }
+
+    /**
+     * The gases, the hyperenergetic nitor and everything lit from it: the six
+     * imbued fires and the infused crops beyond them, plus the funnel and the
+     * restorer. Rooted in Thaumcraft's own NITOR.
+     */
+    private static void registerGaseousLightBranch() {
+        new TinkererResearchItem("GASEOUS_LIGHT",
+                new AspectList().add(Aspect.LIGHT, 2).add(Aspect.AIR, 1),
+                0, -3, 1, new ItemStack(ConfigItems.itemGaseousLight))
+                .setParents("NITOR")
+                .setPages(new ResearchPage("0"),
+                        crucibleRecipePage("GaseousLight"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("GASEOUS_SHADOW",
+                new AspectList().add(Aspect.DARKNESS, 2).add(Aspect.AIR, 1).add(Aspect.MOTION, 4),
+                -1, -5, 2, new ItemStack(ConfigItems.itemGaseousShadow))
+                .setSecondary().setParents("GASEOUS_LIGHT")
+                .setPages(new ResearchPage("0"),
+                        crucibleRecipePage("GaseousShadow"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("BRIGHT_NITOR",
+                new AspectList().add(Aspect.LIGHT, 2).add(Aspect.FIRE, 1)
+                        .add(Aspect.ENERGY, 1).add(Aspect.AIR, 1),
+                1, -5, 2, new ItemStack(ConfigItems.itemBrightNitor))
+                .setParents("GASEOUS_LIGHT").setConcealed()
+                .setPages(new ResearchPage("0"),
+                        crucibleRecipePage("BrightNitor"))
+                .setSecondary()
+                .registerResearchItem();
+
+        // The six imbued fires. Each is one hyperenergetic nitor in a crucible,
+        // and each sits at its own spot on the map. Chaos is the odd one: no
+        // second primal in its tags and complexity 3 where the rest are 2.
+        imbuedFire("FIRE_AER", new AspectList().add(Aspect.FIRE, 5).add(Aspect.AIR, 5),
+                3, -7, 2, ConfigBlocks.blockFireAir);
+        imbuedFire("FIRE_PERDITIO", new AspectList().add(Aspect.FIRE, 5).add(Aspect.ENTROPY, 5),
+                2, -8, 3, ConfigBlocks.blockFireChaos);
+        imbuedFire("FIRE_TERRA", new AspectList().add(Aspect.FIRE, 5).add(Aspect.EARTH, 5),
+                4, -6, 2, ConfigBlocks.blockFireEarth);
+        imbuedFire("FIRE_IGNIS", new AspectList().add(Aspect.FIRE, 10),
+                4, -4, 2, ConfigBlocks.blockFireIgnis);
+        imbuedFire("FIRE_ORDO", new AspectList().add(Aspect.FIRE, 5).add(Aspect.ORDER, 5),
+                3, -3, 2, ConfigBlocks.blockFireOrder);
+        imbuedFire("FIRE_AQUA", new AspectList().add(Aspect.FIRE, 5).add(Aspect.WATER, 5),
+                2, -2, 2, ConfigBlocks.blockFireWater);
+
+        // Upstream's key for this is INFUSED_POTIONS, and it opens only once
+        // all six fires are known.
+        new TinkererResearchItem("INFUSED_POTIONS",
+                new AspectList().add(Aspect.WATER, 5).add(Aspect.ENTROPY, 5),
+                7, -5, 2, new ItemStack(ConfigItems.itemInfusedPotion))
+                .setParents("FIRE_PERDITIO", "FIRE_ORDO", "FIRE_IGNIS",
+                        "FIRE_TERRA", "FIRE_AER", "FIRE_AQUA")
+                .setParentsHidden("INFUSION").setConcealed()
+                .setPages(new ResearchPage("0"), new ResearchPage("1"),
+                        infusionPages("INFUSED_POTIONS", 4),
+                        crucibleRecipePage("INFUSED_POTIONSPOT0"),
+                        crucibleRecipePage("INFUSED_POTIONSPOT1"),
+                        crucibleRecipePage("INFUSED_POTIONSPOT2"),
+                        crucibleRecipePage("INFUSED_POTIONSPOT3"))
+                .registerResearchItem();
+
+        new TinkererResearchItem("FUNNEL",
+                new AspectList().add(Aspect.TOOL, 1).add(Aspect.TRAVEL, 2),
+                0, -7, 1, new ItemStack(ConfigBlocks.blockFunnel))
+                .setParentsHidden("DISTILESSENTIA").setParents("BRIGHT_NITOR").setConcealed()
+                .setPages(new ResearchPage("0"),
+                        arcaneRecipePage("Funnel"))
+                .setSecondary()
+                .registerResearchItem();
+
+        new TinkererResearchItem("REPAIRER",
+                new AspectList().add(Aspect.TOOL, 2).add(Aspect.CRAFT, 1)
+                        .add(Aspect.ORDER, 1).add(Aspect.MAGIC, 1),
+                -1, -9, 3, new ItemStack(ConfigBlocks.blockRepairer))
+                .setConcealed().setParents("FUNNEL").setParentsHidden("THAUMIUM", "ENCHFABRIC")
+                .setPages(new ResearchPage("0"),
+                        infusionPage("Repairer"))
+                .registerResearchItem();
+    }
+
+    /** Every imbued fire is built the same way; only its tags and spot differ. */
+    private static void imbuedFire(String key, AspectList tags, int col, int row,
+                                   int complexity, net.minecraft.block.Block block) {
+        new TinkererResearchItem(key, tags, col, row, complexity, new ItemStack(block))
+                .setParents("BRIGHT_NITOR").setConcealed()
+                .setPages(new ResearchPage("0"), crucibleRecipePage(key))
+                .setSecondary()
+                .registerResearchItem();
     }
 
     /**
@@ -226,6 +372,19 @@ public final class ConfigResearchTinkerer {
     /** The original's ResearchHelper.infusionPage. */
     private static ResearchPage infusionPage(String recipeKey) {
         return new ResearchPage(ConfigResearch.recipeInfusion(recipeKey));
+    }
+
+    /**
+     * The original's two-argument ResearchHelper.infusionPage: one page showing
+     * {@code count} recipes filed under {@code key0}, {@code key1}, and so on.
+     */
+    private static ResearchPage infusionPages(String recipeKeyPrefix, int count) {
+        thaumcraft.api.crafting.InfusionRecipe[] found =
+                new thaumcraft.api.crafting.InfusionRecipe[count];
+        for (int i = 0; i < count; i++) {
+            found[i] = ConfigResearch.recipeInfusion(recipeKeyPrefix + i);
+        }
+        return new ResearchPage(found);
     }
 
     /** The original's ResearchHelper.recipePage — a plain bench recipe. */

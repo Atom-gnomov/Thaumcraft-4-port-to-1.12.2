@@ -708,7 +708,7 @@ public class ConfigTinkerer {
 
         // Ichor: infusion on a nether star, instability 7.
         ConfigResearch.recipes.put("Ichor", ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSION",
+                "ICHOR",
                 new ItemStack(ConfigItems.itemKamiResource, 8, ItemKamiResource.ICHOR), 7,
                 new AspectList().add(Aspect.MAN, 32).add(Aspect.LIGHT, 32).add(Aspect.SOUL, 64),
                 new ItemStack(Items.NETHER_STAR),
@@ -720,7 +720,7 @@ public class ConfigTinkerer {
 
         // Ichorcloth: 3 per craft, 125 of every primal.
         ConfigResearch.recipes.put("IchorCloth", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 3, ItemKamiResource.ICHORCLOTH),
+                "ICHOR_CLOTH", new ItemStack(ConfigItems.itemKamiResource, 3, ItemKamiResource.ICHORCLOTH),
                 allPrimals(125),
                 "CCC", "III", "DDD",
                 'C', new ItemStack(ConfigItems.itemResource, 1, 7),
@@ -729,7 +729,7 @@ public class ConfigTinkerer {
 
         // Ichorium ingot: 100 of every primal.
         ConfigResearch.recipes.put("Ichorium", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
+                "ICHORIUM", new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
                 allPrimals(100),
                 " T ", "IDI", " I ",
                 'T', new ItemStack(ConfigItems.itemResource, 1, 2),
@@ -738,7 +738,7 @@ public class ConfigTinkerer {
 
         // Ichor cap: 2 per craft, on charged thaumium caps.
         ConfigResearch.recipes.put("IchorCap", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 2, ItemKamiResource.ICHOR_CAP),
+                "ICHOR_CAP", new ItemStack(ConfigItems.itemKamiResource, 2, ItemKamiResource.ICHOR_CAP),
                 allPrimals(100),
                 "ICI", " M ", "ICI",
                 'M', ichorium,
@@ -747,7 +747,7 @@ public class ConfigTinkerer {
 
         // Ichorcloth rod: infusion on a greatwood rod, instability 9.
         ConfigResearch.recipes.put("IchorclothRod", ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSION",
+                "ICHORCLOTH_ROD",
                 new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH_ROD), 9,
                 new AspectList().add(Aspect.MAGIC, 100).add(Aspect.LIGHT, 32).add(Aspect.TOOL, 32),
                 new ItemStack(ConfigItems.itemWandRod, 1, 2),
@@ -957,8 +957,10 @@ public class ConfigTinkerer {
         recipe[pattern.length + 1] = new ItemStack(ConfigItems.itemWandRod, 1, 2);
         recipe[pattern.length + 2] = 'I';
         recipe[pattern.length + 3] = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM);
+        // Upstream gates all four plain KAMI tools on ICHOR_TOOLS, whose
+        // entry shows all four crafts on its pages.
         ConfigResearch.recipes.put(key, ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(tool), new AspectList().add(aspect, 75), recipe));
+                "ICHOR_TOOLS", new ItemStack(tool), new AspectList().add(aspect, 75), recipe));
     }
 
     /** The original priced KAMI crafts at the same amount of every primal. */

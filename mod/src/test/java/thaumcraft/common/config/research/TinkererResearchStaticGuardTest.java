@@ -329,6 +329,112 @@ public class TinkererResearchStaticGuardTest {
     }
 
     /**
+     * The KAMI class <em>is</em> the tier's gate: concealed on construction,
+     * and on setPages it sweeps every other research in the book into its own
+     * hidden parents. Lose that sweep and ichorium tools become available to a
+     * fresh world.
+     */
+    @Test
+    public void kamiEntriesAreGatedBehindTheWholeBook() throws IOException {
+        String src = normalize(read(
+                "src/main/java/thaumcraft/common/config/research/TinkererKamiResearchItem.java"));
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        assertTrue("every KAMI entry is concealed from birth",
+                src.contains("super(key, tags, col, row, complexity, icon); setConcealed(); }"));
+        assertTrue("it sweeps every category and every research in it",
+                src.contains("for (String categoryStr : ResearchCategories.researchCategories.keySet())")
+                        && src.contains("for (String tag : category.research.keySet())"));
+        assertTrue("the original's exclusions, all four of them",
+                src.contains("research.isLost()")
+                        && src.contains("(research.parentsHidden == null && research.parents == null)")
+                        && src.contains("research.isVirtual()")
+                        && src.contains("research instanceof TinkererKamiResearchItem"));
+        assertTrue("the blacklist is seeded with MINILITH and matched by prefix",
+                src.contains("BLACKLIST.add(\"MINILITH\");")
+                        && src.contains("if (tag.startsWith(black))"));
+        assertTrue("anything ending in KAMI is skipped too",
+                src.contains("if (tag.endsWith(\"KAMI\"))"));
+        assertTrue("an auto-unlocked stub is exempt, as upstream has it",
+                src.contains("if (!isAutoUnlock()) {"));
+        assertTrue("the swept list replaces the hidden parents",
+                src.contains("this.parentsHidden = requirements.toArray(new String[requirements.size()]);"));
+        assertTrue("KAMI lore carries its own prefix",
+                src.contains("return \"ttresearch.prefix.kami\";")
+                        && en.contains("ttresearch.prefix.kami=[TTKami] \n"));
+    }
+
+    /** A sample of the KAMI tier, and the trunk everything there hangs from. */
+    @Test
+    public void kamiBranchMatchesTheOriginal() throws IOException {
+        String src = normalize(source());
+        assertTrue("dimension shards are the auto-unlocked stub of the tier", src.contains(
+                "new TinkererKamiResearchItem(\"DIMENSION_SHARDS\", new AspectList(),"
+                        + " 7, 8, 0, new ItemStack(ConfigItems.itemKamiResource, 1, 7))"
+                        + ".setStub().setAutoUnlock().setRound()"
+                        + ".setPages(new ResearchPage(\"0\"))"));
+        assertTrue("ichor is the root and takes no parent", src.contains(
+                "new TinkererKamiResearchItem(\"ICHOR\", new AspectList()"
+                        + ".add(Aspect.MAN, 1).add(Aspect.LIGHT, 2)"
+                        + ".add(Aspect.SOUL, 1).add(Aspect.TAINT, 1),"
+                        + " 9, 8, 5, new ItemStack(ConfigItems.itemKamiResource, 1, 0))"
+                        + ".setPages(new ResearchPage(\"0\"), infusionPage(\"Ichor\"))"));
+        assertTrue("the armour entry is the helm's, and shows all four crafts", src.contains(
+                "new TinkererKamiResearchItem(\"ICHORCLOTH_ARMOR\", new AspectList()"
+                        + ".add(Aspect.ARMOR, 2).add(Aspect.CLOTH, 1)"
+                        + ".add(Aspect.LIGHT, 1).add(Aspect.CRAFT, 1),"
+                        + " 17, 5, 5, new ItemStack(ConfigItems.itemIchorclothHelm))"
+                        + ".setConcealed().setParents(\"ICHOR_CLOTH\")"
+                        + ".setPages(new ResearchPage(\"0\"),"
+                        + " arcaneRecipePage(\"IchorclothHelm\"),"
+                        + " arcaneRecipePage(\"IchorclothChest\"),"
+                        + " arcaneRecipePage(\"IchorclothLegs\"),"
+                        + " arcaneRecipePage(\"IchorclothBoots\"))"));
+        assertTrue("the tools entry shows all four plain tools", src.contains(
+                "new TinkererKamiResearchItem(\"ICHOR_TOOLS\", new AspectList()"
+                        + ".add(Aspect.TOOL, 2).add(Aspect.WEAPON, 1)"
+                        + ".add(Aspect.METAL, 1).add(Aspect.CRAFT, 1),"
+                        + " 13, 12, 5, new ItemStack(ConfigItems.itemIchorPick))"
+                        + ".setConcealed().setParents(\"ICHORIUM\").setParentsHidden(\"ICHORCLOTH_ROD\")"));
+        assertTrue("the shovel keeps upstream's doubled EARTH tag", src.contains(
+                "new TinkererKamiResearchItem(\"ICHOR_SHOVEL_GEM\", new AspectList()"
+                        + ".add(Aspect.EARTH, 2).add(Aspect.TOOL, 1)"
+                        + ".add(Aspect.MINE, 1).add(Aspect.EARTH, 1),"));
+        assertTrue("the block talisman needs both gem tools", src.contains(
+                "new TinkererKamiResearchItem(\"BLOCK_TALISMAN\", new AspectList()"
+                        + ".add(Aspect.VOID, 2).add(Aspect.DARKNESS, 1)"
+                        + ".add(Aspect.ELDRITCH, 1).add(Aspect.MAGIC, 1),"
+                        + " 14, 17, 5, new ItemStack(ConfigItems.itemBlockTalisman))"
+                        + ".setParents(\"ICHOR_PICK_GEM\", \"ICHOR_SHOVEL_GEM\")"));
+    }
+
+    /**
+     * The KAMI resources and tools used to be gated on Thaumcraft's INFUSION,
+     * which was an invented gate. They belong on their own keys.
+     */
+    @Test
+    public void kamiRecipesAreGatedOnKamiKeys() throws IOException {
+        String recipes = normalize(read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java"));
+        assertTrue("ichor itself", recipes.contains(
+                "ConfigResearch.recipes.put(\"Ichor\","
+                        + " ThaumcraftApi.addInfusionCraftingRecipe( \"ICHOR\","));
+        assertTrue("ichorcloth", recipes.contains(
+                "ConfigResearch.recipes.put(\"IchorCloth\","
+                        + " ThaumcraftApi.addArcaneCraftingRecipe( \"ICHOR_CLOTH\","));
+        assertTrue("ichorium", recipes.contains(
+                "ConfigResearch.recipes.put(\"Ichorium\","
+                        + " ThaumcraftApi.addArcaneCraftingRecipe( \"ICHORIUM\","));
+        assertTrue("the cap", recipes.contains(
+                "ConfigResearch.recipes.put(\"IchorCap\","
+                        + " ThaumcraftApi.addArcaneCraftingRecipe( \"ICHOR_CAP\","));
+        assertTrue("the rod", recipes.contains(
+                "ConfigResearch.recipes.put(\"IchorclothRod\","
+                        + " ThaumcraftApi.addInfusionCraftingRecipe( \"ICHORCLOTH_ROD\","));
+        assertTrue("and all four plain tools, through their helper", recipes.contains(
+                "ConfigResearch.recipes.put(key, ThaumcraftApi.addArcaneCraftingRecipe("
+                        + " \"ICHOR_TOOLS\", new ItemStack(tool),"));
+    }
+
+    /**
      * Every parent an entry names must exist, hidden ones included. A hidden
      * parent that nothing declares locks the entry shut just as firmly as a
      * missing gate locks a recipe.
@@ -417,8 +523,12 @@ public class TinkererResearchStaticGuardTest {
         int checked = 0;
         while (pages.find()) {
             String key = pages.group(1);
+            // Some recipes are filed by a helper that takes the key as its
+            // first argument — kamiTool("IchorPick", ...) and friends.
             boolean filed = recipes.contains("ConfigResearch.recipes.put(\"" + key + "\",")
-                    || recipes.matches(".*bench\\([^)]*, \"" + Pattern.quote(key) + "\",.*");
+                    || recipes.matches(".*bench\\([^)]*, \"" + Pattern.quote(key) + "\",.*")
+                    || recipes.matches(".*\\b(?:kamiTool|advTool|fire|arcane)\\(\""
+                            + Pattern.quote(key) + "\",.*");
             assertTrue("no recipe is filed under " + key + ", so its page would throw", filed);
             checked++;
         }

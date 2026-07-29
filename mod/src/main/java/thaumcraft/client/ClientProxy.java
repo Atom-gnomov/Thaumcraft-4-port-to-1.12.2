@@ -1283,6 +1283,8 @@ public class ClientProxy extends CommonProxy {
     public void registerHandlers() {
         MinecraftForge.EVENT_BUS.register(new ClientTickEventsFML());
         MinecraftForge.EVENT_BUS.register(new RenderEventHandler());
+        MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.client.lib.tinkerer.SoulHeartClientHandler());
         MinecraftForge.EVENT_BUS.register(ParticleEngine.INSTANCE);
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
         MinecraftForge.EVENT_BUS.register(new ItemAspectTooltipHandler());

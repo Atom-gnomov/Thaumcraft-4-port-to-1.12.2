@@ -311,6 +311,8 @@ public class Thaumcraft {
                 thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer.create());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
                 new thaumcraft.common.lib.enchantment.tinkerer.TinkererEnchantmentHandler());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.tinkerer.SoulHeartHandler());
     }
 
     @SubscribeEvent

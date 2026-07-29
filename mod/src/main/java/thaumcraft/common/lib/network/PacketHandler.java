@@ -25,6 +25,7 @@ import thaumcraft.common.lib.network.misc.PacketBoreDig;
 import thaumcraft.common.lib.network.misc.PacketConfig;
 import thaumcraft.common.lib.network.misc.PacketFlyToServer;
 import thaumcraft.common.lib.network.tinkerer.PacketWarpGateLock;
+import thaumcraft.common.lib.network.tinkerer.PacketSoulHearts;
 import thaumcraft.common.lib.network.tinkerer.PacketWarpGateTeleport;
 import thaumcraft.common.lib.network.misc.PacketFocusChangeToServer;
 import thaumcraft.common.lib.network.misc.PacketItemKeyToServer;
@@ -101,6 +102,7 @@ public class PacketHandler {
         // after it and break the protocol for existing clients.
         register(PacketWarpGateLock.class, idx++, Side.SERVER);
         register(PacketWarpGateTeleport.class, idx++, Side.SERVER);
+        register(PacketSoulHearts.class, idx++, Side.CLIENT);
         if (idx != REFERENCE_PACKET_COUNT) {
             throw new IllegalStateException("Thaumcraft packet discriminator table changed: expected " + REFERENCE_PACKET_COUNT + " entries, got " + idx);
         }

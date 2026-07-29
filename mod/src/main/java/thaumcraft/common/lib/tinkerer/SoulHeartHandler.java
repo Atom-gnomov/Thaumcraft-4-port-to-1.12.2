@@ -25,11 +25,23 @@ public class SoulHeartHandler {
         if (event.getEntityLiving() instanceof EntityPlayer && event.getAmount() > 0.0F) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             event.setAmount(removeHP(player, (int) event.getAmount()));
+            updateClient(player);
         }
     }
 
     public static void addHearts(EntityPlayer player) {
         addHP(player, 1);
+        updateClient(player);
+    }
+
+    /** The pool is server-side NBT, so the HUD has to be told about it. */
+    public static void updateClient(EntityPlayer player) {
+        if (player instanceof net.minecraft.entity.player.EntityPlayerMP
+                && ((net.minecraft.entity.player.EntityPlayerMP) player).connection != null) {
+            thaumcraft.common.lib.network.PacketHandler.INSTANCE.sendTo(
+                    new thaumcraft.common.lib.network.tinkerer.PacketSoulHearts(getHP(player)),
+                    (net.minecraft.entity.player.EntityPlayerMP) player);
+        }
     }
 
     public static boolean addHP(EntityPlayer player, int hp) {

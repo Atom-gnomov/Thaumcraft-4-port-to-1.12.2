@@ -1499,7 +1499,14 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("only pieces that need a tick register on the bus",
                 base.contains("if (ticks()) {") && base.contains("MinecraftForge.EVENT_BUS.register(this)"));
         assertTrue("the awakened set has its own two sheets",
-                base.contains("ichorGem2.png") && base.contains("ichorGem1.png"));
+                base.contains("ichor_gem2.png") && base.contains("ichor_gem1.png"));
+        // Renamed in 1.1.37.3: a ResourceLocation must be lowercase in 1.11+,
+        // so ichorGem1/2.png never resolved and the worn armour drew untextured.
+        assertTrue("armour textures must be lowercase, or they never load",
+                Files.exists(Paths.get(
+                        "src/main/resources/assets/thaumcraft/textures/models/ichor_gem1.png"))
+                        && Files.exists(Paths.get(
+                        "src/main/resources/assets/thaumcraft/textures/models/ichor_gem2.png")));
 
         String helm = read(dir + "ItemGemHelm.java");
         assertTrue("the cowl tops air to 300 and refreshes its effect at 202 ticks",

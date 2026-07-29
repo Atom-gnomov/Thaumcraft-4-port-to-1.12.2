@@ -91,7 +91,7 @@ public abstract class ItemIchorclothArmorAdv extends ItemIchorclothArmor {
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
         return slot == EntityEquipmentSlot.LEGS
-                ? "thaumcraft:textures/models/ichorGem2.png"
-                : "thaumcraft:textures/models/ichorGem1.png";
+                ? "thaumcraft:textures/models/ichor_gem2.png"
+                : "thaumcraft:textures/models/ichor_gem1.png";
     }
 }

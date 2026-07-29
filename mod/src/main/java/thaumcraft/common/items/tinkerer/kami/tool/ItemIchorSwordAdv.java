@@ -34,6 +34,10 @@ public class ItemIchorSwordAdv extends ItemIchorSword implements IAdvancedTool {
     /** Mode 1 re-enters attack from inside attack; this stops the recursion. */
     private boolean ignoreLeftClick = false;
 
+    /** Focused-strike bonus range, inclusive. A deviation, see onLeftClickEntity. */
+    private static final int SINGLE_TARGET_MIN = 14;
+    private static final int SINGLE_TARGET_MAX = 17;
+
     public ItemIchorSwordAdv() {
         super();
         // Modes live in the item damage, so the tool must not stack.
@@ -46,8 +50,18 @@ public class ItemIchorSwordAdv extends ItemIchorSword implements IAdvancedTool {
         if (!this.ignoreLeftClick && entity instanceof EntityLivingBase
                 && ((EntityLivingBase) entity).hurtTime == 0 && !entity.isDead) {
             switch (KamiToolHandler.getMode(stack)) {
-                case 0:
+                case 0: {
+                    // Owner's call, not the original's behaviour: upstream mode 0
+                    // is a plain strike, so single-target and the mode-1 sweep hit
+                    // for exactly the same amount and there was no reason to use
+                    // it. Focusing on one target now rolls 14-17 on top of the
+                    // usual hit. See THAUMIC_TINKERER_PLAN.md.
+                    float bonus = SINGLE_TARGET_MIN
+                            + player.world.rand.nextInt(SINGLE_TARGET_MAX - SINGLE_TARGET_MIN + 1);
+                    entity.attackEntityFrom(
+                            net.minecraft.util.DamageSource.causePlayerDamage(player), bonus);
                     break;
+                }
                 case 1: {
                     int range = 3;
                     List<Entity> entities = player.world.getEntitiesWithinAABB(entity.getClass(),

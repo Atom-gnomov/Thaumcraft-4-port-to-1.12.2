@@ -30,6 +30,10 @@ public class ConfigTinkerer {
      * a substitute for it.</p>
      */
     public static void registerFociRecipes() {
+        // First call of the module inside ConfigRecipes.init(), so this is
+        // where the bench handles come back after the map was cleared.
+        publishBenchRecipeHandles();
+
         // FOCUS_SMELT: arcane, "FNE" - fire focus, nitor, excavation focus.
         ConfigResearch.recipes.put("FocusSmelt", ThaumcraftApi.addArcaneCraftingRecipe(
                 "FOCUS_SMELT", new ItemStack(ConfigItems.focusSmelt),
@@ -548,8 +552,25 @@ public class ConfigTinkerer {
             String registryName, String researchKey,
             net.minecraftforge.oredict.ShapedOreRecipe recipe) {
         recipe.setRegistryName("thaumcraft", registryName);
-        ConfigResearch.recipes.put(researchKey, recipe);
+        BENCH_HANDLES.put(researchKey, recipe);
         return recipe;
+    }
+
+    /**
+     * Bench recipes are registered in the IRecipe registry event, long before
+     * {@link ConfigRecipes#init()} runs — and that begins by clearing
+     * {@code ConfigResearch.recipes}. Handing them over directly there loses
+     * them, so they are parked here and published after the clear.
+     */
+    private static final java.util.Map<String, net.minecraft.item.crafting.IRecipe> BENCH_HANDLES =
+            new java.util.LinkedHashMap<>();
+
+    /** Must be called from inside ConfigRecipes.init(), after the map is cleared. */
+    public static void publishBenchRecipeHandles() {
+        for (java.util.Map.Entry<String, net.minecraft.item.crafting.IRecipe> entry
+                : BENCH_HANDLES.entrySet()) {
+            ConfigResearch.recipes.put(entry.getKey(), entry.getValue());
+        }
     }
 
     /**

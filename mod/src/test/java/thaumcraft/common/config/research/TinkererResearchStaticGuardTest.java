@@ -481,6 +481,31 @@ public class TinkererResearchStaticGuardTest {
     }
 
     /**
+     * ConfigRecipes.init() begins by clearing ConfigResearch.recipes, and the
+     * bench recipes are filed long before that in the IRecipe registry event.
+     * Handing them over directly is silently undone and the strict lookup then
+     * throws at world load — which is what shipped in 1.1.37.1.
+     */
+    @Test
+    public void benchRecipeHandlesSurviveTheRecipeMapClear() throws IOException {
+        String tinkerer = normalize(read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java"));
+        String recipes = normalize(read("src/main/java/thaumcraft/common/config/ConfigRecipes.java"));
+
+        assertTrue("the clear this guards against is still there",
+                recipes.contains("ConfigResearch.recipes.clear();"));
+        assertTrue("bench() must park its handle, not hand it straight over",
+                tinkerer.contains("BENCH_HANDLES.put(researchKey, recipe);"));
+        assertTrue("and they must be published again after the clear",
+                tinkerer.contains("public static void publishBenchRecipeHandles() {"));
+        assertTrue("published from the first module call inside ConfigRecipes.init()",
+                tinkerer.contains("public static void registerFociRecipes() {")
+                        && tinkerer.indexOf("publishBenchRecipeHandles();")
+                                > tinkerer.indexOf("public static void registerFociRecipes() {"));
+        assertTrue("registerFociRecipes must run inside ConfigRecipes.init()",
+                recipes.contains("ConfigTinkerer.registerFociRecipes();"));
+    }
+
+    /**
      * Every parent an entry names must exist, hidden ones included. A hidden
      * parent that nothing declares locks the entry shut just as firmly as a
      * missing gate locks a recipe.

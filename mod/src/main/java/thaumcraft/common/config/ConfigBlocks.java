@@ -88,6 +88,7 @@ public class ConfigBlocks {
     public static BlockTransvectorInterface blockTransvectorInterface;
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
+    public static thaumcraft.common.blocks.tinkerer.kami.BlockWarpGate blockWarpGate;
     public static BlockEnchanter blockEnchanter;
     public static BlockPlatform blockPlatform;
     public static BlockForcefield blockForcefield;
@@ -222,6 +223,11 @@ public class ConfigBlocks {
         blockEnchanter = (BlockEnchanter) new BlockEnchanter()
                 .setRegistryName("thaumcraft", legacyPath("blockEnchanter"))
                 .setTranslationKey("thaumcraft.enchanter");
+
+        blockWarpGate = (thaumcraft.common.blocks.tinkerer.kami.BlockWarpGate)
+                new thaumcraft.common.blocks.tinkerer.kami.BlockWarpGate()
+                        .setRegistryName("thaumcraft", legacyPath("blockWarpGate"))
+                        .setTranslationKey("thaumcraft.kami.warp_gate");
 
         blockBedrockPortal = (thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal)
                 new thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal()
@@ -493,6 +499,7 @@ public class ConfigBlocks {
                 blockTransvectorInterface,
                 blockTransvectorDislocator,
                 blockAnimationTablet,
+                blockWarpGate,
                 blockEnchanter,
                 blockBedrockPortal,
                 blockCosmeticOpaque,
@@ -650,6 +657,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockAnimationTablet.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockEnchanter)
                 .setRegistryName(blockEnchanter.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockWarpGate)
+                .setRegistryName(blockWarpGate.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -739,6 +748,7 @@ public class ConfigBlocks {
             new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
             new TileRegistration(TileTransvectorDislocator.class, "TileTransvectorDislocator"),
             new TileRegistration(TileAnimationTablet.class, "TileAnimationTablet"),
+            new TileRegistration(thaumcraft.common.tiles.tinkerer.kami.TileWarpGate.class, "TileWarpGate"),
             new TileRegistration(TileEnchanter.class, "TileEnchanter"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),

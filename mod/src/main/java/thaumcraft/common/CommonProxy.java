@@ -50,6 +50,7 @@ public class CommonProxy implements IGuiHandler {
     public static final int GUI_MOB_MAGNET = 23;
     /** KAMI screens start at 50, as they do in the original's LibGuiIDs. */
     public static final int GUI_ICHOR_POUCH = 50;
+    public static final int GUI_WARP_GATE = 51;
     public final WandManager wandManager = new WandManager();
 
     // Capability-based player data accessors

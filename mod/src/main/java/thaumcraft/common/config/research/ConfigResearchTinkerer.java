@@ -256,8 +256,14 @@ public final class ConfigResearchTinkerer {
                 .setPages(new ResearchPage("0"), infusionPage("IchorAxeAdv"))
                 .registerResearchItem();
 
-        // ICHOR_SWORD_GEM waits on its object: the awakened ichorium sword is
-        // not ported, so there is no recipe for its page to show.
+        new TinkererKamiResearchItem("ICHOR_SWORD_GEM",
+                new AspectList().add(Aspect.AIR, 2).add(Aspect.WEAPON, 1)
+                        .add(Aspect.SOUL, 1).add(Aspect.HUNGER, 1),
+                16, 12, 5, new ItemStack(ConfigItems.itemIchorSwordAdv))
+                .setParents("ICHOR_TOOLS")
+                .setPages(new ResearchPage("0"), infusionPage("IchorSwordAdv"),
+                        new ResearchPage("1"))
+                .registerResearchItem();
 
         new TinkererKamiResearchItem("ICHOR_POUCH",
                 new AspectList().add(Aspect.VOID, 2).add(Aspect.CLOTH, 1)

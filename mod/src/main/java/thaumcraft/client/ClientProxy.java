@@ -1057,6 +1057,10 @@ public class ClientProxy extends CommonProxy {
             ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorShovelAdv, mode,
                     new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorshoveladv_" + mode), "inventory"));
         }
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorSwordAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorswordadv_" + mode), "inventory"));
+        }
         for (Object[] pair : new Object[][]{
                 {ConfigItems.itemBlockTalisman, "blocktalisman"},
                 {ConfigItems.itemCleansingTalisman, "cleansingtalisman"},

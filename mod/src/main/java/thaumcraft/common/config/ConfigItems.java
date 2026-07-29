@@ -93,6 +93,7 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe itemIchorAxe;
     public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel itemIchorShovel;
     public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword itemIchorSword;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSwordAdv itemIchorSwordAdv;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
@@ -472,6 +473,12 @@ public class ConfigItems {
                         .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorShovelAdv"))
                         .setTranslationKey("thaumcraft.kami.ichor_shovel_adv");
         allItems.add(itemIchorShovelAdv);
+
+        itemIchorSwordAdv = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSwordAdv)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSwordAdv()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorSwordAdv"))
+                        .setTranslationKey("thaumcraft.kami.ichor_sword_adv");
+        allItems.add(itemIchorSwordAdv);
 
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))

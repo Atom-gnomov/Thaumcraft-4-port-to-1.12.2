@@ -240,8 +240,15 @@ public class ConfigTinkerer {
      * this port always registers it, which is that flag's default.</p>
      */
     public static void registerScribeRecipes() {
+        // Ungated on purpose. Upstream gates this on INFUSED_INKWELL, but
+        // ItemInfusedInkwell.getResearchItem() returns null there, so no entry
+        // declares that key and the infusion can never match — and the bench
+        // recipe beside it only refills an inkwell you already own, so the
+        // first one is unobtainable in the original. There is no TT entry to
+        // hang it on, and inventing one would be worse; an empty research key
+        // makes InfusionRecipe.matches skip the check entirely.
         ConfigResearch.recipes.put("InfusedInkwell", ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSED_INKWELL", new ItemStack(ConfigItems.itemInfusedInkwell), 2,
+                "", new ItemStack(ConfigItems.itemInfusedInkwell), 2,
                 new AspectList().add(Aspect.VOID, 8).add(Aspect.DARKNESS, 8),
                 new ItemStack(ConfigItems.itemInkwell),
                 new ItemStack[]{
@@ -906,23 +913,30 @@ public class ConfigTinkerer {
      * each tool's {@code getRecipeItem}.
      */
     public static void registerKamiAdvancedToolRecipes() {
-        advTool("IchorPickAdv", ConfigItems.itemIchorPickAdv, ConfigItems.itemIchorPick,
+        advTool("IchorPickAdv", "ICHOR_PICK_GEM", ConfigItems.itemIchorPickAdv, ConfigItems.itemIchorPick,
                 new AspectList().add(Aspect.FIRE, 50).add(Aspect.MINE, 64).add(Aspect.METAL, 32)
                         .add(Aspect.EARTH, 32).add(Aspect.HARVEST, 32).add(Aspect.GREED, 16)
                         .add(Aspect.SENSES, 16),
                 ConfigItems.itemPickElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
 
-        advTool("IchorAxeAdv", ConfigItems.itemIchorAxeAdv, ConfigItems.itemIchorAxe,
+        advTool("IchorAxeAdv", "ICHOR_AXE_GEM", ConfigItems.itemIchorAxeAdv, ConfigItems.itemIchorAxe,
                 new AspectList().add(Aspect.WATER, 50).add(Aspect.MINE, 64).add(Aspect.TOOL, 32)
                         .add(Aspect.TREE, 32).add(Aspect.HARVEST, 32).add(Aspect.CROP, 16)
                         .add(Aspect.SENSES, 16),
                 ConfigItems.itemAxeElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
 
-        advTool("IchorShovelAdv", ConfigItems.itemIchorShovelAdv, ConfigItems.itemIchorShovel,
+        advTool("IchorShovelAdv", "ICHOR_SHOVEL_GEM", ConfigItems.itemIchorShovelAdv, ConfigItems.itemIchorShovel,
                 new AspectList().add(Aspect.EARTH, 50).add(Aspect.MINE, 64).add(Aspect.TOOL, 32)
                         .add(Aspect.EARTH, 32).add(Aspect.HARVEST, 32).add(Aspect.TRAP, 16)
                         .add(Aspect.SENSES, 16),
                 ConfigItems.itemShovelElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
+
+        advTool("IchorSwordAdv", "ICHOR_SWORD_GEM", ConfigItems.itemIchorSwordAdv, ConfigItems.itemIchorSword,
+                new AspectList().add(Aspect.AIR, 50).add(Aspect.HUNGER, 64).add(Aspect.SOUL, 32)
+                        .add(Aspect.WEAPON, 32).add(Aspect.ENERGY, 32).add(Aspect.ORDER, 16)
+                        .add(Aspect.CRYSTAL, 16),
+                ConfigItems.itemSwordElemental, ConfigItems.focusFrost,
+                new ItemStack(Blocks.CACTUS));
     }
 
     /**
@@ -930,11 +944,17 @@ public class ConfigTinkerer {
      * matching elemental tool and focus either side of a themed reagent, three
      * nuggets, a diamond, and ichorcloth to close the ring.
      */
-    private static void advTool(String key, net.minecraft.item.Item result, net.minecraft.item.Item base,
+    /**
+     * Each awakened tool is gated on its own research upstream, not on
+     * Thaumcraft's INFUSION — the single-argument wrapper there makes the
+     * map key the gate as well.
+     */
+    private static void advTool(String key, String research, net.minecraft.item.Item result,
+                                net.minecraft.item.Item base,
                                 AspectList aspects, net.minecraft.item.Item elemental,
                                 net.minecraft.item.Item focus, ItemStack reagent) {
         ConfigResearch.recipes.put(key, ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSION", new ItemStack(result), 15, aspects, new ItemStack(base),
+                research, new ItemStack(result), 15, aspects, new ItemStack(base),
                 new ItemStack[]{
                         new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
                         new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),

@@ -1863,9 +1863,16 @@ public class ThaumicTinkererFociStaticGuardTest {
         assertTrue("the tome is bench work round a Thaumonomicon",
                 rec.contains("\" S \", \"PTP\", \" P \"")
                         && rec.contains("ConfigItems.itemThaumonomicon"));
-        assertTrue("the tools infuse from ordinary ones at instability 2",
-                rec.contains("\"INFUSED_INKWELL\"")
+        // Deliberately ungated since 1.1.30.0: upstream gates this on
+        // INFUSED_INKWELL, but nothing there declares that research, and the
+        // bench recipe beside it only refills an inkwell you already own — so
+        // the first one is unobtainable in the original. An empty key makes
+        // InfusionRecipe.matches skip the check.
+        assertTrue("the tools infuse from ordinary ones at instability 2, behind no research",
+                rec.contains("\"\", new ItemStack(ConfigItems.itemInfusedInkwell), 2,")
                         && rec.contains("add(Aspect.VOID, 8).add(Aspect.DARKNESS, 8)"));
+        assertTrue("and the reason is written down where it is done",
+                rec.contains("Ungated on purpose."));
         assertTrue("and are re-inked with a ring of ink sacs",
                 rec.contains("infusedinkwell_refill"));
         assertTrue("registered at init",

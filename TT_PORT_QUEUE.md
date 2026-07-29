@@ -3,7 +3,7 @@
 (`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,
 перегенерировать после каждого захода.
 
-**Состояние: портировано 70 из 79, осталось 9.**
+**Состояние: портировано 71 из 79, осталось 8.**
 
 В каталоге 84 объектов; 5 из них вычеркнуты как недостижимые и в счёт
 не идут — см. «Вычеркнуто» в конце.
@@ -24,7 +24,6 @@
 | 2 | `ItemBlockFire` | нет рецепта | — | всегда | — | — |
 | 3 | `ItemFocusShadowbeam` | инфузия | 12 | всегда | — | `ItemFocusDeflect`, `ItemKamiResource` |
 | 4 | `ItemFocusXPDrain` | инфузия | 12 | всегда | — | `ItemKamiResource`, `ItemXPTalisman` |
-| 5 | `ItemIchorSwordAdv` | инфузия | 15 | всегда | — | `ItemIchorSword`, `ItemKamiResource` |
 | 6 | `ItemModFocus` | нет рецепта | — | всегда | — | — |
 | 7 | `ItemModKamiFocus` | нет рецепта | — | по конфигу enableKami | — | — |
 | 8 | `ItemSkyPearl` | инфузия | — | всегда | — | `ItemKamiResource` |

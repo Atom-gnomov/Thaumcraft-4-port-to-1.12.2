@@ -26,6 +26,54 @@
 
 ---
 
+## Последний узел: врата + жемчужина + отзыв
+
+Три оставшихся объекта — это **один** узел, порознь не работающий, и он
+заметно крупнее всего, что бралось до него: **12 файлов, ~1400 строк**.
+Ниже разбор, чтобы следующий заход начинался не с нуля.
+
+### Состав в оригинале
+
+| файл | строк | что делает |
+|---|---|---|
+| `common/block/kami/BlockWarpGate.java` | 199 | блок, ПКМ открывает GUI, при сломе высыпает инвентарь |
+| `common/block/tile/kami/TileWarpGate.java` | 237 | `IInventory` на слоты с жемчужинами; телепорт по индексу слота; флаг `locked` в NBT |
+| `common/block/tile/container/kami/ContainerWarpGate.java` | 79 | контейнер под этот инвентарь |
+| `common/item/kami/ItemBlockWarpGate.java` | 69 | `ItemBlock` врат |
+| `client/gui/kami/GuiWarpGate.java` | 68 | экран врат |
+| `client/gui/kami/GuiWarpGateDestinations.java` | 223 | список назначений — основная часть интерфейса |
+| `client/render/block/kami/RenderWarpGate.java` | 77 | рендер блока в инвентаре |
+| `client/render/tile/kami/RenderTileWarpGate.java` | 37 | TESR |
+| `common/network/packet/kami/PacketWarpGateButton.java` | 58 | нажатие кнопки в GUI → сервер |
+| `common/network/packet/kami/PacketWarpGateTeleport.java` | 60 | запрос телепорта → сервер |
+| `common/item/kami/ItemSkyPearl.java` | 164 | хранит x/y/z в NBT; **настраивается только кликом по вратам** |
+| `common/item/kami/foci/ItemFocusRecall.java` | 124 | фокус, переносящий к точке из жемчужины |
+
+### Порядок и зависимости
+
+1. `ItemSkyPearl` — чистое хранилище координат (`getX/getY/getZ` статические,
+   читают NBT). Можно писать первым, но проверить его нечем, пока нет врат.
+2. `TileWarpGate` + `BlockWarpGate` + `ItemBlockWarpGate` — ядро.
+3. Контейнер и оба GUI. `GuiWarpGateDestinations` — самый крупный кусок.
+4. Два пакета. У нас своя сеть (`common/lib/network`), под неё и писать.
+5. Рендер: в 1.7.10 это `LibRenderIDs.idWarpGate` + TESR; в 1.12 блочный
+   рендер — JSON-модель, а TESR остаётся TESR. Часть работы отпадёт.
+6. `ItemFocusRecall` — последним, он читает жемчужину.
+
+### Ловушки, уже известные
+
+- Жемчужина без врат — **мёртвый предмет**: другого способа записать в неё
+  координаты в оригинале нет. Регистрировать её отдельно бессмысленно.
+- Запись `WARP_GATE` в Таумономиконе показывает **две** инфузии: свою и
+  `SKY_PEARL`. Значит обе должны быть в карте рецептов до `ConfigResearch.init`,
+  иначе строгий lookup упадёт при загрузке.
+- `FOCUS_RECALL` висит на `WARP_GATE` как родителе и на `ICHORCLOTH_ROD` как
+  скрытом. Ставить его исследование только вместе с вратами.
+- Ключи брать в `LibResearch`, не из имён классов — на этом уже трижды
+  спотыкались (`LEVITATOR`, `INFUSED_POTIONS`, `TTENCH_*`).
+
+---
+
 ## Вычеркнуто как не имеющее аналога в 1.12 (1.1.32.0)
 
 Три «объекта» очереди были строительными лесами 1.7.10, а не контентом.

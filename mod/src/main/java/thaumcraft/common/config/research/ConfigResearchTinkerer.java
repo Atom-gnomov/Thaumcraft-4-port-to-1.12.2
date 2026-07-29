@@ -40,6 +40,78 @@ public final class ConfigResearchTinkerer {
         registerGaseousLightBranch();
         registerSpellClothBranch();
         registerKamiBranch();
+        registerEnchantmentEntries();
+    }
+
+    /**
+     * The fourteen enchantments the osmotic enchanter can apply. These carry no
+     * recipe — each is one page of prose — but without them the enchanter's
+     * branch simply stops, and the player has no way to learn what the table
+     * can even do.
+     *
+     * <p>Their icons are loose textures rather than items, exactly as upstream
+     * had them; the files are the original's, renamed to this repo's
+     * snake_case convention.</p>
+     */
+    private static void registerEnchantmentEntries() {
+        enchantEntry("TTENCH_ASCENT_BOOST",
+                new AspectList().add(Aspect.AIR, 1).add(Aspect.MOTION, 1).add(Aspect.MAGIC, 2),
+                6, 2, "ascent_boost", "ENCHANTER");
+        enchantEntry("TTENCH_SLOW_FALL",
+                new AspectList().add(Aspect.AIR, 1).add(Aspect.MOTION, 1).add(Aspect.MAGIC, 2),
+                7, 3, "slow_fall", "ENCHANTER");
+        enchantEntry("TTENCH_AUTO_SMELT",
+                new AspectList().add(Aspect.FIRE, 1).add(Aspect.ENTROPY, 1).add(Aspect.MAGIC, 2),
+                7, 5, "auto_smelt", "ENCHANTER");
+        enchantEntry("TTENCH_DESINTEGRATE",
+                new AspectList().add(Aspect.ENTROPY, 1).add(Aspect.VOID, 1).add(Aspect.MAGIC, 2),
+                6, 6, "desintegrate", "ENCHANTER");
+        enchantEntry("TTENCH_QUICK_DRAW",
+                new AspectList().add(Aspect.SENSES, 1).add(Aspect.WEAPON, 1).add(Aspect.MAGIC, 2),
+                4, 6, "quick_draw", "ENCHANTER");
+        enchantEntry("TTENCH_VAMPIRISM",
+                new AspectList().add(Aspect.HUNGER, 1).add(Aspect.WEAPON, 1).add(Aspect.MAGIC, 2),
+                3, 5, "vampirism", "ENCHANTER");
+        enchantEntry("TTENCH_FOCUSED",
+                new AspectList().add(Aspect.ORDER, 1).add(Aspect.WEAPON, 1).add(Aspect.MAGIC, 2),
+                2, 7, "focused_strikes", "TTENCH_VAMPIRISM");
+        enchantEntry("TTENCH_DISPERSED",
+                new AspectList().add(Aspect.ENTROPY, 1).add(Aspect.WEAPON, 1).add(Aspect.MAGIC, 2),
+                1, 6, "dispersed_strikes", "TTENCH_VAMPIRISM");
+        enchantEntry("TTENCH_FINAL",
+                new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.ORDER, 3)
+                        .add(Aspect.WEAPON, 3).add(Aspect.MAGIC, 2),
+                0, 8, "final_strike", "TTENCH_FOCUSED", "TTENCH_DISPERSED");
+        enchantEntry("TTENCH_POUNCE",
+                new AspectList().add(Aspect.AIR, 3).add(Aspect.ORDER, 3)
+                        .add(Aspect.ARMOR, 3).add(Aspect.MAGIC, 2),
+                7, 0, "pounce", "TTENCH_ASCENT_BOOST");
+        enchantEntry("TTENCH_SHATTER",
+                new AspectList().add(Aspect.EARTH, 3).add(Aspect.ENTROPY, 3)
+                        .add(Aspect.TOOL, 1).add(Aspect.MAGIC, 2),
+                5, 8, "shatter", "TTENCH_DESINTEGRATE");
+        enchantEntry("TTENCH_SHOCKWAVE",
+                new AspectList().add(Aspect.AIR, 3).add(Aspect.ENTROPY, 3)
+                        .add(Aspect.ARMOR, 1).add(Aspect.MAGIC, 2),
+                9, 2, "shockwave", "TTENCH_SLOW_FALL");
+        enchantEntry("TTENCH_TUNNEL",
+                new AspectList().add(Aspect.EARTH, 3).add(Aspect.ORDER, 3)
+                        .add(Aspect.TOOL, 1).add(Aspect.MAGIC, 2),
+                9, 6, "tunnel", "TTENCH_AUTO_SMELT");
+        enchantEntry("TTENCH_VALIANCE",
+                new AspectList().add(Aspect.WEAPON, 3).add(Aspect.HEAL, 3).add(Aspect.MAGIC, 2),
+                1, 4, "valiance", "TTENCH_VAMPIRISM");
+    }
+
+    /** All fourteen are built the same: complexity 2, one text page, secondary. */
+    private static void enchantEntry(String key, AspectList tags, int col, int row,
+                                     String texture, String... parents) {
+        new TinkererResearchItem(key, tags, col, row, 2,
+                new ResourceLocation("thaumcraft", "textures/enchants/" + texture + ".png"))
+                .setParents(parents)
+                .setPages(new ResearchPage("0"))
+                .setSecondary()
+                .registerResearchItem();
     }
 
     /**

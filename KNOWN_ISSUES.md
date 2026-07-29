@@ -105,15 +105,21 @@ SPELL_CLOTH → ENCHANTER                                                  го�
 PERIPHERALS → ASPECT_ANALYZER, GOLEMCONNECTOR
 ```
 
-Оба оставшихся корня перенесены в 1.1.27.0. Дальше — только ярус KAMI, у
-которого сначала должен появиться свой гейт (следующий пункт), и 14 записей
-`ENCHANT_*`: рецептов за ними нет, но без них ветка чарователя обрывается.
-Иконки у них — `ResourceLocation`, а не предмет, то есть нужны текстуры.
+Ветка перенесена целиком: фокусы (1.1.25.0), ствол тёмного кварца (1.1.26.0),
+газы и заклинательная ткань (1.1.27.0), ярус KAMI (1.1.28.0), четырнадцать
+записей зачарований (1.1.29.0). Не поставлены только те, у кого нет объекта:
+`ICHOR_SWORD_GEM`, `WARP_GATE`, `SKY_PEARL`, три фокуса KAMI, `REMOTE_PLACER`,
+и CC-зависимые `PERIPHERALS`/`ASPECT_ANALYZER`/`GOLEMCONNECTOR`.
 
 Два замечания по именам, чтобы не повторять чужие ошибки:
 
-- **Ключ ≠ имя класса.** `LibResearch.KEY_MOBILIZER` — это строка
-  `"LEVITATOR"`. Ключ всегда брать из `LibResearch`, а не из названия класса.
+- **Ключ ≠ имя класса и ≠ имя константы.** `LibResearch.KEY_MOBILIZER` — это
+  строка `"LEVITATOR"`; `KEY_POTIONS` — `"INFUSED_POTIONS"`; все четырнадцать
+  `KEY_ENCHANT_*` — это `"TTENCH_*"`, причём три из них укорочены:
+  `KEY_ENCHANT_FOCUSED_STRIKE` → `"TTENCH_FOCUSED"`,
+  `KEY_ENCHANT_DISPERSED_STRIKE` → `"TTENCH_DISPERSED"`,
+  `KEY_ENCHANT_FINAL_STRIKE` → `"TTENCH_FINAL"`. Ключ всегда читать в
+  `LibResearch`, а не выводить из имени класса или константы.
 - **`REMOTE_PLACER` пока пропущен**: сам объект (`BlockRPlacer`) в порт не
   перенесён, а запись без рецепта упала бы на строгом lookup. Его исследование
   ставить одновременно с блоком.

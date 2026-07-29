@@ -329,6 +329,52 @@ public class TinkererResearchStaticGuardTest {
     }
 
     /**
+     * The fourteen enchantment entries. Their keys are TTENCH_*, and three of
+     * them are shortened — TTENCH_FOCUSED, TTENCH_DISPERSED, TTENCH_FINAL —
+     * where the constant names say STRIKE. Guessing from the constant name
+     * gives an entry whose strings never resolve.
+     */
+    @Test
+    public void enchantmentEntriesUseTheOriginalsKeys() throws IOException {
+        String src = normalize(source());
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String ru = read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang");
+        assertTrue("all fourteen are built the same way", src.contains(
+                "new TinkererResearchItem(key, tags, col, row, 2,"
+                        + " new ResourceLocation(\"thaumcraft\", \"textures/enchants/\" + texture + \".png\"))"
+                        + ".setParents(parents).setPages(new ResearchPage(\"0\")).setSecondary()"));
+        assertTrue("the strike trio keep their shortened keys",
+                src.contains("enchantEntry(\"TTENCH_FOCUSED\",")
+                        && src.contains("enchantEntry(\"TTENCH_DISPERSED\",")
+                        && src.contains("enchantEntry(\"TTENCH_FINAL\","));
+        assertTrue("the final strike needs both of its parents", src.contains(
+                "0, 8, \"final_strike\", \"TTENCH_FOCUSED\", \"TTENCH_DISPERSED\")"));
+        assertTrue("six hang straight off the enchanter", src.contains(
+                "6, 2, \"ascent_boost\", \"ENCHANTER\")")
+                && src.contains("3, 5, \"vampirism\", \"ENCHANTER\")"));
+        String[][] entries = {
+                {"TTENCH_ASCENT_BOOST", "ascent_boost"}, {"TTENCH_SLOW_FALL", "slow_fall"},
+                {"TTENCH_AUTO_SMELT", "auto_smelt"}, {"TTENCH_DESINTEGRATE", "desintegrate"},
+                {"TTENCH_QUICK_DRAW", "quick_draw"}, {"TTENCH_VAMPIRISM", "vampirism"},
+                {"TTENCH_FOCUSED", "focused_strikes"}, {"TTENCH_DISPERSED", "dispersed_strikes"},
+                {"TTENCH_FINAL", "final_strike"}, {"TTENCH_POUNCE", "pounce"},
+                {"TTENCH_SHATTER", "shatter"}, {"TTENCH_SHOCKWAVE", "shockwave"},
+                {"TTENCH_TUNNEL", "tunnel"}, {"TTENCH_VALIANCE", "valiance"},
+        };
+        for (String[] entry : entries) {
+            assertTrue("entry for " + entry[0], src.contains("enchantEntry(\"" + entry[0] + "\","));
+            assertTrue("icon ships for " + entry[0], Files.exists(
+                    Paths.get("src/main/resources/assets/thaumcraft/textures/enchants/"
+                            + entry[1] + ".png")));
+            assertTrue("en strings for " + entry[0],
+                    en.contains("ttresearch.name." + entry[0] + "=")
+                            && en.contains("ttresearch.page." + entry[0] + ".0="));
+            assertTrue("ru strings for " + entry[0],
+                    ru.contains("ttresearch.name." + entry[0] + "="));
+        }
+    }
+
+    /**
      * The KAMI class <em>is</em> the tier's gate: concealed on construction,
      * and on setPages it sweeps every other research in the book into its own
      * hidden parents. Lose that sweep and ichorium tools become available to a

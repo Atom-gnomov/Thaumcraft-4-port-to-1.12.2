@@ -30,6 +30,12 @@ public class TinkererResearchItem extends ResearchItem {
         super(key, ConfigResearchTinkerer.CATEGORY, tags, col, row, complexity, icon);
     }
 
+    /** For entries whose icon is a loose texture rather than an item. */
+    public TinkererResearchItem(String key, AspectList tags, int col, int row, int complexity,
+                                net.minecraft.util.ResourceLocation icon) {
+        super(key, ConfigResearchTinkerer.CATEGORY, tags, col, row, complexity, icon);
+    }
+
     @Override
     public String getName() {
         return I18n.translateToLocal("ttresearch.name." + this.key);

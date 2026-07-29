@@ -709,6 +709,46 @@ public class ConfigTinkerer {
      * {@code DimensionalShardDropHandler}).
      */
     public static void registerKamiRecipes() {
+        // WARP_GATE: the dislocator taught to hold a destination.
+        ConfigResearch.recipes.put("WarpGate", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARP_GATE", new ItemStack(ConfigBlocks.blockWarpGate), 8,
+                new AspectList().add(Aspect.TRAVEL, 64).add(Aspect.ELDRITCH, 32)
+                        .add(Aspect.MECHANISM, 32).add(Aspect.FLIGHT, 32),
+                new ItemStack(ConfigBlocks.blockTransvectorDislocator),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.ENDER_EYE),
+                        new ItemStack(Blocks.OBSIDIAN),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
+                        new ItemStack(Blocks.OBSIDIAN),
+                        new ItemStack(Items.ENDER_EYE)}));
+
+        // SKY_PEARL: two at a time, gated behind the gate that addresses them.
+        ConfigResearch.recipes.put("SkyPearl", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARP_GATE", new ItemStack(ConfigItems.itemSkyPearl, 2), 6,
+                new AspectList().add(Aspect.TRAVEL, 32).add(Aspect.ELDRITCH, 32)
+                        .add(Aspect.FLIGHT, 32).add(Aspect.AIR, 16),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, 7),
+                        new ItemStack(Blocks.LAPIS_BLOCK),
+                        new ItemStack(Items.DIAMOND)}));
+
+        // FOCUS_RECALL: a pearl, a mirror and a portable hole.
+        ConfigResearch.recipes.put("FocusRecall", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_RECALL", new ItemStack(ConfigItems.focusRecall), 10,
+                new AspectList().add(Aspect.TRAVEL, 100).add(Aspect.ELDRITCH, 64)
+                        .add(Aspect.MAGIC, 50),
+                new ItemStack(ConfigItems.itemSkyPearl),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.ENDER_PEARL),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigBlocks.blockMirror),
+                        new ItemStack(ConfigItems.focusPortableHole)}));
+
         // FOCUS_SHADOWBEAM: the shock focus turned on the dark.
         ConfigResearch.recipes.put("FocusShadowbeam", ThaumcraftApi.addInfusionCraftingRecipe(
                 "FOCUS_SHADOWBEAM", new ItemStack(ConfigItems.focusShadowbeam), 12,

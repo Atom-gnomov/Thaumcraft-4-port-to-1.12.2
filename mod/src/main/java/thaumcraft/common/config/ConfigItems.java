@@ -78,6 +78,7 @@ public class ConfigItems {
     public static FocusXpDrain focusXpDrain;
     public static FocusShadowbeam focusShadowbeam;
     public static thaumcraft.common.items.tinkerer.kami.ItemSkyPearl itemSkyPearl;
+    public static FocusRecall focusRecall;
     public static FocusTelekinesis focusTelekinesis;
     public static FocusFlight focusFlight;
     public static FocusHeal focusHeal;
@@ -395,6 +396,12 @@ public class ConfigItems {
                         .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SkyPearl"))
                         .setTranslationKey("thaumcraft.kami.sky_pearl");
         allItems.add(itemSkyPearl);
+
+        focusRecall = (FocusRecall) new FocusRecall()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusRecall"))
+                .setTranslationKey("thaumcraft.kami.focus_recall")
+                .setCreativeTab(tab);
+        allItems.add(focusRecall);
 
         focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))

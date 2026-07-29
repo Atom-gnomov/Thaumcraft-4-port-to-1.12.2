@@ -265,6 +265,23 @@ public final class ConfigResearchTinkerer {
                         new ResearchPage("1"))
                 .registerResearchItem();
 
+        new TinkererKamiResearchItem("WARP_GATE",
+                new AspectList().add(Aspect.TRAVEL, 2).add(Aspect.ELDRITCH, 1)
+                        .add(Aspect.FLIGHT, 1).add(Aspect.MECHANISM, 1),
+                19, 6, 5, new ItemStack(ConfigBlocks.blockWarpGate))
+                .setParents("ICHORCLOTH_CHEST_GEM").setParentsHidden("ICHORCLOTH_BOOTS_GEM")
+                .setPages(new ResearchPage("0"), infusionPage("WarpGate"),
+                        new ResearchPage("1"), infusionPage("SkyPearl"))
+                .registerResearchItem();
+
+        new TinkererKamiResearchItem("FOCUS_RECALL",
+                new AspectList().add(Aspect.TRAVEL, 2).add(Aspect.ELDRITCH, 1)
+                        .add(Aspect.FLIGHT, 1).add(Aspect.MAGIC, 1),
+                20, 8, 5, new ItemStack(ConfigItems.focusRecall))
+                .setParents("WARP_GATE").setParentsHidden("ICHORCLOTH_ROD")
+                .setPages(new ResearchPage("0"), infusionPage("FocusRecall"))
+                .registerResearchItem();
+
         new TinkererKamiResearchItem("FOCUS_SHADOWBEAM",
                 new AspectList().add(Aspect.DARKNESS, 2).add(Aspect.MAGIC, 1)
                         .add(Aspect.ELDRITCH, 1).add(Aspect.TAINT, 1),

@@ -24,6 +24,7 @@ import thaumcraft.common.lib.network.misc.PacketBiomeChange;
 import thaumcraft.common.lib.network.misc.PacketBoreDig;
 import thaumcraft.common.lib.network.misc.PacketConfig;
 import thaumcraft.common.lib.network.misc.PacketFlyToServer;
+import thaumcraft.common.lib.network.tinkerer.PacketWarpGateLock;
 import thaumcraft.common.lib.network.misc.PacketFocusChangeToServer;
 import thaumcraft.common.lib.network.misc.PacketItemKeyToServer;
 import thaumcraft.common.lib.network.misc.PacketMiscEvent;
@@ -95,6 +96,9 @@ public class PacketHandler {
         register(PacketFXVisDrain.class, idx++, Side.CLIENT);
         register(PacketFXBeamPulse.class, idx++, Side.CLIENT);
         register(PacketFXBeamPulseGolemBoss.class, idx++, Side.CLIENT);
+        // Appended, never inserted: inserting would shift every discriminator
+        // after it and break the protocol for existing clients.
+        register(PacketWarpGateLock.class, idx++, Side.SERVER);
         if (idx != REFERENCE_PACKET_COUNT) {
             throw new IllegalStateException("Thaumcraft packet discriminator table changed: expected " + REFERENCE_PACKET_COUNT + " entries, got " + idx);
         }

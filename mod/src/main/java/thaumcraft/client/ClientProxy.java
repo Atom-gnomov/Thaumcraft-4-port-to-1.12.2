@@ -1408,6 +1408,14 @@ public class ClientProxy extends CommonProxy {
                                 (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
                         : null;
             }
+            case GUI_WARP_GATE: {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.kami.TileWarpGate
+                        ? new thaumcraft.client.gui.tinkerer.GuiWarpGate(
+                                (thaumcraft.common.tiles.tinkerer.kami.TileWarpGate) tile, player.inventory)
+                        : null;
+            }
             case GUI_ICHOR_POUCH:
                 return new thaumcraft.client.gui.GuiIchorPouch(player.inventory, world);
             case GUI_ENCHANTER:

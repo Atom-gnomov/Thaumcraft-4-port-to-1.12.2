@@ -127,6 +127,13 @@ public class CommonProxy implements IGuiHandler {
                                 (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
                         : null;
             }
+            case GUI_WARP_GATE: {
+                TileEntity tile = world.getTileEntity(pos);
+                return tile instanceof thaumcraft.common.tiles.tinkerer.kami.TileWarpGate
+                        ? new thaumcraft.common.container.tinkerer.ContainerWarpGate(
+                                (thaumcraft.common.tiles.tinkerer.kami.TileWarpGate) tile, player.inventory)
+                        : null;
+            }
             case GUI_ICHOR_POUCH:
                 return new thaumcraft.common.container.ContainerIchorPouch(player.inventory, world);
             case GUI_THAUMONOMICON: return null;

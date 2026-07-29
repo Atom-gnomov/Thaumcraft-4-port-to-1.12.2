@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Imbued Grain — ported from Thaumic Tinkerer's {@code ItemInfusedGrain}
@@ -20,7 +20,7 @@ public class ItemInfusedGrain extends Item {
     public ItemInfusedGrain() {
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     public PrimalCrop getCrop(ItemStack stack) {

@@ -21,7 +21,7 @@ import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.nodes.IRevealer;
 import thaumcraft.common.config.ConfigItems;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Helmet of Revealing — ported from Thaumic Tinkerer's
@@ -37,7 +37,7 @@ public class ItemRevealingHelm extends ItemArmor implements IRepairable, IReveal
         // The original's super(armorMatThaumium, 2, 0) — render index 2, head slot.
         super(ThaumcraftApi.armorMatThaumium, 2, EntityEquipmentSlot.HEAD);
         this.setMaxDamage(500);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

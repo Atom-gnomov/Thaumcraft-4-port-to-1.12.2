@@ -17,7 +17,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 import thaumcraft.common.lib.tinkerer.ModPotionsTinkerer;
 
 /**
@@ -34,7 +34,7 @@ public class ItemInfusedPotion extends Item {
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     public PrimalCrop getCrop(ItemStack stack) {

@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.common.config.ConfigBlocks;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * The sky pearl — the port of Thaumic Tinkerer's {@code ItemSkyPearl}.
@@ -46,7 +46,7 @@ public class ItemSkyPearl extends Item {
     public ItemSkyPearl() {
         super();
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

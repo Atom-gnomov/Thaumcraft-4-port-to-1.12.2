@@ -4,7 +4,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemAxe;
 import thaumcraft.common.items.tinkerer.kami.KamiMaterials;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Ichor axe — ported from Thaumic Tinkerer's {@code ItemIchorAxe}
@@ -25,7 +25,7 @@ public class ItemIchorAxe extends ItemAxe {
      */
     public ItemIchorAxe() {
         super(KamiMaterials.ICHOR, 8.0F, -3.0F);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setHarvestLevel("axe", 4);
     }
 

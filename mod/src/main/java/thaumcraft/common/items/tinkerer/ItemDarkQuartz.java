@@ -1,7 +1,7 @@
 package thaumcraft.common.items.tinkerer;
 
 import net.minecraft.item.Item;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Smokey Quartz — ported from Thaumic Tinkerer's {@code ItemDarkQuartz}
@@ -12,6 +12,6 @@ import thaumcraft.common.lib.CreativeTabThaumcraft;
 public class ItemDarkQuartz extends Item {
 
     public ItemDarkQuartz() {
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 }

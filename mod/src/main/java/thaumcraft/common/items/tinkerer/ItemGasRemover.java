@@ -12,7 +12,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.blocks.tinkerer.gas.BlockGas;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 import thaumcraft.common.lib.TCSounds;
 
 /**
@@ -30,7 +30,7 @@ public class ItemGasRemover extends Item {
 
     public ItemGasRemover() {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

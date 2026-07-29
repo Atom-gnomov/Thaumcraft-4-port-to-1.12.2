@@ -4,7 +4,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemPickaxe;
 import thaumcraft.common.items.tinkerer.kami.KamiMaterials;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Ichor pickaxe — ported from Thaumic Tinkerer's {@code ItemIchorPick}
@@ -17,7 +17,7 @@ public class ItemIchorPick extends ItemPickaxe {
 
     public ItemIchorPick() {
         super(KamiMaterials.ICHOR);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setHarvestLevel("pickaxe", 4);
     }
 

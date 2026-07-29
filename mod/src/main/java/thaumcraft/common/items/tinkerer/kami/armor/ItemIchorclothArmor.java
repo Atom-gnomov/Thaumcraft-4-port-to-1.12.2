@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.api.IVisDiscountGear;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.items.tinkerer.kami.KamiMaterials;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Ichorcloth armour — ported from Thaumic Tinkerer's
@@ -34,7 +34,7 @@ public class ItemIchorclothArmor extends ItemArmor implements IVisDiscountGear, 
 
     public ItemIchorclothArmor(EntityEquipmentSlot slot) {
         super(KamiMaterials.ICHORCLOTH, 0, slot);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     /** Legs take the second sheet, everything else the first — as upstream. */

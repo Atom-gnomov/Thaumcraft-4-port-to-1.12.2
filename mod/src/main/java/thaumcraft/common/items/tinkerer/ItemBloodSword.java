@@ -23,7 +23,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import thaumcraft.api.IRepairable;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 import thaumcraft.common.lib.tinkerer.MobAspects;
 
 /**
@@ -48,7 +48,7 @@ public class ItemBloodSword extends ItemSword implements IRepairable {
     public ItemBloodSword(ToolMaterial material) {
         super(material);
         MinecraftForge.EVENT_BUS.register(this);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     public static boolean isHarvesting(ItemStack stack) {

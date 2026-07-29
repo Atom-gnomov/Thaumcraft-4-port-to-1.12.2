@@ -2001,3 +2001,4 @@ ttmisc.noTeleport=The Celestial Gateway in the destination does not accept incom
 item.thaumcraft.kami.sky_pearl.name=Celestial Pearl
 item.thaumcraft.kami.focus_recall.name=Wand Focus: Celestial Recall
 tile.thaumcraft.kami.warp_gate.name=Celestial Gateway
+itemGroup.thaumictinkerer=Thaumic Tinkerer

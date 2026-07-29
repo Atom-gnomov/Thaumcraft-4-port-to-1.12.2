@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
 import thaumcraft.common.config.ConfigBlocks;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Infused Seeds — ported from Thaumic Tinkerer's {@code ItemInfusedSeeds}
@@ -31,7 +31,7 @@ public class ItemInfusedSeeds extends Item implements IPlantable {
     public ItemInfusedSeeds() {
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     public PrimalCrop getCrop(ItemStack stack) {

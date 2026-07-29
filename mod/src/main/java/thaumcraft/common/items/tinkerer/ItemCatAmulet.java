@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Cat's Amulet — ported 1:1 from Thaumic Tinkerer's {@code ItemCatAmulet}
@@ -34,7 +34,7 @@ public class ItemCatAmulet extends Item implements IBauble {
 
     public ItemCatAmulet() {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

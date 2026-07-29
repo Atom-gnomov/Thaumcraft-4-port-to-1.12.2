@@ -19,7 +19,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.tinkerer.TileTransvector;
 import thaumcraft.common.tiles.tinkerer.TileTransvectorInterface;
@@ -39,7 +39,7 @@ public class ItemTransvectorConnector extends Item {
 
     public ItemTransvectorConnector() {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

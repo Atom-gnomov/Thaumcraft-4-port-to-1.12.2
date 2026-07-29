@@ -376,19 +376,19 @@ public class ConfigItems {
         focusSmelt = (FocusSmelt) new FocusSmelt()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusSmelt"))
                 .setTranslationKey("thaumcraft.focus_smelt")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusSmelt);
 
         focusXpDrain = (FocusXpDrain) new FocusXpDrain()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusXPDrain"))
                 .setTranslationKey("thaumcraft.kami.focus_xp_drain")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusXpDrain);
 
         focusShadowbeam = (FocusShadowbeam) new FocusShadowbeam()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusShadowbeam"))
                 .setTranslationKey("thaumcraft.kami.focus_shadowbeam")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusShadowbeam);
 
         itemSkyPearl = (thaumcraft.common.items.tinkerer.kami.ItemSkyPearl)
@@ -400,43 +400,43 @@ public class ConfigItems {
         focusRecall = (FocusRecall) new FocusRecall()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusRecall"))
                 .setTranslationKey("thaumcraft.kami.focus_recall")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusRecall);
 
         focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))
                 .setTranslationKey("thaumcraft.focus_telekinesis")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusTelekinesis);
 
         focusFlight = (FocusFlight) new FocusFlight()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusFlight"))
                 .setTranslationKey("thaumcraft.focus_flight")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusFlight);
 
         focusHeal = (FocusHeal) new FocusHeal()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusHeal"))
                 .setTranslationKey("thaumcraft.focus_heal")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusHeal);
 
         focusDeflect = (FocusDeflect) new FocusDeflect()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDeflect"))
                 .setTranslationKey("thaumcraft.focus_deflect")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusDeflect);
 
         focusDislocation = (FocusDislocation) new FocusDislocation()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDislocation"))
                 .setTranslationKey("thaumcraft.focus_dislocation")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusDislocation);
 
         focusEnderChest = (FocusEnderChest) new FocusEnderChest()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusEnderChest"))
                 .setTranslationKey("thaumcraft.focus_enderchest")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusEnderChest);
 
         itemPlacementMirror = (ItemPlacementMirror) new ItemPlacementMirror()

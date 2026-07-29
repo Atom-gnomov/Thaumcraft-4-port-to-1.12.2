@@ -12,7 +12,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.blocks.tinkerer.gas.BlockGas;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * A bottled gas — ported from Thaumic Tinkerer's {@code ItemGas}
@@ -33,7 +33,7 @@ public class ItemGas extends Item {
 
     public ItemGas(Block released) {
         this.released = released;
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     public Block getReleased() {

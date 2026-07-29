@@ -16,7 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 import thaumcraft.common.tiles.tinkerer.kami.TileWarpGate;
 
 /**
@@ -33,7 +33,7 @@ public class BlockWarpGate extends BlockContainer {
         super(Material.ROCK);
         setHardness(5.0F);
         setResistance(2000.0F);
-        setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

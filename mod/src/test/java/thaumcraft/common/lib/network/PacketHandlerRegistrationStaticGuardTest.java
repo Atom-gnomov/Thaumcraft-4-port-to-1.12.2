@@ -82,7 +82,8 @@ public class PacketHandlerRegistrationStaticGuardTest {
                 "PacketFXVisDrain:CLIENT",
                 "PacketFXBeamPulse:CLIENT",
                 "PacketFXBeamPulseGolemBoss:CLIENT",
-                "PacketWarpGateLock:SERVER");
+                "PacketWarpGateLock:SERVER",
+                "PacketWarpGateTeleport:SERVER");
 
         assertEquals("PacketHandler registration sequence must stay reference-aligned",
                 expected, actual);

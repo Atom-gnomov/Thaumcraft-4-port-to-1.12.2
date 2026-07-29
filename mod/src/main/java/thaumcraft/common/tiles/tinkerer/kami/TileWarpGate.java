@@ -42,8 +42,26 @@ public class TileWarpGate extends TileEntity implements IInventory, ITickable {
         }
     }
 
+    /**
+     * Standing on the gate and sneaking opens the destination map. The check
+     * against the client player is what keeps this from firing server-side —
+     * upstream relies on the same comparison.
+     */
     @Override
     public void update() {
+        java.util.List<EntityPlayer> players = this.world.getEntitiesWithinAABB(EntityPlayer.class,
+                new net.minecraft.util.math.AxisAlignedBB(
+                        this.pos.getX(), this.pos.getY() + 1, this.pos.getZ(),
+                        this.pos.getX() + 1, this.pos.getY() + 1.5D, this.pos.getZ() + 1));
+        EntityPlayer clientPlayer = thaumcraft.common.Thaumcraft.proxy.getClientPlayer();
+        for (EntityPlayer player : players) {
+            if (player != null && player == clientPlayer && player.isSneaking()) {
+                player.openGui(thaumcraft.common.Thaumcraft.instance,
+                        thaumcraft.common.CommonProxy.GUI_WARP_GATE_DESTINATIONS,
+                        this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
+                break;
+            }
+        }
         this.teleportedThisTick = false;
     }
 

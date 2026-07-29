@@ -114,4 +114,23 @@ public class FocusXpDrain extends ItemFocusBasic {
     public String getSortingHelper(ItemStack stack) {
         return "XPDRAIN" + super.getSortingHelper(stack);
     }
+
+    // The three below came from the original's ItemModKamiFocus, which this
+    // port has no counterpart for — ItemFocusBasic already does everything
+    // else that base class did, so its values live on the foci themselves.
+
+    @Override
+    public net.minecraft.item.EnumRarity getRarity(ItemStack stack) {
+        return net.minecraft.item.EnumRarity.EPIC;
+    }
+
+    @Override
+    public int getItemEnchantability() {
+        return 5;
+    }
+
+    @Override
+    public ItemFocusBasic.WandFocusAnimation getAnimation(ItemStack focusstack) {
+        return ItemFocusBasic.WandFocusAnimation.WAVE;
+    }
 }

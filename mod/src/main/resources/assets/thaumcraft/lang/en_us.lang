@@ -1982,3 +1982,7 @@ ttresearch.lore.FOCUS_XP_DRAIN=Environmentally friendly Vis
 ttresearch.page.FOCUS_XP_DRAIN.0=After creating a wand that can have an insane amount of vis, you got to the conclusion that you need an alternate source of vis.<BR><BR>To that end, you created a focus that draws from your Experience pool, turning it into vis at a fast, but not very efficient rate.
 ttmisc.experience=Experience
 item.thaumcraft.kami.focus_xp_drain.name=Wand Focus: Experience Drain
+ttresearch.name.FOCUS_SHADOWBEAM=Wand Focus: Shadowbeam
+ttresearch.lore.FOCUS_SHADOWBEAM=Guarded by an Old Man
+ttresearch.page.FOCUS_SHADOWBEAM.0=You created a focus that shoots a beam of energy, damaging anything in its path while it's being fired.<BR><BR>The beam has a decent range and will reflect off any blocks it hits as if they were mirrors.
+item.thaumcraft.kami.focus_shadowbeam.name=Wand Focus: Shadowbeam

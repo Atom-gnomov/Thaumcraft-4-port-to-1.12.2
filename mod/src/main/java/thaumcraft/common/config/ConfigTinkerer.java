@@ -709,6 +709,20 @@ public class ConfigTinkerer {
      * {@code DimensionalShardDropHandler}).
      */
     public static void registerKamiRecipes() {
+        // FOCUS_SHADOWBEAM: the shock focus turned on the dark.
+        ConfigResearch.recipes.put("FocusShadowbeam", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_SHADOWBEAM", new ItemStack(ConfigItems.focusShadowbeam), 12,
+                new AspectList().add(Aspect.DARKNESS, 65).add(Aspect.ELDRITCH, 32)
+                        .add(Aspect.MAGIC, 50).add(Aspect.WEAPON, 32),
+                new ItemStack(ConfigItems.focusShock),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.ARROW),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.focusExcavation),
+                        new ItemStack(ConfigItems.focusDeflect),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR)}));
+
         // FOCUS_XP_DRAIN: an ender pearl infused with what the mind can spare.
         ConfigResearch.recipes.put("FocusXpDrain", ThaumcraftApi.addInfusionCraftingRecipe(
                 "FOCUS_XP_DRAIN", new ItemStack(ConfigItems.focusXpDrain), 12,

@@ -1985,3 +1985,7 @@ ttresearch.lore.FOCUS_XP_DRAIN=Гринпис одобряет
 ttresearch.page.FOCUS_XP_DRAIN.0=После создания сумасшедше емкого жезла, Вы стали искать способ его заполнения.<BR><BR>Вы открыли способ конвертирования Вашего опыта в вис. Но этот способ не особо эффективен.
 ttmisc.experience=Опыт
 item.thaumcraft.kami.focus_xp_drain.name=Набалдашник: Высасывание опыта
+ttresearch.name.FOCUS_SHADOWBEAM=Набалдашник: Теневой луч
+ttresearch.lore.FOCUS_SHADOWBEAM=Защищено Скелетроном
+ttresearch.page.FOCUS_SHADOWBEAM.0=Вы создали набалдашник, стреляющий лучом темной энергии, повреждающим все на своем пути.<BR><BR>Луч довольно далеко стреляет и отражается от любых блоков.
+item.thaumcraft.kami.focus_shadowbeam.name=Набалдашник: Теневой луч

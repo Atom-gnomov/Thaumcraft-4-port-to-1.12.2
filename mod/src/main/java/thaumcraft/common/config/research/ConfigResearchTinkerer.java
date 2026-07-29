@@ -265,6 +265,14 @@ public final class ConfigResearchTinkerer {
                         new ResearchPage("1"))
                 .registerResearchItem();
 
+        new TinkererKamiResearchItem("FOCUS_SHADOWBEAM",
+                new AspectList().add(Aspect.DARKNESS, 2).add(Aspect.MAGIC, 1)
+                        .add(Aspect.ELDRITCH, 1).add(Aspect.TAINT, 1),
+                14, 4, 5, new ItemStack(ConfigItems.focusShadowbeam))
+                .setParents("ICHORCLOTH_ROD")
+                .setPages(new ResearchPage("0"), infusionPage("FocusShadowbeam"))
+                .registerResearchItem();
+
         new TinkererKamiResearchItem("FOCUS_XP_DRAIN",
                 new AspectList().add(Aspect.MIND, 2).add(Aspect.MAGIC, 1)
                         .add(Aspect.AURA, 1).add(Aspect.MAN, 1),

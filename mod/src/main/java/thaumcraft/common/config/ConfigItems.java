@@ -76,6 +76,7 @@ public class ConfigItems {
     // Thaumic Tinkerer foci (reimplemented for 1.12.2 from TT by pixlepix/nekosune)
     public static FocusSmelt focusSmelt;
     public static FocusXpDrain focusXpDrain;
+    public static FocusShadowbeam focusShadowbeam;
     public static FocusTelekinesis focusTelekinesis;
     public static FocusFlight focusFlight;
     public static FocusHeal focusHeal;
@@ -381,6 +382,12 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.kami.focus_xp_drain")
                 .setCreativeTab(tab);
         allItems.add(focusXpDrain);
+
+        focusShadowbeam = (FocusShadowbeam) new FocusShadowbeam()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusShadowbeam"))
+                .setTranslationKey("thaumcraft.kami.focus_shadowbeam")
+                .setCreativeTab(tab);
+        allItems.add(focusShadowbeam);
 
         focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))

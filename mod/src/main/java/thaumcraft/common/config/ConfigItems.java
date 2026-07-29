@@ -75,6 +75,7 @@ public class ConfigItems {
     public static FocusPortableHole focusPortableHole;
     // Thaumic Tinkerer foci (reimplemented for 1.12.2 from TT by pixlepix/nekosune)
     public static FocusSmelt focusSmelt;
+    public static FocusXpDrain focusXpDrain;
     public static FocusTelekinesis focusTelekinesis;
     public static FocusFlight focusFlight;
     public static FocusHeal focusHeal;
@@ -374,6 +375,12 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.focus_smelt")
                 .setCreativeTab(tab);
         allItems.add(focusSmelt);
+
+        focusXpDrain = (FocusXpDrain) new FocusXpDrain()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusXPDrain"))
+                .setTranslationKey("thaumcraft.kami.focus_xp_drain")
+                .setCreativeTab(tab);
+        allItems.add(focusXpDrain);
 
         focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))

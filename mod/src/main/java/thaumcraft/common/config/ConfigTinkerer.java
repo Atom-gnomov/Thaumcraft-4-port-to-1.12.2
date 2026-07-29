@@ -709,6 +709,20 @@ public class ConfigTinkerer {
      * {@code DimensionalShardDropHandler}).
      */
     public static void registerKamiRecipes() {
+        // FOCUS_XP_DRAIN: an ender pearl infused with what the mind can spare.
+        ConfigResearch.recipes.put("FocusXpDrain", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_XP_DRAIN", new ItemStack(ConfigItems.focusXpDrain), 12,
+                new AspectList().add(Aspect.MIND, 65).add(Aspect.TAINT, 16)
+                        .add(Aspect.MAGIC, 50).add(Aspect.AURA, 32),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.EXPERIENCE_BOTTLE),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemXpTalisman),
+                        new ItemStack(Blocks.ENCHANTING_TABLE),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR)}));
+
         ItemStack ichor = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR);
         ItemStack cloth = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH);
         ItemStack ichorium = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM);

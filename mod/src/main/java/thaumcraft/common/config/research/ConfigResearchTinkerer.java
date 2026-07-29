@@ -265,6 +265,14 @@ public final class ConfigResearchTinkerer {
                         new ResearchPage("1"))
                 .registerResearchItem();
 
+        new TinkererKamiResearchItem("FOCUS_XP_DRAIN",
+                new AspectList().add(Aspect.MIND, 2).add(Aspect.MAGIC, 1)
+                        .add(Aspect.AURA, 1).add(Aspect.MAN, 1),
+                12, 3, 5, new ItemStack(ConfigItems.focusXpDrain))
+                .setParents("ICHORCLOTH_ROD")
+                .setPages(new ResearchPage("0"), infusionPage("FocusXpDrain"))
+                .registerResearchItem();
+
         new TinkererKamiResearchItem("ICHOR_POUCH",
                 new AspectList().add(Aspect.VOID, 2).add(Aspect.CLOTH, 1)
                         .add(Aspect.ELDRITCH, 1).add(Aspect.MAN, 1),

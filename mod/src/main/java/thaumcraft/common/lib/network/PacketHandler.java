@@ -50,7 +50,7 @@ import thaumcraft.common.lib.network.playerdata.PacketWarpMessage;
 
 public class PacketHandler {
     public static final String CHANNEL = "thaumcraft";
-    public static final int REFERENCE_PACKET_COUNT = 39;
+    public static final int REFERENCE_PACKET_COUNT = 42;
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL);
 
     // Single dispatch handler that calls onMessage() on each packet

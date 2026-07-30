@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,7 @@ import thaumcraft.common.container.ContainerFocalManipulator;
 import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.TileFocalManipulator;
 
-public class GuiFocalManipulator extends GuiContainer {
+public class GuiFocalManipulator extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/gui_wandtable.png");
 
@@ -44,8 +43,8 @@ public class GuiFocalManipulator extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
         this.drawUpgradeTooltip(mouseX, mouseY);
     }

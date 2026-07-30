@@ -3,7 +3,6 @@ package thaumcraft.client.gui;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -31,7 +30,7 @@ import thaumcraft.common.container.ContainerArcaneWorkbench;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.tiles.TileArcaneWorkbench;
 
-public class GuiArcaneWorkbench extends GuiContainer {
+public class GuiArcaneWorkbench extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/gui_arcaneworkbench.png");
     private static final int GHOST_ALPHA = 168;
@@ -209,8 +208,8 @@ public class GuiArcaneWorkbench extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
         this.renderHoveredToolTip(mouseX, mouseY);
     }

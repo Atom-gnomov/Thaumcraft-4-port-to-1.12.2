@@ -1,7 +1,6 @@
 package thaumcraft.client.gui;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -38,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class GuiResearchTable extends GuiContainer {
+public class GuiResearchTable extends GuiContainerScaled {
 
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/guiresearchtable2.png");
     private static final ResourceLocation PARTICLE_TEXTURE = new ResourceLocation("textures/particle/particles.png");
@@ -102,8 +101,8 @@ public class GuiResearchTable extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         this.xSize_lo = (float) mouseX;
         this.ySize_lo = (float) mouseY;
         int gx = (this.width - this.xSize) / 2;

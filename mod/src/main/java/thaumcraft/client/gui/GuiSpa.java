@@ -3,7 +3,6 @@ package thaumcraft.client.gui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -16,7 +15,7 @@ import thaumcraft.common.container.ContainerSpa;
 import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.TileSpa;
 
-public class GuiSpa extends GuiContainer {
+public class GuiSpa extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/gui_spa.png");
 
@@ -69,8 +68,8 @@ public class GuiSpa extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
 
         if (isMouseIn(mouseX, mouseY, 104, 10, 10, 55)) {

@@ -1,7 +1,6 @@
 package thaumcraft.client.gui;
 
 import java.io.IOException;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,7 +13,7 @@ import net.minecraft.util.text.translation.I18n;
 import thaumcraft.common.entities.golems.ContainerTravelingTrunk;
 import thaumcraft.common.entities.golems.EntityTravelingTrunk;
 
-public class GuiTravelingTrunk extends GuiContainer {
+public class GuiTravelingTrunk extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/guitrunkbase.png");
 
@@ -99,8 +98,8 @@ public class GuiTravelingTrunk extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
         this.renderHoveredToolTip(mouseX, mouseY);
     }

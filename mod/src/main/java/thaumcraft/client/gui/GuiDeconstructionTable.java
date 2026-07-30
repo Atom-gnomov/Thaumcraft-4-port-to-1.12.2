@@ -2,7 +2,6 @@ package thaumcraft.client.gui;
 
 import java.io.IOException;
 import java.util.Arrays;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -11,7 +10,7 @@ import thaumcraft.common.container.ContainerDeconstructionTable;
 import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.TileDeconstructionTable;
 
-public class GuiDeconstructionTable extends GuiContainer {
+public class GuiDeconstructionTable extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/gui_decontable.png");
 
@@ -50,8 +49,8 @@ public class GuiDeconstructionTable extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
         Aspect aspect = this.table.aspect;
         if (aspect != null && isMouseIn(mouseX, mouseY, 64, 48, 16, 16)) {

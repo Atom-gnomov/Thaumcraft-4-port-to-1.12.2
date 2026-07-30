@@ -3,7 +3,6 @@ package thaumcraft.client.gui.tinkerer;
 import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
@@ -13,6 +12,7 @@ import thaumcraft.common.container.tinkerer.ContainerWarpGate;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.tinkerer.PacketWarpGateLock;
 import thaumcraft.common.tiles.tinkerer.kami.TileWarpGate;
+import thaumcraft.client.gui.GuiContainerScaled;
 
 /**
  * The warp gate's inventory screen — the port of Thaumic Tinkerer's
@@ -20,7 +20,7 @@ import thaumcraft.common.tiles.tinkerer.kami.TileWarpGate;
  * arrivals.
  */
 @SideOnly(Side.CLIENT)
-public class GuiWarpGate extends GuiContainer {
+public class GuiWarpGate extends GuiContainerScaled {
 
     private static final ResourceLocation GUI =
             new ResourceLocation("thaumcraft", "textures/gui/gui_warp_gate.png");

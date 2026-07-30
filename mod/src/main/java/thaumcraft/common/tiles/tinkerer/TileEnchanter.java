@@ -275,14 +275,16 @@ public class TileEnchanter extends TileTinkerer implements ITickable {
     }
 
     /**
-     * A stack of 2..12 Obsidian Totems capped with Nitor, as in the original.
+     * A stack of 2..12 Obsidian Totems capped with Nitor, as in the original —
+     * which is also what this device's own Thaumonomicon page tells the player
+     * to build.
      *
-     * <p>The metadata here is named rather than written out, because it was
-     * wrong and nothing noticed: this asked for {@code blockCosmeticSolid}
-     * meta 0, which is the Obsidian <em>Tile</em>. The Totem is meta 1 — see
-     * {@link BlockCosmeticSolid#types}, and the enchanter's own infusion recipe,
-     * which spends five of {@code blockCosmeticSolid:1}. A pillar of totems
-     * therefore never validated and {@link #start()} refused every run.</p>
+     * <p>Both metadata values are named rather than written as digits. They are
+     * easy to get wrong from inside the port: {@link BlockCosmeticSolid#types}
+     * had {@code obsidianTile} and {@code obsidianTotem} the wrong way round
+     * until 1.1.42.0, so reading that array to check this code led straight to
+     * the opposite of the truth. The Totem is meta 0 — as the language files and
+     * the original's own side-icon routine both say.</p>
      */
     private boolean isPillar(BlockPos base) {
         int totems = 0;

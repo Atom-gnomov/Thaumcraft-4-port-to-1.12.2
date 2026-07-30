@@ -39,10 +39,20 @@ import thaumcraft.common.tiles.TileWardingStone;
 public class BlockCosmeticSolid extends Block {
 
     /** Index into {@link #types}. The Obsidian Totem — the Osmotic Enchanter's pillars. */
-    public static final int TYPE_OBSIDIAN_TOTEM = 1;
+    public static final int TYPE_OBSIDIAN_TOTEM = 0;
     public static final int TYPE_TRAVEL = 2;
     public static final int TYPE_WARDING = 3;
-    public static final String[] types = {"obsidianTile", "obsidianTotem", "pavingStone", "wardingStone", "thaumiumBlock", "tallowBlock", "pedestalTop", "arcaneStone", "nodeStone", "golemStone", "golemStoneActive", "eldritchStone", "eldritchPattern", "eldritchStone2", "crust", "eldritchPedestal"};
+    /**
+     * Internal names per metadata. Entries 0 and 1 used to be the wrong way
+     * round — the array said {@code obsidianTile} at 0 and {@code obsidianTotem}
+     * at 1, while everything that matters says the opposite: the original's
+     * {@code tile.blockCosmeticSolid.0.name=Obsidian Totem}, this port's own
+     * {@code cosmetic_solid.0.name}, the model files, and the original's
+     * side-icon routine, which gives the totem column treatment to metas 0 and 8.
+     * Nothing reads these strings, so nothing broke — they simply lied to
+     * whoever read them next.
+     */
+    public static final String[] types = {"obsidianTotem", "obsidianTile", "pavingStone", "wardingStone", "thaumiumBlock", "tallowBlock", "pedestalTop", "arcaneStone", "chargedObsidianTotem", "golemStone", "golemStoneActive", "eldritchStone", "eldritchPattern", "eldritchStone2", "crust", "eldritchPedestal"};
     public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 15);
 
     public BlockCosmeticSolid() {

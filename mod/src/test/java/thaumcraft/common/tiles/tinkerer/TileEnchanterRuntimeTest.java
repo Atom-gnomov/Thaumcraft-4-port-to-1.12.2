@@ -1,6 +1,12 @@
 package thaumcraft.common.tiles.tinkerer;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Enchantments;
@@ -17,9 +23,11 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.WorldInfo;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.blocks.BlockAiry;
 import thaumcraft.common.blocks.BlockCosmeticSolid;
 import thaumcraft.common.config.ConfigBlocks;
+import thaumcraft.common.items.wands.ItemWandCasting;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,13 +39,21 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Runs the Osmotic Enchanter's two broken halves for real, rather than reading
- * the source and reasoning about it.
+ * Runs the Osmotic Enchanter for real, rather than reading the source and
+ * reasoning about it.
  *
- * <p>Both faults were of the kind that a static guard can only describe: the
- * pillar check accepted the wrong block, and the tile never told the client
- * anything. Here an actual multiblock is stacked in a fake world and an actual
- * enchantment is queued, so the assertions are about behaviour.</p>
+ * <p>What was broken was the sync: the tile never told the client anything, so
+ * the screen — which reads its queue, its cost and its start button off the
+ * client's copy — was inert. That is asserted here by queuing an actual
+ * enchantment and watching for the push.</p>
+ *
+ * <p>The multiblock was <em>not</em> broken, and these tests exist partly to
+ * say so. Reading the port's {@code BlockCosmeticSolid.types} array suggested
+ * the pillar check wanted the wrong block, because that array had
+ * {@code obsidianTile} and {@code obsidianTotem} the wrong way round. Stacking
+ * a real ring of each settles it: totems count, tiles do not, and the code was
+ * right all along. A guard that only quoted the source could not have told the
+ * difference.</p>
  */
 public class TileEnchanterRuntimeTest {
 
@@ -65,17 +81,16 @@ public class TileEnchanterRuntimeTest {
     }
 
     /**
-     * The regression itself. The check used to ask for {@code blockCosmeticSolid}
-     * meta 0 — the Obsidian <em>Tile</em> — so a correct ring of Totems counted
-     * as nothing and no run could ever start. Both halves are asserted, because
-     * "totems count" and "tiles do not" are different claims and only the pair
-     * pins the right metadata.
+     * The other half of the same claim. "Totems count" and "tiles do not" are
+     * separate statements, and only the pair pins which metadata is which —
+     * which is the whole point here, given that the port's own name table said
+     * the opposite.
      */
     @Test
     public void pillarsOfObsidianTileDoNotCount() {
         TestWorld world = new TestWorld();
         TileEnchanter enchanter = world.placeEnchanter();
-        raisePillars(world, 6, 3, 0);   // obsidianTile
+        raisePillars(world, 6, 3, 1);   // obsidianTile
 
         assertEquals(0, enchanter.countPillars());
     }
@@ -137,7 +152,7 @@ public class TileEnchanterRuntimeTest {
         TestWorld world = new TestWorld();
         TileEnchanter enchanter = world.placeEnchanter();
         enchanter.getInventory().setStackInSlot(TileEnchanter.SLOT_TOOL,
-                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_SWORD));
+                new ItemStack(Items.IRON_SWORD));
         enchanter.setEnchant(Enchantments.SHARPNESS, 0);
 
         assertFalse("no pillars, no run", enchanter.start());
@@ -150,7 +165,78 @@ public class TileEnchanterRuntimeTest {
         assertTrue("and it costs something", enchanter.getTotalCost().size() > 0);
     }
 
+    /**
+     * The whole device, end to end: tool in, wand in, pillars up, queue set,
+     * start pressed — and the sword comes out sharp. Everything above tests one
+     * joint; this tests that the joints are connected.
+     */
+    @Test
+    public void aFullRunEnchantsTheTool() {
+        TestWorld world = new TestWorld();
+        TileEnchanter enchanter = world.placeEnchanter();
+        raisePillars(world, 6, 3, BlockCosmeticSolid.TYPE_OBSIDIAN_TOTEM);
+
+        ItemStack sword = new ItemStack(Items.IRON_SWORD);
+        enchanter.getInventory().setStackInSlot(TileEnchanter.SLOT_TOOL, sword);
+        enchanter.getInventory().setStackInSlot(TileEnchanter.SLOT_WAND, chargedWand());
+        enchanter.setEnchant(Enchantments.SHARPNESS, 0);
+
+        assertTrue(enchanter.start());
+        for (int tick = 0; tick < 200 && enchanter.isWorking(); tick++) {
+            enchanter.update();
+        }
+
+        assertFalse("the run must finish rather than stall", enchanter.isWorking());
+        assertEquals("the sword must come out enchanted", 1,
+                EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS,
+                        enchanter.getInventory().getStackInSlot(TileEnchanter.SLOT_TOOL)));
+        assertTrue("and the queue must be cleared behind it",
+                enchanter.getQueuedEnchantments().isEmpty());
+    }
+
+    /** Paying for a run has to actually cost the wand its vis. */
+    @Test
+    public void theRunIsPaidForOutOfTheWand() {
+        TestWorld world = new TestWorld();
+        TileEnchanter enchanter = world.placeEnchanter();
+        raisePillars(world, 6, 3, BlockCosmeticSolid.TYPE_OBSIDIAN_TOTEM);
+
+        ItemStack wand = chargedWand();
+        int before = ItemWandCasting.getVis(wand, Aspect.ORDER);
+        enchanter.getInventory().setStackInSlot(TileEnchanter.SLOT_TOOL, new ItemStack(Items.IRON_SWORD));
+        enchanter.getInventory().setStackInSlot(TileEnchanter.SLOT_WAND, wand);
+        enchanter.setEnchant(Enchantments.SHARPNESS, 0);
+        enchanter.start();
+        // Read the price before the run: finishing clears it along with the queue.
+        // Sharpness costs Ordo alone — base 10, and level 1 multiplies by 1.2.
+        assertEquals(12, enchanter.getTotalCost().getAmount(Aspect.ORDER));
+
+        for (int tick = 0; tick < 200 && enchanter.isWorking(); tick++) {
+            enchanter.update();
+        }
+
+        assertEquals("twelve points at a hundred units each",
+                before - 1200, ItemWandCasting.getVis(wand, Aspect.ORDER));
+    }
+
     // ---- fixtures ----
+
+    /**
+     * A plain wand filled to the brim with every primal.
+     *
+     * <p>Filled to exactly its capacity, not past it: a rodless wand holds
+     * 10000 units, and {@code addRealVis} silently clamps to that on the first
+     * write. Seeding more than the wand can hold makes the very first point of
+     * vis look as though it cost ninety thousand.</p>
+     */
+    private static ItemStack chargedWand() {
+        ItemWandCasting item = new ItemWandCasting();
+        ItemStack wand = new ItemStack(item);
+        for (Aspect aspect : Aspect.getPrimalAspects()) {
+            item.storeVis(wand, aspect, ItemWandCasting.getMaxVis(wand));
+        }
+        return wand;
+    }
 
     /** Column bases spread around the enchanter, all inside the original's radius of four. */
     private static BlockPos[] pillarBases(int count) {
@@ -217,6 +303,12 @@ public class TileEnchanterRuntimeTest {
         @Override
         public TileEntity getTileEntity(BlockPos pos) {
             return this.tiles.get(pos);
+        }
+
+        /** No listeners here, and no need for any: the fake world is mute. */
+        @Override
+        public void playSound(EntityPlayer player, BlockPos pos, SoundEvent sound,
+                              SoundCategory category, float volume, float pitch) {
         }
 
         @Override

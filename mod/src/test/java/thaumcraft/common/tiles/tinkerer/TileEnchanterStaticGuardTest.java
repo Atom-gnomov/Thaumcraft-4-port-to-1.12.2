@@ -14,22 +14,24 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The Osmotic Enchanter did nothing at all, and it took two independent faults
- * to get there — either one alone would have been enough.
+ * The Osmotic Enchanter did nothing at all, and the cause was the sync.
  *
- * <p><b>The screen was blind.</b> {@code GuiEnchanter} reads the queue, the
- * cost and the paid-so-far straight off the <em>client's</em> copy of the tile.
- * Nothing ever sent that copy an update, so the queue stayed empty no matter
- * what was clicked: no rows appeared, no aspect bars appeared, and the start
- * button — enabled on "the queue is not empty" — could never be pressed.
- * Upstream's {@code TileMod} pushes the tile on every {@code markDirty}; the
- * port lost that override when it flattened the module onto
- * {@code TileThaumcraft}.</p>
+ * <p>{@code GuiEnchanter} reads the queue, the cost and the paid-so-far
+ * straight off the <em>client's</em> copy of the tile. Nothing ever sent that
+ * copy an update, so the queue stayed empty no matter what was clicked: no rows
+ * appeared, no aspect bars appeared, and the start button — enabled on "the
+ * queue is not empty" — could never be pressed. Upstream's {@code TileMod}
+ * pushes the tile on every {@code markDirty}; the port lost that override when
+ * it flattened the module onto {@code TileThaumcraft}.</p>
  *
- * <p><b>The multiblock asked for the wrong block.</b> The pillar check wanted
- * {@code blockCosmeticSolid} meta 0 — the Obsidian <em>Tile</em>. The Totem is
- * meta 1. A correctly built ring of totems counted as zero pillars, so
- * {@code start()} refused every run even once the button became pressable.</p>
+ * <p>The metadata assertions below guard a near miss rather than a fix. The
+ * pillar check reads {@code blockCosmeticSolid} meta 0, and the port's own
+ * {@code types} array called meta 0 the Obsidian <em>Tile</em> — so the check
+ * looked wrong, and was very nearly "corrected" into being wrong. Meta 0 is the
+ * Totem: the original's language file says so, this port's says so, the model
+ * files say so, and the original's side-icon routine gives the totem column
+ * treatment to metas 0 and 8. The array was the thing that was wrong. Both
+ * values are named now, and pinned here against the table they name.</p>
  */
 public class TileEnchanterStaticGuardTest {
 
@@ -102,8 +104,9 @@ public class TileEnchanterStaticGuardTest {
 
     /**
      * Obsidian Totems, not Obsidian Tiles. Pinned through the named constants and
-     * cross-checked against the metadata table itself, so a renumbering of either
-     * block breaks here rather than in the world.
+     * cross-checked against the metadata table itself — the same table that was
+     * mislabelled — so the next reader gets the truth from the assertion instead
+     * of from the array.
      */
     @Test
     public void thePillarsAreBuiltOfObsidianTotemsCappedWithNitor() throws IOException {

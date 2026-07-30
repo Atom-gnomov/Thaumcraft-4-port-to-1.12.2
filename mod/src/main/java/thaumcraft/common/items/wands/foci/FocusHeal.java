@@ -16,6 +16,10 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.WandManager;
 import thaumcraft.common.lib.TCSounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Focus of Healing — ported 1:1 from Thaumic Tinkerer's ItemFocusHeal
@@ -24,6 +28,9 @@ import thaumcraft.common.lib.TCSounds;
  * restored and the vis is actually charged.
  */
 public class FocusHeal extends ItemFocusBasic {
+
+    /** Upstream's {@code hasDepth()} returns true for this focus; ModelWand draws the depth layer on the wand. */
+    private static final String DEPTH_SPRITE = "thaumcraft:items/focus_heal_depth";
 
     /** The original's visUsage: charged on each heal tick. */
     private static final AspectList COST = new AspectList().add(Aspect.EARTH, 45).add(Aspect.WATER, 45);
@@ -39,6 +46,12 @@ public class FocusHeal extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0xFF88AA;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getFocusDepthLayerIcon(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(DEPTH_SPRITE);
     }
 
     @Override

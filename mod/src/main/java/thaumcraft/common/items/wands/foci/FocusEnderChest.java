@@ -11,6 +11,10 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Focus of the Ender Chest — ported from Thaumic Tinkerer's
@@ -18,6 +22,9 @@ import thaumcraft.common.items.wands.ItemWandCasting;
  * chest from anywhere, at the original's cost.
  */
 public class FocusEnderChest extends ItemFocusBasic {
+
+    /** Upstream's {@code hasDepth()} returns true for this focus; ModelWand draws the depth layer on the wand. */
+    private static final String DEPTH_SPRITE = "thaumcraft:items/focus_ender_chest_depth";
 
     /** The original's visUsage. */
     public static final AspectList COST = new AspectList().add(Aspect.ENTROPY, 100).add(Aspect.ORDER, 100);
@@ -30,6 +37,12 @@ public class FocusEnderChest extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0x116655;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getFocusDepthLayerIcon(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(DEPTH_SPRITE);
     }
 
     @Override

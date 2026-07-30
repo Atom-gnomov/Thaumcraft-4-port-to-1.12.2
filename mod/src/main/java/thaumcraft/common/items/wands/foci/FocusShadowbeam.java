@@ -11,6 +11,10 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.config.Config;
 import thaumcraft.common.entities.projectile.EntityShadowbeam;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Wand Focus: Shadowbeam — the port of Thaumic Tinkerer's
@@ -21,6 +25,9 @@ import thaumcraft.common.items.wands.ItemWandCasting;
  * what it strikes. Potency adds to the damage.</p>
  */
 public class FocusShadowbeam extends ItemFocusBasic {
+
+    /** Upstream's {@code hasOrnament()} returns true for this focus; ModelWand draws the ornament on the wand. */
+    private static final String ORNAMENT_SPRITE = "thaumcraft:items/focus_shadowbeam_orn";
 
     private static final AspectList COST = new AspectList()
             .add(Aspect.ORDER, 25).add(Aspect.ENTROPY, 25).add(Aspect.AIR, 15);
@@ -43,6 +50,12 @@ public class FocusShadowbeam extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0x4B0053;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getOrnament(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(ORNAMENT_SPRITE);
     }
 
     @Override

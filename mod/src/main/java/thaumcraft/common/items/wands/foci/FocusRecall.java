@@ -10,6 +10,10 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.items.tinkerer.kami.ItemSkyPearl;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.tiles.tinkerer.kami.TileWarpGate;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Wand Focus: Recall — the port of Thaumic Tinkerer's {@code ItemFocusRecall}.
@@ -20,6 +24,9 @@ import thaumcraft.common.tiles.tinkerer.kami.TileWarpGate;
  * the wand can afford it, and again for real once the jump has happened.</p>
  */
 public class FocusRecall extends ItemFocusBasic {
+
+    /** Upstream's {@code hasDepth()} returns true for this focus; ModelWand draws the depth layer on the wand. */
+    private static final String DEPTH_SPRITE = "thaumcraft:items/focus_recall_depth";
 
     private static final AspectList COST = new AspectList()
             .add(Aspect.AIR, 4000).add(Aspect.EARTH, 4000).add(Aspect.ORDER, 4000);
@@ -37,6 +44,12 @@ public class FocusRecall extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0x9CF8FF;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getFocusDepthLayerIcon(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(DEPTH_SPRITE);
     }
 
     @Override

@@ -21,6 +21,10 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.TCSounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Focus of Dislocation — ported 1:1 from Thaumic Tinkerer's
@@ -30,6 +34,9 @@ import thaumcraft.common.lib.TCSounds;
  * five times as much, and mob spawners twenty times.
  */
 public class FocusDislocation extends ItemFocusBasic {
+
+    /** Upstream's {@code hasOrnament()} returns true for this focus; ModelWand draws the ornament on the wand. */
+    private static final String ORNAMENT_SPRITE = "thaumcraft:items/focus_dislocation_orn";
 
     /** The original's three cost tiers. */
     private static final AspectList COST_PLAIN =
@@ -51,6 +58,12 @@ public class FocusDislocation extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0x9933CC;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getOrnament(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(ORNAMENT_SPRITE);
     }
 
     @Override

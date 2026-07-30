@@ -15,6 +15,10 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.TCSounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Focus of Flight — ported 1:1 from Thaumic Tinkerer's ItemFocusFlight
@@ -23,6 +27,9 @@ import thaumcraft.common.lib.TCSounds;
  * resets the server's floating-tick counter so the flight is not rejected.
  */
 public class FocusFlight extends ItemFocusBasic {
+
+    /** Upstream's {@code hasOrnament()} returns true for this focus; ModelWand draws the ornament on the wand. */
+    private static final String ORNAMENT_SPRITE = "thaumcraft:items/focus_flight_orn";
 
     /** The original's visUsage, charged per cast. */
     private static final AspectList COST = new AspectList().add(Aspect.AIR, 15);
@@ -35,6 +42,12 @@ public class FocusFlight extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0xCCEEFF;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getOrnament(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(ORNAMENT_SPRITE);
     }
 
     @Override

@@ -22,6 +22,10 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.WandManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Focus of Smelting — ported 1:1 from Thaumic Tinkerer's ItemFocusSmelt
@@ -30,6 +34,9 @@ import thaumcraft.common.items.wands.WandManager;
  * its smelted form. Only smelts block into block, as the original did.
  */
 public class FocusSmelt extends ItemFocusBasic {
+
+    /** Upstream's {@code hasOrnament()} returns true for this focus; ModelWand draws the ornament on the wand. */
+    private static final String ORNAMENT_SPRITE = "thaumcraft:items/focus_smelt_orn";
 
     /** The original's visUsage: charged every tick while channelling. */
     private static final AspectList COST = new AspectList().add(Aspect.FIRE, 45).add(Aspect.ENTROPY, 12);
@@ -59,6 +66,12 @@ public class FocusSmelt extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0xFF6600;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getOrnament(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(ORNAMENT_SPRITE);
     }
 
     @Override

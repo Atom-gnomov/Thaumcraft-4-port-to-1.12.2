@@ -42,6 +42,25 @@ public final class ClientModelRegistry {
             new ModelResourceLocation("thaumcraft:blockcosmeticopaque", "type=2");
     static final ResourceLocation FOCUS_PECH_DEPTH_SPRITE =
             new ResourceLocation("thaumcraft", "items/focus_pech_depth");
+    /**
+     * Thaumic Tinkerer's foci wear an extra layer on the wand — Thaumcraft's own
+     * mostly do not, which is why only the pech's depth layer was here before.
+     * Upstream's {@code ItemModFocus.registerIcons} adds an {@code Orn} or a
+     * {@code Depth} sprite for each of these eight, and {@code ModelWand} draws
+     * it. No item model references them, so nothing else stitches them in; drop
+     * a name from this list and {@code getAtlasSprite} silently hands back the
+     * missing-texture placeholder.
+     */
+    static final String[] TINKERER_FOCUS_LAYER_SPRITES = {
+            "items/focus_smelt_orn",
+            "items/focus_flight_orn",
+            "items/focus_telekinesis_orn",
+            "items/focus_dislocation_orn",
+            "items/focus_shadowbeam_orn",
+            "items/focus_heal_depth",
+            "items/focus_ender_chest_depth",
+            "items/focus_recall_depth",
+    };
     static final ResourceLocation FROST_SHARD_SPRITE =
             new ResourceLocation("thaumcraft", "blocks/frostshard");
     static final ResourceLocation PIPE_VALVE_SPRITE =
@@ -70,6 +89,9 @@ public final class ClientModelRegistry {
     @SubscribeEvent
     public static void onTextureStitchPre(TextureStitchEvent.Pre event) {
         event.getMap().registerSprite(FOCUS_PECH_DEPTH_SPRITE);
+        for (String sprite : TINKERER_FOCUS_LAYER_SPRITES) {
+            event.getMap().registerSprite(new ResourceLocation("thaumcraft", sprite));
+        }
         event.getMap().registerSprite(FROST_SHARD_SPRITE);
         event.getMap().registerSprite(PIPE_VALVE_SPRITE);
         event.getMap().registerSprite(ADVANCED_FURNACE_FLUXGOO_SPRITE);

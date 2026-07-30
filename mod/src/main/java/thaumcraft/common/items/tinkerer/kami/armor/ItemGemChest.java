@@ -2,10 +2,16 @@ package thaumcraft.common.items.tinkerer.kami.armor;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import thaumcraft.client.renderers.models.gear.ModelWings;
 import thaumcraft.common.config.Config;
 import thaumcraft.common.items.wands.foci.FocusDeflect;
 
@@ -25,8 +31,27 @@ public class ItemGemChest extends ItemIchorclothArmorAdv {
     /** Players this robe handed flight to, so it can take it back again. */
     private static final Set<String> PLAYERS_WITH_FLIGHT = new HashSet<>();
 
+    /** Built once and reused; a new model per frame is what the original did, but it churns. */
+    @SideOnly(Side.CLIENT)
+    private static ModelWings wings;
+
     public ItemGemChest() {
         super(EntityEquipmentSlot.CHEST);
+    }
+
+    /**
+     * The original's {@code getArmorModel} — this is the whole reason the robe
+     * has wings. Without it the chestplate falls back to the plain biped armour
+     * model and the wings never exist.
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack,
+                                    EntityEquipmentSlot armorSlot, ModelBiped defaultModel) {
+        if (wings == null) {
+            wings = new ModelWings();
+        }
+        return wings;
     }
 
     @Override

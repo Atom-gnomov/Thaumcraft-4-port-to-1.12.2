@@ -73,6 +73,14 @@ public class TileRepairer extends TileThaumcraft implements ITickable, IEssentia
      */
     public int renderTicks;
 
+    /**
+     * Whether essentia was actually drawn on the last attempt. Upstream's
+     * {@code tookLastTick}: the renderer spins one of two markers under the
+     * block from it, so it has to reach the client, which is why it rides in
+     * the custom NBT rather than staying a bare server-side field.
+     */
+    public boolean tookLastTick;
+
     @Override
     public void update() {
         this.renderTicks++;
@@ -84,7 +92,9 @@ public class TileRepairer extends TileThaumcraft implements ITickable, IEssentia
             return;
         }
         int restored = drawEssentia();
+        this.tookLastTick = restored > 0;
         if (restored <= 0) {
+            markDirty();
             return;
         }
         stack.setItemDamage(Math.max(0, stack.getItemDamage() - restored));
@@ -159,12 +169,14 @@ public class TileRepairer extends TileThaumcraft implements ITickable, IEssentia
     public void readCustomNBT(NBTTagCompound nbt) {
         super.readCustomNBT(nbt);
         inventory.deserializeNBT(nbt.getCompoundTag("Inventory"));
+        this.tookLastTick = nbt.getBoolean("tookLastTick");
     }
 
     @Override
     public void writeCustomNBT(NBTTagCompound nbt) {
         super.writeCustomNBT(nbt);
         nbt.setTag("Inventory", inventory.serializeNBT());
+        nbt.setBoolean("tookLastTick", this.tookLastTick);
     }
 
     // ---- Capabilities: the slot is open to hoppers and pipes ----

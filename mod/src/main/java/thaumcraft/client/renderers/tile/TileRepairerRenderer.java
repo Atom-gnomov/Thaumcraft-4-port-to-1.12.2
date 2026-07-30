@@ -2,7 +2,12 @@ package thaumcraft.client.renderers.tile;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
@@ -23,17 +28,21 @@ import thaumcraft.common.tiles.tinkerer.TileRepairer;
  * then whatever is being repaired, then the glass blended over it. Draw the
  * glass with the case and the item ends up behind it.</p>
  *
- * <p><b>Not ported: the repair overlay.</b> Upstream spins a quad under the
- * block showing {@code repair.png} or {@code repairOff.png} depending on
- * {@code tookLastTick} — whether essentia was actually drawn that tick. Our
- * {@link TileRepairer} has no such flag and it is server-side knowledge, so
- * showing it means adding the field and a sync path, not just a draw call.
- * Both textures are copied and waiting; recorded in {@code KNOWN_ISSUES.md}.</p>
+ * <p>A fourth pass spins the status marker under the block, showing one face
+ * while essentia is being drawn and another while it is not. That is
+ * server-side knowledge, so {@link TileRepairer#tookLastTick} rides across in
+ * the tile's custom NBT to reach this.</p>
  */
 public class TileRepairerRenderer extends TileEntitySpecialRenderer<TileRepairer> {
 
     private static final ResourceLocation REPAIRER =
             new ResourceLocation("thaumcraft", "textures/models/repairer.png");
+    private static final ResourceLocation REPAIRING =
+            new ResourceLocation("thaumcraft", "textures/misc/repairer_repair.png");
+    private static final ResourceLocation IDLE =
+            new ResourceLocation("thaumcraft", "textures/misc/repairer_repair_off.png");
+    /** Upstream passes 1.25 as the overlay's size. */
+    private static final double OVERLAY_SIZE = 1.25D;
 
     private final ModelRepairer model = new ModelRepairer();
 
@@ -76,8 +85,43 @@ public class TileRepairerRenderer extends TileEntitySpecialRenderer<TileRepairer
         this.model.renderGlass();
         GlStateManager.disableBlend();
 
+        renderStatusOverlay(repairer, spin);
+
         GlStateManager.popMatrix();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    /**
+     * The spinning marker under the block: one face while essentia is actually
+     * being drawn, another while it is not. Upstream picks between them on
+     * {@code tookLastTick}, which is server-side knowledge — it rides across in
+     * the tile's custom NBT so this can read it.
+     */
+    private void renderStatusOverlay(TileRepairer repairer, float spin) {
+        bindTexture(repairer.tookLastTick ? REPAIRING : IDLE);
+
+        GlStateManager.pushMatrix();
+        GlStateManager.depthMask(false);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.translate(0.0F, -0.525F, 0.0F);
+        GlStateManager.rotate(spin, 0.0F, 1.0F, 0.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+        final double half = OVERLAY_SIZE / 2.0D;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        buffer.pos(-half, 0.0D, half).tex(0.0D, 1.0D).endVertex();
+        buffer.pos(half, 0.0D, half).tex(1.0D, 1.0D).endVertex();
+        buffer.pos(half, 0.0D, -half).tex(1.0D, 0.0D).endVertex();
+        buffer.pos(-half, 0.0D, -half).tex(0.0D, 0.0D).endVertex();
+        tessellator.draw();
+
+        GlStateManager.depthMask(true);
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
     }
 
     /**

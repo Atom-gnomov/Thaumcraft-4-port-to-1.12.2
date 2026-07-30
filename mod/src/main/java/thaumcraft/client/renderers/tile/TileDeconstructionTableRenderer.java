@@ -1,6 +1,8 @@
 package thaumcraft.client.renderers.tile;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -81,9 +83,8 @@ public class TileDeconstructionTableRenderer extends TileEntitySpecialRenderer<T
         // 1.12's equivalent of renderInFrame is the item-frame transform, and the
         // quarter turn lays it down on the table top.
         GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-        net.minecraft.client.Minecraft.getMinecraft().getRenderItem().renderItem(
-                thaumometer, net.minecraft.client.renderer.block.model
-                        .ItemCameraTransforms.TransformType.FIXED);
+        Minecraft.getMinecraft().getRenderItem()
+                .renderItem(thaumometer, ItemCameraTransforms.TransformType.FIXED);
         GlStateManager.popMatrix();
     }
 

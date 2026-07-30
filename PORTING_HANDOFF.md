@@ -29,15 +29,24 @@ Two habits that follow from that:
 
 ## Чем проверено то, что уже сделано (и чем — нет)
 
-Весь guard-набор модуля — **статический**. Тесты читают исходники и ассеты как
-текст: сверяют числа, наличие ветки, имя константы, присутствие файла. Это
-ловит подмену значения и пропавшую текстуру, и ради этого его стоит расширять
-в каждом заходе.
+Почти весь guard-набор модуля — **статический**. Тесты читают исходники и
+ассеты как текст: сверяют числа, наличие ветки, имя константы, присутствие
+файла. Это ловит подмену значения и пропавшую текстуру, и ради этого его стоит
+расширять в каждом заходе.
 
-Чего он не ловит совсем: **работает ли оно в игре**. Ни один объект модуля не
-запускался. Что 5×5 пробуждённой кирки ложится по грани удара, что дощечка
-некромантии действительно собирает существо, что левитатор довозит сундук с
-содержимым — всё это проверено чтением оригинала, а не наблюдением.
+Чего он не ловит совсем: **работает ли оно в игре**. Что 5×5 пробуждённой кирки
+ложится по грани удара, что дощечка некромантии действительно собирает
+существо, что левитатор довозит сундук с содержимым — всё это проверено чтением
+оригинала, а не наблюдением. Владелец с 2026-07-29 играет и присылает отчёты;
+почти каждый отчёт находил то, чего статика не видела.
+
+**Есть и второй способ, и он дешевле, чем кажется.** Поддельный мир заводится
+без запуска игры: `Bootstrap.register()`, `World` с подменёнными
+`getBlockState`/`getTileEntity`/`notifyBlockUpdate`, и тайл можно тикать руками.
+Готовые образцы — `TileEnchanterRuntimeTest` (складывает многоблок и доводит
+зачарование до конца) и `TileAlchemyFurnaceSyncRuntimeTest`. Там, где утверждение
+звучит как «устройство работает», такой тест стоит написать: статический guard
+может лишь пересказать код, который уже сломан.
 
 Насколько это надёжно, показал аудит 1.1.24.0. Пробуждённая броня была
 перенесена «по прочтении» и выглядела полной; повторное чтение тех же классов
@@ -69,25 +78,34 @@ It exists because it was repeatedly broken: recipes, block hardness, item
 names and tool behaviour were filled in "by analogy" instead of being read out
 of the source, and every one of those had to be found and undone later.
 
-**Local copies of both originals live outside the repo and are permanent.**
 Paths are given relative to the repo root, because this work happens on more
 than one machine — never hard-code a home directory into these docs.
 
-| What | Where |
-| --- | --- |
-| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tt-original-1.7.10` |
-| JDK 8 (Temurin 8u492) used to build | `../tools/jdk8u492-b09` |
+**Thaumcraft 4's own original is inside the repo and is always there.** It is
+the strongest evidence available and the least used; several docs sent readers
+hunting for clones instead.
 
-Re-clone TT if it is ever missing (run from the repo root):
+| What | Where | Present |
+| --- | --- | --- |
+| TC4 original, decompiled — 859 classes | `decompiled/thaumcraft/**` | in the repo |
+| TC4 original assets, incl. 22 language files | `assets/assets/thaumcraft/**` | in the repo |
+| JDK 8 (Temurin 8u492) used to build | `../tools/jdk/jdk8u492-b09` | outside, permanent |
+| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tt-original-1.7.10` | **not on this machine** |
+
+The TT clone is genuinely absent — do not plan a lookup around it without
+checking first. Re-clone from the repo root when you need it:
 
 ```bash
 git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer ../tt-original-1.7.10
 ```
 
+Until then, TT values come from [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md),
+which was extracted verbatim while the clone was present.
+
 Build with that JDK rather than the system default, which is a JRE:
 
 ```bash
-cd mod && ./gradlew build -x test -Dorg.gradle.java.home=../../tools/jdk8u492-b09 --console=plain
+cd mod && ./gradlew build -Dorg.gradle.java.home=../tools/jdk/jdk8u492-b09 --console=plain
 ```
 
 ### The loop, every single time
@@ -101,6 +119,13 @@ cd mod && ./gradlew build -x test -Dorg.gradle.java.home=../../tools/jdk8u492-b0
 3. **Transcribe.** Metadata indices, aspect amounts, instability, hardness and
    resistance carry over unchanged — the meta index is the ground truth even
    when the port happens to call that subtype something else.
+
+   That last clause is not hypothetical. `BlockCosmeticSolid.types` had
+   `obsidianTile` at index 0 and `obsidianTotem` at index 1, the wrong way
+   round, from the port's earliest days until 1.1.42.0. Reading it to check the
+   enchanter's pillar code produced a confident, wrong conclusion and very
+   nearly a wrong "fix". A name written inside the port is not evidence about
+   the original. `decompiled/` and the original's language files are.
 4. **Write what you found back into `TT_OBJECT_REFERENCE.md`** if it was not
    already there, so the next pass does not repeat the lookup.
 

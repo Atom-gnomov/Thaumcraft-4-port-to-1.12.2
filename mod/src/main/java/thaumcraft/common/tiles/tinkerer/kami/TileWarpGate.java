@@ -165,6 +165,59 @@ public class TileWarpGate extends TileEntity implements IInventory, ITickable {
         cmp.setTag("Items", list);
     }
 
+    // ---- Client sync ----
+
+    /**
+     * Sends the gate's pearls and lock state to the client.
+     *
+     * <p>Everything the gate shows is drawn from the <em>client's</em> copy of
+     * this tile: the destination map reads the pearls out of
+     * {@link #getStackInSlot} to place its markers, and the lock button reads
+     * {@link #locked}. Without this the client's copy stays as it was
+     * constructed — ten empty slots — so the map is blank however many pearls
+     * are really inside, and there is nothing to click. Upstream syncs it with
+     * {@code getDescriptionPacket}/{@code onDataPacket}; the port carried
+     * {@link #writeCustomNBT} across and never wired it to anything.</p>
+     */
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound cmp = super.getUpdateTag();
+        writeCustomNBT(cmp);
+        return cmp;
+    }
+
+    @Override
+    public net.minecraft.network.play.server.SPacketUpdateTileEntity getUpdatePacket() {
+        return new net.minecraft.network.play.server.SPacketUpdateTileEntity(
+                this.pos, -999, getUpdateTag());
+    }
+
+    @Override
+    public void onDataPacket(net.minecraft.network.NetworkManager manager,
+                             net.minecraft.network.play.server.SPacketUpdateTileEntity packet) {
+        super.onDataPacket(manager, packet);
+        readCustomNBT(packet.getNbtCompound());
+    }
+
+    @Override
+    public void handleUpdateTag(NBTTagCompound cmp) {
+        readCustomNBT(cmp);
+    }
+
+    /**
+     * Pushes the gate's state to every client watching it. Slot changes go
+     * through {@code markDirty}, so this is where the resync has to hang, or
+     * the map would only refresh on chunk reload.
+     */
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        if (this.world != null && !this.world.isRemote) {
+            net.minecraft.block.state.IBlockState state = this.world.getBlockState(this.pos);
+            this.world.notifyBlockUpdate(this.pos, state, state, 3);
+        }
+    }
+
     // ---- IInventory ----
 
     @Override

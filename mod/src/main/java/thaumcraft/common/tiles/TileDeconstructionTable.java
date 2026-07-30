@@ -12,10 +12,14 @@ import thaumcraft.api.TileThaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
+import thaumcraft.common.lib.research.ResearchManager;
 
 public class TileDeconstructionTable
 extends TileThaumcraft
 implements ISidedInventory, ITickable {
+
+    /** The original's forty-tick grind, and what getBreakTimeScaled divides by. */
+    private static final int BREAK_TICKS = 40;
 
     public Aspect aspect;
     public int breaktime;
@@ -160,12 +164,72 @@ implements ISidedInventory, ITickable {
         compound.setInteger("breaktime", this.breaktime);
     }
 
+    /**
+     * Grinds the item in the slot down to one of its primal aspects.
+     *
+     * <p>The original's tick, transcribed: a countdown of forty starts as soon
+     * as there is something breakable and no aspect waiting to be taken, and on
+     * reaching zero one item is consumed. Interrupt it — take the item out, or
+     * leave an aspect uncollected — and the countdown resets rather than
+     * pausing.</p>
+     *
+     * <p>The aspect is not guaranteed. Upstream rolls {@code nextInt(80)}
+     * against the reduced list's vis size, so a poor item usually yields
+     * nothing and is consumed anyway; that is the table's cost, and it is kept
+     * exactly.</p>
+     */
     @Override
     public void update() {
-        // Deconstruction logic will be added later
+        boolean changed = false;
+        if (!this.world.isRemote) {
+            if (this.breaktime == 0 && canBreak()) {
+                this.breaktime = BREAK_TICKS;
+                changed = true;
+            }
+            if (this.breaktime > 0 && canBreak()) {
+                --this.breaktime;
+                if (this.breaktime == 0) {
+                    breakItem();
+                    changed = true;
+                }
+            } else {
+                this.breaktime = 0;
+            }
+        }
+        if (changed) {
+            net.minecraft.block.state.IBlockState state = this.world.getBlockState(this.pos);
+            this.world.notifyBlockUpdate(this.pos, state, state, 3);
+            markDirty();
+        }
+    }
+
+    /** Nothing to grind while the slot is empty, or while an aspect is still waiting. */
+    private boolean canBreak() {
+        if (this.itemStacks[0].isEmpty() || this.aspect != null) {
+            return false;
+        }
+        AspectList tags = ThaumcraftCraftingManager.getObjectTags(this.itemStacks[0]);
+        tags = ThaumcraftCraftingManager.getBonusTags(this.itemStacks[0], tags);
+        return tags != null && tags.size() != 0;
+    }
+
+    public void breakItem() {
+        if (!canBreak()) {
+            return;
+        }
+        AspectList tags = ThaumcraftCraftingManager.getObjectTags(this.itemStacks[0]);
+        tags = ThaumcraftCraftingManager.getBonusTags(this.itemStacks[0], tags);
+        AspectList primals = ResearchManager.reduceToPrimals(tags);
+        if (this.world.rand.nextInt(80) < primals.visSize()) {
+            this.aspect = primals.getAspects()[this.world.rand.nextInt(primals.getAspects().length)];
+        }
+        this.itemStacks[0].shrink(1);
+        if (this.itemStacks[0].getCount() <= 0) {
+            this.itemStacks[0] = ItemStack.EMPTY;
+        }
     }
 
     public int getBreakTimeScaled(int scale) {
-        return this.breaktime * scale / 40;
+        return this.breaktime * scale / BREAK_TICKS;
     }
 }

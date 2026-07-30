@@ -136,6 +136,25 @@ public class TileRepairer extends TileThaumcraft implements ITickable, IEssentia
 
     // ---- NBT ----
 
+    /**
+     * Pushes the slot to every client watching, so the tool inside is drawn.
+     *
+     * <p>{@link thaumcraft.api.TileThaumcraft} already carries the contents in
+     * its update tag, but that only runs when a client first receives the tile —
+     * on chunk load. {@code markDirty} by itself only marks the chunk for
+     * saving; it sends nothing. So a tool put in was invisible until the chunk
+     * was reloaded, which is exactly what the renderer added in 1.1.38.6 needs:
+     * it draws the item out of the client's copy of this slot.</p>
+     */
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        if (world != null && !world.isRemote) {
+            net.minecraft.block.state.IBlockState state = world.getBlockState(pos);
+            world.notifyBlockUpdate(pos, state, state, 3);
+        }
+    }
+
     @Override
     public void readCustomNBT(NBTTagCompound nbt) {
         super.readCustomNBT(nbt);

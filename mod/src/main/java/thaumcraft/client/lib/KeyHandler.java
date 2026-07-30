@@ -28,6 +28,9 @@ public class KeyHandler {
             KeyConflictContext.IN_GAME, Keyboard.KEY_H, "key.categories.misc");
     public final KeyBinding keyG = new KeyBinding("Wand Focus Selector",
             KeyConflictContext.IN_GAME, Keyboard.KEY_G, "key.categories.misc");
+    /** Every awakened ichorcloth entry ends "pressing U will toggle this armor's effects". */
+    public final KeyBinding keyU = new KeyBinding("ttmisc.toggleArmor",
+            KeyConflictContext.IN_GAME, Keyboard.KEY_U, "key.categories.misc");
 
     public static boolean radialActive = false;
     public static boolean radialLock = false;
@@ -38,11 +41,13 @@ public class KeyHandler {
     private boolean keyPressedF = false;
     private boolean keyPressedH = false;
     private boolean keyPressedG = false;
+    private boolean keyPressedU = false;
 
     public KeyHandler() {
         ClientRegistry.registerKeyBinding(this.keyF);
         ClientRegistry.registerKeyBinding(this.keyH);
         ClientRegistry.registerKeyBinding(this.keyG);
+        ClientRegistry.registerKeyBinding(this.keyU);
     }
 
     @SubscribeEvent
@@ -58,6 +63,49 @@ public class KeyHandler {
         handleFocusKey(player);
         handleHoverKey(player);
         handleMiscKey(player);
+        handleArmorToggleKey(player);
+    }
+
+    /**
+     * Flips every worn awakened ichorcloth piece on or off at once — the port of
+     * upstream's {@code GemArmorKeyHandler}. It only fires while at least one
+     * piece is worn, so the key stays free otherwise.
+     */
+    private void handleArmorToggleKey(EntityPlayer player) {
+        if (!this.keyU.isKeyDown()) {
+            this.keyPressedU = false;
+            return;
+        }
+        if (this.keyPressedU) {
+            return;   // held down; act on the press, not on every tick
+        }
+        this.keyPressedU = true;
+
+        if (player == null || !wearsAwakenedIchorcloth(player)) {
+            return;
+        }
+        boolean enabled = !thaumcraft.common.lib.tinkerer.KamiArmorHandler.getClientStatus();
+        thaumcraft.common.lib.tinkerer.KamiArmorHandler.setClientStatus(enabled);
+        PacketHandler.INSTANCE.sendToServer(
+                new thaumcraft.common.lib.network.tinkerer.PacketToggleArmor(enabled));
+        player.sendStatusMessage(new net.minecraft.util.text.TextComponentTranslation(
+                enabled ? "ttmisc.enableAllArmor" : "ttmisc.disableAllArmor"), true);
+    }
+
+    private static boolean wearsAwakenedIchorcloth(EntityPlayer player) {
+        for (net.minecraft.inventory.EntityEquipmentSlot slot
+                : new net.minecraft.inventory.EntityEquipmentSlot[]{
+                net.minecraft.inventory.EntityEquipmentSlot.HEAD,
+                net.minecraft.inventory.EntityEquipmentSlot.CHEST,
+                net.minecraft.inventory.EntityEquipmentSlot.LEGS,
+                net.minecraft.inventory.EntityEquipmentSlot.FEET}) {
+            ItemStack worn = player.getItemStackFromSlot(slot);
+            if (!worn.isEmpty() && worn.getItem()
+                    instanceof thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmorAdv) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleFocusKey(EntityPlayer player) {

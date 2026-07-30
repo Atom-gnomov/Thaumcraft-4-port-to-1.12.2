@@ -51,9 +51,18 @@ public class TableRendererFidelityStaticGuardTest {
                         && deconRenderer.contains("tableModel.renderAll(MODEL_SCALE);")
                         && deconRenderer.contains("renderItemGround")
                         && deconRenderer.contains("tile.aspect.getImage()")
-                        && deconRenderer.contains("TileRenderHelper.renderEntityItem(tile, thaumometer, 0.0F);")
                         && deconRenderer.contains("TileRenderHelper.renderEntityItem(tile, stack, 0.0F);")
                         && !deconRenderer.contains("renderPlate("));
+
+        // The thaumometer is the one item on this table that must NOT be drawn as
+        // a dropped EntityItem. The original sets RenderItem.renderInFrame for it,
+        // which stops it turning to face the player; drawn as an entity it stands
+        // upright instead of lying on the table. This assertion used to pin the
+        // entity-item call — it was pinning the defect.
+        assertTrue("the thaumometer must use the item-frame transform, not an EntityItem,"
+                + " or it stands upright instead of lying on the table",
+                deconRenderer.contains("TransformType.FIXED")
+                        && !deconRenderer.contains("renderEntityItem(tile, thaumometer"));
 
         assertTrue("TileArcaneWorkbenchRenderer should restore the worktable shell and keep the wand overlay",
                 arcaneWorkbenchRenderer.contains("wand.getItem() instanceof ItemWandCasting")

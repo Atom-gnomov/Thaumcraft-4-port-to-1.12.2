@@ -35,8 +35,29 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class GuiScale {
 
-    /** Nine tenths — the owner asked for ten percent off. */
-    public static final float FACTOR = 0.9F;
+    /**
+     * <b>Currently 1.0 — the reduction is switched off.</b>
+     *
+     * <p>It shipped at {@code 0.9F} in 1.1.39.1 and the owner reported that the
+     * Thaumic Tinkerer screens stopped behaving properly, so it is disabled
+     * until the cause is known. Everything below still runs; at 1.0 it is an
+     * identity transform, so the screens behave exactly as they did before the
+     * reduction was introduced.</p>
+     *
+     * <p><b>The owner still wants ten percent off</b> — see {@code CHANGELOG.md}
+     * for 1.1.39.1. This is a suspension, not a reversal of that decision. Do
+     * not delete the machinery; put the cause right and set this back to
+     * {@code 0.9F}.</p>
+     *
+     * <p>What was checked and ruled out, so it is not re-checked from scratch:
+     * every container screen calls {@code super.initGui()} before laying itself
+     * out; none calls {@code initGui()} again by hand, so the enlargement cannot
+     * compound; {@code GuiScreen.handleMouseInput} derives clicks from
+     * {@code width}/{@code height} and {@code GuiContainer} does not override
+     * it, so clicks and layout share one space; and the rounding of the two
+     * paths agrees. The fault is somewhere this reading did not reach.</p>
+     */
+    public static final float FACTOR = 1.0F;
 
     private GuiScale() {
     }

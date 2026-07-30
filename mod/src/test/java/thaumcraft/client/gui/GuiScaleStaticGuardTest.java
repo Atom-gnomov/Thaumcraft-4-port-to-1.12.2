@@ -77,7 +77,12 @@ public class GuiScaleStaticGuardTest {
     @Test
     public void theMechanismIsTheEnlargedScreenNotHandConvertedInput() throws IOException {
         String scale = read(GUI.resolve("GuiScale.java"));
-        assertTrue("the factor is nine tenths", scale.contains("FACTOR = 0.9F"));
+        // Suspended at 1.0 after the owner reported the Tinkerer screens
+        // misbehaving; the machinery stays so it can be switched back on once
+        // the cause is found. Either value is legitimate, an absent constant is
+        // not.
+        assertTrue("the factor must be either the suspended identity or the owner's nine tenths",
+                scale.contains("FACTOR = 1.0F") || scale.contains("FACTOR = 0.9F"));
         assertTrue("and it is recorded as the owner's call, not a fix",
                 scale.contains("Owner's decision"));
 

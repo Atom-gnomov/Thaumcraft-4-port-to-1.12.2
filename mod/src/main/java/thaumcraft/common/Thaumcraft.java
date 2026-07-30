@@ -313,6 +313,11 @@ public class Thaumcraft {
                 new thaumcraft.common.lib.enchantment.tinkerer.TinkererEnchantmentHandler());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
                 new thaumcraft.common.lib.tinkerer.SoulHeartHandler());
+        // Without this the Awakened Ichor Pickaxe cannot open the Bedrock
+        // dimension: bedrock is unbreakable, so nothing ever calls the pick's
+        // onBlockStartBreak where that lives.
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.tinkerer.KamiDimensionHandler());
     }
 
     @SubscribeEvent

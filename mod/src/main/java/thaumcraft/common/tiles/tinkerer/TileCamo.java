@@ -9,7 +9,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import thaumcraft.api.TileThaumcraft;
 
 /**
  * Holds the block a camouflaged device is disguised as — ported from Thaumic
@@ -22,7 +21,7 @@ import thaumcraft.api.TileThaumcraft;
  * <p>Upstream this is the base of the transvector tiles as well, and it is here
  * too — see {@link TileTransvector}.</p>
  */
-public class TileCamo extends TileThaumcraft {
+public class TileCamo extends TileTinkerer {
 
     private static final String TAG_CAMO = "camo";
     private static final String TAG_CAMO_META = "camoMeta";
@@ -55,11 +54,9 @@ public class TileCamo extends TileThaumcraft {
     public void setCamo(@Nullable Block block, int meta) {
         this.camo = block;
         this.camoMeta = meta;
+        // The push to watching clients now comes from TileTinkerer#markDirty,
+        // where upstream keeps it; this used to repeat it by hand.
         this.markDirty();
-        if (this.world != null) {
-            IBlockState state = this.world.getBlockState(this.pos);
-            this.world.notifyBlockUpdate(this.pos, state, state, 3);
-        }
     }
 
     @Override

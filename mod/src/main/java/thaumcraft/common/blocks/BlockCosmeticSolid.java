@@ -38,6 +38,8 @@ import thaumcraft.common.tiles.TileWardingStone;
 
 public class BlockCosmeticSolid extends Block {
 
+    /** Index into {@link #types}. The Obsidian Totem — the Osmotic Enchanter's pillars. */
+    public static final int TYPE_OBSIDIAN_TOTEM = 1;
     public static final int TYPE_TRAVEL = 2;
     public static final int TYPE_WARDING = 3;
     public static final String[] types = {"obsidianTile", "obsidianTotem", "pavingStone", "wardingStone", "thaumiumBlock", "tallowBlock", "pedestalTop", "arcaneStone", "nodeStone", "golemStone", "golemStoneActive", "eldritchStone", "eldritchPattern", "eldritchStone2", "crust", "eldritchPedestal"};

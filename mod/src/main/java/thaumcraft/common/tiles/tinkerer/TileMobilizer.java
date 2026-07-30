@@ -8,7 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.common.config.ConfigBlocks;
 
 /**
@@ -25,7 +24,7 @@ import thaumcraft.common.config.ConfigBlocks;
  * branch is left out because the mod is not here, and upstream's own code only
  * takes it when AE answers.</p>
  */
-public class TileMobilizer extends TileThaumcraft implements ITickable {
+public class TileMobilizer extends TileTinkerer implements ITickable {
 
     /** The original's cadence: look ahead on 0, step on 1, every 100 ticks. */
     private static final int PERIOD = 100;

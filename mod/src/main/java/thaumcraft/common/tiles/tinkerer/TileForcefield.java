@@ -2,7 +2,6 @@ package thaumcraft.common.tiles.tinkerer;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.common.Thaumcraft;
 
 /**
@@ -12,7 +11,7 @@ import thaumcraft.common.Thaumcraft;
  *
  * <p>Sixty ticks, sparkling every one of them, then the wall goes away.</p>
  */
-public class TileForcefield extends TileThaumcraft implements ITickable {
+public class TileForcefield extends TileTinkerer implements ITickable {
 
     private static final String TAG_TICKS = "ticks";
 

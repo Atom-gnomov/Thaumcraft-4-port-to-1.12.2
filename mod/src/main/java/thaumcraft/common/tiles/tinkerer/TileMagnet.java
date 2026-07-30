@@ -7,7 +7,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.common.blocks.tinkerer.BlockMagnet;
 
 /**
@@ -23,7 +22,7 @@ import thaumcraft.common.blocks.tinkerer.BlockMagnet;
  * <p>The original's research text says 7.5 blocks. The code does not: that
  * division is between two ints. The code is what runs.</p>
  */
-public class TileMagnet extends TileThaumcraft implements ITickable {
+public class TileMagnet extends TileTinkerer implements ITickable {
 
     private static final double SPEED = 0.25D;
 

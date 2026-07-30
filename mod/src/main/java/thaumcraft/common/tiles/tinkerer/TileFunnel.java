@@ -13,7 +13,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -27,7 +26,7 @@ import thaumcraft.common.tiles.TileJarFillableVoid;
  * essentia, one point at a time, into a jar reached through the hopper beneath
  * it — the original's way of emptying jars back into a storage wall.
  */
-public class TileFunnel extends TileThaumcraft implements ITickable, IAspectContainer {
+public class TileFunnel extends TileTinkerer implements ITickable, IAspectContainer {
 
     /** The original's single slot, which only ever holds a filled jar. */
     private final ItemStackHandler inventory = new ItemStackHandler(1) {

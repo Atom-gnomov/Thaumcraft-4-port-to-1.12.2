@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.tinkerer.ItemMobAspect;
@@ -30,7 +29,7 @@ import thaumcraft.common.tiles.TilePedestal;
  *
  * <p>Redstone stops it.</p>
  */
-public class TileSummon extends TileThaumcraft implements ITickable {
+public class TileSummon extends TileTinkerer implements ITickable {
 
     /** The original's cadence: a look round every 300 ticks. */
     private static final int INTERVAL = 300;

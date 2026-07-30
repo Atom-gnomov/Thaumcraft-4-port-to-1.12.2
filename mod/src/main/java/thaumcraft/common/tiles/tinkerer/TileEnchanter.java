@@ -18,9 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.common.blocks.BlockAiry;
+import thaumcraft.common.blocks.BlockCosmeticSolid;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.TCSounds;
@@ -42,7 +43,7 @@ import thaumcraft.common.lib.tinkerer.EnchantmentCosts;
  * compatibility rules and level caps — which is the point of the device. Costs
  * come from {@link EnchantmentCosts}, ported from the original's table.</p>
  */
-public class TileEnchanter extends TileThaumcraft implements ITickable {
+public class TileEnchanter extends TileTinkerer implements ITickable {
 
     public static final int SLOT_TOOL = 0;
     public static final int SLOT_WAND = 1;
@@ -273,19 +274,28 @@ public class TileEnchanter extends TileThaumcraft implements ITickable {
         return found;
     }
 
-    /** A stack of 2..12 Obsidian Totems capped with Nitor, as in the original. */
+    /**
+     * A stack of 2..12 Obsidian Totems capped with Nitor, as in the original.
+     *
+     * <p>The metadata here is named rather than written out, because it was
+     * wrong and nothing noticed: this asked for {@code blockCosmeticSolid}
+     * meta 0, which is the Obsidian <em>Tile</em>. The Totem is meta 1 — see
+     * {@link BlockCosmeticSolid#types}, and the enchanter's own infusion recipe,
+     * which spends five of {@code blockCosmeticSolid:1}. A pillar of totems
+     * therefore never validated and {@link #start()} refused every run.</p>
+     */
     private boolean isPillar(BlockPos base) {
         int totems = 0;
         for (int y = 0; base.getY() + y < world.getHeight(); y++) {
             BlockPos at = base.up(y);
             IBlockState state = world.getBlockState(at);
             if (state.getBlock() == ConfigBlocks.blockCosmeticSolid
-                    && state.getBlock().getMetaFromState(state) == 0) {
+                    && state.getValue(BlockCosmeticSolid.TYPE) == BlockCosmeticSolid.TYPE_OBSIDIAN_TOTEM) {
                 totems++;
                 continue;
             }
             if (state.getBlock() == ConfigBlocks.blockAiry
-                    && state.getBlock().getMetaFromState(state) == 1) {
+                    && state.getValue(BlockAiry.TYPE) == BlockAiry.TYPE_NITOR) {
                 return totems >= MIN_PILLAR && totems <= MAX_PILLAR;
             }
             return false;

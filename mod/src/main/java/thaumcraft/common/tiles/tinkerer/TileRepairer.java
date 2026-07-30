@@ -14,7 +14,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import thaumcraft.api.ThaumcraftApiHelper;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -37,7 +36,7 @@ import thaumcraft.common.lib.network.fx.PacketFXBlockSparkle;
  * <p>The original's Tinkers' Construct branch is deliberately not carried
  * over.</p>
  */
-public class TileRepairer extends TileThaumcraft implements ITickable, IEssentiaTransport, IAspectContainer {
+public class TileRepairer extends TileTinkerer implements ITickable, IEssentiaTransport, IAspectContainer {
 
     /** Durability restored per point of essentia, by aspect. Ordered best-first. */
     private static final Map<Aspect, Integer> REPAIR_VALUES = new LinkedHashMap<>();
@@ -145,25 +144,6 @@ public class TileRepairer extends TileThaumcraft implements ITickable, IEssentia
     }
 
     // ---- NBT ----
-
-    /**
-     * Pushes the slot to every client watching, so the tool inside is drawn.
-     *
-     * <p>{@link thaumcraft.api.TileThaumcraft} already carries the contents in
-     * its update tag, but that only runs when a client first receives the tile —
-     * on chunk load. {@code markDirty} by itself only marks the chunk for
-     * saving; it sends nothing. So a tool put in was invisible until the chunk
-     * was reloaded, which is exactly what the renderer added in 1.1.38.6 needs:
-     * it draws the item out of the client's copy of this slot.</p>
-     */
-    @Override
-    public void markDirty() {
-        super.markDirty();
-        if (world != null && !world.isRemote) {
-            net.minecraft.block.state.IBlockState state = world.getBlockState(pos);
-            world.notifyBlockUpdate(pos, state, state, 3);
-        }
-    }
 
     @Override
     public void readCustomNBT(NBTTagCompound nbt) {

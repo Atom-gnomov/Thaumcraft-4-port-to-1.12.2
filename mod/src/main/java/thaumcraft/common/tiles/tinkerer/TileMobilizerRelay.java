@@ -5,7 +5,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.common.Thaumcraft;
 
 /**
@@ -17,7 +16,7 @@ import thaumcraft.common.Thaumcraft;
  * walks that line, hands any Locomotive standing on it the pair's coordinates,
  * and points it along the axis they share.</p>
  */
-public class TileMobilizerRelay extends TileThaumcraft implements ITickable {
+public class TileMobilizerRelay extends TileTinkerer implements ITickable {
 
     /** How far a relay looks for its partner, in blocks. */
     private static final int SEARCH = 32;

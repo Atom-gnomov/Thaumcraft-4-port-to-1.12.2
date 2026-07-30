@@ -45,6 +45,8 @@ import thaumcraft.common.tiles.TileWardingStoneFence;
 public class BlockAiry extends BlockContainer {
 
     public static final String[] airyTypes = {"node", "nitor", "leavesFiller1", "leavesFiller2", "wardingFence", "energizedNode", null, null, null, null, "fire", "eerie", "barrier"};
+    /** Index into {@link #airyTypes}. Nitor — what caps the Osmotic Enchanter's pillars. */
+    public static final int TYPE_NITOR = 1;
     public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 12);
     private static final AxisAlignedBB AIRY_AABB = new AxisAlignedBB(0.3D, 0.3D, 0.3D, 0.7D, 0.7D, 0.7D);
     private static final AxisAlignedBB ZERO_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -126,7 +128,7 @@ public class BlockAiry extends BlockContainer {
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
         if (meta == 0) return new TileNode();
-        if (meta == 1) return new TileNitor();
+        if (meta == TYPE_NITOR) return new TileNitor();
         if (meta == 4) return new TileWardingStoneFence();
         if (meta == 5) return new TileNodeEnergized();
         return null;

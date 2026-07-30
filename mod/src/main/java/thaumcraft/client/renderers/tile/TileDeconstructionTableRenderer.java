@@ -74,7 +74,16 @@ public class TileDeconstructionTableRenderer extends TileEntitySpecialRenderer<T
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5D, y + 0.92D, z + 0.5D);
         GlStateManager.scale(0.8F, 0.8F, 0.8F);
-        TileRenderHelper.renderEntityItem(tile, thaumometer, 0.0F);
+        // The original sets RenderItem.renderInFrame for this one item, which
+        // stops it turning to face the player the way a dropped item does — it
+        // lies on the table instead. Rendering it as an EntityItem, as the port
+        // did, brings that billboarding back and stands the thaumometer upright.
+        // 1.12's equivalent of renderInFrame is the item-frame transform, and the
+        // quarter turn lays it down on the table top.
+        GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+        net.minecraft.client.Minecraft.getMinecraft().getRenderItem().renderItem(
+                thaumometer, net.minecraft.client.renderer.block.model
+                        .ItemCameraTransforms.TransformType.FIXED);
         GlStateManager.popMatrix();
     }
 

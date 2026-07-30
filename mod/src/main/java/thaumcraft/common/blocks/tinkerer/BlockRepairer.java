@@ -45,9 +45,14 @@ public class BlockRepairer extends BlockContainer {
         return new TileRepairer();
     }
 
+    /**
+     * The whole block is drawn by {@code TileRepairerRenderer}. Upstream's
+     * {@code RenderRepairer.renderWorldBlock} returns false — there is no static
+     * geometry — so a blockstate model here would draw on top of the real one.
+     */
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     /** Right-click swaps the held item with whatever is being repaired. */

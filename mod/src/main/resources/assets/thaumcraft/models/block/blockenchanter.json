@@ -1,8 +1,9 @@
 {
+  "comment": "Face mapping is the original's BlockEnchanter.getIcon: enchanter0 is the bottom, enchanter1 the top, enchanter2 the sides.",
   "parent": "block/cube_bottom_top",
   "textures": {
     "top": "thaumcraft:blocks/enchanter_top",
-    "bottom": "thaumcraft:blocks/enchanter_side",
+    "bottom": "thaumcraft:blocks/enchanter_bottom",
     "side": "thaumcraft:blocks/enchanter_side"
   }
 }

@@ -36,8 +36,12 @@ public class GuiWarpGate extends GuiContainerScaled {
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        button.enabled = !button.enabled;
-        this.warpGate.locked = button.enabled;
+        if (!(button instanceof GuiButtonWarpGateLock)) {
+            return;
+        }
+        GuiButtonWarpGateLock lock = (GuiButtonWarpGateLock) button;
+        lock.locked = !lock.locked;
+        this.warpGate.locked = lock.locked;
         PacketHandler.INSTANCE.sendToServer(
                 new PacketWarpGateLock(this.warpGate.getPos(), this.warpGate.locked));
     }
@@ -48,9 +52,8 @@ public class GuiWarpGate extends GuiContainerScaled {
         this.left = (this.width - this.xSize) / 2;
         this.top = (this.height - this.ySize) / 2;
         this.buttonList.clear();
-        GuiButton lock = new GuiButton(0, this.left + 5, this.top + 5, 10, 10, "");
-        lock.enabled = this.warpGate.locked;
-        this.buttonList.add(lock);
+        this.buttonList.add(new GuiButtonWarpGateLock(
+                0, this.left + 5, this.top + 5, this.warpGate.locked));
     }
 
     @Override

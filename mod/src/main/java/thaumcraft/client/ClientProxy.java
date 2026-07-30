@@ -1089,8 +1089,11 @@ public class ClientProxy extends CommonProxy {
         // condensed one has its own. The stride between tiers is the
         // metadata gap upstream left for padding.
         {
-            String[] souls = {"fire", "magic", "undead", "flesh", "beast",
-                    "poison", "earth", "eldritch", "travel", "metal", "slime"};
+            // Order is metadata — it must stay in step with SoulAspects.ORDER,
+            // which is upstream's NumericAspectHelper construction order.
+            String[] souls = {"water", "man", "air", "flight", "fire",
+                    "magic", "undead", "flesh", "beast", "poison",
+                    "earth", "eldritch", "travel", "metal", "slime"};
             int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
             for (int i = 0; i < souls.length; i++) {
                 ModelResourceLocation plain = new ModelResourceLocation(

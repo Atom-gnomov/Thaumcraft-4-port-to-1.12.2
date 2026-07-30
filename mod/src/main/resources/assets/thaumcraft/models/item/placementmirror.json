@@ -1,6 +1,8 @@
 {
+  "comment": "Two layers, because the original draws two: requiresMultipleRenderPasses() is true and getIconFromDamageForRenderPass returns icons[pass & 1] — placementMirror0 under placementMirror1. The port had a single unrelated icon.",
   "parent": "item/generated",
   "textures": {
-    "layer0": "thaumcraft:items/placement_mirror"
+    "layer0": "thaumcraft:items/placement_mirror0",
+    "layer1": "thaumcraft:items/placement_mirror1"
   }
 }

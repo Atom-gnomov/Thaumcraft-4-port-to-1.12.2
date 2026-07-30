@@ -47,12 +47,15 @@ import thaumcraft.common.items.tinkerer.SoulAspects;
  * exactly these, and the Tablet of Necromancy turns exactly these back into a
  * creature.</p>
  *
- * <p><b>Not every entry is reachable, and that is upstream's state, not an
- * omission here.</b> Only eleven aspects have an item form (see
- * {@link SoulAspects}); entries calling for WATER, MAN, AIR, FLIGHT or CROP
- * name a soul that cannot be held, so those creatures can be dismantled but not
- * rebuilt. The table is transcribed whole so the blade still yields the right
- * aspects, and so the gap stays visible instead of being quietly closed.</p>
+ * <p><b>One entry is unreachable, and that one really is upstream's state.</b>
+ * CROP is named here but {@code NumericAspectHelper} never numbers it, so no
+ * item form exists and a creature needing it can be dismantled but not rebuilt.
+ * The table is transcribed whole so the blade still yields the right aspects,
+ * and so the gap stays visible instead of being quietly closed.</p>
+ *
+ * <p>This note used to say the same of WATER, MAN, AIR and FLIGHT. That was
+ * wrong: upstream numbers all four, and they were missing from the port, not
+ * from Thaumic Tinkerer. Restored in 1.1.38.4 — see {@link SoulAspects}.</p>
  */
 public final class MobAspects {
 

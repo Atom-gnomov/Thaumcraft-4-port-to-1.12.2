@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -1787,10 +1788,38 @@ public class ThaumicTinkererFociStaticGuardTest {
     @Test
     public void necromancySetMatchesTheOriginal() throws IOException {
         String souls = read("src/main/java/thaumcraft/common/items/tinkerer/SoulAspects.java");
-        assertTrue("eleven aspects in upstream's construction order",
-                souls.indexOf("Aspect.FIRE") < souls.indexOf("Aspect.MAGIC")
-                        && souls.indexOf("Aspect.MAGIC") < souls.indexOf("Aspect.UNDEAD")
-                        && souls.indexOf("Aspect.METAL") < souls.indexOf("Aspect.SLIME"));
+        // Upstream's NumericAspectHelper.init() constructs these fifteen in this
+        // order, and the construction order is the item metadata.
+        //
+        // This assertion used to compare a few indexes against each other —
+        // FIRE before MAGIC, METAL before SLIME — and passed for years while the
+        // list was missing its first four entries entirely. Checking the order of
+        // what is present says nothing about what is absent, so pin the sequence.
+        String[] upstreamOrder = {
+                "WATER", "MAN", "AIR", "FLIGHT", "FIRE",
+                "MAGIC", "UNDEAD", "FLESH", "BEAST", "POISON",
+                "EARTH", "ELDRITCH", "TRAVEL", "METAL", "SLIME"};
+        String order = souls.replaceAll("(?s).*ORDER = Arrays\\.asList\\((.*?)\\);.*", "$1");
+        java.util.List<String> found = new java.util.ArrayList<>();
+        java.util.regex.Matcher aspects =
+                java.util.regex.Pattern.compile("Aspect\\.([A-Z_]+)").matcher(order);
+        while (aspects.find()) {
+            found.add(aspects.group(1));
+        }
+        assertEquals("the soul aspect list is upstream's construction order, whole and in sequence",
+                java.util.Arrays.asList(upstreamOrder), found);
+
+        // The client registers one model per aspect off the same order; if the two
+        // drift, every soul aspect past the drift wears the wrong face.
+        String proxy = read("src/main/java/thaumcraft/client/ClientProxy.java");
+        String souls_ = proxy.replaceAll("(?s).*String\\[\\] souls = \\{(.*?)\\};.*", "$1");
+        java.util.List<String> registered = new java.util.ArrayList<>();
+        java.util.regex.Matcher names = java.util.regex.Pattern.compile("\"([a-z]+)\"").matcher(souls_);
+        while (names.find()) {
+            registered.add(names.group(1).toUpperCase(java.util.Locale.ROOT));
+        }
+        assertEquals("ClientProxy's soul model order must match SoulAspects.ORDER",
+                found, registered);
         // Upstream spaces the tiers 20 apart although there are only eleven,
         // as padding so a new aspect would not shift existing metadata.
         assertTrue("the tier stride is 20, not the count", souls.contains("TIER_STRIDE = 20"));

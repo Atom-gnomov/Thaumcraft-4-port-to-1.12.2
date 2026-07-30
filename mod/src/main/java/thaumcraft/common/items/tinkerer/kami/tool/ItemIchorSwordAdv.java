@@ -56,10 +56,21 @@ public class ItemIchorSwordAdv extends ItemIchorSword implements IAdvancedTool {
                     // for exactly the same amount and there was no reason to use
                     // it. Focusing on one target now rolls 14-17 on top of the
                     // usual hit. See THAUMIC_TINKERER_PLAN.md.
-                    float bonus = SINGLE_TARGET_MIN
-                            + player.world.rand.nextInt(SINGLE_TARGET_MAX - SINGLE_TARGET_MIN + 1);
-                    entity.attackEntityFrom(
-                            net.minecraft.util.DamageSource.causePlayerDamage(player), bonus);
+                    //
+                    // The bonus is dealt here, before the vanilla hit, and the
+                    // victim's immunity window is cleared afterwards. Without
+                    // that clear the vanilla hit lands inside the window this
+                    // one opened and only the larger of the two counts, so the
+                    // player sees no change at all.
+                    if (!player.world.isRemote) {
+                        float bonus = SINGLE_TARGET_MIN
+                                + player.world.rand.nextInt(SINGLE_TARGET_MAX - SINGLE_TARGET_MIN + 1);
+                        EntityLivingBase victim = (EntityLivingBase) entity;
+                        victim.attackEntityFrom(
+                                net.minecraft.util.DamageSource.causePlayerDamage(player), bonus);
+                        victim.hurtResistantTime = 0;
+                        victim.hurtTime = 0;
+                    }
                     break;
                 }
                 case 1: {

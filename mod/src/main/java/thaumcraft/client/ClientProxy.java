@@ -1037,6 +1037,14 @@ public class ClientProxy extends CommonProxy {
         for (int meta = 0; meta <= 2; meta++) {
             registerBlockItemModel(darkQuartzItem, meta, "variant=" + meta);
         }
+        // The six imbued fires use multipart blockstates, which carry no
+        // inventory variant — their items need the item json directly.
+        for (net.minecraft.block.Block fire : new net.minecraft.block.Block[]{
+                ConfigBlocks.blockFireAir, ConfigBlocks.blockFireChaos,
+                ConfigBlocks.blockFireEarth, ConfigBlocks.blockFireIgnis,
+                ConfigBlocks.blockFireOrder, ConfigBlocks.blockFireWater}) {
+            registerBlockItemModelFromItemJson(Item.getItemFromBlock(fire));
+        }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockSlabDarkQuartz), 0,
                 "half=bottom,seamless=false");
@@ -1173,6 +1181,23 @@ public class ClientProxy extends CommonProxy {
         registerBuiltinItemModel(manaPodItem, 0, "blockmanapod");
         Item chestItem = Item.getItemFromBlock(ConfigBlocks.blockChestHungry);
         registerBuiltinItemModel(chestItem, 0, "blockchesthungry");
+    }
+
+    /**
+     * Points a block's item at {@code models/item/<name>.json} rather than at a
+     * blockstate variant.
+     *
+     * <p>Needed for every block whose blockstate is {@code multipart}: those
+     * have no {@code inventory} variant to resolve against, so without this the
+     * item renders as the missing-model placeholder while the placed block is
+     * perfectly fine. That is what the six imbued fires were doing.</p>
+     */
+    private static void registerBlockItemModelFromItemJson(Item item) {
+        if (item == null || item.getRegistryName() == null) {
+            return;
+        }
+        ModelLoader.setCustomModelResourceLocation(item, 0,
+                new ModelResourceLocation(item.getRegistryName(), "inventory"));
     }
 
     private static void registerBlockItemModel(Item item, int meta, String variant) {

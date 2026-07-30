@@ -1,0 +1,24 @@
+{
+  "comment": "Two pixels tall, not a cube: the original's BlockSummon does setBlockBounds(0, 0, 0, 1, 1F / 16F * 2F, 1) with renderAsNormalBlock() == false. Faces follow its getIcon: up is summon_top, down borrows vanilla obsidian, the rest summon_side.",
+  "parent": "block/block",
+  "textures": {
+    "particle": "thaumcraft:blocks/summon_side",
+    "top": "thaumcraft:blocks/summon_top",
+    "bottom": "blocks/obsidian",
+    "side": "thaumcraft:blocks/summon_side"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 2, 16],
+      "faces": {
+        "down":  { "texture": "#bottom", "cullface": "down" },
+        "up":    { "texture": "#top" },
+        "north": { "texture": "#side" },
+        "south": { "texture": "#side" },
+        "west":  { "texture": "#side" },
+        "east":  { "texture": "#side" }
+      }
+    }
+  ]
+}

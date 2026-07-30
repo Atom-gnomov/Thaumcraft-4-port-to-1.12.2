@@ -1,8 +1,24 @@
 {
-  "parent": "block/cube_bottom_top",
+  "comment": "Twelve pixels tall, not a cube: the original's BlockEnchanter does setBlockBounds(0, 0, 0, 1, 0.75F, 1) with renderAsNormalBlock() == false. Face mapping is its getIcon: enchanter0 is the bottom, enchanter1 the top, enchanter2 the sides. UVs stay implicit so they crop to the element exactly as RenderBlocks cropped them to the bounds.",
+  "parent": "block/block",
   "textures": {
+    "particle": "thaumcraft:blocks/enchanter_side",
     "top": "thaumcraft:blocks/enchanter_top",
-    "bottom": "thaumcraft:blocks/enchanter_side",
+    "bottom": "thaumcraft:blocks/enchanter_bottom",
     "side": "thaumcraft:blocks/enchanter_side"
-  }
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 12, 16],
+      "faces": {
+        "down":  { "texture": "#bottom", "cullface": "down" },
+        "up":    { "texture": "#top" },
+        "north": { "texture": "#side" },
+        "south": { "texture": "#side" },
+        "west":  { "texture": "#side" },
+        "east":  { "texture": "#side" }
+      }
+    }
+  ]
 }

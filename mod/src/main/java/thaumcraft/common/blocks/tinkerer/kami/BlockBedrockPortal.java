@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.Config;
 import thaumcraft.common.lib.world.dim.bedrock.TeleporterBedrock;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Bedrock portal — ported from Thaumic Tinkerer's {@code BlockBedrockPortal}
@@ -35,7 +36,7 @@ public class BlockBedrockPortal extends Block {
         this.setResistance(6000000.0F);
         this.setSoundType(SoundType.GLASS);
         this.setLightLevel(0.75F);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

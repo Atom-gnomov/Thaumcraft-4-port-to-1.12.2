@@ -1,7 +1,10 @@
 {
+  "comment": "Five metas, as the original: 0 plain, 1 chiseled, 2/3/4 the pillar on the Y/X/Z axis. The axis is picked at placement time from the face clicked (the original's onBlockPlaced) and drawn as a rotation of the one column model, the way vanilla quartz pillars are.",
   "variants": {
     "variant=0": { "model": "thaumcraft:blockdarkquartz_0" },
     "variant=1": { "model": "thaumcraft:blockdarkquartz_1" },
-    "variant=2": { "model": "thaumcraft:blockdarkquartz_2" }
+    "variant=2": { "model": "thaumcraft:blockdarkquartz_2" },
+    "variant=3": { "model": "thaumcraft:blockdarkquartz_2", "x": 90, "y": 90 },
+    "variant=4": { "model": "thaumcraft:blockdarkquartz_2", "x": 90 }
   }
 }

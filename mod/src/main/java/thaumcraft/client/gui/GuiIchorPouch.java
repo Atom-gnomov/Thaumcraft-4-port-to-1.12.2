@@ -1,6 +1,5 @@
 package thaumcraft.client.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -12,7 +11,7 @@ import thaumcraft.common.container.ContainerIchorPouch;
  * {@code GuiIchorPouch} (pixlepix / nekosune, originally Vazkii), on the
  * original's own 256×256 texture.
  */
-public class GuiIchorPouch extends GuiContainer {
+public class GuiIchorPouch extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE =
             new ResourceLocation("thaumcraft", "textures/gui/ichorpouch.png");

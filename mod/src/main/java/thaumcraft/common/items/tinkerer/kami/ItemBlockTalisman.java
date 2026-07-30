@@ -29,7 +29,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Black Hole Ring — ported from Thaumic Tinkerer's {@code ItemBlockTalisman}
@@ -56,7 +56,7 @@ public class ItemBlockTalisman extends Item implements IBauble {
         // Damage 0/1 is the original's on/off switch, not wear.
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

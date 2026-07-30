@@ -165,6 +165,17 @@ public class GuiResearchRecipe extends GuiScreen {
             return;
         }
         GlStateManager.pushMatrix();
+        // Adopted from FOREVA 651cc8b. Whatever drew before this page can leave
+        // the texture unit, lighting or blend func somewhere the font renderer
+        // does not expect, and the recipe text comes out dim or invisible.
+        GlStateManager.setActiveTexture(net.minecraft.client.renderer.OpenGlHelper.defaultTexUnit);
+        GlStateManager.disableLighting();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableAlpha();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
         if (this.page == 0 && side == 0 && this.research != null) {

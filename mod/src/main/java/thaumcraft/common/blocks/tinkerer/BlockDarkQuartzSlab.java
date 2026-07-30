@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigBlocks;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Dark Quartz Slab — ported from Thaumic Tinkerer's
@@ -32,7 +33,7 @@ public abstract class BlockDarkQuartzSlab extends BlockSlab {
             state = state.withProperty(SEAMLESS, false);
         } else {
             state = state.withProperty(HALF, EnumBlockHalf.BOTTOM);
-            this.setCreativeTab(Thaumcraft.tabTC);
+            this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         }
         this.setDefaultState(state);
         this.setHardness(0.8F);

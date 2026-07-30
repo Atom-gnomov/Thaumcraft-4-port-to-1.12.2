@@ -11,7 +11,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import thaumcraft.common.items.tinkerer.kami.tool.IAdvancedTool;
 import thaumcraft.common.items.tinkerer.kami.tool.KamiToolHandler;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Protoclay — ported from Thaumic Tinkerer's {@code ItemProtoclay}
@@ -27,7 +27,7 @@ public class ItemProtoclay extends Item {
 
     public ItemProtoclay() {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

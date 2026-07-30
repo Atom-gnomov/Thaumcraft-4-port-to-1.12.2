@@ -11,10 +11,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileFunnel;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Funnel — ported from Thaumic Tinkerer's {@code BlockFunnel}
@@ -32,7 +34,7 @@ public class BlockFunnel extends BlockContainer {
         this.setHardness(3.0F);
         this.setResistance(8.0F);
         this.setSoundType(net.minecraft.block.SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override
@@ -43,6 +45,17 @@ public class BlockFunnel extends BlockContainer {
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, net.minecraft.world.IBlockAccess source, BlockPos pos) {
         return SHAPE;
+    }
+
+    /**
+     * The original's {@code getCollisionBoundingBoxFromPool} hands back the whole
+     * cube, not {@link #SHAPE}: the funnel looks like a two-pixel plate but stops
+     * you like a full block. Without this override 1.12 would collide against the
+     * plate and let you stand inside the block.
+     */
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return FULL_BLOCK_AABB;
     }
 
     @Override

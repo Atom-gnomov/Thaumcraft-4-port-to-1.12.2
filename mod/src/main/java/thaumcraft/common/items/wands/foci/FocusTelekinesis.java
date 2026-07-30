@@ -15,6 +15,10 @@ import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.WandManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Focus of Telekinesis — ported 1:1 from Thaumic Tinkerer's
@@ -23,6 +27,9 @@ import thaumcraft.common.items.wands.WandManager;
  * the caster instead. Potency widens the radius.
  */
 public class FocusTelekinesis extends ItemFocusBasic {
+
+    /** Upstream's {@code hasOrnament()} returns true for this focus; ModelWand draws the ornament on the wand. */
+    private static final String ORNAMENT_SPRITE = "thaumcraft:items/focus_telekinesis_orn";
 
     /** The original's visUsage: charged every tick while channelling. */
     private static final AspectList COST = new AspectList().add(Aspect.AIR, 5).add(Aspect.ENTROPY, 5);
@@ -35,6 +42,12 @@ public class FocusTelekinesis extends ItemFocusBasic {
     @Override
     public int getFocusColor(ItemStack stack) {
         return 0x66CCFF;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getOrnament(ItemStack stack) {
+        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(ORNAMENT_SPRITE);
     }
 
     @Override

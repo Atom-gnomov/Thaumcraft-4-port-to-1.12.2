@@ -42,6 +42,25 @@ public final class ClientModelRegistry {
             new ModelResourceLocation("thaumcraft:blockcosmeticopaque", "type=2");
     static final ResourceLocation FOCUS_PECH_DEPTH_SPRITE =
             new ResourceLocation("thaumcraft", "items/focus_pech_depth");
+    /**
+     * Thaumic Tinkerer's foci wear an extra layer on the wand — Thaumcraft's own
+     * mostly do not, which is why only the pech's depth layer was here before.
+     * Upstream's {@code ItemModFocus.registerIcons} adds an {@code Orn} or a
+     * {@code Depth} sprite for each of these eight, and {@code ModelWand} draws
+     * it. No item model references them, so nothing else stitches them in; drop
+     * a name from this list and {@code getAtlasSprite} silently hands back the
+     * missing-texture placeholder.
+     */
+    static final String[] TINKERER_FOCUS_LAYER_SPRITES = {
+            "items/focus_smelt_orn",
+            "items/focus_flight_orn",
+            "items/focus_telekinesis_orn",
+            "items/focus_dislocation_orn",
+            "items/focus_shadowbeam_orn",
+            "items/focus_heal_depth",
+            "items/focus_ender_chest_depth",
+            "items/focus_recall_depth",
+    };
     static final ResourceLocation FROST_SHARD_SPRITE =
             new ResourceLocation("thaumcraft", "blocks/frostshard");
     static final ResourceLocation PIPE_VALVE_SPRITE =
@@ -70,6 +89,9 @@ public final class ClientModelRegistry {
     @SubscribeEvent
     public static void onTextureStitchPre(TextureStitchEvent.Pre event) {
         event.getMap().registerSprite(FOCUS_PECH_DEPTH_SPRITE);
+        for (String sprite : TINKERER_FOCUS_LAYER_SPRITES) {
+            event.getMap().registerSprite(new ResourceLocation("thaumcraft", sprite));
+        }
         event.getMap().registerSprite(FROST_SHARD_SPRITE);
         event.getMap().registerSprite(PIPE_VALVE_SPRITE);
         event.getMap().registerSprite(ADVANCED_FURNACE_FLUXGOO_SPRITE);
@@ -117,20 +139,27 @@ public final class ClientModelRegistry {
         replaceCamoModels(event);
     }
 
+    /** The blocks that can be disguised, by the name their blockstate uses. */
+    private static final java.util.Set<String> CAMO_BLOCKS = new java.util.HashSet<>(
+            java.util.Arrays.asList("blockplatform", "blocktransvectorinterface",
+                    "blocktransvectordislocator"));
+
     /**
      * Wraps every camouflaged device's model so it can draw as the block it is
-     * disguised as. Both the world model and the inventory one, since the
-     * blockstate names them separately.
+     * disguised as. Their blockstates name a different number of variants each
+     * — one for the interface, twelve for the dislocator — so this walks the
+     * baked registry rather than listing variants by hand.
      */
     private static void replaceCamoModels(ModelBakeEvent event) {
-        for (String name : new String[]{"blockplatform"}) {
-            for (String variant : new String[]{"normal", "inventory"}) {
-                ModelResourceLocation key = new ModelResourceLocation(
-                        new ResourceLocation("thaumcraft", name), variant);
-                IBakedModel delegate = event.getModelRegistry().getObject(key);
-                if (delegate != null) {
-                    event.getModelRegistry().putObject(key, new CamoBakedModel(delegate));
-                }
+        for (ModelResourceLocation key : new java.util.ArrayList<>(
+                event.getModelRegistry().getKeys())) {
+            if (!"thaumcraft".equals(key.getNamespace())
+                    || !CAMO_BLOCKS.contains(key.getPath())) {
+                continue;
+            }
+            IBakedModel delegate = event.getModelRegistry().getObject(key);
+            if (delegate != null && !(delegate instanceof CamoBakedModel)) {
+                event.getModelRegistry().putObject(key, new CamoBakedModel(delegate));
             }
         }
     }

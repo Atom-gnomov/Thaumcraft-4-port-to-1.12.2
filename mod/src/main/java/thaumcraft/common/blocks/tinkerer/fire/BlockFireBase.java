@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Shared behaviour of the six imbued fires — transcribed from Thaumic
@@ -34,7 +35,7 @@ public abstract class BlockFireBase extends BlockFire {
 
     protected BlockFireBase() {
         super();
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     /** What this fire changes, and into what. */

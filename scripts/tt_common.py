@@ -204,6 +204,38 @@ def research_parent(research, consts):
     return first.strip('"') or None
 
 
+def is_excluded(entry):
+    """Whether this object is out of scope rather than merely unported.
+
+    Either upstream never registers it, or it only appears alongside a mod this
+    port does not carry. Both are decisions, not backlog.
+    """
+    g = gate(entry)
+    return bool(g) and (g == u'НЕ РЕГИСТРИРУЕТСЯ' or g.startswith(u'только с'))
+
+
+def gate(entry):
+    """A short label for a shouldRegister() that is not plain `return true`.
+
+    Returns None when the object is registered unconditionally.
+    """
+    body = entry.get('shouldRegister')
+    if not body:
+        return None
+    body = ' '.join(body.split())
+    if body == 'return true;':
+        return None
+    if body == 'return false;':
+        return 'НЕ РЕГИСТРИРУЕТСЯ'
+    m = re.search(r'isModLoaded\("(\w+)"\)', body)
+    if m:
+        return 'только с %s' % m.group(1)
+    m = re.search(r'ConfigHandler\.(\w+)', body)
+    if m:
+        return 'по конфигу %s' % m.group(1)
+    return body
+
+
 def components(entry):
     """TT classes this object's recipe consumes, itself excluded.
 
@@ -218,6 +250,25 @@ def components(entry):
     names = {a or b for a, b in found}
     names.discard(entry['cls'])
     return sorted(names)
+
+
+# --- how the objects are grouped for human reading ------------------------
+
+GROUPS = [
+    (u'Ресурсы и базовые блоки', lambda f: '/quartz/' in f or 'DarkQuartz' in f),
+    (u'Механизмы (блоки)', lambda f: f.startswith('common/block/') and '/kami/' not in f
+        and '/quartz/' not in f and '/fire/' not in f),
+    (u'Элементальные костры', lambda f: '/fire/' in f),
+    (u'Трансвекторы', lambda f: 'transvector' in f or 'Connector' in f),
+    (u'Фокусы палочки', lambda f: '/foci/' in f and '/kami/' not in f),
+    (u'Предметы', lambda f: f.startswith('common/item/') and '/kami/' not in f
+        and '/foci/' not in f and '/quartz/' not in f),
+    (u'KAMI — ресурсы и предметы', lambda f: '/kami/' in f and '/tool/' not in f
+        and '/armor/' not in f and '/foci/' not in f),
+    (u'KAMI — броня', lambda f: '/kami/armor/' in f),
+    (u'KAMI — инструменты', lambda f: '/kami/tool/' in f),
+    (u'KAMI — фокусы', lambda f: '/kami/foci/' in f),
+]
 
 
 # --- which objects this port already has ----------------------------------

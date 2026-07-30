@@ -30,6 +30,10 @@ public class ConfigTinkerer {
      * a substitute for it.</p>
      */
     public static void registerFociRecipes() {
+        // First call of the module inside ConfigRecipes.init(), so this is
+        // where the bench handles come back after the map was cleared.
+        publishBenchRecipeHandles();
+
         // FOCUS_SMELT: arcane, "FNE" - fire focus, nitor, excavation focus.
         ConfigResearch.recipes.put("FocusSmelt", ThaumcraftApi.addArcaneCraftingRecipe(
                 "FOCUS_SMELT", new ItemStack(ConfigItems.focusSmelt),
@@ -200,6 +204,219 @@ public class ConfigTinkerer {
                         new ItemStack(Items.DIAMOND)}));
     }
 
+
+
+
+
+
+    /**
+     * The Levitational Locomotive and its relay. The locomotive is infused on
+     * a Thaumcraft lifter; the relay is an arcane craft sharing the magnet's
+     * shape but built round glass rather than a focus.
+     */
+    public static void registerMobilizerRecipes() {
+        ConfigResearch.recipes.put("Mobilizer", ThaumcraftApi.addInfusionCraftingRecipe(
+                "LEVITATOR", new ItemStack(ConfigBlocks.blockMobilizer), 4,
+                new AspectList().add(Aspect.MOTION, 15).add(Aspect.ORDER, 20).add(Aspect.MAGIC, 15),
+                new ItemStack(ConfigBlocks.blockLifter),
+                new ItemStack[]{
+                        new ItemStack(Items.IRON_INGOT),
+                        new ItemStack(Items.FEATHER),
+                        new ItemStack(Items.IRON_INGOT),
+                        new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1)}));
+
+        ConfigResearch.recipes.put("MobilizerRelay", ThaumcraftApi.addArcaneCraftingRecipe(
+                "LEVITATOR", new ItemStack(ConfigBlocks.blockMobilizerRelay),
+                new AspectList().add(Aspect.AIR, 20).add(Aspect.ORDER, 5).add(Aspect.EARTH, 15),
+                "WFW", "SIs", "WFW",
+                'I', new ItemStack(Items.IRON_INGOT),
+                's', new ItemStack(ConfigItems.itemShard, 1, 3),
+                'S', new ItemStack(ConfigItems.itemShard, 1, 0),
+                'W', new ItemStack(ConfigBlocks.blockMagicalLog),
+                'F', new ItemStack(Blocks.GLASS)));
+    }
+
+    /**
+     * Two odds and ends: the tome that copies research between players, and
+     * scribing tools with more than twice the ink.
+     *
+     * <p>The tome is bench work upstream, gated behind its own config flag —
+     * this port always registers it, which is that flag's default.</p>
+     */
+    public static void registerScribeRecipes() {
+        // Ungated on purpose. Upstream gates this on INFUSED_INKWELL, but
+        // ItemInfusedInkwell.getResearchItem() returns null there, so no entry
+        // declares that key and the infusion can never match — and the bench
+        // recipe beside it only refills an inkwell you already own, so the
+        // first one is unobtainable in the original. There is no TT entry to
+        // hang it on, and inventing one would be worse; an empty research key
+        // makes InfusionRecipe.matches skip the check entirely.
+        ConfigResearch.recipes.put("InfusedInkwell", ThaumcraftApi.addInfusionCraftingRecipe(
+                "", new ItemStack(ConfigItems.itemInfusedInkwell), 2,
+                new AspectList().add(Aspect.VOID, 8).add(Aspect.DARKNESS, 8),
+                new ItemStack(ConfigItems.itemInkwell),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigBlocks.blockJar),
+                        new ItemStack(ConfigItems.itemResource, 1, 3)}));
+    }
+
+    /**
+     * The necromancy set: the blade that takes creatures apart, the souls it
+     * yields, and the tablet that puts them back together.
+     *
+     * <p>Souls come in three tiers {@code SoulAspects.TIER_STRIDE} apart —
+     * nine plain press into one condensed, nine condensed infuse into one
+     * infused — so the loop below writes twenty-two recipes.</p>
+     */
+    public static void registerNecromancyRecipes() {
+        // Upstream's wrapper takes (mapKey, researchGate): the block is stored
+        // under SUMMON0 but gated behind SUMMON. Gating it on SUMMON0 — a key
+        // no entry declares — is what made it uncraftable.
+        ConfigResearch.recipes.put("SUMMON0", ThaumcraftApi.addArcaneCraftingRecipe(
+                "SUMMON", new ItemStack(ConfigBlocks.blockSummon),
+                new AspectList().add(Aspect.ORDER, 50).add(Aspect.ENTROPY, 50),
+                "WWW", "SSS",
+                'S', new ItemStack(Blocks.STONE),
+                'W', new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 1)));
+
+        ConfigResearch.recipes.put("BloodSword", ThaumcraftApi.addInfusionCraftingRecipe(
+                "BLOOD_SWORD", new ItemStack(ConfigItems.itemBloodSword), 6,
+                new AspectList().add(Aspect.WEAPON, 25).add(Aspect.SOUL, 25)
+                        .add(Aspect.DEATH, 25).add(Aspect.MAGIC, 15),
+                new ItemStack(ConfigItems.itemSwordThaumium),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemResource, 1, 5),
+                        new ItemStack(ConfigItems.itemResource, 1, 5),
+                        new ItemStack(Items.ROTTEN_FLESH),
+                        new ItemStack(Items.BONE),
+                        new ItemStack(Items.SPIDER_EYE)}));
+
+        for (int i = 0; i < thaumcraft.common.items.tinkerer.SoulAspects.count(); i++) {
+            int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
+            thaumcraft.api.aspects.Aspect aspect =
+                    thaumcraft.common.items.tinkerer.SoulAspects.byNumber(i);
+            ThaumcraftApi.registerObjectTag(
+                    new ItemStack(ConfigItems.itemMobAspect, 1, i),
+                    new AspectList().add(aspect, 8));
+
+            thaumcraft.api.crafting.InfusionRecipe soulInfusion =
+                    ThaumcraftApi.addInfusionCraftingRecipe(
+                            "SUMMON", new ItemStack(ConfigItems.itemMobAspect, 1, stride * 2 + i), 4,
+                            new AspectList().add(aspect, 10),
+                            new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                            new ItemStack[]{
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                                    new ItemStack(ConfigItems.itemMobAspect, 1, stride + i)});
+            ConfigResearch.recipes.put("SoulAspectInfused" + i, soulInfusion);
+            // Upstream keys every one of these SUMMON too, so its research page
+            // shows whichever was registered last; this handle keeps that page
+            // the same, while the per-aspect one stays for anything specific.
+            ConfigResearch.recipes.put("SUMMON", soulInfusion);
+        }
+    }
+
+    /**
+     * The infused crops: four seeds infused from wheat seeds and a matching set
+     * of elemental shards, and the four potions brewed from what they yield.
+     *
+     * <p>The shard metas are upstream's and are deliberately not the primal
+     * order — seeds 0..3 take shards 0, 1, 3, 2. See {@code PrimalCrop}.</p>
+     */
+    public static void registerCropRecipes() {
+        ConfigResearch.recipes.put("INFUSED_POTIONS0", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 0), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigItems.itemShard, 1, 0),
+                        new ItemStack(ConfigItems.itemShard, 1, 0)}));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONS1", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 1), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 1),
+                        new ItemStack(ConfigItems.itemShard, 1, 1),
+                        new ItemStack(ConfigItems.itemShard, 1, 1),
+                        new ItemStack(ConfigItems.itemShard, 1, 1)}));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONS2", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 2), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 3),
+                        new ItemStack(ConfigItems.itemShard, 1, 3)}));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONS3", ThaumcraftApi.addInfusionCraftingRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedSeeds, 1, 3), 5,
+                new AspectList().add(Aspect.CROP, 32).add(Aspect.HARVEST, 32),
+                new ItemStack(Items.WHEAT_SEEDS),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemShard, 1, 2),
+                        new ItemStack(ConfigItems.itemShard, 1, 2),
+                        new ItemStack(ConfigItems.itemShard, 1, 2),
+                        new ItemStack(ConfigItems.itemShard, 1, 2)}));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONSPOT0", ThaumcraftApi.addCrucibleRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedPotion, 1, 0),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 0),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.AIR, 5)));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONSPOT1", ThaumcraftApi.addCrucibleRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedPotion, 1, 1),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 1),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.FIRE, 5)));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONSPOT2", ThaumcraftApi.addCrucibleRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedPotion, 1, 2),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 2),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.EARTH, 5)));
+
+        ConfigResearch.recipes.put("INFUSED_POTIONSPOT3", ThaumcraftApi.addCrucibleRecipe(
+                "INFUSED_POTIONS", new ItemStack(ConfigItems.itemInfusedPotion, 1, 3),
+                new ItemStack(ConfigItems.itemInfusedGrain, 1, 3),
+                new AspectList().add(Aspect.AURA, 5).add(Aspect.WATER, 5)));
+    }
+
+    /**
+     * The gases in a bottle and the thing that clears them away. Both bottles
+     * boil out of an empty phial; the dissipator is an arcane craft that needs
+     * one of each gas in it.
+     */
+    public static void registerGasRecipes() {
+        ConfigResearch.recipes.put("GaseousLight", ThaumcraftApi.addCrucibleRecipe(
+                "GASEOUS_LIGHT", new ItemStack(ConfigItems.itemGaseousLight),
+                new ItemStack(ConfigItems.itemEssence, 1, 0),
+                new AspectList().add(Aspect.LIGHT, 16).add(Aspect.AIR, 10).add(Aspect.MOTION, 8)));
+
+        ConfigResearch.recipes.put("GaseousShadow", ThaumcraftApi.addCrucibleRecipe(
+                "GASEOUS_SHADOW", new ItemStack(ConfigItems.itemGaseousShadow),
+                new ItemStack(ConfigItems.itemEssence, 1, 0),
+                new AspectList().add(Aspect.DARKNESS, 16).add(Aspect.AIR, 10).add(Aspect.MOTION, 8)));
+
+        ConfigResearch.recipes.put("GasRemover", ThaumcraftApi.addArcaneCraftingRecipe(
+                "GAS_REMOVER", new ItemStack(ConfigItems.itemGasRemover),
+                new AspectList().add(Aspect.AIR, 2).add(Aspect.ORDER, 2),
+                "DDD", "T G", "QQQ",
+                'D', new ItemStack(ConfigItems.itemDarkQuartz),
+                'T', new ItemStack(ConfigItems.itemGaseousLight),
+                'G', new ItemStack(ConfigItems.itemGaseousShadow),
+                'Q', new ItemStack(Items.QUARTZ)));
+    }
+
     /**
      * Hyperenergetic Nitor and the six imbued fires — all crucible recipes
      * upstream, every one of them boiled out of a single nitor.
@@ -239,47 +456,52 @@ public class ConfigTinkerer {
      */
     public static void registerBenchRecipes(net.minecraftforge.registries.IForgeRegistry<
             net.minecraft.item.crafting.IRecipe> registry) {
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigItems.itemDarkQuartz, 8),
-                "QQQ", "QCQ", "QQQ",
-                'Q', new ItemStack(Items.QUARTZ),
-                'C', new ItemStack(Items.COAL, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_coal"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigItems.itemDarkQuartz, 8),
-                "QQQ", "QCQ", "QQQ",
-                'Q', new ItemStack(Items.QUARTZ),
-                'C', new ItemStack(Items.COAL, 1, 1))
-                .setRegistryName("thaumcraft", "darkquartz_charcoal"));
+        // The keys are the original's: its research entry shows one page per
+        // DARK_QUARTZ0..5. Upstream registers both gem recipes under the same
+        // key, so the map keeps the charcoal one and that is the page shown —
+        // reproduced here rather than tidied.
+        registry.register(bench("darkquartz_coal", "DARK_QUARTZ0",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigItems.itemDarkQuartz, 8),
+                        "QQQ", "QCQ", "QQQ",
+                        'Q', new ItemStack(Items.QUARTZ),
+                        'C', new ItemStack(Items.COAL, 1, 0))));
+        registry.register(bench("darkquartz_charcoal", "DARK_QUARTZ0",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigItems.itemDarkQuartz, 8),
+                        "QQQ", "QCQ", "QQQ",
+                        'Q', new ItemStack(Items.QUARTZ),
+                        'C', new ItemStack(Items.COAL, 1, 1))));
 
         // The blocks: four gems make one, two blocks make two pillars, and two
         // slabs make one chiseled block. All bench recipes upstream.
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0),
-                "QQ", "QQ",
-                'Q', new ItemStack(ConfigItems.itemDarkQuartz))
-                .setRegistryName("thaumcraft", "darkquartz_block"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
-                "Q", "Q",
-                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_pillar"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
-                "Q", "Q",
-                'Q', new ItemStack(ConfigBlocks.blockSlabDarkQuartz))
-                .setRegistryName("thaumcraft", "darkquartz_chiseled"));
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockSlabDarkQuartz, 6),
-                "QQQ",
-                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_slab"));
-        // Stairs are registered both ways round, as upstream does.
-        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
-                new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
-                "  Q", " QQ", "QQQ",
-                'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))
-                .setRegistryName("thaumcraft", "darkquartz_stairs"));
+        registry.register(bench("darkquartz_block", "DARK_QUARTZ1",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0),
+                        "QQ", "QQ",
+                        'Q', new ItemStack(ConfigItems.itemDarkQuartz))));
+        registry.register(bench("darkquartz_pillar", "DARK_QUARTZ3",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockDarkQuartz, 2, 2),
+                        "Q", "Q",
+                        'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))));
+        registry.register(bench("darkquartz_chiseled", "DARK_QUARTZ4",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 1),
+                        "Q", "Q",
+                        'Q', new ItemStack(ConfigBlocks.blockSlabDarkQuartz))));
+        registry.register(bench("darkquartz_slab", "DARK_QUARTZ2",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockSlabDarkQuartz, 6),
+                        "QQQ",
+                        'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))));
+        // Stairs are registered both ways round, as upstream does — but only
+        // the first carries the research key there, so only it gets a page.
+        registry.register(bench("darkquartz_stairs", "DARK_QUARTZ5",
+                new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                        new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
+                        "  Q", " QQ", "QQQ",
+                        'Q', new ItemStack(ConfigBlocks.blockDarkQuartz, 1, 0))));
         registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
                 new ItemStack(ConfigBlocks.blockStairsDarkQuartz, 4),
                 "Q  ", "QQ ", "QQQ",
@@ -290,6 +512,65 @@ public class ConfigTinkerer {
         registry.register(new thaumcraft.common.items.tinkerer.SpellClothRecipe(
                 ConfigItems.itemSpellCloth)
                 .setRegistryName("thaumcraft", "spellcloth_disenchant"));
+
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigItems.itemShareBook),
+                " S ", "PTP", " P ",
+                'S', new ItemStack(ConfigItems.itemInkwell),
+                'T', new ItemStack(ConfigItems.itemThaumonomicon),
+                'P', new ItemStack(Items.PAPER))
+                .setRegistryName("thaumcraft", "sharebook"));
+
+        // Re-inking the infused tools: a ring of ink sacs round the worn ones.
+        registry.register(new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                new ItemStack(ConfigItems.itemInfusedInkwell),
+                "QQQ", "QCQ", "QQQ",
+                'Q', new ItemStack(Items.DYE, 1, 0),
+                'C', new ItemStack(ConfigItems.itemInfusedInkwell, 1,
+                        net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE))
+                .setRegistryName("thaumcraft", "infusedinkwell_refill"));
+
+        // Nine plain souls press into one condensed, per aspect. Upstream keys
+        // every one of them SUMMON1, so the summoning research shows whichever
+        // was registered last; keeping the single key keeps that page the same.
+        for (int i = 0; i < thaumcraft.common.items.tinkerer.SoulAspects.count(); i++) {
+            int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
+            registry.register(bench("soulaspect_condense_" + i, "SUMMON1",
+                    new net.minecraftforge.oredict.ShapedOreRecipe(null,
+                            new ItemStack(ConfigItems.itemMobAspect, 1, stride + i),
+                            "XXX", "XXX", "XXX",
+                            'X', new ItemStack(ConfigItems.itemMobAspect, 1, i))));
+        }
+    }
+
+    /**
+     * Registers a bench recipe under its Forge name and keeps a handle under
+     * the research key the original used, so a Thaumonomicon page can show it.
+     * Reusing a key overwrites, exactly as upstream's registry does.
+     */
+    private static net.minecraft.item.crafting.IRecipe bench(
+            String registryName, String researchKey,
+            net.minecraftforge.oredict.ShapedOreRecipe recipe) {
+        recipe.setRegistryName("thaumcraft", registryName);
+        BENCH_HANDLES.put(researchKey, recipe);
+        return recipe;
+    }
+
+    /**
+     * Bench recipes are registered in the IRecipe registry event, long before
+     * {@link ConfigRecipes#init()} runs — and that begins by clearing
+     * {@code ConfigResearch.recipes}. Handing them over directly there loses
+     * them, so they are parked here and published after the clear.
+     */
+    private static final java.util.Map<String, net.minecraft.item.crafting.IRecipe> BENCH_HANDLES =
+            new java.util.LinkedHashMap<>();
+
+    /** Must be called from inside ConfigRecipes.init(), after the map is cleared. */
+    public static void publishBenchRecipeHandles() {
+        for (java.util.Map.Entry<String, net.minecraft.item.crafting.IRecipe> entry
+                : BENCH_HANDLES.entrySet()) {
+            ConfigResearch.recipes.put(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -449,13 +730,81 @@ public class ConfigTinkerer {
      * {@code DimensionalShardDropHandler}).
      */
     public static void registerKamiRecipes() {
+        // WARP_GATE: the dislocator taught to hold a destination.
+        ConfigResearch.recipes.put("WarpGate", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARP_GATE", new ItemStack(ConfigBlocks.blockWarpGate), 8,
+                new AspectList().add(Aspect.TRAVEL, 64).add(Aspect.ELDRITCH, 32)
+                        .add(Aspect.MECHANISM, 32).add(Aspect.FLIGHT, 32),
+                new ItemStack(ConfigBlocks.blockTransvectorDislocator),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.ENDER_EYE),
+                        new ItemStack(Blocks.OBSIDIAN),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
+                        new ItemStack(Blocks.OBSIDIAN),
+                        new ItemStack(Items.ENDER_EYE)}));
+
+        // SKY_PEARL: two at a time, gated behind the gate that addresses them.
+        ConfigResearch.recipes.put("SkyPearl", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARP_GATE", new ItemStack(ConfigItems.itemSkyPearl, 2), 6,
+                new AspectList().add(Aspect.TRAVEL, 32).add(Aspect.ELDRITCH, 32)
+                        .add(Aspect.FLIGHT, 32).add(Aspect.AIR, 16),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, 7),
+                        new ItemStack(Blocks.LAPIS_BLOCK),
+                        new ItemStack(Items.DIAMOND)}));
+
+        // FOCUS_RECALL: a pearl, a mirror and a portable hole.
+        ConfigResearch.recipes.put("FocusRecall", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_RECALL", new ItemStack(ConfigItems.focusRecall), 10,
+                new AspectList().add(Aspect.TRAVEL, 100).add(Aspect.ELDRITCH, 64)
+                        .add(Aspect.MAGIC, 50),
+                new ItemStack(ConfigItems.itemSkyPearl),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.ENDER_PEARL),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigBlocks.blockMirror),
+                        new ItemStack(ConfigItems.focusPortableHole)}));
+
+        // FOCUS_SHADOWBEAM: the shock focus turned on the dark.
+        ConfigResearch.recipes.put("FocusShadowbeam", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_SHADOWBEAM", new ItemStack(ConfigItems.focusShadowbeam), 12,
+                new AspectList().add(Aspect.DARKNESS, 65).add(Aspect.ELDRITCH, 32)
+                        .add(Aspect.MAGIC, 50).add(Aspect.WEAPON, 32),
+                new ItemStack(ConfigItems.focusShock),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.ARROW),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.focusExcavation),
+                        new ItemStack(ConfigItems.focusDeflect),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR)}));
+
+        // FOCUS_XP_DRAIN: an ender pearl infused with what the mind can spare.
+        ConfigResearch.recipes.put("FocusXpDrain", ThaumcraftApi.addInfusionCraftingRecipe(
+                "FOCUS_XP_DRAIN", new ItemStack(ConfigItems.focusXpDrain), 12,
+                new AspectList().add(Aspect.MIND, 65).add(Aspect.TAINT, 16)
+                        .add(Aspect.MAGIC, 50).add(Aspect.AURA, 32),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(Items.EXPERIENCE_BOTTLE),
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemXpTalisman),
+                        new ItemStack(Blocks.ENCHANTING_TABLE),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR)}));
+
         ItemStack ichor = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR);
         ItemStack cloth = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH);
         ItemStack ichorium = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM);
 
         // Ichor: infusion on a nether star, instability 7.
         ConfigResearch.recipes.put("Ichor", ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSION",
+                "ICHOR",
                 new ItemStack(ConfigItems.itemKamiResource, 8, ItemKamiResource.ICHOR), 7,
                 new AspectList().add(Aspect.MAN, 32).add(Aspect.LIGHT, 32).add(Aspect.SOUL, 64),
                 new ItemStack(Items.NETHER_STAR),
@@ -467,7 +816,7 @@ public class ConfigTinkerer {
 
         // Ichorcloth: 3 per craft, 125 of every primal.
         ConfigResearch.recipes.put("IchorCloth", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 3, ItemKamiResource.ICHORCLOTH),
+                "ICHOR_CLOTH", new ItemStack(ConfigItems.itemKamiResource, 3, ItemKamiResource.ICHORCLOTH),
                 allPrimals(125),
                 "CCC", "III", "DDD",
                 'C', new ItemStack(ConfigItems.itemResource, 1, 7),
@@ -476,7 +825,7 @@ public class ConfigTinkerer {
 
         // Ichorium ingot: 100 of every primal.
         ConfigResearch.recipes.put("Ichorium", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
+                "ICHORIUM", new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
                 allPrimals(100),
                 " T ", "IDI", " I ",
                 'T', new ItemStack(ConfigItems.itemResource, 1, 2),
@@ -485,7 +834,7 @@ public class ConfigTinkerer {
 
         // Ichor cap: 2 per craft, on charged thaumium caps.
         ConfigResearch.recipes.put("IchorCap", ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(ConfigItems.itemKamiResource, 2, ItemKamiResource.ICHOR_CAP),
+                "ICHOR_CAP", new ItemStack(ConfigItems.itemKamiResource, 2, ItemKamiResource.ICHOR_CAP),
                 allPrimals(100),
                 "ICI", " M ", "ICI",
                 'M', ichorium,
@@ -494,7 +843,7 @@ public class ConfigTinkerer {
 
         // Ichorcloth rod: infusion on a greatwood rod, instability 9.
         ConfigResearch.recipes.put("IchorclothRod", ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSION",
+                "ICHORCLOTH_ROD",
                 new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH_ROD), 9,
                 new AspectList().add(Aspect.MAGIC, 100).add(Aspect.LIGHT, 32).add(Aspect.TOOL, 32),
                 new ItemStack(ConfigItems.itemWandRod, 1, 2),
@@ -504,6 +853,136 @@ public class ConfigTinkerer {
                         new ItemStack(Items.GHAST_TEAR),
                         new ItemStack(ConfigItems.itemResource, 1, 14),
                         cloth.copy()}));
+    }
+
+    /**
+     * Ichorcloth armour. Four arcane crafts from ichorcloth alone, each priced
+     * at 75 of a single primal — a different one per piece, which is the
+     * original's own pattern.
+     */
+    public static void registerKamiArmorRecipes() {
+        ConfigResearch.recipes.put("IchorclothHelm", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothHelm),
+                new AspectList().add(Aspect.WATER, 75),
+                "CCC", "C C",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+
+        ConfigResearch.recipes.put("IchorclothChest", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothChest),
+                new AspectList().add(Aspect.AIR, 75),
+                "C C", "CCC", "CCC",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+
+        ConfigResearch.recipes.put("IchorclothLegs", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothLegs),
+                new AspectList().add(Aspect.FIRE, 75),
+                "CCC", "C C", "C C",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+
+        ConfigResearch.recipes.put("IchorclothBoots", ThaumcraftApi.addArcaneCraftingRecipe(
+                "ICHORCLOTH_ARMOR", new ItemStack(ConfigItems.itemIchorclothBoots),
+                new AspectList().add(Aspect.EARTH, 75),
+                "C C", "C C",
+                'C', new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORCLOTH)));
+    }
+
+    /**
+     * The awakened armour: each piece is an infusion at instability 13 on its
+     * plain counterpart. Three of the four are here — see the note at the end
+     * for the leggings.
+     */
+    public static void registerKamiAwakenedArmorRecipes() {
+        // ICHORCLOTH_HELM_GEM: the cowl, on the plain cowl.
+        ConfigResearch.recipes.put("IchorclothHelmGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_HELM_GEM", new ItemStack(ConfigItems.itemIchorclothHelmGem), 13,
+                new AspectList().add(Aspect.WATER, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.HUNGER, 32).add(Aspect.AURA, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.FLESH, 16).add(Aspect.MIND, 16),
+                new ItemStack(ConfigItems.itemIchorclothHelm),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(Items.GOLDEN_HELMET),
+                        new ItemStack(ConfigItems.itemGoggles),
+                        new ItemStack(ConfigItems.itemCleansingTalisman),
+                        new ItemStack(Items.FISH),
+                        new ItemStack(Items.CAKE),
+                        new ItemStack(Items.ENDER_EYE)}));
+
+        // ICHORCLOTH_CHEST_GEM: the robes, on the plain robe.
+        ConfigResearch.recipes.put("IchorclothChestGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_CHEST_GEM", new ItemStack(ConfigItems.itemIchorclothChestGem), 13,
+                new AspectList().add(Aspect.AIR, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.FLIGHT, 32).add(Aspect.ORDER, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.ELDRITCH, 16).add(Aspect.SENSES, 16),
+                new ItemStack(ConfigItems.itemIchorclothChest),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(Items.GOLDEN_CHESTPLATE),
+                        new ItemStack(ConfigItems.focusFlight),
+                        new ItemStack(ConfigItems.itemHoverHarness),
+                        new ItemStack(ConfigItems.focusDeflect),
+                        new ItemStack(Items.FEATHER),
+                        new ItemStack(Items.FIREWORKS),
+                        new ItemStack(Items.ARROW)}));
+
+        // ICHORCLOTH_BOOTS_GEM: the boots, on the plain boots.
+        ConfigResearch.recipes.put("IchorclothBootsGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_BOOTS_GEM", new ItemStack(ConfigItems.itemIchorclothBootsGem), 13,
+                new AspectList().add(Aspect.EARTH, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.MINE, 32).add(Aspect.MOTION, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.PLANT, 16).add(Aspect.TRAVEL, 16),
+                new ItemStack(ConfigItems.itemIchorclothBoots),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(Items.GOLDEN_BOOTS),
+                        new ItemStack(Blocks.GRASS),
+                        new ItemStack(ConfigBlocks.blockWoodenDevice, 1, 5),
+                        new ItemStack(ConfigBlocks.blockMetalDevice, 1, 8),
+                        new ItemStack(Items.WHEAT_SEEDS),
+                        new ItemStack(Blocks.WOOL),
+                        new ItemStack(Items.LEAD)}));
+
+        // ICHORCLOTH_LEGS_GEM: unblocked in 1.1.17.0 by the gases.
+        ConfigResearch.recipes.put("IchorclothLegsGem", ThaumcraftApi.addInfusionCraftingRecipe(
+                "ICHORCLOTH_LEGS_GEM", new ItemStack(ConfigItems.itemIchorclothLegsGem), 13,
+                new AspectList().add(Aspect.FIRE, 50).add(Aspect.ARMOR, 32)
+                        .add(Aspect.HEAL, 32).add(Aspect.ENERGY, 32)
+                        .add(Aspect.LIGHT, 64).add(Aspect.GREED, 16).add(Aspect.ELDRITCH, 16),
+                new ItemStack(ConfigItems.itemIchorclothLegs),
+                new ItemStack[]{
+                        new ItemStack(Items.DIAMOND),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
+                        new ItemStack(ConfigItems.focusPrimal),
+                        new ItemStack(ConfigItems.itemThaumonomicon),
+                        new ItemStack(Items.GOLDEN_CHESTPLATE),
+                        fireResistancePotion(),
+                        new ItemStack(ConfigItems.focusSmelt),
+                        new ItemStack(ConfigItems.itemBrightNitor),
+                        new ItemStack(Items.LAVA_BUCKET),
+                        new ItemStack(Items.FIRE_CHARGE),
+                        new ItemStack(Items.BLAZE_ROD)}));
+    }
+
+    /**
+     * A potion of fire resistance, which upstream wrote as damage 8195 on the
+     * old flat potion item. Potions carry their type in NBT in this version.
+     */
+    private static ItemStack fireResistancePotion() {
+        return net.minecraft.potion.PotionUtils.addPotionToItemStack(
+                new ItemStack(Items.POTIONITEM), net.minecraft.init.PotionTypes.FIRE_RESISTANCE);
     }
 
     /**
@@ -523,23 +1002,30 @@ public class ConfigTinkerer {
      * each tool's {@code getRecipeItem}.
      */
     public static void registerKamiAdvancedToolRecipes() {
-        advTool("IchorPickAdv", ConfigItems.itemIchorPickAdv, ConfigItems.itemIchorPick,
+        advTool("IchorPickAdv", "ICHOR_PICK_GEM", ConfigItems.itemIchorPickAdv, ConfigItems.itemIchorPick,
                 new AspectList().add(Aspect.FIRE, 50).add(Aspect.MINE, 64).add(Aspect.METAL, 32)
                         .add(Aspect.EARTH, 32).add(Aspect.HARVEST, 32).add(Aspect.GREED, 16)
                         .add(Aspect.SENSES, 16),
                 ConfigItems.itemPickElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
 
-        advTool("IchorAxeAdv", ConfigItems.itemIchorAxeAdv, ConfigItems.itemIchorAxe,
+        advTool("IchorAxeAdv", "ICHOR_AXE_GEM", ConfigItems.itemIchorAxeAdv, ConfigItems.itemIchorAxe,
                 new AspectList().add(Aspect.WATER, 50).add(Aspect.MINE, 64).add(Aspect.TOOL, 32)
                         .add(Aspect.TREE, 32).add(Aspect.HARVEST, 32).add(Aspect.CROP, 16)
                         .add(Aspect.SENSES, 16),
                 ConfigItems.itemAxeElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
 
-        advTool("IchorShovelAdv", ConfigItems.itemIchorShovelAdv, ConfigItems.itemIchorShovel,
+        advTool("IchorShovelAdv", "ICHOR_SHOVEL_GEM", ConfigItems.itemIchorShovelAdv, ConfigItems.itemIchorShovel,
                 new AspectList().add(Aspect.EARTH, 50).add(Aspect.MINE, 64).add(Aspect.TOOL, 32)
                         .add(Aspect.EARTH, 32).add(Aspect.HARVEST, 32).add(Aspect.TRAP, 16)
                         .add(Aspect.SENSES, 16),
                 ConfigItems.itemShovelElemental, ConfigItems.focusExcavation, new ItemStack(Blocks.TNT));
+
+        advTool("IchorSwordAdv", "ICHOR_SWORD_GEM", ConfigItems.itemIchorSwordAdv, ConfigItems.itemIchorSword,
+                new AspectList().add(Aspect.AIR, 50).add(Aspect.HUNGER, 64).add(Aspect.SOUL, 32)
+                        .add(Aspect.WEAPON, 32).add(Aspect.ENERGY, 32).add(Aspect.ORDER, 16)
+                        .add(Aspect.CRYSTAL, 16),
+                ConfigItems.itemSwordElemental, ConfigItems.focusFrost,
+                new ItemStack(Blocks.CACTUS));
     }
 
     /**
@@ -547,11 +1033,17 @@ public class ConfigTinkerer {
      * matching elemental tool and focus either side of a themed reagent, three
      * nuggets, a diamond, and ichorcloth to close the ring.
      */
-    private static void advTool(String key, net.minecraft.item.Item result, net.minecraft.item.Item base,
+    /**
+     * Each awakened tool is gated on its own research upstream, not on
+     * Thaumcraft's INFUSION — the single-argument wrapper there makes the
+     * map key the gate as well.
+     */
+    private static void advTool(String key, String research, net.minecraft.item.Item result,
+                                net.minecraft.item.Item base,
                                 AspectList aspects, net.minecraft.item.Item elemental,
                                 net.minecraft.item.Item focus, ItemStack reagent) {
         ConfigResearch.recipes.put(key, ThaumcraftApi.addInfusionCraftingRecipe(
-                "INFUSION", new ItemStack(result), 15, aspects, new ItemStack(base),
+                research, new ItemStack(result), 15, aspects, new ItemStack(base),
                 new ItemStack[]{
                         new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM),
                         new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHOR),
@@ -574,8 +1066,10 @@ public class ConfigTinkerer {
         recipe[pattern.length + 1] = new ItemStack(ConfigItems.itemWandRod, 1, 2);
         recipe[pattern.length + 2] = 'I';
         recipe[pattern.length + 3] = new ItemStack(ConfigItems.itemKamiResource, 1, ItemKamiResource.ICHORIUM);
+        // Upstream gates all four plain KAMI tools on ICHOR_TOOLS, whose
+        // entry shows all four crafts on its pages.
         ConfigResearch.recipes.put(key, ThaumcraftApi.addArcaneCraftingRecipe(
-                "INFUSION", new ItemStack(tool), new AspectList().add(aspect, 75), recipe));
+                "ICHOR_TOOLS", new ItemStack(tool), new AspectList().add(aspect, 75), recipe));
     }
 
     /** The original priced KAMI crafts at the same amount of every primal. */

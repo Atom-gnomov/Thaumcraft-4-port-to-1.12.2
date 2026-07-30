@@ -4,7 +4,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import thaumcraft.common.items.tinkerer.kami.KamiMaterials;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Ichor sword — ported from Thaumic Tinkerer's {@code ItemIchorSword}
@@ -17,7 +17,7 @@ public class ItemIchorSword extends ItemSword {
 
     public ItemIchorSword() {
         super(KamiMaterials.ICHOR);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

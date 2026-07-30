@@ -1,7 +1,6 @@
 package thaumcraft.client.gui;
 
 import java.io.IOException;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -12,7 +11,7 @@ import thaumcraft.common.entities.ContainerPech;
 import thaumcraft.common.entities.monster.EntityPech;
 import thaumcraft.common.lib.TCSounds;
 
-public class GuiPech extends GuiContainer {
+public class GuiPech extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/gui_pech.png");
 
@@ -76,8 +75,8 @@ public class GuiPech extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
         this.renderHoveredToolTip(mouseX, mouseY);
     }

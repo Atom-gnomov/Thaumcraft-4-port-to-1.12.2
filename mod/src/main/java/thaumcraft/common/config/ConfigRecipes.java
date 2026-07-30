@@ -423,7 +423,14 @@ public class ConfigRecipes {
         ConfigTinkerer.registerUtilityItemRecipes();
         ConfigTinkerer.registerBlockRecipes();
         ConfigTinkerer.registerFireRecipes();
+        ConfigTinkerer.registerGasRecipes();
+        ConfigTinkerer.registerCropRecipes();
+        ConfigTinkerer.registerNecromancyRecipes();
+        ConfigTinkerer.registerScribeRecipes();
+        ConfigTinkerer.registerMobilizerRecipes();
         ConfigTinkerer.registerKamiRecipes();
+        ConfigTinkerer.registerKamiArmorRecipes();
+        ConfigTinkerer.registerKamiAwakenedArmorRecipes();
         ConfigTinkerer.registerKamiToolRecipes();
         ConfigTinkerer.registerKamiAdvancedToolRecipes();
     }

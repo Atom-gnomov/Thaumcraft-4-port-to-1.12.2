@@ -26,6 +26,7 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.tinkerer.TileAnimationTablet;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Animation Tablet — reimplemented from Thaumic Tinkerer (pixlepix/nekosune,
@@ -53,7 +54,7 @@ public class BlockAnimationTablet extends BlockContainer {
         this.setHardness(3.0F);
         this.setResistance(50.0F);
         this.setSoundType(SoundType.METAL);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 

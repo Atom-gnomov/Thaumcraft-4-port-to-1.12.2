@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
@@ -29,7 +28,7 @@ import thaumcraft.common.tiles.tinkerer.TileEnchanter;
  * and a bar per primal aspect showing paid-against-total with a tooltip.</p>
  */
 @SideOnly(Side.CLIENT)
-public class GuiEnchanter extends GuiContainer {
+public class GuiEnchanter extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE =
             new ResourceLocation("thaumcraft", "textures/gui/enchanter.png");

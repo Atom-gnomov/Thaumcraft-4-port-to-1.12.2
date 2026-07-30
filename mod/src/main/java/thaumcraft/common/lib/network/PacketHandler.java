@@ -24,6 +24,9 @@ import thaumcraft.common.lib.network.misc.PacketBiomeChange;
 import thaumcraft.common.lib.network.misc.PacketBoreDig;
 import thaumcraft.common.lib.network.misc.PacketConfig;
 import thaumcraft.common.lib.network.misc.PacketFlyToServer;
+import thaumcraft.common.lib.network.tinkerer.PacketWarpGateLock;
+import thaumcraft.common.lib.network.tinkerer.PacketSoulHearts;
+import thaumcraft.common.lib.network.tinkerer.PacketWarpGateTeleport;
 import thaumcraft.common.lib.network.misc.PacketFocusChangeToServer;
 import thaumcraft.common.lib.network.misc.PacketItemKeyToServer;
 import thaumcraft.common.lib.network.misc.PacketMiscEvent;
@@ -47,7 +50,7 @@ import thaumcraft.common.lib.network.playerdata.PacketWarpMessage;
 
 public class PacketHandler {
     public static final String CHANNEL = "thaumcraft";
-    public static final int REFERENCE_PACKET_COUNT = 39;
+    public static final int REFERENCE_PACKET_COUNT = 42;
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL);
 
     // Single dispatch handler that calls onMessage() on each packet
@@ -95,6 +98,11 @@ public class PacketHandler {
         register(PacketFXVisDrain.class, idx++, Side.CLIENT);
         register(PacketFXBeamPulse.class, idx++, Side.CLIENT);
         register(PacketFXBeamPulseGolemBoss.class, idx++, Side.CLIENT);
+        // Appended, never inserted: inserting would shift every discriminator
+        // after it and break the protocol for existing clients.
+        register(PacketWarpGateLock.class, idx++, Side.SERVER);
+        register(PacketWarpGateTeleport.class, idx++, Side.SERVER);
+        register(PacketSoulHearts.class, idx++, Side.CLIENT);
         if (idx != REFERENCE_PACKET_COUNT) {
             throw new IllegalStateException("Thaumcraft packet discriminator table changed: expected " + REFERENCE_PACKET_COUNT + " entries, got " + idx);
         }

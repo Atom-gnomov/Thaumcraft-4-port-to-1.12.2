@@ -1,7 +1,7 @@
 package thaumcraft.common.items.tinkerer;
 
 import net.minecraft.item.Item;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Hyperenergetic Nitor — ported from Thaumic Tinkerer's {@code ItemBrightNitor}
@@ -14,6 +14,6 @@ public class ItemBrightNitor extends Item {
 
     public ItemBrightNitor() {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 }

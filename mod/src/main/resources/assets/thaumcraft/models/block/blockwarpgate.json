@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "thaumcraft:blocks/kami_warp_gate_0",
+    "side": "thaumcraft:blocks/kami_warp_gate_1",
+    "bottom": "thaumcraft:blocks/kami_warp_gate_1"
+  }
+}

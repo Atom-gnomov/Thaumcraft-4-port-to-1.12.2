@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Spellbinding Cloth — ported from Thaumic Tinkerer's {@code ItemSpellCloth}
@@ -25,7 +25,7 @@ public class ItemSpellCloth extends Item {
         this.setMaxDamage(USES);
         this.setMaxStackSize(1);
         this.setNoRepair();
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

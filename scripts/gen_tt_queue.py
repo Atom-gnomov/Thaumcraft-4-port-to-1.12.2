@@ -12,6 +12,8 @@ import os
 
 import tt_common as tt
 
+GROUPS = tt.GROUPS
+
 
 def order(entries, have):
     """Dependency order: an object follows everything its recipe consumes."""
@@ -38,9 +40,12 @@ def main():
     entries = tt.extract()
     have = tt.ported_classes()
 
-    todo = [e for e in entries if not tt.is_ported(e['cls'], have)]
-    done = len(entries) - len(todo)
-    todo = order(todo, have)
+    ported = [e for e in entries if tt.is_ported(e['cls'], have)]
+    rest = [e for e in entries if e not in ported]
+    excluded = [e for e in rest if tt.is_excluded(e)]
+    todo = order([e for e in rest if e not in excluded], have)
+    done = len(ported)
+    scope = len(entries) - len(excluded)
 
     L = []
     w = L.append
@@ -49,21 +54,25 @@ def main():
     w('(`../tt-original-1.7.10`) и дерева этого порта — руками не заполнять,')
     w('перегенерировать после каждого захода.')
     w('')
-    w('**Состояние: портировано %d из %d объектов каталога, осталось %d.**'
-      % (done, len(entries), len(todo)))
+    w('**Состояние: портировано %d из %d, осталось %d.**' % (done, scope, len(todo)))
+    w('')
+    w('В каталоге %d объектов; %d из них вычеркнуты как недостижимые и в счёт'
+      % (len(entries), len(excluded)))
+    w('не идут — см. «Вычеркнуто» в конце.')
     w('')
     w('Порядок — по зависимостям: объект появляется после всего, что ему нужно.')
     w('«Связи» — компоненты рецепта, которые сами являются объектами TT.')
     w('Точные значения любого объекта — в [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md).')
     w('')
+
     w('> **Осторожно: таблица знает только про зависимости по рецепту.**')
     w('> Поведенческие связи она не видит, и их надо проверять глазами по')
     w('> исходнику. Пример: `ItemSkyPearl` числится свободным, но настраивается')
     w('> только кликом по `BlockWarpGate` — без портала это мёртвый предмет.')
     w('> Перед тем как брать объект, прочитай его класс целиком.')
     w('')
-    w('| # | Объект | Рецепт | Неста­бильность | Зависит от (ещё нет) | Использует (уже есть) |')
-    w('|---|---|---|---|---|---|')
+    w('| # | Объект | Рецепт | Неста­бильность | Регистрация | Зависит от (ещё нет) | Использует (уже есть) |')
+    w('|---|---|---|---|---|---|---|')
 
     rows = []
     for i, e in enumerate(todo, 1):
@@ -72,12 +81,47 @@ def main():
         present = [c for c in comps if tt.is_ported(c, have)]
         inst = tt.instability(e['recipe'])
         rows.append((i, e, missing, present, inst))
-        w('| %d | `%s` | %s | %s | %s | %s |' % (
+        w('| %d | `%s` | %s | %s | %s | %s | %s |' % (
             i, e['cls'], tt.recipe_kind(e['recipe']), inst or '—',
+            tt.gate(e) or 'всегда',
             ', '.join('`%s`' % c for c in missing) or '—',
             ', '.join('`%s`' % c for c in present) or '—'))
 
     w('')
+    w('---')
+    w('')
+    w('## Уже перенесено')
+    w('')
+    w('Полный список того, что в моде есть. Считается по дереву исходников, а не')
+    w('по памяти: объект считается перенесённым, когда в порту существует класс с')
+    w('его именем (или тем, на которое он был переименован — таблица переименований')
+    w('живёт в `scripts/tt_common.py`).')
+    w('')
+    done_list = [e for e in entries if tt.is_ported(e['cls'], have)]
+    for title, pred in GROUPS:
+        members = [e for e in done_list if pred(e['file'])]
+        if not members:
+            continue
+        for e in members:
+            done_list = [x for x in done_list if x is not e]
+        w('**%s** — %d' % (title, len(members)))
+        w('')
+        for e in members:
+            name = tt.resolve(e['name'] or '', consts)
+            name = name.replace('return ', '').rstrip(';').replace('\n', ' ').strip()
+            port = tt.RENAMES.get(e['cls'], e['cls'])
+            w('- `%s`%s — %s' % (
+                e['cls'],
+                '' if port == e['cls'] else ' → у нас `%s`' % port,
+                name or '—'))
+        w('')
+    if done_list:
+        w('**Прочее** — %d' % len(done_list))
+        w('')
+        for e in done_list:
+            w('- `%s`' % e['cls'])
+        w('')
+
     w('---')
     w('')
     w('## Свойства каждого объекта')
@@ -103,14 +147,35 @@ def main():
             w('- **Родитель в дереве исследований:** `%s`' % parent)
         if missing:
             w('- **Блокируется:** %s' % ', '.join('`%s`' % c for c in missing))
+        if tt.gate(e):
+            w('- **Регистрация:** %s' % tt.gate(e))
         if present:
             w('- **Использует уже портированное:** %s' % ', '.join('`%s`' % c for c in present))
         w('- **Точные значения:** см. `TT_OBJECT_REFERENCE.md` → `%s`' % e['cls'])
         w('')
 
+    w('---')
+    w('')
+    w('## Вычеркнуто')
+    w('')
+    w('Эти объекты не портируются и в счёт не входят. Решение принято сознательно,')
+    w('а не по недосмотру, поэтому список висит здесь, а не пропадает.')
+    w('')
+    for e in sorted(excluded, key=lambda x: x['cls']):
+        g = tt.gate(e)
+        if g == u'НЕ РЕГИСТРИРУЕТСЯ':
+            why = (u'`shouldRegister()` в оригинале возвращает `false` — объекта нет '
+                   u'в игре и с оригиналом')
+        else:
+            why = (u'%s; этого мода в порту нет, и добавлять объект «просто так» '
+                   u'значило бы дать игроку то, чего оригинал не даёт' % g)
+        w('- ~~`%s`~~ — %s' % (e['cls'], why))
+    w('')
+
     out = os.path.join(tt.REPO, 'TT_PORT_QUEUE.md')
     io.open(out, 'w', encoding='utf-8', newline='\n').write('\n'.join(L))
-    print('wrote %s — %d ported, %d remaining' % (out, done, len(todo)))
+    print('wrote %s — %d ported, %d remaining, %d struck out'
+          % (out, done, len(todo), len(excluded)))
 
 
 if __name__ == '__main__':

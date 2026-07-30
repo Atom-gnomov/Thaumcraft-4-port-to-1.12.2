@@ -88,8 +88,18 @@ public class ConfigBlocks {
     public static BlockTransvectorInterface blockTransvectorInterface;
     public static BlockTransvectorDislocator blockTransvectorDislocator;
     public static BlockAnimationTablet blockAnimationTablet;
+    public static thaumcraft.common.blocks.tinkerer.kami.BlockWarpGate blockWarpGate;
     public static BlockEnchanter blockEnchanter;
     public static BlockPlatform blockPlatform;
+    public static BlockForcefield blockForcefield;
+    public static BlockSummon blockSummon;
+    public static BlockMobilizer blockMobilizer;
+    public static BlockMobilizerRelay blockMobilizerRelay;
+    /** One per primal, indexed by {@link thaumcraft.common.items.tinkerer.PrimalCrop}. */
+    public static BlockInfusedGrain[] blockInfusedGrain = new BlockInfusedGrain[4];
+    public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight blockGaseousLight;
+    public static thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow blockGaseousShadow;
+    public static thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas blockNitorGas;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireAir blockFireAir;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireWater blockFireWater;
     public static thaumcraft.common.blocks.tinkerer.fire.BlockFireEarth blockFireEarth;
@@ -214,6 +224,11 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockEnchanter"))
                 .setTranslationKey("thaumcraft.enchanter");
 
+        blockWarpGate = (thaumcraft.common.blocks.tinkerer.kami.BlockWarpGate)
+                new thaumcraft.common.blocks.tinkerer.kami.BlockWarpGate()
+                        .setRegistryName("thaumcraft", legacyPath("blockWarpGate"))
+                        .setTranslationKey("thaumcraft.kami.warp_gate");
+
         blockBedrockPortal = (thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal)
                 new thaumcraft.common.blocks.tinkerer.kami.BlockBedrockPortal()
                         .setRegistryName("thaumcraft", legacyPath("blockBedrockPortal"))
@@ -337,6 +352,57 @@ public class ConfigBlocks {
                 .setRegistryName("thaumcraft", legacyPath("blockFireChaos"))
                 .setTranslationKey("thaumcraft.fire_chaos");
 
+        blockGaseousLight = (thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight)
+                new thaumcraft.common.blocks.tinkerer.gas.BlockGaseousLight()
+                .setRegistryName("thaumcraft", legacyPath("blockGaseousLight"))
+                .setTranslationKey("thaumcraft.gaseous_light");
+
+        blockGaseousShadow = (thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow)
+                new thaumcraft.common.blocks.tinkerer.gas.BlockGaseousShadow()
+                .setRegistryName("thaumcraft", legacyPath("blockGaseousShadow"))
+                .setTranslationKey("thaumcraft.gaseous_shadow");
+
+        blockNitorGas = (thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas)
+                new thaumcraft.common.blocks.tinkerer.gas.BlockNitorGas()
+                .setRegistryName("thaumcraft", legacyPath("blockNitorGas"))
+                .setTranslationKey("thaumcraft.nitor_gas");
+
+        blockInfusedGrain[0] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.AIR)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainAer"))
+                .setTranslationKey("thaumcraft.infused_grain_aer");
+
+        blockInfusedGrain[1] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.FIRE)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainIgnis"))
+                .setTranslationKey("thaumcraft.infused_grain_ignis");
+
+        blockInfusedGrain[2] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.EARTH)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainTerra"))
+                .setTranslationKey("thaumcraft.infused_grain_terra");
+
+        blockInfusedGrain[3] = (BlockInfusedGrain) new BlockInfusedGrain(
+                thaumcraft.common.items.tinkerer.PrimalCrop.WATER)
+                .setRegistryName("thaumcraft", legacyPath("blockInfusedGrainAqua"))
+                .setTranslationKey("thaumcraft.infused_grain_aqua");
+
+        blockMobilizer = (BlockMobilizer) new BlockMobilizer()
+                .setRegistryName("thaumcraft", legacyPath("blockMobilizer"))
+                .setTranslationKey("thaumcraft.mobilizer");
+
+        blockMobilizerRelay = (BlockMobilizerRelay) new BlockMobilizerRelay()
+                .setRegistryName("thaumcraft", legacyPath("blockMobilizerRelay"))
+                .setTranslationKey("thaumcraft.mobilizer_relay");
+
+        blockSummon = (BlockSummon) new BlockSummon()
+                .setRegistryName("thaumcraft", legacyPath("blockSummon"))
+                .setTranslationKey("thaumcraft.summon");
+
+        blockForcefield = (BlockForcefield) new BlockForcefield()
+                .setRegistryName("thaumcraft", legacyPath("blockForcefield"))
+                .setTranslationKey("thaumcraft.forcefield");
+
         blockPlatform = (BlockPlatform) new BlockPlatform()
                 .setRegistryName("thaumcraft", legacyPath("blockPlatform"))
                 .setTranslationKey("thaumcraft.platform");
@@ -433,6 +499,7 @@ public class ConfigBlocks {
                 blockTransvectorInterface,
                 blockTransvectorDislocator,
                 blockAnimationTablet,
+                blockWarpGate,
                 blockEnchanter,
                 blockBedrockPortal,
                 blockCosmeticOpaque,
@@ -457,6 +524,17 @@ public class ConfigBlocks {
                 blockDoubleSlabStone,
                 blockLootUrn,
                 blockLootCrate,
+                blockGaseousLight,
+                blockGaseousShadow,
+                blockNitorGas,
+                blockInfusedGrain[0],
+                blockInfusedGrain[1],
+                blockInfusedGrain[2],
+                blockInfusedGrain[3],
+                blockMobilizer,
+                blockMobilizerRelay,
+                blockSummon,
+                blockForcefield,
                 blockPlatform,
                 blockFireAir,
                 blockFireWater,
@@ -536,6 +614,12 @@ public class ConfigBlocks {
                 .setRegistryName(blockLootUrn.getRegistryName()));
         registry.register(new BlockLootItem(blockLootCrate)
                 .setRegistryName(blockLootCrate.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockMobilizer)
+                .setRegistryName(blockMobilizer.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockMobilizerRelay)
+                .setRegistryName(blockMobilizerRelay.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockSummon)
+                .setRegistryName(blockSummon.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockPlatform)
                 .setRegistryName(blockPlatform.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockFireAir)
@@ -573,6 +657,8 @@ public class ConfigBlocks {
                 .setRegistryName(blockAnimationTablet.getRegistryName()));
         registry.register(new net.minecraft.item.ItemBlock(blockEnchanter)
                 .setRegistryName(blockEnchanter.getRegistryName()));
+        registry.register(new net.minecraft.item.ItemBlock(blockWarpGate)
+                .setRegistryName(blockWarpGate.getRegistryName()));
     }
 
     public static void registerTileEntities() {
@@ -651,6 +737,10 @@ public class ConfigBlocks {
 
     private static final TileRegistration[] TILE_REGISTRATIONS = new TileRegistration[]{
             new TileRegistration(TileFunnel.class, "TileFunnel"),
+            new TileRegistration(TileMobilizer.class, "TileMobilizer"),
+            new TileRegistration(TileMobilizerRelay.class, "TileMobilizerRelay"),
+            new TileRegistration(TileSummon.class, "TileSummon"),
+            new TileRegistration(TileForcefield.class, "TileForcefield"),
             new TileRegistration(TileCamo.class, "TileCamo"),
             new TileRegistration(TileMagnet.class, "TileMagnet"),
             new TileRegistration(TileMobMagnet.class, "TileMobMagnet"),
@@ -658,6 +748,7 @@ public class ConfigBlocks {
             new TileRegistration(TileTransvectorInterface.class, "TileTransvectorInterface"),
             new TileRegistration(TileTransvectorDislocator.class, "TileTransvectorDislocator"),
             new TileRegistration(TileAnimationTablet.class, "TileAnimationTablet"),
+            new TileRegistration(thaumcraft.common.tiles.tinkerer.kami.TileWarpGate.class, "TileWarpGate"),
             new TileRegistration(TileEnchanter.class, "TileEnchanter"),
             new TileRegistration(TileJarFillable.class, "TileJar"),
             new TileRegistration(TileJarBrain.class, "TileJarBrain"),

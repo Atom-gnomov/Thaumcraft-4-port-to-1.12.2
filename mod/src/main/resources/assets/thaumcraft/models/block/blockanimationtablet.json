@@ -1,8 +1,24 @@
 {
-  "parent": "block/cube_bottom_top",
+  "comment": "Two pixels tall, not a cube: the original's BlockAnimationTablet does setBlockBounds(0, 0, 0, 1, 1F / 16F * 2F, 1) with renderAsNormalBlock() == false. Faces follow its registerBlockIcons/getIcon: animationTablet0 is the bottom, animationTablet1 the top, animationTablet2 the sides.",
+  "parent": "block/block",
   "textures": {
+    "particle": "thaumcraft:blocks/animation_tablet_side",
     "top": "thaumcraft:blocks/animation_tablet_top",
-    "bottom": "thaumcraft:blocks/animation_tablet_side",
+    "bottom": "thaumcraft:blocks/animation_tablet_bottom",
     "side": "thaumcraft:blocks/animation_tablet_side"
-  }
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 2, 16],
+      "faces": {
+        "down":  { "texture": "#bottom", "cullface": "down" },
+        "up":    { "texture": "#top" },
+        "north": { "texture": "#side" },
+        "south": { "texture": "#side" },
+        "west":  { "texture": "#side" },
+        "east":  { "texture": "#side" }
+      }
+    }
+  ]
 }

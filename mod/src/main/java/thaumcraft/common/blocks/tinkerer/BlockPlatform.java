@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Ethereal Platform — ported from Thaumic Tinkerer's {@code BlockPlatform}
@@ -29,7 +30,7 @@ public class BlockPlatform extends BlockCamo {
         this.setHardness(2.0F);
         this.setResistance(5.0F);
         this.setSoundType(SoundType.WOOD);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     /**

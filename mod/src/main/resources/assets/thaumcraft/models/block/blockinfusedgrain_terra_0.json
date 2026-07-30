@@ -1,0 +1,6 @@
+{
+  "parent": "block/crop",
+  "textures": {
+    "crop": "thaumcraft:blocks/crop_terra_0"
+  }
+}

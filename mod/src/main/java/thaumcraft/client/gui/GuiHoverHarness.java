@@ -1,13 +1,12 @@
 package thaumcraft.client.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import thaumcraft.common.container.ContainerHoverHarness;
 
-public class GuiHoverHarness extends GuiContainer {
+public class GuiHoverHarness extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/guihoverharness.png");
 
@@ -34,8 +33,8 @@ public class GuiHoverHarness extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
         this.renderHoveredToolTip(mouseX, mouseY);
     }

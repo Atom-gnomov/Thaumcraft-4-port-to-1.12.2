@@ -50,6 +50,8 @@ public class CommonProxy implements IGuiHandler {
     public static final int GUI_MOB_MAGNET = 23;
     /** KAMI screens start at 50, as they do in the original's LibGuiIDs. */
     public static final int GUI_ICHOR_POUCH = 50;
+    public static final int GUI_WARP_GATE = 51;
+    public static final int GUI_WARP_GATE_DESTINATIONS = 52;
     public final WandManager wandManager = new WandManager();
 
     // Capability-based player data accessors
@@ -126,6 +128,15 @@ public class CommonProxy implements IGuiHandler {
                                 (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
                         : null;
             }
+            case GUI_WARP_GATE: {
+                TileEntity tile = world.getTileEntity(pos);
+                return tile instanceof thaumcraft.common.tiles.tinkerer.kami.TileWarpGate
+                        ? new thaumcraft.common.container.tinkerer.ContainerWarpGate(
+                                (thaumcraft.common.tiles.tinkerer.kami.TileWarpGate) tile, player.inventory)
+                        : null;
+            }
+            case GUI_WARP_GATE_DESTINATIONS:
+                return null;
             case GUI_ICHOR_POUCH:
                 return new thaumcraft.common.container.ContainerIchorPouch(player.inventory, world);
             case GUI_THAUMONOMICON: return null;

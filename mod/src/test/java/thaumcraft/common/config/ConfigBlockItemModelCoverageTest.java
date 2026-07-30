@@ -20,10 +20,27 @@ public class ConfigBlockItemModelCoverageTest {
 
     private static final Pattern LEGACY_BLOCK_PATH = Pattern.compile("legacyPath\\(\"([^\"]+)\"\\)");
 
+    /**
+     * Blocks with no item form, which therefore have no item model to find.
+     *
+     * <p>The Thaumic Tinkerer gases are placed by other things and never held:
+     * upstream registers no ItemBlock for them and keeps them out of the
+     * creative tab. Giving them a model to satisfy this test would be inventing
+     * an item the mod does not have.</p>
+     */
+    private static final Set<String> NO_ITEM_FORM = new HashSet<>(java.util.Arrays.asList(
+            "blockgaseouslight", "blockgaseousshadow", "blocknitorgas",
+            "blockforcefield",
+            // Crops are planted from a seed and drop a seed; they are never
+            // held, so upstream gives them no ItemBlock either.
+            "blockinfusedgrainaer", "blockinfusedgrainignis",
+            "blockinfusedgrainterra", "blockinfusedgrainaqua"));
+
     @Test
     public void everyConfigBlockRegistryPathHasItemModelJson() throws IOException {
         String source = readFile("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
         Set<String> blockPaths = extractBlockPaths(source);
+        blockPaths.removeAll(NO_ITEM_FORM);
 
         Path modelDir = Paths.get("src/main/resources/assets/thaumcraft/models/item");
         List<String> missing = new ArrayList<>();

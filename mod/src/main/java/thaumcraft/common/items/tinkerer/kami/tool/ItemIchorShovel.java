@@ -4,7 +4,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSpade;
 import thaumcraft.common.items.tinkerer.kami.KamiMaterials;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Ichor shovel — ported from Thaumic Tinkerer's {@code ItemIchorShovel}
@@ -17,7 +17,7 @@ public class ItemIchorShovel extends ItemSpade {
 
     public ItemIchorShovel() {
         super(KamiMaterials.ICHOR);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setHarvestLevel("shovel", 4);
     }
 

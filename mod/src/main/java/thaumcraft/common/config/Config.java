@@ -72,6 +72,8 @@ public class Config {
     public static int dimensionOuterId = -42;
     public static int dimensionBedrockId = -43;
     public static int bedrockOreDensity = 3;
+    /** Thaumic Tinkerer's own ConfigHandler.enableFlight — the Robes of the Stratosphere. */
+    public static boolean tinkererEnableFlight = true;
 
     // Mobs
     public static boolean championMobs = true;
@@ -274,6 +276,7 @@ public class Config {
         dimensionOuterId = config.get(CATEGORY_BIOMES, "outer_lands_dim", -42).getInt();
         dimensionBedrockId = config.get(CATEGORY_BIOMES, "bedrock_dim", -43).getInt();
         bedrockOreDensity = config.get(CATEGORY_BIOMES, "bedrock_ore_density", 3).getInt();
+        tinkererEnableFlight = config.get(CATEGORY_BIOMES, "tinkerer_enable_flight", true).getBoolean();
 
         ThaumcraftApi.enchantHaste = config.get(CATEGORY_ENCH, "ench_haste", 150).getInt();
         ThaumcraftApi.enchantRepair = config.get(CATEGORY_ENCH, "ench_repair", 151).getInt();

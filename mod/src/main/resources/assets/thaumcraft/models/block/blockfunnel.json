@@ -1,8 +1,24 @@
 {
-  "parent": "block/cube_bottom_top",
+  "comment": "Two pixels tall, not a cube: the original's BlockFunnel does setBlockBounds(0, 0, 0, 1, 1F / 8F, 1). Its collision box stays the full cube — that lives in BlockFunnel.getCollisionBoundingBox, not here. Face mapping is its getIcon (par1 > 1 ? side : top), so both the top and the bottom take funnel_top.",
+  "parent": "block/block",
   "textures": {
+    "particle": "thaumcraft:blocks/funnel_side",
     "top": "thaumcraft:blocks/funnel_top",
     "bottom": "thaumcraft:blocks/funnel_top",
     "side": "thaumcraft:blocks/funnel_side"
-  }
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 2, 16],
+      "faces": {
+        "down":  { "texture": "#bottom", "cullface": "down" },
+        "up":    { "texture": "#top" },
+        "north": { "texture": "#side" },
+        "south": { "texture": "#side" },
+        "west":  { "texture": "#side" },
+        "east":  { "texture": "#side" }
+      }
+    }
+  ]
 }

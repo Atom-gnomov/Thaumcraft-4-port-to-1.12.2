@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "thaumcraft:blocks/mobilizer_relay_top",
+    "side": "thaumcraft:blocks/mobilizer_relay_side",
+    "bottom": "thaumcraft:blocks/mobilizer_relay_bottom"
+  }
+}

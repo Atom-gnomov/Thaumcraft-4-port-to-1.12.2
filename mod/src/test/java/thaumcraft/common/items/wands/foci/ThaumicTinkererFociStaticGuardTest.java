@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -1293,8 +1294,14 @@ public class ThaumicTinkererFociStaticGuardTest {
         String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileCamo.java");
         assertTrue("stores the block by registry name and its metadata",
                 tile.contains("TAG_CAMO = \"camo\"") && tile.contains("TAG_CAMO_META = \"camoMeta\""));
-        assertTrue("syncs to the client", tile.contains("getUpdatePacket")
-                && tile.contains("markBlockRangeForRenderUpdate"));
+        // Packet plumbing comes from TileThaumcraft's readCustomNBT/writeCustomNBT;
+        // only the redraw on arrival is this tile's own business.
+        assertTrue("built on the port's tile base",
+                tile.contains("extends TileThaumcraft")
+                        && tile.contains("public void writeCustomNBT")
+                        && tile.contains("public void readCustomNBT"));
+        assertTrue("a new disguise redraws the chunk",
+                tile.contains("markBlockRangeForRenderUpdate"));
 
         String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockCamo.java");
         assertTrue("exposes the disguise as an unlisted property",
@@ -1348,6 +1355,641 @@ public class ThaumicTinkererFociStaticGuardTest {
                         .contains("tile.thaumcraft.platform.name=Ethereal Platform")
                         && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
                         .contains("tile.thaumcraft.platform.name="));
+    }
+
+    /**
+     * Both transvector devices are camouflaged upstream, which is what lets
+     * them hide in a wall. Register item 3 closed in 1.1.13.0.
+     */
+    @Test
+    public void transvectorsAreCamouflaged() throws IOException {
+        String blocks = "src/main/java/thaumcraft/common/blocks/tinkerer/";
+        assertTrue("interface extends BlockCamo",
+                read(blocks + "BlockTransvectorInterface.java")
+                        .contains("extends BlockCamo"));
+        String dislocator = read(blocks + "BlockTransvectorDislocator.java");
+        assertTrue("dislocator extends BlockCamo", dislocator.contains("extends BlockCamo"));
+        assertTrue("its own facing and powered stay listed, camo goes around them",
+                dislocator.contains("listedProperties()")
+                        && dislocator.contains("{FACING, POWERED}"));
+        assertTrue("a wand re-aims it before camo gets the click",
+                dislocator.contains("instanceof ItemWandCasting")
+                        && dislocator.contains("state.withProperty(FACING, side)")
+                        && dislocator.contains("super.onBlockActivated("));
+
+        assertTrue("the shared tile base is a camo tile",
+                read("src/main/java/thaumcraft/common/tiles/tinkerer/TileTransvector.java")
+                        .contains("extends TileCamo"));
+        assertTrue("all three devices get the wrapping model",
+                read("src/main/java/thaumcraft/client/ClientModelRegistry.java")
+                        .contains("\"blocktransvectorinterface\"")
+                        && read("src/main/java/thaumcraft/client/ClientModelRegistry.java")
+                        .contains("\"blocktransvectordislocator\""));
+    }
+
+    /**
+     * The KAMI tier's cloth: never wears, absorbs by its own rating, and each
+     * piece is one primal's worth of ichorcloth.
+     */
+    @Test
+    public void ichorclothArmourMatchesTheOriginal() throws IOException {
+        String armour = read("src/main/java/thaumcraft/common/items/tinkerer/kami/armor/"
+                + "ItemIchorclothArmor.java");
+        assertTrue("absorbs at the original's reduction x 0.0425, priority 0, no cap",
+                armour.contains("this.damageReduceAmount * 0.0425D")
+                        && armour.contains("ArmorProperties(0,")
+                        && armour.contains("Integer.MAX_VALUE"));
+        assertTrue("never wears — damageArmor is deliberately empty",
+                armour.contains("public void damageArmor(EntityLivingBase entity, ItemStack stack, "
+                        + "DamageSource source, int damage, int slot) {\n    }"));
+        assertTrue("boots discount three percent, the rest four",
+                armour.contains("armorType == EntityEquipmentSlot.FEET ? 3 : 4"));
+        assertTrue("legs take the second sheet",
+                armour.contains("slot == EntityEquipmentSlot.LEGS"));
+
+        String mats = read("src/main/java/thaumcraft/common/items/tinkerer/kami/KamiMaterials.java");
+        assertTrue("the original's reduction numbers, reordered for this version's slot order",
+                mats.contains("new int[]{3, 6, 8, 3}") && mats.contains("20,"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        String[][] pieces = {
+                {"itemIchorclothHelm", "IchorclothHelm", "Aspect.WATER", "ichorcloth_helm"},
+                {"itemIchorclothChest", "IchorclothChest", "Aspect.AIR", "ichorcloth_chest"},
+                {"itemIchorclothLegs", "IchorclothLegs", "Aspect.FIRE", "ichorcloth_legs"},
+                {"itemIchorclothBoots", "IchorclothBoots", "Aspect.EARTH", "ichorcloth_boots"},
+        };
+        for (String[] piece : pieces) {
+            assertTrue(piece[0] + " registered", cfg.contains("allItems.add(" + piece[0] + ")"));
+            assertTrue(piece[1] + " recipe at 75 of its own primal",
+                    rec.contains("\"" + piece[1] + "\"")
+                            && rec.contains("add(" + piece[2] + ", 75)"));
+            assertTrue(piece[3] + " named",
+                    en.contains("item.thaumcraft.kami." + piece[3] + ".name="));
+            assertTrue(piece[3] + " icon ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/items/"
+                            + piece[3] + ".png")));
+        }
+        for (String sheet : new String[]{"ichor1", "ichor2"}) {
+            assertTrue(sheet + " armour sheet ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/models/"
+                            + sheet + ".png")));
+        }
+        assertTrue("armour recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiArmorRecipes()"));
+    }
+
+    /**
+     * The ichor tools and wand parts, checked against the original in
+     * 1.1.15.0. Only the axe had drifted; the rest is pinned so the audit does
+     * not have to be repeated.
+     */
+    @Test
+    public void ichorToolsAndWandPartsMatchTheOriginal() throws IOException {
+        String tools = "src/main/java/thaumcraft/common/items/tinkerer/kami/tool/";
+
+        // ItemAxe's damage argument is the total, not an increment on the
+        // material — every other tool class adds the material itself. 8.0 is
+        // upstream's 3.0 + 5.0, and a vanilla diamond axe for comparison.
+        assertTrue("the axe hits for the original's 8.0, not 5.0",
+                read(tools + "ItemIchorAxe.java")
+                        .contains("super(KamiMaterials.ICHOR, 8.0F, -3.0F)"));
+
+        // The other three take the material alone, so their totals come from
+        // this version's own tool constructors and sit correctly among its
+        // other tools. Not something to "correct" back to the 1.7.10 figures.
+        for (String tool : new String[]{"ItemIchorPick", "ItemIchorShovel", "ItemIchorSword"}) {
+            assertTrue(tool + " takes the material alone",
+                    read(tools + tool + ".java").contains("super(KamiMaterials.ICHOR)"));
+        }
+        for (String[] pair : new String[][]{{"ItemIchorPick", "pickaxe"},
+                {"ItemIchorAxe", "axe"}, {"ItemIchorShovel", "shovel"}}) {
+            assertTrue(pair[0] + " harvests at level 4",
+                    read(tools + pair[0] + ".java")
+                            .contains("setHarvestLevel(\"" + pair[1] + "\", 4)"));
+        }
+
+        assertTrue("the tool material is the original's, unbreakable at -1 uses",
+                read("src/main/java/thaumcraft/common/items/tinkerer/kami/KamiMaterials.java")
+                        .contains("addToolMaterial(\"ICHOR\", 4, -1, 10.0F, 5.0F, 25)"));
+
+        String wand = "src/main/java/thaumcraft/common/items/tinkerer/kami/wand/";
+        assertTrue("the cap discounts to 0.8 and is repaired with the ichor cap",
+                read(wand + "CapIchor.java")
+                        .contains("super(\"ICHOR\", 0.8F,")
+                        && read(wand + "CapIchor.java").contains("ItemKamiResource.ICHOR_CAP"));
+        assertTrue("the rod holds 1000 vis and glows",
+                read(wand + "RodIchorcloth.java")
+                        .contains("super(\"ICHORCLOTH\", 1000,")
+                        && read(wand + "RodIchorcloth.java").contains("setGlowing(true)"));
+    }
+
+    /**
+     * The awakened armour: three of the four pieces, each an infusion at
+     * instability 13 on its plain counterpart, each with its own ability.
+     */
+    @Test
+    public void awakenedArmourMatchesTheOriginal() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/items/tinkerer/kami/armor/";
+
+        String base = read(dir + "ItemIchorclothArmorAdv.java");
+        assertTrue("sneak-right-click toggles the piece through item damage 0/1",
+                base.contains("stack.setItemDamage(~stack.getItemDamage() & 1)"));
+        assertTrue("only pieces that need a tick register on the bus",
+                base.contains("if (ticks()) {") && base.contains("MinecraftForge.EVENT_BUS.register(this)"));
+        assertTrue("the awakened set has its own two sheets",
+                base.contains("ichor_gem2.png") && base.contains("ichor_gem1.png"));
+        // Renamed in 1.1.37.3: a ResourceLocation must be lowercase in 1.11+,
+        // so ichorGem1/2.png never resolved and the worn armour drew untextured.
+        assertTrue("armour textures must be lowercase, or they never load",
+                Files.exists(Paths.get(
+                        "src/main/resources/assets/thaumcraft/textures/models/ichor_gem1.png"))
+                        && Files.exists(Paths.get(
+                        "src/main/resources/assets/thaumcraft/textures/models/ichor_gem2.png")));
+
+        String helm = read(dir + "ItemGemHelm.java");
+        assertTrue("the cowl tops air to 300 and refreshes its effect at 202 ticks",
+                helm.contains("player.setAir(300)")
+                        && helm.contains("REFRESH_TICKS = 202"));
+        assertTrue("and reveals nodes", helm.contains("implements IGoggles, IRevealer"));
+
+        String chest = read(dir + "ItemGemChest.java");
+        assertTrue("the robes grant flight and remember who they gave it to",
+                chest.contains("PLAYERS_WITH_FLIGHT")
+                        && chest.contains("capabilities.allowFlying = true"));
+        assertTrue("never strips flight from creative",
+                chest.contains("!player.capabilities.isCreativeMode"));
+        assertTrue("and deflects projectiles with the focus's own sweep",
+                chest.contains("FocusDeflect.protectFromProjectiles(player)"));
+
+        String boots = read(dir + "ItemGemBoots.java");
+        assertTrue("the boots give haste, a block of step height and no fall damage",
+                boots.contains("MobEffects.HASTE, 2, 1")
+                        && boots.contains("player.isSneaking() ? 0.5F : 1.0F")
+                        && boots.contains("player.fallDistance = 0.0F"));
+        assertTrue("push forward on foot and in flight, at the original's rates",
+                boots.contains("player.capabilities.isFlying ? 0.075F : 0.15F")
+                        && boots.contains("player.isSprinting() ? 0.05F : 0.04F"));
+        assertTrue("a higher jump", boots.contains("motionY += 0.3D"));
+        assertTrue("and grass from the dirt underfoot",
+                boots.contains("Blocks.GRASS.getDefaultState()"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        for (String key : new String[]{"ICHORCLOTH_HELM_GEM", "ICHORCLOTH_CHEST_GEM",
+                "ICHORCLOTH_BOOTS_GEM"}) {
+            assertTrue(key + " infuses at 13", rec.contains("\"" + key + "\""));
+        }
+        // Unblocked in 1.1.17.0 once the gases landed.
+        assertTrue("the leggings infuse at 13 like the rest of the set",
+                rec.contains("\"ICHORCLOTH_LEGS_GEM\"")
+                        && rec.contains("ConfigItems.itemBrightNitor"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String en = read("src/main/resources/assets/thaumcraft/lang/en_us.lang");
+        for (String[] piece : new String[][]{
+                {"itemIchorclothHelmGem", "Cowl of the Abyssal Depths"},
+                {"itemIchorclothChestGem", "Robes of the Stratosphere"},
+                {"itemIchorclothBootsGem", "Boots of the Horizontal Shield"}}) {
+            assertTrue(piece[0] + " registered", cfg.contains("allItems.add(" + piece[0] + ")"));
+            assertTrue(piece[1] + " named", en.contains("=" + piece[1]));
+        }
+        assertTrue("awakened recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerKamiAwakenedArmorRecipes()"));
+    }
+
+    /**
+     * The gases: no shape, no drops, air to anything that asks, and a spread
+     * counter in the metadata that blooms outward once and stops.
+     */
+    @Test
+    public void gasesBehaveLikeTheOriginal() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/blocks/tinkerer/gas/";
+
+        String base = read(dir + "BlockGas.java");
+        assertTrue("the spread counter is the metadata",
+                base.contains("PropertyInteger.create(\"spread\", 0, 15)"));
+        assertTrue("seeds all six neighbours at one less, then zeroes itself",
+                base.contains("setAt(world, pos.offset(face), spread - 1)")
+                        && base.contains("state.withProperty(SPREAD, 0)"));
+        assertTrue("counts as air and cannot be collided with or dropped",
+                base.contains("public boolean isAir(") && base.contains("return NULL_AABB;")
+                        && base.contains("canCollideCheck"));
+
+        assertTrue("the light glows at 0.85",
+                read(dir + "BlockGaseousLight.java").contains("setLightLevel(0.85F)"));
+        assertTrue("the shadow swallows light at opacity 215",
+                read(dir + "BlockGaseousShadow.java").contains("setLightOpacity(215)"));
+
+        String nitor = read(dir + "BlockNitorGas.java");
+        assertTrue("nitor light ticks slower in the Nether",
+                nitor.contains("getDimension() == -1 ? 60 : 20"));
+        assertTrue("it looks six blocks out when the leggings laid it, one otherwise",
+                nitor.contains("== FROM_LEGGINGS ? 6 : 1"));
+        assertTrue("and is brighter for it",
+                nitor.contains("== FROM_LEGGINGS ? 15 : 12"));
+        assertTrue("it vanishes when nobody nearby carries the nitor or wears the leggings",
+                nitor.contains("carriesNitor(player) || wearsBurningMantle(player)")
+                        && nitor.contains("world.setBlockToAir(pos)"));
+
+        String blocks = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        for (String field : new String[]{"blockGaseousLight", "blockGaseousShadow", "blockNitorGas"}) {
+            assertTrue(field + " registered and listed",
+                    blocks.contains(field + ";") && blocks.contains("                " + field + ","));
+        }
+    }
+
+    /** Fire heals in the burning mantle, and it lights the way ahead. */
+    @Test
+    public void burningMantleLegsMatchTheOriginal() throws IOException {
+        String legs = read("src/main/java/thaumcraft/common/items/tinkerer/kami/armor/ItemGemLegs.java");
+        assertTrue("fire is cancelled and healed for the same amount",
+                legs.contains("event.getSource().isFireDamage()")
+                        && legs.contains("event.setCanceled(true)")
+                        && legs.contains("player.heal(event.getAmount())"));
+        assertTrue("at the lowest priority, as upstream",
+                legs.contains("EventPriority.LOWEST"));
+        assertTrue("five blocks of trail ahead, plus one overhead",
+                legs.contains("TRAIL_LENGTH = 5"));
+        assertTrue("laid at the spread value that marks it the leggings' work",
+                legs.contains("withProperty(BlockGas.SPREAD, 1)"));
+        assertTrue("registered",
+                read("src/main/java/thaumcraft/common/config/ConfigItems.java")
+                        .contains("allItems.add(itemIchorclothLegsGem)"));
+        assertTrue("named in both languages",
+                read("src/main/resources/assets/thaumcraft/lang/en_us.lang")
+                        .contains("Leggings of the Burning Mantle")
+                        && read("src/main/resources/assets/thaumcraft/lang/ru_ru.lang")
+                        .contains("item.thaumcraft.kami.ichorcloth_legs_gem.name="));
+    }
+
+    /** The gases in a bottle, and the thing that clears them away. */
+    @Test
+    public void gasItemsMatchTheOriginal() throws IOException {
+        String gas = read("src/main/java/thaumcraft/common/items/tinkerer/ItemGas.java");
+        assertTrue("one class, each instance carrying the block it releases",
+                gas.contains("private final Block released"));
+        assertTrue("released a block above the head at spread 4",
+                gas.contains("RELEASE_SPREAD = 4")
+                        && gas.contains("(int) player.posY + 1"));
+        assertTrue("the bottle is spent before the air check, as upstream",
+                gas.indexOf("stack.shrink(1)") < gas.indexOf("if (air) {"));
+
+        String remover = read("src/main/java/thaumcraft/common/items/tinkerer/ItemGasRemover.java");
+        assertTrue("clears gases within three blocks on sneak-right-click",
+                remover.contains("RANGE = 3") && remover.contains("player.isSneaking()"));
+        assertTrue("upstream's off-centre sweep is kept",
+                remover.contains("x < xs + RANGE"));
+        assertTrue("and puffs each one out as it goes",
+                remover.contains("placeParticle(world, pos)"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        for (String field : new String[]{"itemGaseousLight", "itemGaseousShadow", "itemGasRemover"}) {
+            assertTrue(field + " registered", cfg.contains("allItems.add(" + field + ")"));
+        }
+        assertTrue("both bottles boil out of an empty phial",
+                rec.contains("\"GASEOUS_LIGHT\"") && rec.contains("\"GASEOUS_SHADOW\"")
+                        && rec.contains("add(Aspect.LIGHT, 16).add(Aspect.AIR, 10).add(Aspect.MOTION, 8)"));
+        assertTrue("the dissipator needs one of each gas",
+                rec.contains("\"GAS_REMOVER\"") && rec.contains("\"DDD\", \"T G\", \"QQQ\""));
+        assertTrue("gas recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerGasRecipes()"));
+    }
+
+    /**
+     * The four primal potions do nothing while held — everything happens when
+     * the drinker strikes something, except Aqua, which works on its holder.
+     */
+    @Test
+    public void primalPotionsMatchTheOriginal() throws IOException {
+        String potions = read("src/main/java/thaumcraft/common/lib/tinkerer/ModPotionsTinkerer.java");
+        assertTrue("all four last three minutes", potions.contains("DURATION = 3600"));
+        assertTrue("and have no per-tick effect of their own",
+                potions.contains("public boolean isReady(int duration, int amplifier)")
+                        && potions.contains("return false;"));
+
+        String handler = read("src/main/java/thaumcraft/common/lib/tinkerer/TinkererPotionHandler.java");
+        assertTrue("a struck target is affected for twenty ticks, every fifth",
+                handler.contains("HIT_DURATION = 20") && handler.contains("CADENCE = 5"));
+        assertTrue("Aer throws the target about",
+                handler.contains("target.setVelocity("));
+        assertTrue("Ignis sets it alight in a sphere of thirty wisps",
+                handler.contains("target.setFire(6)") && handler.contains("i < 30")
+                        && handler.contains("r = 2.5D"));
+        assertTrue("Terra raises a five-by-five wall on the closer axis",
+                handler.contains("Math.abs(target.posZ - player.posZ) < Math.abs(target.posX - player.posX)")
+                        && handler.contains("ConfigBlocks.blockForcefield"));
+        assertTrue("Aqua sets nearby lava to obsidian on its holder's tick",
+                handler.contains("Blocks.LAVA || block == Blocks.FLOWING_LAVA")
+                        && handler.contains("Blocks.OBSIDIAN.getDefaultState()"));
+
+        // 1.7.10 had two event buses; 1.12.2 has one, so registering on both
+        // would double every effect.
+        String mod = read("src/main/java/thaumcraft/common/Thaumcraft.java");
+        assertTrue("the potion handler is registered exactly once",
+                mod.contains("ModPotionsTinkerer.register(event.getRegistry())"));
+        assertFalse("never on FMLCommonHandler's bus as well",
+                mod.contains("FMLCommonHandler.instance().bus().register(\n"
+                        + "                new thaumcraft.common.lib.tinkerer.TinkererPotionHandler())"));
+
+        String field = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockForcefield.java");
+        assertTrue("the forcefield is invisible, solid and dropless",
+                field.contains("EnumBlockRenderType.INVISIBLE")
+                        && field.contains("public boolean isFullCube")
+                        && field.contains("public void getDrops("));
+        assertTrue("and lasts sixty ticks",
+                read("src/main/java/thaumcraft/common/tiles/tinkerer/TileForcefield.java")
+                        .contains("ticks = 60"));
+        assertTrue("registered with its tile",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("blockForcefield;")
+                        && read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("TileRegistration(TileForcefield.class, \"TileForcefield\")"));
+    }
+
+    /**
+     * The infused crops: seeds, one crop block per primal, grain and potion.
+     * The ordering of the four is the item metadata and must not be reshuffled.
+     */
+    @Test
+    public void infusedCropChainMatchesTheOriginal() throws IOException {
+        String enumSrc = read("src/main/java/thaumcraft/common/items/tinkerer/PrimalCrop.java");
+        assertTrue("the order is upstream's AIR, FIRE, EARTH, WATER",
+                enumSrc.indexOf("AIR(") < enumSrc.indexOf("FIRE(")
+                        && enumSrc.indexOf("FIRE(") < enumSrc.indexOf("EARTH(")
+                        && enumSrc.indexOf("EARTH(") < enumSrc.indexOf("WATER("));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("seeds infuse from wheat seeds at instability 5",
+                rec.contains("Items.WHEAT_SEEDS")
+                        && rec.contains("add(Aspect.CROP, 32).add(Aspect.HARVEST, 32)"));
+        // Upstream's shard metas for seeds 0..3 are 0, 1, 3, 2 — not the primal
+        // order. Getting this wrong swaps Terra and Aqua silently.
+        // The map keys became the original's own in 1.1.27.0, so the research
+        // entry can show these recipes on its pages.
+        assertTrue("seed 2 (Terra) takes shard 3",
+                rec.contains("\"INFUSED_POTIONS2\"")
+                        && rec.contains("new ItemStack(ConfigItems.itemShard, 1, 3),\n"
+                        + "                        new ItemStack(ConfigItems.itemShard, 1, 3)"));
+        assertTrue("seed 3 (Aqua) takes shard 2",
+                rec.contains("\"INFUSED_POTIONS3\""));
+        assertTrue("potions boil from the grain at AURA 5 plus their own primal",
+                rec.contains("\"INFUSED_POTIONSPOT0\"")
+                        && rec.contains("add(Aspect.AURA, 5).add(Aspect.AIR, 5)"));
+        assertTrue("crop recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerCropRecipes()"));
+
+        String block = read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockInfusedGrain.java");
+        assertTrue("the primal is fixed per block, not held in metadata",
+                block.contains("private final PrimalCrop crop")
+                        && block.contains("public int damageDropped"));
+        assertTrue("it yields its own seed and its own grain",
+                block.contains("ConfigItems.itemInfusedSeeds")
+                        && block.contains("ConfigItems.itemInfusedGrain"));
+
+        String seeds = read("src/main/java/thaumcraft/common/items/tinkerer/ItemInfusedSeeds.java");
+        assertTrue("planting is written out because each damage grows its own block",
+                seeds.contains("cropBlock(stack).getDefaultState()")
+                        && seeds.contains("facing != EnumFacing.UP"));
+
+        String potion = read("src/main/java/thaumcraft/common/items/tinkerer/ItemInfusedPotion.java");
+        assertTrue("drinking grants the matching primal effect for the full duration",
+                potion.contains("ModPotionsTinkerer.DURATION")
+                        && potion.contains("EnumAction.DRINK"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        for (String field : new String[]{"itemInfusedSeeds", "itemInfusedGrain", "itemInfusedPotion"}) {
+            assertTrue(field + " registered", cfg.contains("allItems.add(" + field + ")"));
+        }
+        assertTrue("four crop blocks registered",
+                read("src/main/java/thaumcraft/common/config/ConfigBlocks.java")
+                        .contains("blockInfusedGrain = new BlockInfusedGrain[4]"));
+        for (String tag : new String[]{"aer", "ignis", "terra", "aqua"}) {
+            assertTrue(tag + " blockstate ships",
+                    Files.exists(Paths.get("src/main/resources/assets/thaumcraft/blockstates/"
+                            + "blockinfusedgrain_" + tag + ".json")));
+            for (int stage = 0; stage < 4; stage++) {
+                assertTrue(tag + " stage " + stage + " texture",
+                        Files.exists(Paths.get("src/main/resources/assets/thaumcraft/textures/blocks/"
+                                + "crop_" + tag + "_" + stage + ".png")));
+            }
+        }
+    }
+
+    /**
+     * The necromancy set: the blade takes creatures apart into Soul Aspects,
+     * the tablet puts them back together.
+     */
+    @Test
+    public void necromancySetMatchesTheOriginal() throws IOException {
+        String souls = read("src/main/java/thaumcraft/common/items/tinkerer/SoulAspects.java");
+        // Upstream's NumericAspectHelper.init() constructs these fifteen in this
+        // order, and the construction order is the item metadata.
+        //
+        // This assertion used to compare a few indexes against each other —
+        // FIRE before MAGIC, METAL before SLIME — and passed for years while the
+        // list was missing its first four entries entirely. Checking the order of
+        // what is present says nothing about what is absent, so pin the sequence.
+        String[] upstreamOrder = {
+                "WATER", "MAN", "AIR", "FLIGHT", "FIRE",
+                "MAGIC", "UNDEAD", "FLESH", "BEAST", "POISON",
+                "EARTH", "ELDRITCH", "TRAVEL", "METAL", "SLIME"};
+        String order = souls.replaceAll("(?s).*ORDER = Arrays\\.asList\\((.*?)\\);.*", "$1");
+        java.util.List<String> found = new java.util.ArrayList<>();
+        java.util.regex.Matcher aspects =
+                java.util.regex.Pattern.compile("Aspect\\.([A-Z_]+)").matcher(order);
+        while (aspects.find()) {
+            found.add(aspects.group(1));
+        }
+        assertEquals("the soul aspect list is upstream's construction order, whole and in sequence",
+                java.util.Arrays.asList(upstreamOrder), found);
+
+        // The client registers one model per aspect off the same order; if the two
+        // drift, every soul aspect past the drift wears the wrong face.
+        String proxy = read("src/main/java/thaumcraft/client/ClientProxy.java");
+        String souls_ = proxy.replaceAll("(?s).*String\\[\\] souls = \\{(.*?)\\};.*", "$1");
+        java.util.List<String> registered = new java.util.ArrayList<>();
+        java.util.regex.Matcher names = java.util.regex.Pattern.compile("\"([a-z]+)\"").matcher(souls_);
+        while (names.find()) {
+            registered.add(names.group(1).toUpperCase(java.util.Locale.ROOT));
+        }
+        assertEquals("ClientProxy's soul model order must match SoulAspects.ORDER",
+                found, registered);
+        // Upstream spaces the tiers 20 apart although there are only eleven,
+        // as padding so a new aspect would not shift existing metadata.
+        assertTrue("the tier stride is 20, not the count", souls.contains("TIER_STRIDE = 20"));
+
+        String item = read("src/main/java/thaumcraft/common/items/tinkerer/ItemMobAspect.java");
+        assertTrue("three tiers read off the stride",
+                item.contains("damage >= SoulAspects.TIER_STRIDE && damage < SoulAspects.TIER_STRIDE * 2")
+                        && item.contains("stack.getItemDamage() >= SoulAspects.TIER_STRIDE * 2"));
+        assertTrue("infused souls remember the tablet that used them",
+                item.contains("markLastUsedTablet") && item.contains("lastUsedTabletMatches"));
+
+        String blade = read("src/main/java/thaumcraft/common/items/tinkerer/ItemBloodSword.java");
+        assertTrue("hits for the original's flat ten and moves you faster",
+                blade.contains("DAMAGE = 10") && blade.contains("0.25D, 1"));
+        assertTrue("blocking costs three magic damage, swinging costs two",
+                blade.contains("DamageSource.MAGIC, 3") && blade.contains("DamageSource.MAGIC, 2"));
+        assertTrue("and the recoil does not re-enter its own event",
+                blade.contains("handleNext = 3"));
+        assertTrue("harvesting replaces the drops rather than adding to them",
+                blade.contains("event.getDrops().clear()"));
+
+        String table = read("src/main/java/thaumcraft/common/lib/tinkerer/MobAspects.java");
+        assertTrue("the table carries Thaumcraft's own creatures too",
+                table.contains("EntityBrainyZombie") && table.contains("EntityFireBat")
+                        && table.contains("EntityWisp"));
+        assertTrue("and knows which entries can actually be rebuilt",
+                table.contains("isSummonable"));
+
+        String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileSummon.java");
+        assertTrue("looks round every 300 ticks, five blocks out",
+                tile.contains("INTERVAL = 300") && tile.contains("RADIUS = 5"));
+        assertTrue("infused souls survive but only fire every 1200",
+                tile.contains("INFUSED_INTERVAL = 1200"));
+        assertTrue("plain souls are spent", tile.contains("setInventorySlotContents(0, ItemStack.EMPTY)"));
+        assertTrue("redstone stops it", tile.contains("isBlockPowered(this.pos)"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("the tablet is an arcane craft on obsidian totems",
+                rec.contains("\"SUMMON0\"")
+                        && rec.contains("add(Aspect.ORDER, 50).add(Aspect.ENTROPY, 50)"));
+        assertTrue("nine plain souls press into one condensed",
+                rec.contains("soulaspect_condense_"));
+        assertTrue("nine condensed infuse into one infused at instability 4",
+                rec.contains("\"SoulAspectInfused\" + i"));
+        assertTrue("necromancy recipes registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerNecromancyRecipes()"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        assertTrue("both items registered",
+                cfg.contains("allItems.add(itemMobAspect)")
+                        && cfg.contains("allItems.add(itemBloodSword)"));
+        assertTrue("the blade keeps upstream's material: 950 uses, no bonus of its own",
+                cfg.contains("addToolMaterial(\"TT_BLOOD\", 0, 950, 0.0F, 0.0F"));
+    }
+
+    /** The tome copies research between players; the tools just hold more ink. */
+    @Test
+    public void tomeAndInkwellMatchTheOriginal() throws IOException {
+        String tome = read("src/main/java/thaumcraft/common/items/tinkerer/ItemShareBook.java");
+        assertTrue("binds on first right-click and records what it saw",
+                tome.contains("UNASSIGNED = \"[none]\"") && tome.contains("writeResearch(stack, name)"));
+        assertTrue("falls back to its own copy when the owner is away",
+                tome.contains("storedResearch(stack)"));
+        assertTrue("grants every recorded research to whoever reads it",
+                tome.contains("ResearchManager.addResearch(player, key)"));
+        assertTrue("its contents reach the client for the tooltip",
+                tome.contains("public boolean getShareTag()"));
+
+        String ink = read("src/main/java/thaumcraft/common/items/tinkerer/ItemInfusedInkwell.java");
+        assertTrue("800 uses, against the ordinary tools' 350",
+                ink.contains("USES = 800"));
+        assertTrue("and stays out of the creative tab, as upstream",
+                !ink.contains("setCreativeTab"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("the tome is bench work round a Thaumonomicon",
+                rec.contains("\" S \", \"PTP\", \" P \"")
+                        && rec.contains("ConfigItems.itemThaumonomicon"));
+        // Deliberately ungated since 1.1.30.0: upstream gates this on
+        // INFUSED_INKWELL, but nothing there declares that research, and the
+        // bench recipe beside it only refills an inkwell you already own — so
+        // the first one is unobtainable in the original. An empty key makes
+        // InfusionRecipe.matches skip the check.
+        assertTrue("the tools infuse from ordinary ones at instability 2, behind no research",
+                rec.contains("\"\", new ItemStack(ConfigItems.itemInfusedInkwell), 2,")
+                        && rec.contains("add(Aspect.VOID, 8).add(Aspect.DARKNESS, 8)"));
+        assertTrue("and the reason is written down where it is done",
+                rec.contains("Ungated on purpose."));
+        assertTrue("and are re-inked with a ring of ink sacs",
+                rec.contains("infusedinkwell_refill"));
+        assertTrue("registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerScribeRecipes()"));
+
+        String cfg = read("src/main/java/thaumcraft/common/config/ConfigItems.java");
+        assertTrue("both registered",
+                cfg.contains("allItems.add(itemShareBook)")
+                        && cfg.contains("allItems.add(itemInfusedInkwell)"));
+    }
+
+    /**
+     * The Levitational Locomotive runs the track two relays define, carrying
+     * whatever stands on it.
+     */
+    @Test
+    public void levitationalLocomotiveMatchesTheOriginal() throws IOException {
+        String loco = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMobilizer.java");
+        assertTrue("looks ahead on tick 0 of 100 and steps on tick 1",
+                loco.contains("PERIOD = 100") && loco.contains("phase == 0")
+                        && loco.contains("phase == 1"));
+        assertTrue("turns round at the end of the track",
+                loco.contains("this.movementDirection.getOpposite()"));
+        assertTrue("redstone holds it", loco.contains("isBlockPowered(this.pos)"));
+        assertTrue("drops stone ahead so the passenger cannot fall through",
+                loco.contains("Blocks.STONE.getDefaultState(), 0"));
+        assertTrue("bedrock is never carried", loco.contains("block == Blocks.BEDROCK"));
+        assertTrue("a tile passenger is carried by hand so its contents survive",
+                loco.contains("passenger.writeToNBT(new NBTTagCompound())")
+                        && loco.contains("TileEntity.create(this.world, saved)"));
+        assertTrue("a ghost tile from a broken block stops working",
+                loco.contains("if (this.dead)")
+                        && read("src/main/java/thaumcraft/common/blocks/tinkerer/BlockMobilizer.java")
+                        .contains(").dead = true"));
+
+        String relay = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileMobilizerRelay.java");
+        assertTrue("relays pair within 32 blocks and re-check every 40 ticks",
+                relay.contains("SEARCH = 32") && relay.contains("CADENCE = 40"));
+        assertTrue("a pairing only counts while both ends agree",
+                relay.contains("public void verifyPartner()"));
+        assertTrue("and it points the locomotive along the axis they share",
+                relay.contains("EnumFacing.EAST : EnumFacing.NORTH"));
+
+        String rec = read("src/main/java/thaumcraft/common/config/ConfigTinkerer.java");
+        assertTrue("the locomotive infuses on a lifter at instability 4",
+                rec.contains("\"Mobilizer\"") && rec.contains("ConfigBlocks.blockLifter")
+                        && rec.contains("add(Aspect.MOTION, 15).add(Aspect.ORDER, 20)"));
+        assertTrue("the relay is the magnet's shape round glass",
+                rec.contains("\"WFW\", \"SIs\", \"WFW\"") && rec.contains("Blocks.GLASS"));
+        assertTrue("registered at init",
+                read("src/main/java/thaumcraft/common/config/ConfigRecipes.java")
+                        .contains("ConfigTinkerer.registerMobilizerRecipes()"));
+
+        String blocks = read("src/main/java/thaumcraft/common/config/ConfigBlocks.java");
+        for (String field : new String[]{"blockMobilizer", "blockMobilizerRelay"}) {
+            assertTrue(field + " registered and listed",
+                    blocks.contains(field + ";") && blocks.contains("                " + field + ","));
+        }
+    }
+
+    /**
+     * Behaviours the awakened armour was missing until the 1.1.24.0 audit.
+     * Each is easy to lose because it sits outside the obvious code path.
+     */
+    @Test
+    public void awakenedArmourKeepsItsQuieterBehaviours() throws IOException {
+        String dir = "src/main/java/thaumcraft/common/items/tinkerer/kami/armor/";
+
+        String helm = read(dir + "ItemGemHelm.java");
+        assertTrue("lava is handled as well as water, and blinds rather than lights",
+                helm.contains("Material.LAVA") && helm.contains("MobEffects.BLINDNESS"));
+        assertTrue("and the cowl feeds its wearer half a heart every four seconds",
+                helm.contains("food > 0 && food < 18")
+                        && helm.contains("player.ticksExisted % 80 == 0")
+                        && helm.contains("player.heal(1.0F)"));
+
+        String boots = read(dir + "ItemGemBoots.java");
+        // Step height is a plain field, so nothing undoes it when the boots go.
+        assertTrue("the boots give the step height back",
+                boots.contains("player.stepHeight = 0.5F") && boots.contains("RAISED"));
     }
 
     private static String read(String path) throws IOException {

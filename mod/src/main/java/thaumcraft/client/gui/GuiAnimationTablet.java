@@ -2,7 +2,6 @@ package thaumcraft.client.gui;
 
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -19,7 +18,7 @@ import thaumcraft.common.tiles.tinkerer.TileAnimationTablet;
  * it, at the original's coordinates.
  */
 @SideOnly(Side.CLIENT)
-public class GuiAnimationTablet extends GuiContainer {
+public class GuiAnimationTablet extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE =
             new ResourceLocation("thaumcraft", "textures/gui/animation_tablet.png");

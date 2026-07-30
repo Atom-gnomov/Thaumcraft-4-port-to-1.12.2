@@ -65,8 +65,17 @@ public class TileRepairer extends TileThaumcraft implements ITickable, IEssentia
 
     private int ticks;
 
+    /**
+     * Upstream's {@code ticksExisted}, kept because the renderer spins the item
+     * off it. The work below runs server-side only, so this has to be counted
+     * before that early return or the client would never advance it and the
+     * item would hang motionless.
+     */
+    public int renderTicks;
+
     @Override
     public void update() {
+        this.renderTicks++;
         if (world == null || world.isRemote || ++ticks % INTERVAL != 0) {
             return;
         }

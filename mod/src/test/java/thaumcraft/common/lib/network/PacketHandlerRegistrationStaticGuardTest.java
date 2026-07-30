@@ -27,9 +27,35 @@ public class PacketHandlerRegistrationStaticGuardTest {
         assertTrue("PacketHandler should keep lowercase thaumcraft channel id",
                 source.contains("public static final String CHANNEL = \"thaumcraft\";"));
         assertTrue("PacketHandler should keep reference packet count contract",
-                source.contains("public static final int REFERENCE_PACKET_COUNT = 39;"));
+                source.contains("public static final int REFERENCE_PACKET_COUNT = 42;"));
         assertTrue("PacketHandler should keep discriminator mismatch guard",
                 source.contains("if (idx != REFERENCE_PACKET_COUNT) {"));
+    }
+
+    /**
+     * The count and the register() calls must agree. Pinning each separately
+     * is not enough: adding a packet without bumping the constant leaves both
+     * assertions happy and crashes the game at mod load instead, which is
+     * exactly what shipped in 1.1.37.0.
+     */
+    @Test
+    public void referenceCountShouldMatchTheNumberOfRegistrations() throws IOException {
+        String source = readFile("src/main/java/thaumcraft/common/lib/network/PacketHandler.java");
+
+        int registrations = 0;
+        Matcher matcher = REGISTER_LINE.matcher(source);
+        while (matcher.find()) {
+            registrations++;
+        }
+
+        Matcher declared = Pattern.compile(
+                "REFERENCE_PACKET_COUNT = (\\d+);").matcher(source);
+        assertTrue("REFERENCE_PACKET_COUNT must be declared", declared.find());
+        int expected = Integer.parseInt(declared.group(1));
+
+        assertEquals("REFERENCE_PACKET_COUNT must equal the number of register() calls;"
+                        + " a mismatch is a crash at mod load, not a test failure in the game",
+                registrations, expected);
     }
 
     @Test
@@ -81,7 +107,10 @@ public class PacketHandlerRegistrationStaticGuardTest {
                 "PacketFXZap:CLIENT",
                 "PacketFXVisDrain:CLIENT",
                 "PacketFXBeamPulse:CLIENT",
-                "PacketFXBeamPulseGolemBoss:CLIENT");
+                "PacketFXBeamPulseGolemBoss:CLIENT",
+                "PacketWarpGateLock:SERVER",
+                "PacketWarpGateTeleport:SERVER",
+                "PacketSoulHearts:CLIENT");
 
         assertEquals("PacketHandler registration sequence must stay reference-aligned",
                 expected, actual);

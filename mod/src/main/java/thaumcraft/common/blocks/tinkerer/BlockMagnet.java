@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileMagnet;
 import thaumcraft.common.tiles.tinkerer.TileMobMagnet;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Magnet — reimplemented from Thaumic Tinkerer (pixlepix/nekosune) for 1.12.2.
@@ -43,7 +44,7 @@ public class BlockMagnet extends BlockContainer {
         this.setHardness(1.7F);
         this.setResistance(1.0F);
         this.setSoundType(SoundType.WOOD);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setDefaultState(this.blockState.getBaseState()
                 .withProperty(PULLING, true)
                 .withProperty(MOB, false));
@@ -78,9 +79,15 @@ public class BlockMagnet extends BlockContainer {
         list.add(new ItemStack(this, 1, 1));
     }
 
+    /**
+     * The whole block is drawn by {@code TileMagnetRenderer}. Upstream's
+     * {@code RenderMagnet.renderWorldBlock} returns false — there is no static
+     * geometry for this block anywhere — so anything a blockstate model drew
+     * here would be on top of the real one.
+     */
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     /** Right-click toggles attract/repel, as in the original. */

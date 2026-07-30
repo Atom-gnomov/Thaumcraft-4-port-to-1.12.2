@@ -63,6 +63,8 @@ public class ConfigResearch {
             ConfigResearchGolemancy.initGolemancyResearchTextOnlyBaseline();
             ConfigResearchThaumaturgy.initThaumaturgyResearchBaseline();
             ConfigResearchBasics.initBasicResearchTextOnlyExtended();
+            // Thaumic Tinkerer's entries, so its recipes have a research to sit behind.
+            ConfigResearchTinkerer.initResearch();
             ConfigResearchThaumaturgy.initThaumaturgyResearchTextOnlyBaseline();
             ConfigResearchEldritch.initEldritchResearchTextOnlyBaseline();
             ConfigResearchEldritch.initEldritchResearchBaseline();
@@ -109,6 +111,8 @@ public class ConfigResearch {
                 "GOLEMANCY",
                 new ResourceLocation("thaumcraft", "textures/misc/r_golemancy.png"),
                 new ResourceLocation("thaumcraft", "textures/gui/gui_researchback.png"));
+        // Thaumic Tinkerer's own tab, at the original's icon and background.
+        ConfigResearchTinkerer.initCategory();
         ResearchCategories.registerCategory(
                 "ELDRITCH",
                 new ResourceLocation("thaumcraft", "textures/misc/r_eldritch.png"),

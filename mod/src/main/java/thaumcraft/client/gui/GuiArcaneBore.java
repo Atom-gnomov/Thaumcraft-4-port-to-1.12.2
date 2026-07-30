@@ -1,6 +1,5 @@
 package thaumcraft.client.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -14,7 +13,7 @@ import thaumcraft.common.items.equipment.ItemElementalPickaxe;
 import thaumcraft.common.items.wands.foci.FocusExcavation;
 import thaumcraft.common.tiles.TileArcaneBore;
 
-public class GuiArcaneBore extends GuiContainer {
+public class GuiArcaneBore extends GuiContainerScaled {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("thaumcraft", "textures/gui/gui_arcanebore.png");
 
@@ -86,8 +85,8 @@ public class GuiArcaneBore extends GuiContainer {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
         // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
         this.renderHoveredToolTip(mouseX, mouseY);
     }

@@ -16,7 +16,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-import thaumcraft.common.lib.CreativeTabThaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 import thaumcraft.common.lib.TCSounds;
 
 /**
@@ -35,7 +35,7 @@ public class ItemCleansingTalisman extends Item implements IBauble {
     public ItemCleansingTalisman() {
         this.setMaxStackSize(1);
         this.setMaxDamage(USES);
-        this.setCreativeTab(CreativeTabThaumcraft.tabThaumcraft);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

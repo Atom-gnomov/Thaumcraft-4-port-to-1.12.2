@@ -286,6 +286,14 @@ public class Thaumcraft {
                 Config.potionSunScorned,
                 Config.potionThaumarhia
         );
+        // Thaumic Tinkerer's four primal potions, and what gives them effect.
+        // Upstream registered its handler on both MinecraftForge.EVENT_BUS and
+        // FMLCommonHandler's bus because 1.7.10 kept them separate. In 1.12.2
+        // FMLCommonHandler.bus() returns MinecraftForge.EVENT_BUS itself, so
+        // doing the same here would fire every effect twice.
+        thaumcraft.common.lib.tinkerer.ModPotionsTinkerer.register(event.getRegistry());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.tinkerer.TinkererPotionHandler());
     }
 
     @SubscribeEvent
@@ -303,6 +311,8 @@ public class Thaumcraft {
                 thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer.create());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
                 new thaumcraft.common.lib.enchantment.tinkerer.TinkererEnchantmentHandler());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.tinkerer.SoulHeartHandler());
     }
 
     @SubscribeEvent

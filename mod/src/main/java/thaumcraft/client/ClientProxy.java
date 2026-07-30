@@ -1037,6 +1037,32 @@ public class ClientProxy extends CommonProxy {
         for (int meta = 0; meta <= 2; meta++) {
             registerBlockItemModel(darkQuartzItem, meta, "variant=" + meta);
         }
+        // The six imbued fires use multipart blockstates, which carry no
+        // inventory variant — their items need the item json directly.
+        for (net.minecraft.block.Block fire : new net.minecraft.block.Block[]{
+                ConfigBlocks.blockFireAir, ConfigBlocks.blockFireChaos,
+                ConfigBlocks.blockFireEarth, ConfigBlocks.blockFireIgnis,
+                ConfigBlocks.blockFireOrder, ConfigBlocks.blockFireWater}) {
+            registerBlockItemModelFromItemJson(Item.getItemFromBlock(fire));
+        }
+        // The same trap, and the fires were only the first six to hit it. A
+        // block item resolves through ModelResourceLocation(name, "inventory"),
+        // and none of these blockstates declares an inventory variant, so
+        // without an explicit registration the item shows the missing-model
+        // placeholder while the placed block looks perfectly normal. Every one
+        // of these already has an item json; nothing was ever pointed at it.
+        for (net.minecraft.block.Block block : new net.minecraft.block.Block[]{
+                ConfigBlocks.blockAlchemyFurnace, ConfigBlocks.blockArcaneDoor,
+                ConfigBlocks.blockBedrockPortal, ConfigBlocks.blockDoubleSlabStone,
+                ConfigBlocks.blockDoubleSlabWood, ConfigBlocks.blockSlabStone,
+                ConfigBlocks.blockSlabWood, ConfigBlocks.blockDoubleSlabDarkQuartz,
+                ConfigBlocks.blockEldritchNothing, ConfigBlocks.blockFluidDeath,
+                ConfigBlocks.blockFluidPure, ConfigBlocks.blockFluxGas,
+                ConfigBlocks.blockFluxGoo, ConfigBlocks.blockHole,
+                ConfigBlocks.blockLootUrn, ConfigBlocks.blockWarded,
+                ConfigBlocks.blockWarpGate}) {
+            registerBlockItemModelFromItemJson(Item.getItemFromBlock(block));
+        }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockSlabDarkQuartz), 0,
                 "half=bottom,seamless=false");
@@ -1057,6 +1083,10 @@ public class ClientProxy extends CommonProxy {
             ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorShovelAdv, mode,
                     new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorshoveladv_" + mode), "inventory"));
         }
+        for (int mode = 0; mode < 3; mode++) {
+            ModelLoader.setCustomModelResourceLocation(ConfigItems.itemIchorSwordAdv, mode,
+                    new ModelResourceLocation(new ResourceLocation("thaumcraft", "ichorswordadv_" + mode), "inventory"));
+        }
         for (Object[] pair : new Object[][]{
                 {ConfigItems.itemBlockTalisman, "blocktalisman"},
                 {ConfigItems.itemCleansingTalisman, "cleansingtalisman"},
@@ -1072,6 +1102,51 @@ public class ClientProxy extends CommonProxy {
                     new ModelResourceLocation(new ResourceLocation("thaumcraft",
                             "kamiresource_" + thaumcraft.common.items.tinkerer.kami.ItemKamiResource.NAMES[meta]),
                             "inventory"));
+        }
+        // Soul aspects: the plain and infused tiers share a face, the
+        // condensed one has its own. The stride between tiers is the
+        // metadata gap upstream left for padding.
+        {
+            // Order is metadata — it must stay in step with SoulAspects.ORDER,
+            // which is upstream's NumericAspectHelper construction order.
+            String[] souls = {"water", "man", "air", "flight", "fire",
+                    "magic", "undead", "flesh", "beast", "poison",
+                    "earth", "eldritch", "travel", "metal", "slime"};
+            int stride = thaumcraft.common.items.tinkerer.SoulAspects.TIER_STRIDE;
+            for (int i = 0; i < souls.length; i++) {
+                ModelResourceLocation plain = new ModelResourceLocation(
+                        new ResourceLocation("thaumcraft", "soulaspect" + souls[i]), "inventory");
+                ModelLoader.setCustomModelResourceLocation(ConfigItems.itemMobAspect, i, plain);
+                ModelLoader.setCustomModelResourceLocation(ConfigItems.itemMobAspect,
+                        stride * 2 + i, plain);
+                ModelLoader.setCustomModelResourceLocation(ConfigItems.itemMobAspect, stride + i,
+                        new ModelResourceLocation(new ResourceLocation("thaumcraft",
+                                "soulaspect" + souls[i] + "condensed"), "inventory"));
+            }
+        }
+        // The blade's face follows its harvesting toggle.
+        net.minecraft.client.renderer.block.model.ModelBakery.registerItemVariants(
+                ConfigItems.itemBloodSword,
+                new ModelResourceLocation(new ResourceLocation("thaumcraft", "bloodswordactive"),
+                        "inventory"));
+        ConfigItems.itemBloodSword.addPropertyOverride(
+                new ResourceLocation("thaumcraft", "harvesting"),
+                (stack, world, entity) ->
+                        thaumcraft.common.items.tinkerer.ItemBloodSword.isHarvesting(stack) ? 1.0F : 0.0F);
+
+        // The infused crops: one model per primal for each of the three items.
+        for (thaumcraft.common.items.tinkerer.PrimalCrop crop
+                : thaumcraft.common.items.tinkerer.PrimalCrop.values()) {
+            Object[][] families = {
+                    {ConfigItems.itemInfusedSeeds, "infusedseeds"},
+                    {ConfigItems.itemInfusedGrain, "infusedgrain"},
+                    {ConfigItems.itemInfusedPotion, "infusedpotion"},
+            };
+            for (Object[] family : families) {
+                ModelLoader.setCustomModelResourceLocation((Item) family[0], crop.ordinal(),
+                        new ModelResourceLocation(new ResourceLocation("thaumcraft",
+                                family[1] + "_" + crop.getTag()), "inventory"));
+            }
         }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockRepairer), 0, "facing=down");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockTransvectorInterface), 0, "normal");
@@ -1129,6 +1204,23 @@ public class ClientProxy extends CommonProxy {
         registerBuiltinItemModel(chestItem, 0, "blockchesthungry");
     }
 
+    /**
+     * Points a block's item at {@code models/item/<name>.json} rather than at a
+     * blockstate variant.
+     *
+     * <p>Needed for every block whose blockstate is {@code multipart}: those
+     * have no {@code inventory} variant to resolve against, so without this the
+     * item renders as the missing-model placeholder while the placed block is
+     * perfectly fine. That is what the six imbued fires were doing.</p>
+     */
+    private static void registerBlockItemModelFromItemJson(Item item) {
+        if (item == null || item.getRegistryName() == null) {
+            return;
+        }
+        ModelLoader.setCustomModelResourceLocation(item, 0,
+                new ModelResourceLocation(item.getRegistryName(), "inventory"));
+    }
+
     private static void registerBlockItemModel(Item item, int meta, String variant) {
         if (item == null || item.getRegistryName() == null) {
             return;
@@ -1151,6 +1243,20 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileJarFillableVoid.class, jarRenderer);
         ClientRegistry.bindTileEntitySpecialRenderer(TileJarBrain.class, jarRenderer);
         ClientRegistry.bindTileEntitySpecialRenderer(TileJarNode.class, jarRenderer);
+
+        // The magnet has no static model upstream at all — renderWorldBlock
+        // returns false there, so this renderer is the whole block. Both tiles
+        // need it: TileMobMagnet extends TileMagnet but binds separately.
+        thaumcraft.client.renderers.tile.TileMagnetRenderer magnetRenderer =
+                new thaumcraft.client.renderers.tile.TileMagnetRenderer();
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                thaumcraft.common.tiles.tinkerer.TileMagnet.class, magnetRenderer);
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                thaumcraft.common.tiles.tinkerer.TileMobMagnet.class, magnetRenderer);
+
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                thaumcraft.common.tiles.tinkerer.TileRepairer.class,
+                new thaumcraft.client.renderers.tile.TileRepairerRenderer());
 
         TileNodeRenderer nodeRenderer = new TileNodeRenderer();
         ClientRegistry.bindTileEntitySpecialRenderer(TileNode.class, nodeRenderer);
@@ -1237,6 +1343,8 @@ public class ClientProxy extends CommonProxy {
     public void registerHandlers() {
         MinecraftForge.EVENT_BUS.register(new ClientTickEventsFML());
         MinecraftForge.EVENT_BUS.register(new RenderEventHandler());
+        MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.client.lib.tinkerer.SoulHeartClientHandler());
         MinecraftForge.EVENT_BUS.register(ParticleEngine.INSTANCE);
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
         MinecraftForge.EVENT_BUS.register(new ItemAspectTooltipHandler());
@@ -1360,6 +1468,22 @@ public class ClientProxy extends CommonProxy {
                 return tile instanceof thaumcraft.common.tiles.tinkerer.TileMobMagnet
                         ? new thaumcraft.client.gui.GuiMobMagnet(player.inventory,
                                 (thaumcraft.common.tiles.tinkerer.TileMobMagnet) tile)
+                        : null;
+            }
+            case GUI_WARP_GATE: {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.kami.TileWarpGate
+                        ? new thaumcraft.client.gui.tinkerer.GuiWarpGate(
+                                (thaumcraft.common.tiles.tinkerer.kami.TileWarpGate) tile, player.inventory)
+                        : null;
+            }
+            case GUI_WARP_GATE_DESTINATIONS: {
+                net.minecraft.tileentity.TileEntity tile =
+                        world.getTileEntity(new net.minecraft.util.math.BlockPos(x, y, z));
+                return tile instanceof thaumcraft.common.tiles.tinkerer.kami.TileWarpGate
+                        ? new thaumcraft.client.gui.tinkerer.GuiWarpGateDestinations(
+                                (thaumcraft.common.tiles.tinkerer.kami.TileWarpGate) tile)
                         : null;
             }
             case GUI_ICHOR_POUCH:

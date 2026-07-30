@@ -75,6 +75,10 @@ public class ConfigItems {
     public static FocusPortableHole focusPortableHole;
     // Thaumic Tinkerer foci (reimplemented for 1.12.2 from TT by pixlepix/nekosune)
     public static FocusSmelt focusSmelt;
+    public static FocusXpDrain focusXpDrain;
+    public static FocusShadowbeam focusShadowbeam;
+    public static thaumcraft.common.items.tinkerer.kami.ItemSkyPearl itemSkyPearl;
+    public static FocusRecall focusRecall;
     public static FocusTelekinesis focusTelekinesis;
     public static FocusFlight focusFlight;
     public static FocusHeal focusHeal;
@@ -93,6 +97,7 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorAxe itemIchorAxe;
     public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorShovel itemIchorShovel;
     public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSword itemIchorSword;
+    public static thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSwordAdv itemIchorSwordAdv;
     public static ItemCleansingTalisman itemCleansingTalisman;
     public static ItemXpTalisman itemXpTalisman;
     public static ItemCatAmulet itemCatAmulet;
@@ -102,7 +107,25 @@ public class ConfigItems {
     public static thaumcraft.common.items.tinkerer.kami.ItemProtoclay itemProtoclay;
     public static thaumcraft.common.items.tinkerer.ItemBrightNitor itemBrightNitor;
     public static thaumcraft.common.items.tinkerer.ItemSpellCloth itemSpellCloth;
+    public static thaumcraft.common.items.tinkerer.ItemGas itemGaseousLight;
+    public static thaumcraft.common.items.tinkerer.ItemGas itemGaseousShadow;
+    public static thaumcraft.common.items.tinkerer.ItemGasRemover itemGasRemover;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedSeeds itemInfusedSeeds;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedGrain itemInfusedGrain;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedPotion itemInfusedPotion;
+    public static thaumcraft.common.items.tinkerer.ItemMobAspect itemMobAspect;
+    public static thaumcraft.common.items.tinkerer.ItemBloodSword itemBloodSword;
+    public static thaumcraft.common.items.tinkerer.ItemShareBook itemShareBook;
+    public static thaumcraft.common.items.tinkerer.ItemInfusedInkwell itemInfusedInkwell;
     public static thaumcraft.common.items.tinkerer.ItemRevealingHelm itemRevealingHelm;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothHelm;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothChest;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothLegs;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor itemIchorclothBoots;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm itemIchorclothHelmGem;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest itemIchorclothChestGem;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots itemIchorclothBootsGem;
+    public static thaumcraft.common.items.tinkerer.kami.armor.ItemGemLegs itemIchorclothLegsGem;
 
     // Basic items
     public static ItemShard itemShard;
@@ -353,43 +376,67 @@ public class ConfigItems {
         focusSmelt = (FocusSmelt) new FocusSmelt()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusSmelt"))
                 .setTranslationKey("thaumcraft.focus_smelt")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusSmelt);
+
+        focusXpDrain = (FocusXpDrain) new FocusXpDrain()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusXPDrain"))
+                .setTranslationKey("thaumcraft.kami.focus_xp_drain")
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
+        allItems.add(focusXpDrain);
+
+        focusShadowbeam = (FocusShadowbeam) new FocusShadowbeam()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusShadowbeam"))
+                .setTranslationKey("thaumcraft.kami.focus_shadowbeam")
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
+        allItems.add(focusShadowbeam);
+
+        itemSkyPearl = (thaumcraft.common.items.tinkerer.kami.ItemSkyPearl)
+                new thaumcraft.common.items.tinkerer.kami.ItemSkyPearl()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("SkyPearl"))
+                        .setTranslationKey("thaumcraft.kami.sky_pearl");
+        allItems.add(itemSkyPearl);
+
+        focusRecall = (FocusRecall) new FocusRecall()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusRecall"))
+                .setTranslationKey("thaumcraft.kami.focus_recall")
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
+        allItems.add(focusRecall);
 
         focusTelekinesis = (FocusTelekinesis) new FocusTelekinesis()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusTelekinesis"))
                 .setTranslationKey("thaumcraft.focus_telekinesis")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusTelekinesis);
 
         focusFlight = (FocusFlight) new FocusFlight()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusFlight"))
                 .setTranslationKey("thaumcraft.focus_flight")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusFlight);
 
         focusHeal = (FocusHeal) new FocusHeal()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusHeal"))
                 .setTranslationKey("thaumcraft.focus_heal")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusHeal);
 
         focusDeflect = (FocusDeflect) new FocusDeflect()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDeflect"))
                 .setTranslationKey("thaumcraft.focus_deflect")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusDeflect);
 
         focusDislocation = (FocusDislocation) new FocusDislocation()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDislocation"))
                 .setTranslationKey("thaumcraft.focus_dislocation")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusDislocation);
 
         focusEnderChest = (FocusEnderChest) new FocusEnderChest()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusEnderChest"))
                 .setTranslationKey("thaumcraft.focus_enderchest")
-                .setCreativeTab(tab);
+                .setCreativeTab(thaumcraft.common.lib.CreativeTabTinkerer.tabTinkerer);
         allItems.add(focusEnderChest);
 
         itemPlacementMirror = (ItemPlacementMirror) new ItemPlacementMirror()
@@ -455,6 +502,12 @@ public class ConfigItems {
                         .setTranslationKey("thaumcraft.kami.ichor_shovel_adv");
         allItems.add(itemIchorShovelAdv);
 
+        itemIchorSwordAdv = (thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSwordAdv)
+                new thaumcraft.common.items.tinkerer.kami.tool.ItemIchorSwordAdv()
+                        .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorSwordAdv"))
+                        .setTranslationKey("thaumcraft.kami.ichor_sword_adv");
+        allItems.add(itemIchorSwordAdv);
+
         itemCleansingTalisman = (ItemCleansingTalisman) new ItemCleansingTalisman()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("CleansingTalisman"))
                 .setTranslationKey("thaumcraft.cleansing_talisman");
@@ -505,11 +558,128 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.spell_cloth");
         allItems.add(itemSpellCloth);
 
+        itemGaseousLight = (thaumcraft.common.items.tinkerer.ItemGas)
+                new thaumcraft.common.items.tinkerer.ItemGas(ConfigBlocks.blockGaseousLight)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GaseousLightItem"))
+                .setTranslationKey("thaumcraft.gaseous_light_item");
+        allItems.add(itemGaseousLight);
+
+        itemGaseousShadow = (thaumcraft.common.items.tinkerer.ItemGas)
+                new thaumcraft.common.items.tinkerer.ItemGas(ConfigBlocks.blockGaseousShadow)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GaseousShadowItem"))
+                .setTranslationKey("thaumcraft.gaseous_shadow_item");
+        allItems.add(itemGaseousShadow);
+
+        itemGasRemover = (thaumcraft.common.items.tinkerer.ItemGasRemover)
+                new thaumcraft.common.items.tinkerer.ItemGasRemover()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("GasRemover"))
+                .setTranslationKey("thaumcraft.gas_remover");
+        allItems.add(itemGasRemover);
+
+        itemInfusedSeeds = (thaumcraft.common.items.tinkerer.ItemInfusedSeeds)
+                new thaumcraft.common.items.tinkerer.ItemInfusedSeeds()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedSeeds"))
+                .setTranslationKey("thaumcraft.infused_seeds");
+        allItems.add(itemInfusedSeeds);
+
+        itemInfusedGrain = (thaumcraft.common.items.tinkerer.ItemInfusedGrain)
+                new thaumcraft.common.items.tinkerer.ItemInfusedGrain()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedGrain"))
+                .setTranslationKey("thaumcraft.infused_grain");
+        allItems.add(itemInfusedGrain);
+
+        itemInfusedPotion = (thaumcraft.common.items.tinkerer.ItemInfusedPotion)
+                new thaumcraft.common.items.tinkerer.ItemInfusedPotion()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedPotion"))
+                .setTranslationKey("thaumcraft.infused_potion");
+        allItems.add(itemInfusedPotion);
+
+        itemMobAspect = (thaumcraft.common.items.tinkerer.ItemMobAspect)
+                new thaumcraft.common.items.tinkerer.ItemMobAspect()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("MobAspect"))
+                .setTranslationKey("thaumcraft.mob_aspect");
+        allItems.add(itemMobAspect);
+
+        // The blade's material is upstream's: no harvest level, 950 uses, no
+        // bonus of its own — the damage comes from its attribute modifier —
+        // and thaumium's enchantability.
+        itemBloodSword = (thaumcraft.common.items.tinkerer.ItemBloodSword)
+                new thaumcraft.common.items.tinkerer.ItemBloodSword(
+                        EnumHelper.addToolMaterial("TT_BLOOD", 0, 950, 0.0F, 0.0F,
+                                TOOLMAT_THAUMIUM.getEnchantability()))
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("BloodSword"))
+                .setTranslationKey("thaumcraft.blood_sword");
+        allItems.add(itemBloodSword);
+
+        itemShareBook = (thaumcraft.common.items.tinkerer.ItemShareBook)
+                new thaumcraft.common.items.tinkerer.ItemShareBook()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ShareBook"))
+                .setTranslationKey("thaumcraft.share_book");
+        allItems.add(itemShareBook);
+
+        itemInfusedInkwell = (thaumcraft.common.items.tinkerer.ItemInfusedInkwell)
+                new thaumcraft.common.items.tinkerer.ItemInfusedInkwell()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("InfusedInkwell"))
+                .setTranslationKey("thaumcraft.infused_inkwell");
+        allItems.add(itemInfusedInkwell);
+
         itemRevealingHelm = (thaumcraft.common.items.tinkerer.ItemRevealingHelm)
                 new thaumcraft.common.items.tinkerer.ItemRevealingHelm()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("RevealingHelm"))
                 .setTranslationKey("thaumcraft.revealing_helm");
         allItems.add(itemRevealingHelm);
+
+        itemIchorclothHelm = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.HEAD)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothHelm"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_helm");
+        allItems.add(itemIchorclothHelm);
+
+        itemIchorclothChest = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.CHEST)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothChest"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_chest");
+        allItems.add(itemIchorclothChest);
+
+        itemIchorclothLegs = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.LEGS)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothLegs"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_legs");
+        allItems.add(itemIchorclothLegs);
+
+        itemIchorclothBoots = (thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemIchorclothArmor(
+                        net.minecraft.inventory.EntityEquipmentSlot.FEET)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothBoots"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_boots");
+        allItems.add(itemIchorclothBoots);
+
+        itemIchorclothHelmGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemHelm()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothHelmGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_helm_gem");
+        allItems.add(itemIchorclothHelmGem);
+
+        itemIchorclothChestGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemChest()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothChestGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_chest_gem");
+        allItems.add(itemIchorclothChestGem);
+
+        itemIchorclothBootsGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemBoots()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothBootsGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_boots_gem");
+        allItems.add(itemIchorclothBootsGem);
+
+        itemIchorclothLegsGem = (thaumcraft.common.items.tinkerer.kami.armor.ItemGemLegs)
+                new thaumcraft.common.items.tinkerer.kami.armor.ItemGemLegs()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("IchorclothLegsGem"))
+                .setTranslationKey("thaumcraft.kami.ichorcloth_legs_gem");
+        allItems.add(itemIchorclothLegsGem);
 
         itemShard = (ItemShard) new ItemShard()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemShard"))

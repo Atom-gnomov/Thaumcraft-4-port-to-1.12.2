@@ -1,6 +1,9 @@
 {
-  "parent": "block/cube_all",
+  "comment": "Chiseled dark quartz has a distinct end face: the original's registerBlockIcons binds chiseledDarkQuartz1 as chiseledDarkQuartzIcon and getIcon hands it to the top and the bottom, exactly as vanilla chiseled quartz does.",
+  "parent": "block/cube_bottom_top",
   "textures": {
-    "all": "thaumcraft:blocks/dark_quartz_chiseled"
+    "top": "thaumcraft:blocks/dark_quartz_chiseled_top",
+    "bottom": "thaumcraft:blocks/dark_quartz_chiseled_top",
+    "side": "thaumcraft:blocks/dark_quartz_chiseled"
   }
 }

@@ -160,6 +160,53 @@ public class TinkererBlockShapeStaticGuardTest {
                 model.contains("\"side\": \"thaumcraft:blocks/animation_tablet_side\""));
     }
 
+    /**
+     * Dark quartz is vanilla quartz with a different palette, and the original
+     * was written that way: five metas, where 2/3/4 are the pillar standing on
+     * Y, X and Z. The port had three, drew the chiseled block and the pillar as
+     * {@code cube_all} — side texture on all six faces — and never copied the
+     * two end textures the original registers.
+     */
+    @Test
+    public void darkQuartzHasItsEndFacesAndAllThreePillarAxes() throws IOException {
+        for (String end : new String[]{"dark_quartz_chiseled_top", "dark_quartz_pillar_top"}) {
+            assertTrue(end + ".png is an end face the original registers and must exist",
+                    Files.exists(TEXTURES.resolve(end + ".png")));
+        }
+
+        String chiseled = squash(read(MODELS.resolve("blockdarkquartz_1.json")));
+        assertFalse("chiseled dark quartz has a distinct end face, so it is not cube_all",
+                chiseled.contains("block/cube_all"));
+        assertTrue("chiseled top must be chiseledDarkQuartz1",
+                chiseled.contains("\"top\": \"thaumcraft:blocks/dark_quartz_chiseled_top\""));
+
+        String pillar = squash(read(MODELS.resolve("blockdarkquartz_2.json")));
+        assertTrue("the pillar is a column, not a uniform cube",
+                pillar.contains("\"parent\": \"block/cube_column\""));
+        assertTrue("pillar end must be pillarDarkQuartz1",
+                pillar.contains("\"end\": \"thaumcraft:blocks/dark_quartz_pillar_top\""));
+
+        String state = squash(read(Paths.get(
+                "src/main/resources/assets/thaumcraft/blockstates/blockdarkquartz.json")));
+        for (String variant : new String[]{"variant=0", "variant=1", "variant=2", "variant=3", "variant=4"}) {
+            assertTrue("the original has five metas; " + variant + " is missing",
+                    state.contains("\"" + variant + "\""));
+        }
+
+        String source = read(BLOCKS.resolve("BlockDarkQuartz.java"));
+        assertTrue("VARIANT must span all five metas",
+                source.contains("PropertyInteger.create(\"variant\", 0, 4)"));
+        assertTrue("placing the pillar must pick its axis, as the original's onBlockPlaced does",
+                source.contains("public IBlockState getStateForPlacement("));
+        assertTrue("a lying pillar drops the upright one",
+                source.contains("public int damageDropped(IBlockState state)")
+                        && source.contains("uprightIfPillar"));
+        assertTrue("pick-block on a lying pillar gives the upright one",
+                source.contains("public ItemStack getItem(World world, BlockPos pos, IBlockState state)"));
+        assertTrue("only the first three variants belong in creative, as upstream",
+                source.contains("VARIANTS = {\"plain\", \"chiseled\", \"pillar\"}"));
+    }
+
     /** Collapse runs of whitespace so the assertions do not depend on formatting. */
     private static String squash(String text) {
         return text.replaceAll("\\s+", " ");

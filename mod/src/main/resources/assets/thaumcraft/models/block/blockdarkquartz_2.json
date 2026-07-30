@@ -1,6 +1,8 @@
 {
-  "parent": "block/cube_all",
+  "comment": "Pillar dark quartz is a column: the original's registerBlockIcons binds pillarDarkQuartz1 as pillarDarkQuartzIcon and getIcon hands it to whichever pair of faces is the end for that meta (2 = Y, 3 = X, 4 = Z). The axis is a rotation of this model in the blockstate, the way vanilla quartz pillars do it.",
+  "parent": "block/cube_column",
   "textures": {
-    "all": "thaumcraft:blocks/dark_quartz_pillar"
+    "end": "thaumcraft:blocks/dark_quartz_pillar_top",
+    "side": "thaumcraft:blocks/dark_quartz_pillar"
   }
 }

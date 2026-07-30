@@ -78,9 +78,15 @@ public class BlockMagnet extends BlockContainer {
         list.add(new ItemStack(this, 1, 1));
     }
 
+    /**
+     * The whole block is drawn by {@code TileMagnetRenderer}. Upstream's
+     * {@code RenderMagnet.renderWorldBlock} returns false — there is no static
+     * geometry for this block anywhere — so anything a blockstate model drew
+     * here would be on top of the real one.
+     */
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     /** Right-click toggles attract/repel, as in the original. */

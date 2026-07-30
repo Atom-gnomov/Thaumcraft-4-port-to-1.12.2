@@ -1226,6 +1226,16 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileJarBrain.class, jarRenderer);
         ClientRegistry.bindTileEntitySpecialRenderer(TileJarNode.class, jarRenderer);
 
+        // The magnet has no static model upstream at all — renderWorldBlock
+        // returns false there, so this renderer is the whole block. Both tiles
+        // need it: TileMobMagnet extends TileMagnet but binds separately.
+        thaumcraft.client.renderers.tile.TileMagnetRenderer magnetRenderer =
+                new thaumcraft.client.renderers.tile.TileMagnetRenderer();
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                thaumcraft.common.tiles.tinkerer.TileMagnet.class, magnetRenderer);
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                thaumcraft.common.tiles.tinkerer.TileMobMagnet.class, magnetRenderer);
+
         TileNodeRenderer nodeRenderer = new TileNodeRenderer();
         ClientRegistry.bindTileEntitySpecialRenderer(TileNode.class, nodeRenderer);
         ClientRegistry.bindTileEntitySpecialRenderer(TileNodeEnergized.class, new TileNodeEnergizedRenderer());

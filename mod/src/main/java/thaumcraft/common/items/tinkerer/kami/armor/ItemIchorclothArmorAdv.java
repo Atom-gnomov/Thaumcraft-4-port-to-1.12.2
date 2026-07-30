@@ -60,10 +60,18 @@ public abstract class ItemIchorclothArmorAdv extends ItemIchorclothArmor {
         }
     }
 
-    /** True when this piece is worn and switched on. */
+    /**
+     * True when this piece is worn and switched on.
+     *
+     * <p>Two switches, both of which upstream checks everywhere it applies an
+     * effect: the piece's own damage value, flipped by sneak-right-click, and
+     * the player-wide flag behind the U key. The port had only the first, so
+     * the U key described in all four Thaumonomicon entries did nothing.</p>
+     */
     protected boolean isActive(EntityPlayer player) {
         ItemStack worn = player.getItemStackFromSlot(this.armorType);
-        return !worn.isEmpty() && worn.getItem() == this && worn.getItemDamage() == 0;
+        return !worn.isEmpty() && worn.getItem() == this && worn.getItemDamage() == 0
+                && thaumcraft.common.lib.tinkerer.KamiArmorHandler.getArmorStatus(player);
     }
 
     @Override

@@ -12,6 +12,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileSummon;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Tablet of Necromancy — ported from Thaumic Tinkerer's {@code BlockSummon}
@@ -30,7 +31,7 @@ public class BlockSummon extends BlockContainer {
         this.setHardness(3.0F);
         this.setResistance(10.0F);
         this.setSoundType(SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

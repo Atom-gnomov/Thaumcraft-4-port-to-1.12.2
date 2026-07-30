@@ -20,6 +20,7 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.TCSounds;
 import thaumcraft.common.tiles.tinkerer.TileTransvectorDislocator;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Transvector Dislocator — reimplemented from Thaumic Tinkerer
@@ -40,7 +41,7 @@ public class BlockTransvectorDislocator extends BlockCamo {
         this.setHardness(3.0F);
         this.setResistance(10.0F);
         this.setSoundType(SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setDefaultState(this.blockState.getBaseState()
                 .withProperty(FACING, EnumFacing.UP)
                 .withProperty(POWERED, false));

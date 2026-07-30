@@ -1045,6 +1045,24 @@ public class ClientProxy extends CommonProxy {
                 ConfigBlocks.blockFireOrder, ConfigBlocks.blockFireWater}) {
             registerBlockItemModelFromItemJson(Item.getItemFromBlock(fire));
         }
+        // The same trap, and the fires were only the first six to hit it. A
+        // block item resolves through ModelResourceLocation(name, "inventory"),
+        // and none of these blockstates declares an inventory variant, so
+        // without an explicit registration the item shows the missing-model
+        // placeholder while the placed block looks perfectly normal. Every one
+        // of these already has an item json; nothing was ever pointed at it.
+        for (net.minecraft.block.Block block : new net.minecraft.block.Block[]{
+                ConfigBlocks.blockAlchemyFurnace, ConfigBlocks.blockArcaneDoor,
+                ConfigBlocks.blockBedrockPortal, ConfigBlocks.blockDoubleSlabStone,
+                ConfigBlocks.blockDoubleSlabWood, ConfigBlocks.blockSlabStone,
+                ConfigBlocks.blockSlabWood, ConfigBlocks.blockDoubleSlabDarkQuartz,
+                ConfigBlocks.blockEldritchNothing, ConfigBlocks.blockFluidDeath,
+                ConfigBlocks.blockFluidPure, ConfigBlocks.blockFluxGas,
+                ConfigBlocks.blockFluxGoo, ConfigBlocks.blockHole,
+                ConfigBlocks.blockLootUrn, ConfigBlocks.blockWarded,
+                ConfigBlocks.blockWarpGate}) {
+            registerBlockItemModelFromItemJson(Item.getItemFromBlock(block));
+        }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockSlabDarkQuartz), 0,
                 "half=bottom,seamless=false");

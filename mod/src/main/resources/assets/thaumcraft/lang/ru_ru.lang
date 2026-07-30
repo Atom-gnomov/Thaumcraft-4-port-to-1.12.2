@@ -822,6 +822,7 @@ tc.research_category.ALCHEMY=Алхимия
 tc.research_category.ARTIFICE=Изобретения
 tc.research_category.GOLEMANCY=Големоведение
 tc.research_category.ELDRITCH=Древние знания
+tc.research_category.TT_CATEGORY=Таум-инженерия
 tile.researchtable.noink.0=Вы исчерпали чернила!
 tile.researchtable.noink.1=Заправьте Вашу чернильницу.
 tc.key1=Ключ был привязан к этой Магической двери.

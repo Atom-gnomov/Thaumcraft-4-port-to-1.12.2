@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
@@ -34,9 +35,22 @@ public class ItemIchorSwordAdv extends ItemIchorSword implements IAdvancedTool {
     /** Mode 1 re-enters attack from inside attack; this stops the recursion. */
     private boolean ignoreLeftClick = false;
 
-    /** Focused-strike bonus range, inclusive. A deviation, see onLeftClickEntity. */
-    private static final int SINGLE_TARGET_MIN = 14;
-    private static final int SINGLE_TARGET_MAX = 17;
+    /**
+     * Extra attack damage while the sword is in focused-strike mode. Owner's
+     * call, not upstream: mode 0 is a plain strike there, so focusing on one
+     * target hit for exactly what the mode-1 sweep did and there was no reason
+     * to use it.
+     *
+     * <p>This started as a bonus hit dealt alongside the vanilla one, which
+     * fought the damage-immunity window and had to clear it by hand. It is a
+     * plain attribute now, on the owner's instruction: the number shows in the
+     * tooltip, enchantments and potions scale it the way they scale any weapon,
+     * and the sweep and lifesteal modes keep the stock value.</p>
+     */
+    private static final double FOCUSED_STRIKE_BONUS_DAMAGE = 6.0D;
+
+    /** Upstream's plain strike, and the only mode that gets the bonus. */
+    private static final int MODE_FOCUSED_STRIKE = 0;
 
     public ItemIchorSwordAdv() {
         super();
@@ -50,29 +64,10 @@ public class ItemIchorSwordAdv extends ItemIchorSword implements IAdvancedTool {
         if (!this.ignoreLeftClick && entity instanceof EntityLivingBase
                 && ((EntityLivingBase) entity).hurtTime == 0 && !entity.isDead) {
             switch (KamiToolHandler.getMode(stack)) {
-                case 0: {
-                    // Owner's call, not the original's behaviour: upstream mode 0
-                    // is a plain strike, so single-target and the mode-1 sweep hit
-                    // for exactly the same amount and there was no reason to use
-                    // it. Focusing on one target now rolls 14-17 on top of the
-                    // usual hit. See THAUMIC_TINKERER_PLAN.md.
-                    //
-                    // The bonus is dealt here, before the vanilla hit, and the
-                    // victim's immunity window is cleared afterwards. Without
-                    // that clear the vanilla hit lands inside the window this
-                    // one opened and only the larger of the two counts, so the
-                    // player sees no change at all.
-                    if (!player.world.isRemote) {
-                        float bonus = SINGLE_TARGET_MIN
-                                + player.world.rand.nextInt(SINGLE_TARGET_MAX - SINGLE_TARGET_MIN + 1);
-                        EntityLivingBase victim = (EntityLivingBase) entity;
-                        victim.attackEntityFrom(
-                                net.minecraft.util.DamageSource.causePlayerDamage(player), bonus);
-                        victim.hurtResistantTime = 0;
-                        victim.hurtTime = 0;
-                    }
+                case MODE_FOCUSED_STRIKE:
+                    // Nothing to do on the hit itself. The mode's extra damage is
+                    // an attribute now — see getAttributeModifiers.
                     break;
-                }
                 case 1: {
                     int range = 3;
                     List<Entity> entities = player.world.getEntitiesWithinAABB(entity.getClass(),
@@ -96,6 +91,42 @@ public class ItemIchorSwordAdv extends ItemIchorSword implements IAdvancedTool {
             }
         }
         return super.onLeftClickEntity(stack, player, entity);
+    }
+
+    /**
+     * Focused-strike mode hits harder; the sweep and lifesteal modes keep the
+     * stock ichor numbers. Only the damage is touched — attack speed stays
+     * where {@code ItemSword} puts it, so the weapon still feels like a sword.
+     */
+    @Override
+    public com.google.common.collect.Multimap<String, net.minecraft.entity.ai.attributes.AttributeModifier>
+            getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+        com.google.common.collect.Multimap<String,
+                net.minecraft.entity.ai.attributes.AttributeModifier> base =
+                super.getAttributeModifiers(slot, stack);
+
+        if (slot != EntityEquipmentSlot.MAINHAND
+                || KamiToolHandler.getMode(stack) != MODE_FOCUSED_STRIKE) {
+            return base;
+        }
+
+        String damage = net.minecraft.entity.SharedMonsterAttributes.ATTACK_DAMAGE.getName();
+        com.google.common.collect.Multimap<String,
+                net.minecraft.entity.ai.attributes.AttributeModifier> tuned =
+                com.google.common.collect.HashMultimap.create();
+        for (java.util.Map.Entry<String,
+                net.minecraft.entity.ai.attributes.AttributeModifier> entry : base.entries()) {
+            net.minecraft.entity.ai.attributes.AttributeModifier modifier = entry.getValue();
+            if (damage.equals(entry.getKey())) {
+                tuned.put(damage, new net.minecraft.entity.ai.attributes.AttributeModifier(
+                        modifier.getID(), modifier.getName(),
+                        modifier.getAmount() + FOCUSED_STRIKE_BONUS_DAMAGE,
+                        modifier.getOperation()));
+            } else {
+                tuned.put(entry.getKey(), modifier);
+            }
+        }
+        return tuned;
     }
 
     @Override

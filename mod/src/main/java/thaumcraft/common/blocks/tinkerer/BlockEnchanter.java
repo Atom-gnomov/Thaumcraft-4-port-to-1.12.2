@@ -18,6 +18,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import thaumcraft.common.CommonProxy;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileEnchanter;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Osmotic Enchanter — reimplemented from Thaumic Tinkerer (pixlepix/nekosune,
@@ -38,7 +39,7 @@ public class BlockEnchanter extends BlockContainer {
         this.setHardness(5.0F);
         this.setResistance(2000.0F);
         this.setSoundType(SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

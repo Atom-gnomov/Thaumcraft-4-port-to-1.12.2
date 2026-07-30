@@ -841,6 +841,7 @@ tc.research_category.ALCHEMY=Alchemy
 tc.research_category.ARTIFICE=Artifice
 tc.research_category.GOLEMANCY=Golemancy
 tc.research_category.ELDRITCH=Eldritch
+tc.research_category.TT_CATEGORY=Thaumic Tinkering
 tile.researchtable.noink.0=You have run out of ink!
 tile.researchtable.noink.1=Refill your scribing tools.
 tc.key1=The key has been linked to this arcane door.

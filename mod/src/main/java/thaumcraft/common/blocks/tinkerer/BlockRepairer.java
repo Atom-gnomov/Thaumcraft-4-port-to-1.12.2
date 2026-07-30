@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.ItemStackHandler;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileRepairer;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Repairer — reimplemented from Thaumic Tinkerer (pixlepix/nekosune) for
@@ -36,7 +37,7 @@ public class BlockRepairer extends BlockContainer {
         this.setHardness(5.0F);
         this.setResistance(10.0F);
         this.setSoundType(SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN));
     }
 
@@ -53,6 +54,22 @@ public class BlockRepairer extends BlockContainer {
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    /**
+     * The original says false to both, and it matters for more than culling:
+     * an opaque block stops light, so leaving this out left the repairer's own
+     * space unlit and the renderer drew the whole case nearly black. It is a
+     * glass case — light has to reach it.
+     */
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
     }
 
     /** Right-click swaps the held item with whatever is being repaired. */

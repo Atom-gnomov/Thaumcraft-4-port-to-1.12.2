@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileMagnet;
 import thaumcraft.common.tiles.tinkerer.TileMobMagnet;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Magnet — reimplemented from Thaumic Tinkerer (pixlepix/nekosune) for 1.12.2.
@@ -43,7 +44,7 @@ public class BlockMagnet extends BlockContainer {
         this.setHardness(1.7F);
         this.setResistance(1.0F);
         this.setSoundType(SoundType.WOOD);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.setDefaultState(this.blockState.getBaseState()
                 .withProperty(PULLING, true)
                 .withProperty(MOB, false));

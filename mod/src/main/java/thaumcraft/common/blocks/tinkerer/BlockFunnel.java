@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileFunnel;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Funnel — ported from Thaumic Tinkerer's {@code BlockFunnel}
@@ -33,7 +34,7 @@ public class BlockFunnel extends BlockContainer {
         this.setHardness(3.0F);
         this.setResistance(8.0F);
         this.setSoundType(net.minecraft.block.SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

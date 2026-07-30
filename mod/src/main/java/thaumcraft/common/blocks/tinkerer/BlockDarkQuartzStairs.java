@@ -3,6 +3,7 @@ package thaumcraft.common.blocks.tinkerer;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.blocks.BlockThaumcraftStairs;
 import thaumcraft.common.config.ConfigBlocks;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Dark Quartz Stairs — ported from Thaumic Tinkerer's
@@ -13,7 +14,7 @@ public class BlockDarkQuartzStairs extends BlockThaumcraftStairs {
 
     public BlockDarkQuartzStairs() {
         super(ConfigBlocks.blockDarkQuartz.getStateFromMeta(0));
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
         this.useNeighborBrightness = true;
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileMobilizer;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Levitational Locomotive — ported from Thaumic Tinkerer's
@@ -24,7 +25,7 @@ public class BlockMobilizer extends BlockContainer {
         this.setHardness(3.0F);
         this.setResistance(10.0F);
         this.setSoundType(SoundType.METAL);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Dark Quartz — reimplemented from Thaumic Tinkerer (pixlepix/nekosune) for
@@ -45,7 +46,7 @@ public class BlockDarkQuartz extends Block {
         this.setHardness(0.8F);
         this.setResistance(10.0F);
         this.setSoundType(net.minecraft.block.SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

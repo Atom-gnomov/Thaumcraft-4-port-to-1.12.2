@@ -8,6 +8,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileTransvectorInterface;
+import thaumcraft.common.lib.CreativeTabTinkerer;
 
 /**
  * Transvector Interface — reimplemented from Thaumic Tinkerer
@@ -26,7 +27,7 @@ public class BlockTransvectorInterface extends BlockCamo {
         this.setHardness(3.0F);
         this.setResistance(10.0F);
         this.setSoundType(SoundType.STONE);
-        this.setCreativeTab(Thaumcraft.tabTC);
+        this.setCreativeTab(CreativeTabTinkerer.tabTinkerer);
     }
 
     @Override

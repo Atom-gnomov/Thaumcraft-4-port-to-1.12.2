@@ -6,6 +6,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.tinkerer.TileSummon;
@@ -19,6 +22,9 @@ import thaumcraft.common.tiles.tinkerer.TileSummon;
  */
 public class BlockSummon extends BlockContainer {
 
+    /** The original's {@code setBlockBounds(0, 0, 0, 1, 1F / 16F * 2F, 1)} — a two-pixel tablet. */
+    private static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 2.0D / 16.0D, 1.0D);
+
     public BlockSummon() {
         super(Material.ROCK);
         this.setHardness(3.0F);
@@ -30,6 +36,21 @@ public class BlockSummon extends BlockContainer {
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
         return new TileSummon();
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return SHAPE;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
     }
 
     @Override

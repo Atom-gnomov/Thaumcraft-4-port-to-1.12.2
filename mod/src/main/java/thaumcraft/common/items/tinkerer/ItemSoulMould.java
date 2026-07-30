@@ -41,24 +41,37 @@ public class ItemSoulMould extends Item {
         return EnumRarity.UNCOMMON;
     }
 
+    /**
+     * Records what the creature is.
+     *
+     * <p>The pattern goes onto {@code player.getHeldItem(hand)} rather than onto
+     * {@code stack}, and upstream is equally deliberate about it — it writes to
+     * {@code getCurrentEquippedItem()}. In creative mode
+     * {@link EntityPlayer#interactOn} swaps in a <em>copy</em> of the held stack
+     * before calling this, so anything written to the argument is thrown away
+     * the moment the method returns. Writing through the player reaches the real
+     * stack in both modes.</p>
+     */
     @Override
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player,
                                             EntityLivingBase target, EnumHand hand) {
-        if (player.world.isRemote || target instanceof EntityPlayer) {
+        if (target instanceof EntityPlayer) {
             return false;
         }
         ResourceLocation key = EntityList.getKey(target);
         if (key == null) {
             return false;
         }
-        setPattern(stack, key.toString());
+        ItemStack held = player.getHeldItem(hand);
+        setPattern(held.isEmpty() ? stack : held, key.toString());
         return true;
     }
 
+    /** Sneak-right-click in the air wipes it, as upstream does. */
     @Override
     public net.minecraft.util.ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (!world.isRemote && player.isSneaking()) {
+        if (player.isSneaking()) {
             clearPattern(stack);
         }
         return new net.minecraft.util.ActionResult<>(net.minecraft.util.EnumActionResult.SUCCESS, stack);

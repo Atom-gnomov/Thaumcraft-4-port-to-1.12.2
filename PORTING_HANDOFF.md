@@ -29,15 +29,24 @@ Two habits that follow from that:
 
 ## Чем проверено то, что уже сделано (и чем — нет)
 
-Весь guard-набор модуля — **статический**. Тесты читают исходники и ассеты как
-текст: сверяют числа, наличие ветки, имя константы, присутствие файла. Это
-ловит подмену значения и пропавшую текстуру, и ради этого его стоит расширять
-в каждом заходе.
+Почти весь guard-набор модуля — **статический**. Тесты читают исходники и
+ассеты как текст: сверяют числа, наличие ветки, имя константы, присутствие
+файла. Это ловит подмену значения и пропавшую текстуру, и ради этого его стоит
+расширять в каждом заходе.
 
-Чего он не ловит совсем: **работает ли оно в игре**. Ни один объект модуля не
-запускался. Что 5×5 пробуждённой кирки ложится по грани удара, что дощечка
-некромантии действительно собирает существо, что левитатор довозит сундук с
-содержимым — всё это проверено чтением оригинала, а не наблюдением.
+Чего он не ловит совсем: **работает ли оно в игре**. Что 5×5 пробуждённой кирки
+ложится по грани удара, что дощечка некромантии действительно собирает
+существо, что левитатор довозит сундук с содержимым — всё это проверено чтением
+оригинала, а не наблюдением. Владелец с 2026-07-29 играет и присылает отчёты;
+почти каждый отчёт находил то, чего статика не видела.
+
+**Есть и второй способ, и он дешевле, чем кажется.** Поддельный мир заводится
+без запуска игры: `Bootstrap.register()`, `World` с подменёнными
+`getBlockState`/`getTileEntity`/`notifyBlockUpdate`, и тайл можно тикать руками.
+Готовые образцы — `TileEnchanterRuntimeTest` (складывает многоблок и доводит
+зачарование до конца) и `TileAlchemyFurnaceSyncRuntimeTest`. Там, где утверждение
+звучит как «устройство работает», такой тест стоит написать: статический guard
+может лишь пересказать код, который уже сломан.
 
 Насколько это надёжно, показал аудит 1.1.24.0. Пробуждённая броня была
 перенесена «по прочтении» и выглядела полной; повторное чтение тех же классов
@@ -69,25 +78,38 @@ It exists because it was repeatedly broken: recipes, block hardness, item
 names and tool behaviour were filled in "by analogy" instead of being read out
 of the source, and every one of those had to be found and undone later.
 
-**Local copies of both originals live outside the repo and are permanent.**
 Paths are given relative to the repo root, because this work happens on more
 than one machine — never hard-code a home directory into these docs.
 
-| What | Where |
-| --- | --- |
-| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tt-original-1.7.10` |
-| JDK 8 (Temurin 8u492) used to build | `../tools/jdk8u492-b09` |
+**Thaumcraft 4's own original is inside the repo and is always there.** It is
+the strongest evidence available and the least used; several docs sent readers
+hunting for clones instead.
 
-Re-clone TT if it is ever missing (run from the repo root):
+| What | Where | Present |
+| --- | --- | --- |
+| TC4 original, decompiled — 859 classes | `decompiled/thaumcraft/**` | in the repo |
+| TC4 original assets, incl. 22 language files | `assets/assets/thaumcraft/**` | in the repo |
+| JDK 8 (Temurin 8u492) used to build | `../tools/jdk/jdk8u492-b09` | outside, permanent |
+| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tc4/tt-original-1.7.10` | outside, permanent |
+
+The TT clone was declared lost here for a while — the check looked at
+`../tt-original-1.7.10` and nowhere else, while the clone sits one directory
+over, under `tc4/`. The lesson generalizes: "not at the path I tried" and "not
+on this machine" are different claims. Search before declaring a source gone
+(`find ~ -maxdepth 4 -iname "*tinkerer*"` settles it in seconds); if it is
+truly gone, re-clone:
 
 ```bash
 git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer ../tt-original-1.7.10
 ```
 
+[`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md) remains the quick reference
+extracted from it, but with the clone present, the clone wins any disagreement.
+
 Build with that JDK rather than the system default, which is a JRE:
 
 ```bash
-cd mod && ./gradlew build -x test -Dorg.gradle.java.home=../../tools/jdk8u492-b09 --console=plain
+cd mod && ./gradlew build -Dorg.gradle.java.home=../tools/jdk/jdk8u492-b09 --console=plain
 ```
 
 ### The loop, every single time
@@ -101,6 +123,13 @@ cd mod && ./gradlew build -x test -Dorg.gradle.java.home=../../tools/jdk8u492-b0
 3. **Transcribe.** Metadata indices, aspect amounts, instability, hardness and
    resistance carry over unchanged — the meta index is the ground truth even
    when the port happens to call that subtype something else.
+
+   That last clause is not hypothetical. `BlockCosmeticSolid.types` had
+   `obsidianTile` at index 0 and `obsidianTotem` at index 1, the wrong way
+   round, from the port's earliest days until 1.1.42.0. Reading it to check the
+   enchanter's pillar code produced a confident, wrong conclusion and very
+   nearly a wrong "fix". A name written inside the port is not evidence about
+   the original. `decompiled/` and the original's language files are.
 4. **Write what you found back into `TT_OBJECT_REFERENCE.md`** if it was not
    already there, so the next pass does not repeat the lookup.
 
@@ -177,28 +206,16 @@ continues from `1.0.60.0` under the same rules.
 
 ---
 
-## Test baseline — 5 failures as of 1.0.47 (was GREEN at 1.0.35)
+## Test baseline — GREEN
 
-At **1.0.35** `cd mod && ./gradlew.bat test` passed completely: 318 suites,
-0 failures (down from 21 at the start of that effort).
-
-**That is no longer true.** As of **1.0.47** the suite runs 539 tests with
-**5 failures**, all client-render guards:
-
-- `ArcaneFurnaceVisualShellContractTest`
-- `ClientProxyDedicatedBeamBoltStaticGuardTest`
-- `InfusionRendererFidelityStaticGuardTest`
-- `VisEnergyRendererFidelityStaticGuardTest`
-- `ReportedItemModelRoutingContractTest`
-
-They were verified pre-existing (stash the working tree, re-run on a clean
-checkout) and trace back to the FOREVA renderer/tile/block adoption of
-1.0.36–1.0.45 — not to the Thaumic Tinkerer module. Either fix the renderers
-or update those guards to the intended contract (see the rule below), then
-restore this section to GREEN.
+The suite is green and has been since 2026-07-28: as of 1.1.43.0 it runs
+**345 suites / ~690 tests / 0 failures**. (The five client-render guards that
+this section used to list as failing were fixed along the way; the stale
+listing sent at least one session hunting for failures that no longer
+existed.)
 
 The rule still stands: **do not add new failures.** After any change, run the
-full suite and compare against these five; investigate every *new* failure
+full suite; investigate every *new* failure
 before shipping.
 
 When a **static-guard test pins an old reconstruction you deliberately
@@ -267,11 +284,16 @@ FX guards. This was attempted and fully reverted. **Skip the FX cluster.** If a
 specific FX behaviour is worth porting, re-implement it inside our ITCParticle
 model rather than copying FOREVA's class.
 
-## Remaining FOREVA systems to port (after tests are green)
+## Remaining FOREVA systems to port
 
-From the full diverged-file set (was captured as `$TEMP/adopt2.txt`; regenerate
-with `git diff --name-only <foreva-base> HEAD` or by diffing trees). High-value,
-roughly ordered by coherence / lower risk:
+**Checked name-by-name on 2026-08-02: every class in the list below is already
+in the port** — the list is done, except `EldritchCrustBakedModel` (still
+deferred, adoption recipe at the end of this section). What is NOT done is the
+new backlog: **144 FOREVA commits (2026-07-16 … 2026-07-29)**, fetched into
+`tc4-foreva-ref` at `1286a89`; the ones matching open bugs are mapped in
+`KNOWN_ISSUES.md` («Бэклог адопции FOREVA»).
+
+The original list, kept for its notes:
 
 1. **Node renderers** — TileNodeRenderer, TileNodeEnergizedRenderer,
    TileNodeStabilizerRenderer (visual; validate GL state save/restore — this

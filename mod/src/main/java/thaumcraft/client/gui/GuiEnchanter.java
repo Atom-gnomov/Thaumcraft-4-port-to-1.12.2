@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -15,6 +13,10 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.client.gui.tinkerer.GuiButtonEnchant;
+import thaumcraft.client.gui.tinkerer.GuiButtonEnchanterLevel;
+import thaumcraft.client.gui.tinkerer.GuiButtonEnchantment;
+import thaumcraft.client.gui.tinkerer.GuiButtonFramedEnchantment;
 import thaumcraft.common.container.ContainerEnchanter;
 import thaumcraft.common.tiles.tinkerer.TileEnchanter;
 
@@ -26,6 +28,14 @@ import thaumcraft.common.tiles.tinkerer.TileEnchanter;
  * to sixteen offered enchantments in two rows of eight starting at (34, 54),
  * each queued enchantment listed off the right edge with level down/up buttons,
  * and a bar per primal aspect showing paid-against-total with a tooltip.</p>
+ *
+ * <p>The buttons are the original's own classes, ported one to one —
+ * {@code GuiButtonEnchant}, {@code GuiButtonEnchantment},
+ * {@code GuiButtonFramedEnchantment}, {@code GuiButtonEnchanterLevel} — drawing
+ * their sprites from the enchanter's atlas. Nothing is dimmed while a run is
+ * working: upstream keeps every button live and lets the server refuse, and
+ * the start button's sprite switching to the busy variant is the only visible
+ * change.</p>
  */
 @SideOnly(Side.CLIENT)
 public class GuiEnchanter extends GuiContainerScaled {
@@ -35,7 +45,8 @@ public class GuiEnchanter extends GuiContainerScaled {
 
     private final TileEnchanter enchanter;
     private final ContainerEnchanter container;
-    private List<String> hoverText = new ArrayList<>();
+    /** Filled by whichever button is hovered this frame; drawn and cleared in the foreground pass. */
+    public List<String> tooltip = new ArrayList<>();
     private int left;
     private int top;
 
@@ -43,6 +54,10 @@ public class GuiEnchanter extends GuiContainerScaled {
         super(new ContainerEnchanter(playerInv, enchanter));
         this.container = (ContainerEnchanter) this.inventorySlots;
         this.enchanter = enchanter;
+    }
+
+    public TileEnchanter getEnchanter() {
+        return enchanter;
     }
 
     @Override
@@ -56,9 +71,9 @@ public class GuiEnchanter extends GuiContainerScaled {
     private void rebuildButtons() {
         this.buttonList.clear();
 
-        GuiButton start = new GuiButton(ContainerEnchanter.BUTTON_START,
-                this.left + 151, this.top + 33, 18, 18, ">");
-        start.enabled = !enchanter.getQueuedEnchantments().isEmpty() && !enchanter.isWorking();
+        GuiButtonEnchant start = new GuiButtonEnchant(this, enchanter,
+                ContainerEnchanter.BUTTON_START, this.left + 151, this.top + 33);
+        start.enabled = !enchanter.getQueuedEnchantments().isEmpty();
         this.buttonList.add(start);
 
         // Offers: two rows of eight, second row only appears once the first fills.
@@ -67,9 +82,9 @@ public class GuiEnchanter extends GuiContainerScaled {
             int row = i / 8;
             int col = i % 8;
             int y = this.top + 54 + (offers.size() > 8 ? (row == 0 ? -24 : 0) : 0);
-            IconButton button = new IconButton(ContainerEnchanter.FIRST_OFFER_BUTTON + i,
-                    this.left + 34 + col * 16, y, offers.get(i));
-            button.enabled = !enchanter.isWorking();
+            GuiButtonEnchantment button = new GuiButtonEnchantment(this,
+                    ContainerEnchanter.FIRST_OFFER_BUTTON + i, this.left + 34 + col * 16, y);
+            button.enchant = offers.get(i);
             this.buttonList.add(button);
         }
 
@@ -78,16 +93,15 @@ public class GuiEnchanter extends GuiContainerScaled {
         for (int i = 0; i < queued.size(); i++) {
             int id = ContainerEnchanter.FIRST_ROW_BUTTON + i * ContainerEnchanter.ROW_STRIDE;
             int y = this.top + i * 26;
-            IconButton row = new IconButton(id, this.left + this.xSize + 4, y, queued.get(i));
-            row.framed = true;
-            row.enabled = !enchanter.isWorking();
+            GuiButtonFramedEnchantment row = new GuiButtonFramedEnchantment(
+                    this, id, this.left + this.xSize + 4, y);
+            row.enchant = queued.get(i);
             this.buttonList.add(row);
 
-            GuiButton down = new GuiButton(id + 1, this.left + this.xSize + 24, y - 4, 8, 12, "-");
-            GuiButton up = new GuiButton(id + 2, this.left + this.xSize + 33, y - 4, 8, 12, "+");
-            down.enabled = up.enabled = !enchanter.isWorking();
-            this.buttonList.add(down);
-            this.buttonList.add(up);
+            this.buttonList.add(new GuiButtonEnchanterLevel(
+                    id + 1, this.left + this.xSize + 24, y - 4, false));
+            this.buttonList.add(new GuiButtonEnchanterLevel(
+                    id + 2, this.left + this.xSize + 31, y - 4, true));
         }
     }
 
@@ -152,60 +166,15 @@ public class GuiEnchanter extends GuiContainerScaled {
             List<String> text = new ArrayList<>();
             text.add(TextFormatting.RESET + aspect.getName());
             text.add(paid + "/" + total);
-            this.hoverText = text;
+            this.tooltip = text;
         }
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        for (GuiButton button : this.buttonList) {
-            if (button instanceof IconButton && button.isMouseOver()) {
-                IconButton icon = (IconButton) button;
-                List<String> text = new ArrayList<>();
-                text.add(TextFormatting.AQUA + I18n.format(icon.enchantment.getName()));
-                int level = enchanter.getQueuedLevel(icon.enchantment);
-                if (level > 0) {
-                    text.add(TextFormatting.GRAY + I18n.format("enchantment.level." + level));
-                }
-                this.hoverText = text;
-            }
+        if (!this.tooltip.isEmpty()) {
+            this.drawHoveringText(this.tooltip, mouseX - this.left, mouseY - this.top);
         }
-        if (!this.hoverText.isEmpty()) {
-            this.drawHoveringText(this.hoverText, mouseX - this.left, mouseY - this.top);
-            this.hoverText.clear();
-        }
-    }
-
-    /** Enchantment button drawing the icon sheet the original shipped. */
-    private static class IconButton extends GuiButton {
-
-        final Enchantment enchantment;
-        boolean framed;
-
-        IconButton(int id, int x, int y, Enchantment enchantment) {
-            super(id, x, y, 16, 16, "");
-            this.enchantment = enchantment;
-        }
-
-        @Override
-        public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-            if (!this.visible) {
-                return;
-            }
-            this.hovered = mouseX >= this.x && mouseY >= this.y
-                    && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            if (this.framed) {
-                drawRect(this.x - 1, this.y - 1, this.x + 17, this.y + 17,
-                        this.hovered ? 0xFFFFFFAA : 0xFF6A6A6A);
-            }
-            GlStateManager.color(1.0F, 1.0F, 1.0F, this.enabled ? 1.0F : 0.4F);
-            String path = this.enchantment.getRegistryName() == null
-                    ? "unknown" : this.enchantment.getRegistryName().getPath();
-            mc.getTextureManager().bindTexture(
-                    new ResourceLocation("thaumcraft", "textures/enchants/" + path + ".png"));
-            // Icons are 32x32; draw them into a 16x16 slot.
-            drawModalRectWithCustomSizedTexture(this.x, this.y, 0, 0, 16, 16, 16, 16);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
+        this.tooltip.clear();
     }
 }

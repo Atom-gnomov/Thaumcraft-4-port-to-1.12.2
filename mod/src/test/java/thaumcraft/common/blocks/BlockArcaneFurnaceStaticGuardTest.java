@@ -32,7 +32,7 @@ public class BlockArcaneFurnaceStaticGuardTest {
         assertTrue(source.contains("return this.getBoundingBox(state, worldIn, pos);"));
         assertTrue(source.contains("Block.addCollisionBoxToList(pos, entityBox, collidingBoxes, CORE_AABB);"));
         assertTrue(source.contains("return new ExtendedBlockState(this,"));
-        assertTrue(source.contains("new IUnlistedProperty[]{RENDER_LEVEL, NOZZLE_SIDE}"));
+        assertTrue(source.contains("new IUnlistedProperty[]{RENDER_LEVEL, NOZZLE_MASK}"));
         assertTrue(source.contains("withProperty(FACING, EnumFacing.NORTH);"));
         assertTrue(source.contains("this.getMetaFromState(world.getBlockState(pos.west())) == 0"));
         assertTrue(source.contains("this.getMetaFromState(world.getBlockState(pos.east())) == 0"));

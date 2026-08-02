@@ -22,7 +22,6 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import thaumcraft.api.TileThaumcraft;
 import thaumcraft.common.blocks.tinkerer.BlockAnimationTablet;
 
 /**
@@ -42,7 +41,7 @@ import thaumcraft.common.blocks.tinkerer.BlockAnimationTablet;
  * running freely and waiting for a redstone pulse. The swing is state kept for
  * a renderer; there is no TESR yet, so the tablet does not visibly swing.</p>
  */
-public class TileAnimationTablet extends TileThaumcraft implements ITickable {
+public class TileAnimationTablet extends TileTinkerer implements ITickable {
 
     private static final int SWING_SPEED = 3;
     private static final int MAX_DEGREE = 45;

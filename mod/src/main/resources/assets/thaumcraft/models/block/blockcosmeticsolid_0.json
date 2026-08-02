@@ -1,7 +1,7 @@
 {
-  "parent": "block/cube_column",
+  "comment": "Obsidian Totem. Flat obsidian tile on every face: that is what the original's getIcon(side, meta) returns for this metadata, so it is the inventory look and the fallback. The varied sides come from ObsidianTotemBakedModel, which needs a world to choose them.",
+  "parent": "block/cube_all",
   "textures": {
-    "side": "thaumcraft:blocks/obsidiantotem1",
-    "end": "thaumcraft:blocks/obsidiantotem2"
+    "all": "thaumcraft:blocks/obsidiantile"
   }
 }

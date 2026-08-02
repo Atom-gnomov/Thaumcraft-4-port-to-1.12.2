@@ -1294,10 +1294,11 @@ public class ThaumicTinkererFociStaticGuardTest {
         String tile = read("src/main/java/thaumcraft/common/tiles/tinkerer/TileCamo.java");
         assertTrue("stores the block by registry name and its metadata",
                 tile.contains("TAG_CAMO = \"camo\"") && tile.contains("TAG_CAMO_META = \"camoMeta\""));
-        // Packet plumbing comes from TileThaumcraft's readCustomNBT/writeCustomNBT;
-        // only the redraw on arrival is this tile's own business.
-        assertTrue("built on the port's tile base",
-                tile.contains("extends TileThaumcraft")
+        // The packet format comes from readCustomNBT/writeCustomNBT and the send
+        // itself from TileTinkerer#markDirty (upstream's TileMod); only the redraw
+        // on arrival is this tile's own business.
+        assertTrue("built on the module's tile base",
+                tile.contains("extends TileTinkerer")
                         && tile.contains("public void writeCustomNBT")
                         && tile.contains("public void readCustomNBT"));
         assertTrue("a new disguise redraws the chunk",

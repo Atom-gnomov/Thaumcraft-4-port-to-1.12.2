@@ -28,6 +28,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.common.Thaumcraft;
@@ -38,9 +40,47 @@ import thaumcraft.common.tiles.TileWardingStone;
 
 public class BlockCosmeticSolid extends Block {
 
+    /** Index into {@link #types}. The Obsidian Totem — the Osmotic Enchanter's pillars. */
+    public static final int TYPE_OBSIDIAN_TOTEM = 0;
     public static final int TYPE_TRAVEL = 2;
     public static final int TYPE_WARDING = 3;
-    public static final String[] types = {"obsidianTile", "obsidianTotem", "pavingStone", "wardingStone", "thaumiumBlock", "tallowBlock", "pedestalTop", "arcaneStone", "nodeStone", "golemStone", "golemStoneActive", "eldritchStone", "eldritchPattern", "eldritchStone2", "crust", "eldritchPedestal"};
+    /** Index into {@link #types}. The Charged Obsidian Totem — drawn exactly like the plain one. */
+    public static final int TYPE_CHARGED_OBSIDIAN_TOTEM = 8;
+
+    /**
+     * The totem's side textures, in the original's own order — its
+     * {@code icon[1]} through {@code icon[6]}. Kept as one list so the index
+     * carried in the unlisted properties means the same thing on both sides of
+     * the model.
+     */
+    public static final String[] TOTEM_TEXTURES = {
+            "obsidiantotembase",
+            "obsidiantotem1", "obsidiantotem2", "obsidiantotem3", "obsidiantotem4",
+            "obsidiantotembaseshaded",
+    };
+    /** What the top, the bottom and the inventory icon use — the original's {@code icon[0]}. */
+    public static final String TOTEM_END_TEXTURE = "obsidiantile";
+
+    public static final int TOTEM_TEXTURE_COUNT = TOTEM_TEXTURES.length;
+    public static final int TOTEM_BASE = 0;
+    public static final int TOTEM_BODY_FIRST = 1;
+    public static final int TOTEM_SHADED = 5;
+
+    public static final IUnlistedProperty<Integer> TOTEM_NORTH = new IntUnlistedProperty("totem_north");
+    public static final IUnlistedProperty<Integer> TOTEM_SOUTH = new IntUnlistedProperty("totem_south");
+    public static final IUnlistedProperty<Integer> TOTEM_WEST = new IntUnlistedProperty("totem_west");
+    public static final IUnlistedProperty<Integer> TOTEM_EAST = new IntUnlistedProperty("totem_east");
+    /**
+     * Internal names per metadata. Entries 0 and 1 used to be the wrong way
+     * round — the array said {@code obsidianTile} at 0 and {@code obsidianTotem}
+     * at 1, while everything that matters says the opposite: the original's
+     * {@code tile.blockCosmeticSolid.0.name=Obsidian Totem}, this port's own
+     * {@code cosmetic_solid.0.name}, the model files, and the original's
+     * side-icon routine, which gives the totem column treatment to metas 0 and 8.
+     * Nothing reads these strings, so nothing broke — they simply lied to
+     * whoever read them next.
+     */
+    public static final String[] types = {"obsidianTotem", "obsidianTile", "pavingStone", "wardingStone", "thaumiumBlock", "tallowBlock", "pedestalTop", "arcaneStone", "chargedObsidianTotem", "golemStone", "golemStoneActive", "eldritchStone", "eldritchPattern", "eldritchStone2", "crust", "eldritchPedestal"};
     public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 15);
 
     public BlockCosmeticSolid() {
@@ -182,7 +222,103 @@ public class BlockCosmeticSolid extends Block {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, TYPE);
+        return new net.minecraftforge.common.property.ExtendedBlockState(this,
+                new net.minecraft.block.properties.IProperty[]{TYPE},
+                new IUnlistedProperty[]{TOTEM_NORTH, TOTEM_SOUTH, TOTEM_WEST, TOTEM_EAST});
+    }
+
+    /**
+     * Picks the side texture of an Obsidian Totem, reproducing the original's
+     * {@code getIcon(IBlockAccess, x, y, z, side)} — see
+     * {@code decompiled/thaumcraft/common/blocks/BlockCosmeticSolid.java},
+     * {@code func_149673_e}.
+     *
+     * <p>Three cases, in the original's order: a totem underneath the next one
+     * is drawn shaded; a totem standing on something that is not a totem is a
+     * base; anything else picks one of four body textures from its own
+     * coordinates and the face being drawn. Top and bottom faces are not
+     * touched — they fall through to the plain tile, which is also what the
+     * block looks like in the inventory.</p>
+     *
+     * <p>The arithmetic is copied rather than tidied. {@code %} keeps its sign
+     * in Java, so {@code x % 4} is negative west of the origin and the
+     * {@code Math.abs} sits <em>outside</em> the second remainder — moving it
+     * inward, or swapping in a floor-modulus, would change which texture lands
+     * on which block across a third of the world.</p>
+     */
+    @Override
+    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+        if (!isTotem(state)) {
+            return state;
+        }
+        IExtendedBlockState extended = (IExtendedBlockState) state;
+        if (isTotem(world.getBlockState(pos.up()))) {
+            return allSides(extended, TOTEM_SHADED);
+        }
+        if (!isTotem(world.getBlockState(pos.down()))) {
+            return allSides(extended, TOTEM_BASE);
+        }
+        int coords = pos.getX() % 4 + pos.getZ() % 4 + pos.getY() % 4;
+        return extended
+                .withProperty(TOTEM_NORTH, bodyTexture(EnumFacing.NORTH, coords))
+                .withProperty(TOTEM_SOUTH, bodyTexture(EnumFacing.SOUTH, coords))
+                .withProperty(TOTEM_WEST, bodyTexture(EnumFacing.WEST, coords))
+                .withProperty(TOTEM_EAST, bodyTexture(EnumFacing.EAST, coords));
+    }
+
+    private static int bodyTexture(EnumFacing side, int coords) {
+        return TOTEM_BODY_FIRST + Math.abs((side.getIndex() + coords) % 4);
+    }
+
+    private static IExtendedBlockState allSides(IExtendedBlockState state, int texture) {
+        return state
+                .withProperty(TOTEM_NORTH, texture)
+                .withProperty(TOTEM_SOUTH, texture)
+                .withProperty(TOTEM_WEST, texture)
+                .withProperty(TOTEM_EAST, texture);
+    }
+
+    /**
+     * Whether this is a totem for drawing purposes. The original tests both
+     * metadata values everywhere it tests one — a charged totem stacks with a
+     * plain one and the column reads as continuous.
+     */
+    public boolean isTotem(IBlockState state) {
+        if (state.getBlock() != this) {
+            return false;
+        }
+        int meta = state.getValue(TYPE);
+        return meta == TYPE_OBSIDIAN_TOTEM || meta == TYPE_CHARGED_OBSIDIAN_TOTEM;
+    }
+
+    /** Minimal {@code Integer} unlisted property; mirrors the one in {@code BlockCosmeticOpaque}. */
+    private static final class IntUnlistedProperty implements IUnlistedProperty<Integer> {
+
+        private final String name;
+
+        IntUnlistedProperty(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public boolean isValid(Integer value) {
+            return value != null && value >= 0 && value < TOTEM_TEXTURE_COUNT;
+        }
+
+        @Override
+        public Class<Integer> getType() {
+            return Integer.class;
+        }
+
+        @Override
+        public String valueToString(Integer value) {
+            return String.valueOf(value);
+        }
     }
 
     @Override

@@ -162,6 +162,15 @@ public class SoaringHandler {
         }
         if (mode == MODE_FLIGHT && ascension) {
             fly(player);
+            return;
+        }
+        // Not in FLIGHT mode — and yet elytra-flying? That is our own flag
+        // left over from a mid-air mode switch (the chestplate can never be a
+        // real elytra: the enchant does not fit one). Fold the wings on both
+        // sides at once, instead of waiting for stale NBT and sync to agree —
+        // the owner's "переключил на выкл, а всё ещё лечу".
+        if (player.isElytraFlying()) {
+            setElytraFlying(player, false);
         }
     }
 
@@ -198,10 +207,20 @@ public class SoaringHandler {
                 player.motionY = SoaringPhysics.LAUNCH_IMPULSE;
                 player.fallDistance = 0.0F;
                 setElytraFlying(player, true);
+                return;
+            }
+            // Landed: fold the wings explicitly, on both sides, this tick —
+            // relying on the sync round-trip left the owner stuck in the
+            // flying pose until an unrelated key shook it loose.
+            if (flying) {
+                setElytraFlying(player, false);
             }
             return;
         }
         if (wet) {
+            if (flying) {
+                setElytraFlying(player, false);
+            }
             return;
         }
         if (!flying) {

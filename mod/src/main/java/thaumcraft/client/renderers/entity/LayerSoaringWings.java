@@ -65,12 +65,16 @@ public class LayerSoaringWings implements LayerRenderer<AbstractClientPlayer> {
             return;
         }
         // Switched-off wings are stowed wings: nothing on the back at all.
-        if (SoaringHandler.getMode(chest) == SoaringHandler.MODE_OFF) {
+        int mode = SoaringHandler.getMode(chest);
+        if (mode == SoaringHandler.MODE_OFF) {
             return;
         }
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        if (ascension) {
+        // The silhouette follows the MODE, not the enchant: gliding wears the
+        // cloth wings even on an Ascension plate — the owner's report, "в
+        // парении крылья элитры — не те".
+        if (mode == SoaringHandler.MODE_FLIGHT && ascension) {
             // Vanilla LayerElytra's own transform; the model reads the flight
             // state off the entity, so the wings spread when flying.
             this.renderer.bindTexture(ELYTRA_TEXTURE);

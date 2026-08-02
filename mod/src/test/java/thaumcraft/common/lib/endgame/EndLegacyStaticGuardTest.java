@@ -215,6 +215,38 @@ public class EndLegacyStaticGuardTest {
         }
     }
 
+    /**
+     * The dragonbreath cap: registered, modelled, hooked at cast start, and
+     * the owner's six-line effect table transcribed in primal order.
+     */
+    @Test
+    public void theDragonbreathCapExhalesOnCastStart() throws IOException {
+        String thaumcraft = read(MAIN + "common/Thaumcraft.java");
+        assertTrue("the cap must be registered with the others",
+                thaumcraft.contains("new WandCap(\"dragonbreath\", 0.85f"));
+        String wand = read(MAIN + "common/items/wands/ItemWandCasting.java");
+        assertTrue("the exhale hooks the cast start — after the cooldown gate, before the focus",
+                wand.contains("DragonbreathCap.TAG.equals(castCap.getTag())"));
+        String cap = read(MAIN + "common/lib/endgame/DragonbreathCap.java");
+        assertTrue("the die has six faces and rolls once",
+                cap.contains("world.rand.nextInt(6)"));
+        for (String effect : new String[]{"setFire(FIRE_SECONDS)", "MINING_FATIGUE",
+                "SLOWNESS", "WEAKNESS", "BLINDNESS", "setMagicDamage()"}) {
+            assertTrue("the owner's table must keep " + effect, cap.contains(effect));
+        }
+        assertTrue("a dragon does not scorch its own throat",
+                cap.contains("victim == caster"));
+        String proxy = read(MAIN + "client/ClientProxy.java");
+        assertTrue("meta 9 must have its model", proxy.contains("wandcap_dragonbreath"));
+        for (String lang : new String[]{"en_us", "ru_ru"}) {
+            String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
+            for (String key : new String[]{"item.thaumcraft.wand_cap.9.name=",
+                    "item.Wand.dragonbreath.cap=", "tc.research_page.CAP_dragonbreath.1="}) {
+                assertTrue(key + " missing from " + lang, file.contains(key));
+            }
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

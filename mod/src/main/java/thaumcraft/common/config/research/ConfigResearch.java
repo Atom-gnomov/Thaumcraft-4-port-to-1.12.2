@@ -19,7 +19,7 @@ public class ConfigResearch {
         return requireRecipeHandle(key, IRecipe.class);
     }
 
-    static IArcaneRecipe recipeArcane(String key) {
+    public static IArcaneRecipe recipeArcane(String key) {
         return requireRecipeHandle(key, IArcaneRecipe.class);
     }
 

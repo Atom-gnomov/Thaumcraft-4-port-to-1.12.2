@@ -103,6 +103,8 @@ public class GuiResearchTable extends GuiContainerScaled {
     @Override
     protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScaledScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
         this.xSize_lo = (float) mouseX;
         this.ySize_lo = (float) mouseY;
         int gx = (this.width - this.xSize) / 2;

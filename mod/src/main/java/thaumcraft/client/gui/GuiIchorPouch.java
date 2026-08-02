@@ -49,4 +49,11 @@ public class GuiIchorPouch extends GuiContainerScaled {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
     }
+
+    @Override
+    protected void drawScaledScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScaledScreen(mouseX, mouseY, partialTicks);
+        // FOREVA fix: render the hovered item tooltip so slots show tooltips in this container GUI.
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

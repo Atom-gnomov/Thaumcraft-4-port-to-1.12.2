@@ -107,6 +107,60 @@ public final class ConfigEndLegacy {
                 .setConcealed()
                 .registerResearchItem();
 
+        // ---- The infernal branch: THAUMATURGY, beside the other foci ----
+
+        new ResearchItem(
+                "INFERNAL_SECRETS",
+                "THAUMATURGY",
+                new AspectList()
+                        .add(Aspect.FIRE, 8)
+                        .add(Aspect.ENTROPY, 6)
+                        .add(Aspect.MAGIC, 4)
+                        .add(Aspect.LIFE, 4),
+                5, -6, 2,
+                new ItemStack(Items.GHAST_TEAR))
+                .setPages(
+                        new ResearchPage("tc.research_page.INFERNAL_SECRETS.1"),
+                        new ResearchPage("tc.research_page.INFERNAL_SECRETS.2"))
+                .setParentsHidden("FOCUSFIRE")
+                .setHidden()
+                .setItemTriggers(
+                        new ItemStack(Items.GHAST_TEAR),
+                        new ItemStack(Items.SKULL, 1, 1))
+                .registerResearchItem();
+
+        new ResearchItem(
+                "FOCUS_FIREBALL",
+                "THAUMATURGY",
+                new AspectList()
+                        .add(Aspect.FIRE, 6)
+                        .add(Aspect.MAGIC, 4)
+                        .add(Aspect.ENTROPY, 3),
+                5, -4, 2,
+                new ItemStack(ConfigItems.focusFireball))
+                .setPages(
+                        new ResearchPage("tc.research_page.FOCUS_FIREBALL.1"),
+                        new ResearchPage(ConfigResearch.recipeArcane("FocusFireball")))
+                .setParents("INFERNAL_SECRETS")
+                .setConcealed()
+                .registerResearchItem();
+
+        new ResearchItem(
+                "FOCUS_LIFEDRAIN",
+                "THAUMATURGY",
+                new AspectList()
+                        .add(Aspect.ENTROPY, 6)
+                        .add(Aspect.LIFE, 5)
+                        .add(Aspect.MAGIC, 4),
+                6, -7, 2,
+                new ItemStack(ConfigItems.focusLifedrain))
+                .setPages(
+                        new ResearchPage("tc.research_page.FOCUS_LIFEDRAIN.1"),
+                        new ResearchPage(ConfigResearch.recipeArcane("FocusLifedrain")))
+                .setParents("INFERNAL_SECRETS")
+                .setConcealed()
+                .registerResearchItem();
+
         // ---- Phase 2: the wards ----
 
         new ResearchItem(
@@ -203,6 +257,26 @@ public final class ConfigEndLegacy {
                 'D', new ItemStack(Items.DRAGON_BREATH),
                 'Q', new ItemStack(Items.QUARTZ),
                 'P', new ItemStack(Items.ENDER_PEARL)));
+
+        // The infernal foci: the ghast's tear and the wither skeleton's skull,
+        // in the fire focus's frame.
+        ConfigResearch.recipes.put("FocusFireball", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_FIREBALL",
+                new ItemStack(ConfigItems.focusFireball),
+                new AspectList().add(Aspect.FIRE, 25).add(Aspect.ENTROPY, 15),
+                "CQC", "Q#Q", "CQC",
+                '#', new ItemStack(Items.GHAST_TEAR),
+                'Q', new ItemStack(Items.QUARTZ),
+                'C', new ItemStack(ConfigItems.itemShard, 1, 1)));
+
+        ConfigResearch.recipes.put("FocusLifedrain", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_LIFEDRAIN",
+                new ItemStack(ConfigItems.focusLifedrain),
+                new AspectList().add(Aspect.ENTROPY, 25).add(Aspect.WATER, 15),
+                "CQC", "Q#Q", "CQC",
+                '#', new ItemStack(Items.SKULL, 1, 1),
+                'Q', new ItemStack(Items.QUARTZ),
+                'C', new ItemStack(ConfigItems.itemShard, 1, 5)));
 
         // ---- Phase 2: the wards ----
 

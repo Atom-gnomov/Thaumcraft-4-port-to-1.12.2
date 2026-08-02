@@ -254,6 +254,39 @@ public class EndLegacyStaticGuardTest {
         }
     }
 
+    /**
+     * The infernal branch: two foci beside the others in Thaumaturgy, behind
+     * hidden secrets scanned off a ghast's tear or a wither skeleton's skull.
+     */
+    @Test
+    public void theInfernalBranchIsWired() throws IOException {
+        String items = read(MAIN + "common/config/ConfigItems.java");
+        assertTrue("both foci constructed and added",
+                items.contains("allItems.add(focusFireball)")
+                        && items.contains("allItems.add(focusLifedrain)"));
+        String fireball = read(MAIN + "common/items/wands/foci/FocusFireball.java");
+        assertTrue("the fireball is the ghast's own projectile",
+                fireball.contains("EntityLargeFireball") && fireball.contains("POWER = 1"));
+        String drain = read(MAIN + "common/items/wands/foci/FocusLifedrain.java");
+        assertTrue("the drain withers and heals — the owner's иссушение → лечение",
+                drain.contains("MobEffects.WITHER") && drain.contains("player.heal(HEAL)"));
+        assertTrue("the heal is a share of the bite, not free health",
+                drain.contains("HEAL = 3.0F") && drain.contains("DAMAGE = 4.0F"));
+        String config = read(MAIN + "common/config/ConfigEndLegacy.java");
+        for (String key : new String[]{"INFERNAL_SECRETS", "FOCUS_FIREBALL", "FOCUS_LIFEDRAIN",
+                "Items.GHAST_TEAR", "new ItemStack(Items.SKULL, 1, 1)"}) {
+            assertTrue(key + " must be present", config.contains(key));
+        }
+        for (String lang : new String[]{"en_us", "ru_ru"}) {
+            String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
+            for (String key : new String[]{"item.thaumcraft.focus_fireball.name=",
+                    "item.thaumcraft.focus_lifedrain.name=",
+                    "tc.research_page.INFERNAL_SECRETS.1="}) {
+                assertTrue(key + " missing from " + lang, file.contains(key));
+            }
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

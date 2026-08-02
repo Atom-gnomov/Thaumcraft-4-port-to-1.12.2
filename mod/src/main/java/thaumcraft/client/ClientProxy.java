@@ -1258,6 +1258,10 @@ public class ClientProxy extends CommonProxy {
                 thaumcraft.common.tiles.tinkerer.TileRepairer.class,
                 new thaumcraft.client.renderers.tile.TileRepairerRenderer());
 
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                thaumcraft.common.tiles.tinkerer.kami.TileWarpGate.class,
+                new thaumcraft.client.renderers.tile.TileWarpGateRenderer());
+
         TileNodeRenderer nodeRenderer = new TileNodeRenderer();
         ClientRegistry.bindTileEntitySpecialRenderer(TileNode.class, nodeRenderer);
         ClientRegistry.bindTileEntitySpecialRenderer(TileNodeEnergized.class, new TileNodeEnergizedRenderer());

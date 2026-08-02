@@ -306,6 +306,10 @@ public class Thaumcraft {
                 Config.enchPotency,
                 Config.enchWandFortune
         );
+        // End Legacy: Soaring and Ascension, and the handler that flies them.
+        event.getRegistry().registerAll(Config.enchSoaring, Config.enchAscension);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.endgame.SoaringHandler());
         // Thaumic Tinkerer's own fourteen, and the handler that gives them effect.
         event.getRegistry().registerAll(
                 thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer.create());
@@ -424,5 +428,7 @@ public class Thaumcraft {
         Config.enchHaste = new thaumcraft.common.lib.enchantment.EnchantmentHaste();
         Config.enchWandFortune = new thaumcraft.common.lib.enchantment.EnchantmentWandFortune();
         Config.enchRepair = new thaumcraft.common.lib.enchantment.EnchantmentRepair();
+        Config.enchSoaring = new thaumcraft.common.lib.enchantment.endgame.EnchantmentSoaring();
+        Config.enchAscension = new thaumcraft.common.lib.enchantment.endgame.EnchantmentAscension();
     }
 }

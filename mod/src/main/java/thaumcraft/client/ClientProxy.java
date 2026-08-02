@@ -337,6 +337,20 @@ public class ClientProxy extends CommonProxy {
     public void registerDisplayInformation() {
         registerItemColorHandlers();
         setupTileRenderers();
+        attachSoaringWingLayers();
+    }
+
+    /**
+     * End Legacy: wings on any chestplate carrying Soaring/Ascension. A layer
+     * per skin type — the render player instances exist once the renderer
+     * dispatcher is up, which init-time guarantees.
+     */
+    private void attachSoaringWingLayers() {
+        for (net.minecraft.client.renderer.entity.RenderPlayer renderPlayer
+                : net.minecraft.client.Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
+            renderPlayer.addLayer(
+                    new thaumcraft.client.renderers.entity.LayerSoaringWings(renderPlayer));
+        }
     }
 
     @Override

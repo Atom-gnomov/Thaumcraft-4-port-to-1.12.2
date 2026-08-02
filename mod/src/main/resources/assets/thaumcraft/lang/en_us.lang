@@ -2014,3 +2014,17 @@ ttmisc.spaceToReset=Press SPACE to return to Entrance Point.
 ttmisc.destinationInd=(Destination %s)
 ttmisc.clickToTeleport=Shift + Left Click to Teleport
 ttmisc.destinations=Destinations:
+# --- End Legacy (new content, owner's decision 2026-08-02 — END_LEGACY_PLAN.md) ---
+enchantment.soaring=Soaring
+enchantment.ascension=Ascension
+tc.research_name.SOARING=Soaring Infusion
+tc.research_text.SOARING=The sky was never locked
+tc.research_page.SOARING.1=The wings I pried from the wreck of that ship beyond the End's islands are not clothing, and they are not machinery. They are a frozen stroke of some other will — a thing that remembers flying the way amber remembers the forest.<BR><BR>Infusing their essence into a chestplate has convinced me the memory is contagious: any armour can be taught it. A fall is no longer a fall. It is a long, unhurried step forward, and the ground arrives only when I permit it.
+tc.research_page.SOARING.2=The enchantment settles into the plate itself, beneath any other magic the armour carries, and asks for nothing once it is in — no fuel, no feathers, no favours.<BR><BR>It will not lift me. I must be honest about that; whatever remembered flight in those wings remembers the gliding of it, not the rising. The rising, I suspect, was never the wings' job at all.
+tc.research_name.ASCENSION=Ascension
+tc.research_text.ASCENSION=The ground agreed to let go
+tc.research_page.ASCENSION.1=Gliding is falling, stretched into a pleasure. But the dragon's breath knows how to fall upward.<BR><BR>Woven into the soaring infusion, it changes the argument entirely: I crouch, I leap, and the earth simply releases its claim. Holding my nerve — and the jump — carries me higher, the Aer in my wand thinning with every heartbeat spent aloft. That is a fair price. The sky owes nobody a free passage.<BR><BR>When the vis runs dry the thrust dies quietly and the glide catches me, which has so far been the difference between an experiment and an obituary.
+tc.research_name.DRACONIC_SECRETS=Draconic Vitality
+tc.research_text.DRACONIC_SECRETS=It refused to die politely
+tc.research_page.DRACONIC_SECRETS.1=The breath of the dead dragon did not disperse. It hung in the air of the End as if death, for that creature, were a matter of negotiation rather than fact.<BR><BR>I collected some in a phial. The phial is warm. I should have been alarmed by that at the time, and I am choosing to be alarmed by it now, in writing, where it is safer.
+tc.research_page.DRACONIC_SECRETS.2=Whatever sustains itself in that vapour is not life as the Vitium-touched know it, nor the hollow persistence of the eldritch. It is stubbornness, distilled — a flat refusal to stop.<BR><BR>I can think of several uses for a substance that refuses to stop. Most of them involve me, the open sky, and a great deal of confidence.

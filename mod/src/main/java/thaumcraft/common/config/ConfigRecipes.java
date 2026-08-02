@@ -419,6 +419,7 @@ public class ConfigRecipes {
     private static void initializeArcaneRecipeBaseline() {
         ConfigRecipesArcaneSlice.initializeArcaneRecipeBaseline();
         // Additional (non-TC4-parity) content registered after the audited baseline.
+        ConfigEndLegacy.initRecipes();
         ConfigTinkerer.registerFociRecipes();
         ConfigTinkerer.registerUtilityItemRecipes();
         ConfigTinkerer.registerBlockRecipes();

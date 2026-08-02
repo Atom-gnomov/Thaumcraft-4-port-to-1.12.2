@@ -24,6 +24,7 @@ import thaumcraft.common.lib.network.misc.PacketBiomeChange;
 import thaumcraft.common.lib.network.misc.PacketBoreDig;
 import thaumcraft.common.lib.network.misc.PacketConfig;
 import thaumcraft.common.lib.network.misc.PacketFlyToServer;
+import thaumcraft.common.lib.network.misc.PacketSoaringThrust;
 import thaumcraft.common.lib.network.tinkerer.PacketWarpGateLock;
 import thaumcraft.common.lib.network.tinkerer.PacketSoulHearts;
 import thaumcraft.common.lib.network.tinkerer.PacketToggleArmor;
@@ -51,7 +52,7 @@ import thaumcraft.common.lib.network.playerdata.PacketWarpMessage;
 
 public class PacketHandler {
     public static final String CHANNEL = "thaumcraft";
-    public static final int REFERENCE_PACKET_COUNT = 43;
+    public static final int REFERENCE_PACKET_COUNT = 44;
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL);
 
     // Single dispatch handler that calls onMessage() on each packet
@@ -105,6 +106,7 @@ public class PacketHandler {
         register(PacketWarpGateTeleport.class, idx++, Side.SERVER);
         register(PacketSoulHearts.class, idx++, Side.CLIENT);
         register(PacketToggleArmor.class, idx++, Side.SERVER);
+        register(PacketSoaringThrust.class, idx++, Side.SERVER);
         if (idx != REFERENCE_PACKET_COUNT) {
             throw new IllegalStateException("Thaumcraft packet discriminator table changed: expected " + REFERENCE_PACKET_COUNT + " entries, got " + idx);
         }

@@ -312,6 +312,8 @@ public class Thaumcraft {
                 new thaumcraft.common.lib.endgame.SoaringHandler());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
                 new thaumcraft.common.lib.endgame.WardHandler());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.endgame.DragonbreathFog());
         // Thaumic Tinkerer's own fourteen, and the handler that gives them effect.
         event.getRegistry().registerAll(
                 thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer.create());
@@ -382,9 +384,6 @@ public class Thaumcraft {
         new WandCap("gold", 1.0f, new ItemStack(ConfigItems.itemWandCap, 1, 1), 3);
         new WandCap("thaumium", 0.9f, new ItemStack(ConfigItems.itemWandCap, 1, 2), 6);
         new WandCap("void", 0.8f, new ItemStack(ConfigItems.itemWandCap, 1, 7), 9);
-        // End Legacy: the dragonbreath cap — between thaumium and void on
-        // discount; its point is the exhale, not the arithmetic.
-        new WandCap("dragonbreath", 0.85f, new ItemStack(ConfigItems.itemWandCap, 1, 9), 8);
         // KAMI wand parts (Thaumic Tinkerer): ichor cap, ichorcloth rod.
         new thaumcraft.common.items.tinkerer.kami.wand.CapIchor();
         new thaumcraft.common.items.tinkerer.kami.wand.RodIchorcloth();

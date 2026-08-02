@@ -631,7 +631,7 @@ public class ClientProxy extends CommonProxy {
                 String[] capModels = {
                     "wandcap_iron", "wandcap_gold", "wandcap_thaumium", "wandcap_copper",
                     "wandcap_silver", "wandcap_silver_inert", "wandcap_thaumium_inert",
-                    "wandcap_void", "wandcap_void_inert", "wandcap_dragonbreath"
+                    "wandcap_void", "wandcap_void_inert"
                 };
                 for (int meta = 0; meta < capModels.length; meta++) {
                     ModelLoader.setCustomModelResourceLocation(item, meta,

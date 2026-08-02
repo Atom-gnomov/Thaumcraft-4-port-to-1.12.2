@@ -88,9 +88,9 @@ public final class ConfigEndLegacy {
                         new ItemStack(net.minecraft.init.Blocks.DRAGON_EGG))
                 .registerResearchItem();
 
-        // The dragonbreath wand cap: ELDRITCH (3, 4), behind the dragon.
+        // Focus: Dragonbreath — ELDRITCH (3, 4), behind the dragon.
         new ResearchItem(
-                "CAP_dragonbreath",
+                "FOCUS_DRAGONBREATH",
                 "ELDRITCH",
                 new AspectList()
                         .add(Aspect.MAGIC, 6)
@@ -98,11 +98,11 @@ public final class ConfigEndLegacy {
                         .add(Aspect.FIRE, 3)
                         .add(Aspect.ENTROPY, 3),
                 3, 4, 2,
-                new ItemStack(ConfigItems.itemWandCap, 1, 9))
+                new ItemStack(ConfigItems.focusDragonbreath))
                 .setPages(
-                        new ResearchPage("tc.research_page.CAP_dragonbreath.1"),
-                        new ResearchPage(ConfigResearch.recipeArcane("WandCapDragonbreath")),
-                        new ResearchPage("tc.research_page.CAP_dragonbreath.2"))
+                        new ResearchPage("tc.research_page.FOCUS_DRAGONBREATH.1"),
+                        new ResearchPage(ConfigResearch.recipeArcane("FocusDragonbreath")),
+                        new ResearchPage("tc.research_page.FOCUS_DRAGONBREATH.2"))
                 .setParents("DRACONIC_SECRETS")
                 .setConcealed()
                 .registerResearchItem();
@@ -193,15 +193,16 @@ public final class ConfigEndLegacy {
                         new ItemStack(net.minecraft.init.Blocks.END_ROD),
                         new ItemStack(ConfigItems.itemResource, 1, 14)}));
 
-        // The dragonbreath cap: a gold cap's shape, breathed full. Two per
-        // wand, a phial of breath in each — the exhale is worth the phials.
-        ConfigResearch.recipes.put("WandCapDragonbreath", ThaumcraftApi.addArcaneCraftingRecipe(
-                "CAP_dragonbreath",
-                new ItemStack(ConfigItems.itemWandCap, 1, 9),
-                new AspectList().add(Aspect.FIRE, 8).add(Aspect.ENTROPY, 8).add(Aspect.AIR, 8),
-                "NNN", "NDN",
-                'N', new ItemStack(net.minecraft.init.Items.GOLD_NUGGET),
-                'D', new ItemStack(Items.DRAGON_BREATH)));
+        // Focus: Dragonbreath — the fire focus's frame, breathed full.
+        ConfigResearch.recipes.put("FocusDragonbreath", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_DRAGONBREATH",
+                new ItemStack(ConfigItems.focusDragonbreath),
+                new AspectList().add(Aspect.AIR, 10).add(Aspect.FIRE, 10).add(Aspect.WATER, 10)
+                        .add(Aspect.EARTH, 10).add(Aspect.ORDER, 10).add(Aspect.ENTROPY, 10),
+                "PQP", "QDQ", "PQP",
+                'D', new ItemStack(Items.DRAGON_BREATH),
+                'Q', new ItemStack(Items.QUARTZ),
+                'P', new ItemStack(Items.ENDER_PEARL)));
 
         // ---- Phase 2: the wards ----
 

@@ -610,12 +610,6 @@ public class ItemWandCasting extends Item implements IArchitect {
         if (focus != null) {
             if (!WandManager.isOnCooldown(player)) {
                 WandManager.setCooldown(player, focus.getActivationCooldown(getFocusItem(stack)));
-                // End Legacy: a dragonbreath-capped wand exhales at cast start —
-                // one die across the six primals, rolled here and nowhere else.
-                WandCap castCap = getCap(stack);
-                if (castCap != null && thaumcraft.common.lib.endgame.DragonbreathCap.TAG.equals(castCap.getTag())) {
-                    thaumcraft.common.lib.endgame.DragonbreathCap.exhale(world, player);
-                }
                 ItemStack result = focus.onFocusRightClick(stack, world, player, mop);
                 if (result != null) {
                     return new ActionResult<>(EnumActionResult.SUCCESS, result);

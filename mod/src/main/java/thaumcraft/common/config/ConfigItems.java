@@ -65,6 +65,8 @@ public class ConfigItems {
     // Wand foci
     public static FocusShock focusShock;
     public static FocusFire focusFire;
+    /** End Legacy: the dragon's fog on a wand (END_LEGACY_PLAN.md). */
+    public static thaumcraft.common.items.wands.foci.FocusDragonbreath focusDragonbreath;
     public static FocusFrost focusFrost;
     public static FocusExcavation focusExcavation;
     public static FocusPrimal focusPrimal;
@@ -328,6 +330,12 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusFire"))
                 .setTranslationKey("thaumcraft.focus_fire")
                 .setCreativeTab(tab);
+        focusDragonbreath = (thaumcraft.common.items.wands.foci.FocusDragonbreath)
+                new thaumcraft.common.items.wands.foci.FocusDragonbreath()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusDragonbreath"))
+                .setTranslationKey("thaumcraft.focus_dragonbreath")
+                .setCreativeTab(tab);
+        allItems.add(focusDragonbreath);
         allItems.add(focusFire);
 
         focusFrost = (FocusFrost) new FocusFrost()

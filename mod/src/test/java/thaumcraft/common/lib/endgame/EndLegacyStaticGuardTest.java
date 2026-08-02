@@ -216,32 +216,39 @@ public class EndLegacyStaticGuardTest {
     }
 
     /**
-     * The dragonbreath cap: registered, modelled, hooked at cast start, and
-     * the owner's six-line effect table transcribed in primal order.
+     * Focus: Dragonbreath — a focus like Fire or Excavation (the owner's
+     * correction: «набалдашник» means a focus, not a cap), breathing the
+     * dragon's own lingering cloud with one die rolled at cast start.
      */
     @Test
-    public void theDragonbreathCapExhalesOnCastStart() throws IOException {
-        String thaumcraft = read(MAIN + "common/Thaumcraft.java");
-        assertTrue("the cap must be registered with the others",
-                thaumcraft.contains("new WandCap(\"dragonbreath\", 0.85f"));
+    public void theDragonbreathFocusBreathesTheDragonsFog() throws IOException {
+        String items = read(MAIN + "common/config/ConfigItems.java");
+        assertTrue("the focus must be constructed and added",
+                items.contains("focusDragonbreath = (") && items.contains("allItems.add(focusDragonbreath)"));
         String wand = read(MAIN + "common/items/wands/ItemWandCasting.java");
-        assertTrue("the exhale hooks the cast start — after the cooldown gate, before the focus",
-                wand.contains("DragonbreathCap.TAG.equals(castCap.getTag())"));
-        String cap = read(MAIN + "common/lib/endgame/DragonbreathCap.java");
+        assertTrue("the cap-era hook must stay gone", !wand.contains("DragonbreathCap"));
+        String fog = read(MAIN + "common/lib/endgame/DragonbreathFog.java");
+        assertTrue("the fog is the genuine article",
+                fog.contains("EntityAreaEffectCloud") && fog.contains("EnumParticleTypes.DRAGON_BREATH"));
         assertTrue("the die has six faces and rolls once",
-                cap.contains("world.rand.nextInt(6)"));
-        for (String effect : new String[]{"setFire(FIRE_SECONDS)", "MINING_FATIGUE",
-                "SLOWNESS", "WEAKNESS", "BLINDNESS", "setMagicDamage()"}) {
-            assertTrue("the owner's table must keep " + effect, cap.contains(effect));
+                fog.contains("world.rand.nextInt(6)"));
+        for (String effect : new String[]{"FIRE_CLOUDS.add(cloud)", "MINING_FATIGUE",
+                "SLOWNESS", "WEAKNESS", "BLINDNESS", "INSTANT_DAMAGE"}) {
+            assertTrue("the owner's table must keep " + effect, fog.contains(effect));
         }
-        assertTrue("a dragon does not scorch its own throat",
-                cap.contains("victim == caster"));
-        String proxy = read(MAIN + "client/ClientProxy.java");
-        assertTrue("meta 9 must have its model", proxy.contains("wandcap_dragonbreath"));
+        assertTrue("fire is not a potion — the ticker sets the fog's victims alight",
+                fog.contains("onWorldTick") && fog.contains("setFire(FIRE_SECONDS)"));
+        String thaumcraft = read(MAIN + "common/Thaumcraft.java");
+        assertTrue("the ticker must be on the bus",
+                thaumcraft.contains("new thaumcraft.common.lib.endgame.DragonbreathFog()"));
+        String config = read(MAIN + "common/config/ConfigEndLegacy.java");
+        assertTrue("recipe and research share the FOCUS_DRAGONBREATH key",
+                config.contains("FOCUS_DRAGONBREATH")
+                        && config.contains("recipeArcane(\"FocusDragonbreath\")"));
         for (String lang : new String[]{"en_us", "ru_ru"}) {
             String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
-            for (String key : new String[]{"item.thaumcraft.wand_cap.9.name=",
-                    "item.Wand.dragonbreath.cap=", "tc.research_page.CAP_dragonbreath.1="}) {
+            for (String key : new String[]{"item.thaumcraft.focus_dragonbreath.name=",
+                    "tc.research_page.FOCUS_DRAGONBREATH.1="}) {
                 assertTrue(key + " missing from " + lang, file.contains(key));
             }
         }

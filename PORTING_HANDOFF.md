@@ -90,17 +90,21 @@ hunting for clones instead.
 | TC4 original, decompiled — 859 classes | `decompiled/thaumcraft/**` | in the repo |
 | TC4 original assets, incl. 22 language files | `assets/assets/thaumcraft/**` | in the repo |
 | JDK 8 (Temurin 8u492) used to build | `../tools/jdk/jdk8u492-b09` | outside, permanent |
-| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tt-original-1.7.10` | **not on this machine** |
+| Thaumic Tinkerer 1.7.10 source (branch `1.7.10`) | `../tc4/tt-original-1.7.10` | outside, permanent |
 
-The TT clone is genuinely absent — do not plan a lookup around it without
-checking first. Re-clone from the repo root when you need it:
+The TT clone was declared lost here for a while — the check looked at
+`../tt-original-1.7.10` and nowhere else, while the clone sits one directory
+over, under `tc4/`. The lesson generalizes: "not at the path I tried" and "not
+on this machine" are different claims. Search before declaring a source gone
+(`find ~ -maxdepth 4 -iname "*tinkerer*"` settles it in seconds); if it is
+truly gone, re-clone:
 
 ```bash
 git clone -b 1.7.10 https://github.com/Thaumic-Tinkerer/ThaumicTinkerer ../tt-original-1.7.10
 ```
 
-Until then, TT values come from [`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md),
-which was extracted verbatim while the clone was present.
+[`TT_OBJECT_REFERENCE.md`](TT_OBJECT_REFERENCE.md) remains the quick reference
+extracted from it, but with the clone present, the clone wins any disagreement.
 
 Build with that JDK rather than the system default, which is a JRE:
 

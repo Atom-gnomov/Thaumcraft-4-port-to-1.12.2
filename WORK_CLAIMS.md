@@ -58,7 +58,7 @@ TC4) закрыты позже; порядок и дерево — в `KNOWN_ISS
 - `mod/src/main/java/thaumcraft/common/config/ConfigTinkerer.java`
 - `mod/src/test/java/thaumcraft/common/items/wands/foci/ThaumicTinkererFociStaticGuardTest.java`
 - `scripts/**` — генераторы документации TT
-- `TT_OBJECT_REFERENCE.md`, `TT_PORT_QUEUE.md`, `TT_PORT_AUDIT.md`, `THAUMIC_TINKERER_PLAN.md`
+- `TT_OBJECT_REFERENCE.md`, `TT_PORT_QUEUE.md`, `THAUMIC_TINKERER_PLAN.md`
 
 Общие файлы, которые приходится трогать (правки точечные, конфликтуют редко —
 но лучше предупредить перед своей правкой):

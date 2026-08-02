@@ -357,9 +357,13 @@ public class ThaumcraftWorldGenerator implements IWorldGenerator {
             return;
         }
 
-        // End generation is intentionally skipped by the reference generator.
+        // The reference generator skips the End entirely; the Spires from
+        // Beyond are End Legacy content (new, no 1.7.10 original) and are the
+        // one thing generated there — the central island stays vanilla.
         if (world.provider.getDimensionType() != net.minecraft.world.DimensionType.THE_END) {
             generateSurface(world, random, chunkX, chunkZ, newGen);
+        } else if (newGen) {
+            thaumcraft.common.lib.endgame.WorldGenEndSpires.generate(world, random, chunkX, chunkZ);
         }
 
         if (!newGen) {

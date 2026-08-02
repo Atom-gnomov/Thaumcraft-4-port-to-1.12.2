@@ -108,6 +108,72 @@ public class EndLegacyStaticGuardTest {
         }
     }
 
+    /** Phase 2: the wards — items, handler, recipes, and the death refusal's price. */
+    @Test
+    public void theWardsAreWiredEndToEnd() throws IOException {
+        String items = read(MAIN + "common/config/ConfigItems.java");
+        for (String field : new String[]{
+                "itemVoidExtract", "itemWardDeflection", "itemWardLastBreath", "itemWardLastBreathCracked"}) {
+            assertTrue(field + " must be constructed and added",
+                    items.contains(field + " = (") && items.contains("allItems.add(" + field + ")"));
+        }
+        String thaumcraft = read(MAIN + "common/Thaumcraft.java");
+        assertTrue("the ward handler must be on the bus",
+                thaumcraft.contains("new thaumcraft.common.lib.endgame.WardHandler()"));
+
+        String handler = read(MAIN + "common/lib/endgame/WardHandler.java");
+        assertTrue("deflection cancels the attack and wears the charm",
+                handler.contains("isProjectile()") && handler.contains("charm.damageItem(1, player)"));
+        assertTrue("the last breath costs two points of temporary warp",
+                handler.contains("WARP_TEMPORARY = 2")
+                        && handler.contains("addWarpToPlayer(player, WARP_TEMPORARY, true)"));
+        assertTrue("and shatters the ward into its cracked remnant in place",
+                handler.contains("new ItemStack(ConfigItems.itemWardLastBreathCracked)"));
+        assertTrue("the void still kills — even dragons cannot argue with it",
+                handler.contains("canHarmInCreative()"));
+
+        String config = read(MAIN + "common/config/ConfigEndLegacy.java");
+        for (String key : new String[]{
+                "\"VoidExtract\"", "\"WardDeflection\"", "\"WardLastBreath\"", "\"WardLastBreathReforge\"",
+                "\"WARD_ARROWS\"", "\"WARD_LASTBREATH\""}) {
+            assertTrue(key + " must be present", config.contains(key));
+        }
+        assertTrue("the reforge must be cheaper than the first forging",
+                config.indexOf("add(Aspect.LIFE, 16)") > config.indexOf("add(Aspect.LIFE, 32)"));
+    }
+
+    /** Phase 3: the spires generate only on the outer islands, from existing blocks. */
+    @Test
+    public void theSpiresStayOnTheOuterIslands() throws IOException {
+        String gen = read(MAIN + "common/lib/endgame/WorldGenEndSpires.java");
+        assertTrue("outer-island guard", gen.contains("OUTER_ISLAND_CHUNKS = 64"));
+        assertTrue("the crown seals a crab spawner",
+                gen.contains("CRAB_SPAWNER = 9") && gen.contains("BlockEldritch.TYPE, CRAB_SPAWNER"));
+        assertTrue("urns at the base", gen.contains("blockLootUrn"));
+
+        String worldGen = read(MAIN + "common/lib/world/ThaumcraftWorldGenerator.java");
+        assertTrue("hooked into the End branch, new chunks only",
+                worldGen.contains("WorldGenEndSpires.generate(world, random, chunkX, chunkZ)"));
+        String research = read(MAIN + "common/config/ConfigEndLegacy.java");
+        assertTrue("the END_SPIRES entry exists", research.contains("\"END_SPIRES\""));
+    }
+
+    /** Phase 2-3 lang keys, both languages. */
+    @Test
+    public void phaseTwoAndThreeSpeakBothLanguages() throws IOException {
+        for (String lang : new String[]{"en_us", "ru_ru"}) {
+            String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
+            for (String key : new String[]{
+                    "item.thaumcraft.void_extract.name=", "item.thaumcraft.ward_deflection.name=",
+                    "item.thaumcraft.ward_lastbreath.name=", "item.thaumcraft.ward_lastbreath_cracked.name=",
+                    "tc.research_page.WARD_ARROWS.1=", "tc.research_page.WARD_LASTBREATH.1=",
+                    "tc.research_page.WARD_LASTBREATH.2=", "tc.research_page.END_SPIRES.1=",
+                    "tc.research_page.END_SPIRES.2="}) {
+                assertTrue(key + " missing from " + lang, file.contains(key));
+            }
+        }
+    }
+
     private static String read(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }

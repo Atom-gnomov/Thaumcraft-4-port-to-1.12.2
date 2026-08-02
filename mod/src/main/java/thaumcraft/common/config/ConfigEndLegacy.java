@@ -87,6 +87,65 @@ public final class ConfigEndLegacy {
                         new ItemStack(Items.DRAGON_BREATH),
                         new ItemStack(net.minecraft.init.Blocks.DRAGON_EGG))
                 .registerResearchItem();
+
+        // ---- Phase 2: the wards ----
+
+        new ResearchItem(
+                "WARD_ARROWS",
+                "ARTIFICE",
+                new AspectList()
+                        .add(Aspect.ARMOR, 6)
+                        .add(Aspect.MOTION, 4)
+                        .add(Aspect.VOID, 4)
+                        .add(Aspect.MAGIC, 3),
+                -5, 6, 2,
+                new ItemStack(ConfigItems.itemWardDeflection))
+                .setPages(
+                        new ResearchPage("tc.research_page.WARD_ARROWS.1"),
+                        new ResearchPage(ConfigResearch.recipeCrucible("VoidExtract")),
+                        new ResearchPage(ConfigResearch.recipeInfusion("WardDeflection")))
+                .setParents("INFUSION")
+                .setSecondary()
+                .registerResearchItem();
+
+        new ResearchItem(
+                "WARD_LASTBREATH",
+                "ELDRITCH",
+                new AspectList()
+                        .add(Aspect.LIFE, 8)
+                        .add(Aspect.ELDRITCH, 6)
+                        .add(Aspect.ARMOR, 4)
+                        .add(Aspect.MAGIC, 4),
+                5, 4, 3,
+                new ItemStack(ConfigItems.itemWardLastBreath))
+                .setPages(
+                        new ResearchPage("tc.research_page.WARD_LASTBREATH.1"),
+                        new ResearchPage(ConfigResearch.recipeInfusion("WardLastBreath")),
+                        new ResearchPage("tc.research_page.WARD_LASTBREATH.2"),
+                        new ResearchPage(ConfigResearch.recipeInfusion("WardLastBreathReforge")))
+                .setParents("WARD_ARROWS", "DRACONIC_SECRETS")
+                .setConcealed()
+                .setSpecial()
+                .registerResearchItem();
+
+        // ---- Phase 3: the Spires from Beyond ----
+
+        new ResearchItem(
+                "END_SPIRES",
+                "ELDRITCH",
+                new AspectList()
+                        .add(Aspect.ELDRITCH, 8)
+                        .add(Aspect.VOID, 6)
+                        .add(Aspect.EARTH, 4)
+                        .add(Aspect.GREED, 3),
+                6, 2, 1,
+                new ItemStack(ConfigBlocks.blockCosmeticSolid, 1, 11))
+                .setPages(
+                        new ResearchPage("tc.research_page.END_SPIRES.1"),
+                        new ResearchPage("tc.research_page.END_SPIRES.2"))
+                .setParentsHidden("DRACONIC_SECRETS")
+                .setSecondary()
+                .registerResearchItem();
     }
 
     /**
@@ -114,5 +173,48 @@ public final class ConfigEndLegacy {
                         new ItemStack(Items.SHULKER_SHELL),
                         new ItemStack(net.minecraft.init.Blocks.END_ROD),
                         new ItemStack(ConfigItems.itemResource, 1, 14)}));
+
+        // ---- Phase 2: the wards ----
+
+        // Chorus fruit, boiled down to its refusal to stay put.
+        ConfigResearch.recipes.put("VoidExtract", ThaumcraftApi.addCrucibleRecipe(
+                "WARD_ARROWS",
+                new ItemStack(ConfigItems.itemVoidExtract),
+                new ItemStack(Items.CHORUS_FRUIT),
+                new AspectList().add(Aspect.VOID, 4).add(Aspect.ELDRITCH, 2)));
+
+        ConfigResearch.recipes.put("WardDeflection", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARD_ARROWS",
+                new ItemStack(ConfigItems.itemWardDeflection), 3,
+                new AspectList().add(Aspect.MOTION, 16).add(Aspect.ARMOR, 12).add(Aspect.AIR, 8),
+                new ItemStack(ConfigItems.itemBaubleBlanks, 1, 4),
+                new ItemStack[]{
+                        new ItemStack(ConfigItems.itemVoidExtract),
+                        new ItemStack(Items.SHULKER_SHELL),
+                        new ItemStack(Items.SHIELD),
+                        new ItemStack(Items.ARROW),
+                        new ItemStack(Items.ARROW)}));
+
+        ConfigResearch.recipes.put("WardLastBreath", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARD_LASTBREATH",
+                new ItemStack(ConfigItems.itemWardLastBreath), 8,
+                new AspectList().add(Aspect.LIFE, 32).add(Aspect.ELDRITCH, 16)
+                        .add(Aspect.MAGIC, 16).add(Aspect.ARMOR, 8),
+                new ItemStack(ConfigItems.itemWardDeflection),
+                new ItemStack[]{
+                        new ItemStack(Items.TOTEM_OF_UNDYING),
+                        new ItemStack(Items.DRAGON_BREATH),
+                        new ItemStack(ConfigItems.itemVoidExtract),
+                        new ItemStack(ConfigItems.itemVoidExtract)}));
+
+        // Re-forging the cracked remnant: the soul inside is already broken in.
+        ConfigResearch.recipes.put("WardLastBreathReforge", ThaumcraftApi.addInfusionCraftingRecipe(
+                "WARD_LASTBREATH",
+                new ItemStack(ConfigItems.itemWardLastBreath), 5,
+                new AspectList().add(Aspect.LIFE, 16).add(Aspect.ELDRITCH, 8),
+                new ItemStack(ConfigItems.itemWardLastBreathCracked),
+                new ItemStack[]{
+                        new ItemStack(Items.DRAGON_BREATH),
+                        new ItemStack(ConfigItems.itemVoidExtract)}));
     }
 }

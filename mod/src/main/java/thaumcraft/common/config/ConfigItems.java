@@ -243,6 +243,11 @@ public class ConfigItems {
     public static ItemAmuletVis itemAmuletVis;
     public static ItemGirdleRunic itemGirdleRunic;
     public static ItemGirdleHover itemGirdleHover;
+    // End Legacy, phase 2 (new content, no 1.7.10 original — END_LEGACY_PLAN.md)
+    public static thaumcraft.common.items.endgame.ItemVoidExtract itemVoidExtract;
+    public static thaumcraft.common.items.endgame.ItemWardDeflection itemWardDeflection;
+    public static thaumcraft.common.items.endgame.ItemWardLastBreath itemWardLastBreath;
+    public static thaumcraft.common.items.endgame.ItemWardLastBreathCracked itemWardLastBreathCracked;
     public static ItemBaubleBlanks itemBaubleBlanks;
 
     // Relics
@@ -1159,6 +1164,27 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.girdle_hover")
                 .setCreativeTab(tab);
         allItems.add(itemGirdleHover);
+
+        itemVoidExtract = (thaumcraft.common.items.endgame.ItemVoidExtract)
+                new thaumcraft.common.items.endgame.ItemVoidExtract()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemVoidExtract"))
+                .setTranslationKey("thaumcraft.void_extract");
+        allItems.add(itemVoidExtract);
+        itemWardDeflection = (thaumcraft.common.items.endgame.ItemWardDeflection)
+                new thaumcraft.common.items.endgame.ItemWardDeflection()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemWardDeflection"))
+                .setTranslationKey("thaumcraft.ward_deflection");
+        allItems.add(itemWardDeflection);
+        itemWardLastBreath = (thaumcraft.common.items.endgame.ItemWardLastBreath)
+                new thaumcraft.common.items.endgame.ItemWardLastBreath()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemWardLastBreath"))
+                .setTranslationKey("thaumcraft.ward_lastbreath");
+        allItems.add(itemWardLastBreath);
+        itemWardLastBreathCracked = (thaumcraft.common.items.endgame.ItemWardLastBreathCracked)
+                new thaumcraft.common.items.endgame.ItemWardLastBreathCracked()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemWardLastBreathCracked"))
+                .setTranslationKey("thaumcraft.ward_lastbreath_cracked");
+        allItems.add(itemWardLastBreathCracked);
 
         itemBaubleBlanks = (ItemBaubleBlanks) new ItemBaubleBlanks()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemBaubleBlanks"))

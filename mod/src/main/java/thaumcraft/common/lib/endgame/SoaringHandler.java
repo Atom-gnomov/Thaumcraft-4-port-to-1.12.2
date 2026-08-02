@@ -1,41 +1,65 @@
 package thaumcraft.common.lib.endgame;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.config.Config;
-import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.items.wands.WandManager;
 
 /**
- * Gives the Soaring and Ascension enchantments their behaviour — the End
- * Legacy module's flight (new content, no 1.7.10 original; numbers and design
- * in {@code END_LEGACY_PLAN.md}).
+ * Gives Soaring and Ascension their behaviour — the End Legacy module's flight
+ * (new content, no 1.7.10 original; design in {@code END_LEGACY_PLAN.md} §2,
+ * reshaped 2026-08-02 by the owner: Ascension is <b>the elytra, on armour</b>,
+ * not a hand-rolled thruster).
  *
- * <p>Runs in {@code PlayerTickEvent} on <b>both</b> sides: the client
- * predicts its own motion in 1.12, so a server-only push stutters. The maths
- * lives in {@link SoaringPhysics} as pure functions; this class is the glue —
- * find the enchant, read the state, apply the numbers.</p>
+ * <p><b>Soaring</b> stays a paraglider: fall softened, drift toward the look,
+ * soft landing. Runs in {@code Phase.START}, pure functions from
+ * {@link SoaringPhysics}.</p>
  *
- * <p>Thrust needs to know whether the jump key is held, which the server
- * cannot see — the client reports edges through {@code PacketSoaringThrust},
- * the same road the hover harness's fly packet takes. Thrust is paid in Aer
- * from any wand in the inventory: one point per
- * {@link SoaringPhysics#THRUST_TICKS_PER_VIS_POINT} ticks, and when the wands
- * run dry the thrust dies but the glide stays.</p>
+ * <p><b>Ascension</b> puts the player into the <em>real</em> elytra flight
+ * state — vanilla's aerodynamics, the tilted pose, dive-to-accelerate — on any
+ * chestplate. Forge 14.23.5.2847 has no {@code canElytraFly} hook, and vanilla
+ * clears entity flag 7 every server tick for anything that is not the elytra
+ * item ({@code EntityLivingBase.updateElytra}, server-side only). The way
+ * through is sequencing, not a coremod: {@code updateElytra} runs
+ * <em>inside</em> the tick and the metadata sync happens <em>after</em> it, so
+ * re-raising the flag in {@code Phase.END} means the value the client ever
+ * sees is {@code true} — and the client, whose flag vanilla never touches,
+ * runs the genuine elytra physics on it.</p>
+ *
+ * <p><b>Climbing costs vis.</b> A held jump while flying applies the firework
+ * rocket's own boost formula and burns one point of Aer per
+ * {@link SoaringPhysics#THRUST_TICKS_PER_VIS_POINT} ticks through
+ * {@link WandManager#consumeVisFromInventory} — which drains the <b>vis
+ * amulet in the baubles first</b>, then any wand, exactly the owner's
+ * "за вис в броне/бижутерии". A held jump on the ground is the launch.
+ * Sneaking drops out of the flight state — the emergency exit.</p>
  */
 public class SoaringHandler {
 
+    /** {@code Entity.setFlag} — protected; flag 7 is the elytra-flying state. */
+    private static final Method SET_FLAG = ObfuscationReflectionHelper.findMethod(
+            Entity.class, "func_70052_a", void.class, int.class, boolean.class);
+    private static final int FLAG_ELYTRA = 7;
+
+    /** One point of Aer, in the centivis units the consume helpers speak. */
+    private static final AspectList BOOST_COST = new AspectList().add(Aspect.AIR, 100);
+
     /** Jump-held state per player entity id, fed by the packet (server) or read directly (client). */
     private static final Map<Integer, Boolean> THRUSTING = new HashMap<>();
-    /** Ticks of thrust since the last vis point was paid, per player entity id. */
+    /** Ticks of paid ascent remaining, per player entity id (server only). */
     private static final Map<Integer, Integer> THRUST_TICKS = new HashMap<>();
 
     public static void setThrusting(int playerId, boolean thrusting) {
@@ -57,48 +81,30 @@ public class SoaringHandler {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) {
-            return;
-        }
         EntityPlayer player = event.player;
         if (player.capabilities.isFlying || player.isRiding()) {
             return;
         }
-
         ItemStack chest = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
         if (chest.isEmpty()) {
             return;
         }
         boolean ascension = EnchantmentHelper.getEnchantmentLevel(Config.enchAscension, chest) > 0;
-        boolean soaring = ascension
-                || EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0;
-        if (!soaring) {
+        boolean soaring = EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0;
+
+        if (event.phase == TickEvent.Phase.START) {
+            // The paraglider — only when the full flight state is not in play.
+            if (soaring && !ascension) {
+                glide(player);
+            }
             return;
         }
-
-        boolean thrusting = ascension && isThrusting(player.getEntityId());
-
-        // The launch: a held jump on the ground throws the player up — no
-        // firework, no cliff. This is the owner's core request; the ordinary
-        // jump impulse is replaced, not stacked.
-        if (thrusting && player.onGround && payForThrust(player)) {
-            player.motionY = SoaringPhysics.LAUNCH_IMPULSE;
-            player.fallDistance = 0.0F;
-            return;
+        if (ascension) {
+            ascend(player);
         }
+    }
 
-        if (thrusting && !player.onGround && payForThrust(player)) {
-            Vec3d look = player.getLookVec().normalize();
-            double[] motion = SoaringPhysics.thrust(
-                    new double[]{player.motionX, player.motionY, player.motionZ},
-                    new double[]{look.x, look.y, look.z});
-            player.motionX = motion[0];
-            player.motionY = motion[1];
-            player.motionZ = motion[2];
-            player.fallDistance = 0.0F;
-            return;
-        }
-
+    private void glide(EntityPlayer player) {
         if (SoaringPhysics.isGlidingFall(player.motionY, player.onGround,
                 player.isSneaking(), player.isInWater() || player.isInLava())) {
             player.motionY = SoaringPhysics.glideMotionY(player.motionY);
@@ -113,11 +119,51 @@ public class SoaringHandler {
     }
 
     /**
-     * A tick of thrust either rides the current vis point or buys the next one
-     * from a wand in the inventory. Runs the payment server-side only; the
-     * client trusts its own state until the server stops moving it.
+     * The elytra state, maintained per tick from {@code Phase.END} — after
+     * vanilla's {@code updateElytra} has had its say, so the metadata sync
+     * carries our answer, not its.
      */
-    private boolean payForThrust(EntityPlayer player) {
+    private void ascend(EntityPlayer player) {
+        boolean jumpHeld = isThrusting(player.getEntityId());
+        boolean wet = player.isInWater() || player.isInLava();
+
+        if (player.onGround) {
+            // The launch: a held jump on the ground throws the player up and
+            // straight into the flight state — no firework, no cliff.
+            if (jumpHeld && !wet && payForAscent(player)) {
+                player.motionY = SoaringPhysics.LAUNCH_IMPULSE;
+                player.fallDistance = 0.0F;
+                setElytraFlying(player, true);
+            }
+            return;
+        }
+        if (wet || player.isSneaking()) {
+            // Sneak is the way down; water ends the argument on its own.
+            return;
+        }
+
+        setElytraFlying(player, true);
+        player.fallDistance = 0.0F;
+
+        if (jumpHeld && payForAscent(player)) {
+            Vec3d look = player.getLookVec();
+            double[] motion = SoaringPhysics.boost(
+                    new double[]{player.motionX, player.motionY, player.motionZ},
+                    new double[]{look.x, look.y, look.z});
+            player.motionX = motion[0];
+            player.motionY = motion[1];
+            player.motionZ = motion[2];
+        }
+    }
+
+    /**
+     * A tick of ascent either rides the current vis point or buys the next
+     * one — the amulet in the baubles first, then any wand
+     * ({@link WandManager#consumeVisFromInventory}'s order). Payment is
+     * server-side; the client trusts its reported jump state and lets the
+     * server's motion win when the vis runs out.
+     */
+    private boolean payForAscent(EntityPlayer player) {
         if (player.world.isRemote) {
             return true;
         }
@@ -126,17 +172,19 @@ public class SoaringHandler {
             THRUST_TICKS.put(player.getEntityId(), ticks - 1);
             return true;
         }
-        for (int slot = 0; slot < player.inventory.getSizeInventory(); slot++) {
-            ItemStack stack = player.inventory.getStackInSlot(slot);
-            if (!stack.isEmpty() && stack.getItem() instanceof ItemWandCasting) {
-                ItemWandCasting wand = (ItemWandCasting) stack.getItem();
-                if (wand.consumeVis(stack, player, Aspect.AIR, 100, false)) {
-                    THRUST_TICKS.put(player.getEntityId(),
-                            SoaringPhysics.THRUST_TICKS_PER_VIS_POINT - 1);
-                    return true;
-                }
-            }
+        if (WandManager.consumeVisFromInventory(player, BOOST_COST)) {
+            THRUST_TICKS.put(player.getEntityId(), SoaringPhysics.THRUST_TICKS_PER_VIS_POINT - 1);
+            return true;
         }
         return false;
+    }
+
+    /** Both sides: the server's write is what the metadata sync broadcasts. */
+    private static void setElytraFlying(EntityPlayer player, boolean flying) {
+        try {
+            SET_FLAG.invoke(player, FLAG_ELYTRA, flying);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Entity.setFlag is unreachable — the mappings moved", e);
+        }
     }
 }

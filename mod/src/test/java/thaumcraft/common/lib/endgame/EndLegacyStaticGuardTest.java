@@ -40,6 +40,32 @@ public class EndLegacyStaticGuardTest {
                         && soaring.contains("isAllowedOnBooks") && ascension.contains("isAllowedOnBooks"));
     }
 
+    /**
+     * Ascension is the real elytra state, held open by sequencing: vanilla's
+     * updateElytra clears flag 7 server-side inside the tick, the metadata
+     * sync runs after the tick, so a Phase.END re-raise is the value the
+     * client ever sees — and the client runs genuine elytra physics on it.
+     * The climb burns Aer through the helper that drains the vis amulet in
+     * the baubles first, then wands: the owner's "за вис в броне/бижутерии".
+     */
+    @Test
+    public void ascensionRidesTheRealElytraState() throws IOException {
+        String handler = read(MAIN + "common/lib/endgame/SoaringHandler.java");
+        assertTrue("flag 7 via the SRG name, or production breaks where dev works",
+                handler.contains("\"func_70052_a\"") && handler.contains("FLAG_ELYTRA = 7"));
+        assertTrue("maintenance must run in Phase.END — after updateElytra, before the sync",
+                handler.contains("event.phase == TickEvent.Phase.START")
+                        && handler.contains("ascend(player)"));
+        assertTrue("the climb pays through the baubles-first consume helper",
+                handler.contains("WandManager.consumeVisFromInventory(player, BOOST_COST)"));
+        assertTrue("sneaking is the exit and water ends the flight",
+                handler.contains("player.isSneaking()") && handler.contains("isInWater()"));
+        String physics = read(MAIN + "common/lib/endgame/SoaringPhysics.java");
+        assertTrue("the boost is the firework rocket's formula, verbatim",
+                physics.contains("BOOST_ADD = 0.1D") && physics.contains("BOOST_TARGET = 1.5D")
+                        && physics.contains("BOOST_PULL = 0.5D"));
+    }
+
     /** The thrust packet is appended to the registry tail, never inserted. */
     @Test
     public void theThrustPacketRidesTheRegistryTail() throws IOException {

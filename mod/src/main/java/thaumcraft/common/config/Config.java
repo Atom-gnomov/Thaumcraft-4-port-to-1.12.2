@@ -166,6 +166,10 @@ public class Config {
     // Enchantments
     public static Enchantment enchHaste = null;
     public static Enchantment enchRepair = null;
+    // End Legacy (new content, no 1.7.10 original — owner's decision 2026-08-02,
+    // see END_LEGACY_PLAN.md): flight infused into any chestplate.
+    public static Enchantment enchSoaring = null;
+    public static Enchantment enchAscension = null;
     public static Enchantment enchFrugal = null;
     public static Enchantment enchPotency = null;
     public static Enchantment enchWandFortune = null;

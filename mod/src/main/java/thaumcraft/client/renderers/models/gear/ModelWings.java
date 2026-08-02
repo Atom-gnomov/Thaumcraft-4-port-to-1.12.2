@@ -97,6 +97,27 @@ public class ModelWings extends ModelBiped {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
     }
 
+    /**
+     * Draws the wings alone — no body, no arms — for the End Legacy render
+     * layer, which puts these wings on any chestplate carrying Soaring or
+     * Ascension (new content, no 1.7.10 original; the armor-model route above
+     * stays exactly as the Robes of the Stratosphere use it).
+     *
+     * <p>The body box itself must not draw (the player is already wearing
+     * whatever armour they wear), but the wings hang off {@code bipedBody}'s
+     * transform, so its rotation is applied by hand before the two wing parts
+     * render.</p>
+     */
+    public void renderWingsOnly(Entity entity, float limbSwing, float limbSwingAmount,
+                                float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+        net.minecraft.client.renderer.GlStateManager.pushMatrix();
+        this.bipedBody.postRender(scale);
+        this.wing1.render(scale);
+        this.wing2.render(scale);
+        net.minecraft.client.renderer.GlStateManager.popMatrix();
+    }
+
     private static void setRotation(ModelRenderer model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;

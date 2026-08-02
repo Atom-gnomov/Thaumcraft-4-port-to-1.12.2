@@ -31,7 +31,7 @@ public class ConfigResearch {
         return requireRecipeHandle(key, InfusionRecipe.class);
     }
 
-    static InfusionEnchantmentRecipe recipeInfusionEnchantment(String key) {
+    public static InfusionEnchantmentRecipe recipeInfusionEnchantment(String key) {
         return requireRecipeHandle(key, InfusionEnchantmentRecipe.class);
     }
 
@@ -68,6 +68,9 @@ public class ConfigResearch {
             ConfigResearchThaumaturgy.initThaumaturgyResearchTextOnlyBaseline();
             ConfigResearchEldritch.initEldritchResearchTextOnlyBaseline();
             ConfigResearchEldritch.initEldritchResearchBaseline();
+            // End Legacy — new content in TC4's own tabs (owner's decision,
+            // END_LEGACY_PLAN.md). After the tabs it lives in.
+            thaumcraft.common.config.ConfigEndLegacy.initResearch();
         } finally {
             strictRecipeLookups = false;
         }

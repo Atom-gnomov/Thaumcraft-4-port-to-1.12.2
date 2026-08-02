@@ -16,7 +16,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.Config;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.lib.endgame.SoaringHandler;
 import thaumcraft.common.lib.events.EssentiaHandler;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.misc.PacketSoaringThrust;
 import thaumcraft.common.tiles.TileInfusionMatrix;
 
 @SideOnly(Side.CLIENT)
@@ -160,6 +163,7 @@ public class ClientTickEventsFML {
             return;
         }
         this.tickCount++;
+        this.reportSoaringThrust(mc);
 
         for (String fxKey : new ArrayList<String>(EssentiaHandler.sourceFX.keySet())) {
             EssentiaHandler.EssentiaSourceFX fx = EssentiaHandler.sourceFX.get(fxKey);
@@ -225,5 +229,26 @@ public class ClientTickEventsFML {
 
     @SubscribeEvent
     public void renderTick(TickEvent.RenderTickEvent event) {
+    }
+
+    /** Last jump-held state reported to the server for Ascension's thrust. */
+    private boolean soaringThrustReported;
+
+    /**
+     * The server cannot see the held jump key, so the client reports edges —
+     * pressed, released — and mirrors the state locally so its own prediction
+     * agrees with what the server will do. Same road as the hover harness's
+     * fly packet.
+     */
+    private void reportSoaringThrust(Minecraft mc) {
+        if (mc.player == null) {
+            return;
+        }
+        boolean held = mc.player.movementInput != null && mc.player.movementInput.jump;
+        if (held != this.soaringThrustReported) {
+            this.soaringThrustReported = held;
+            SoaringHandler.setThrusting(mc.player.getEntityId(), held);
+            PacketHandler.INSTANCE.sendToServer(new PacketSoaringThrust(held));
+        }
     }
 }

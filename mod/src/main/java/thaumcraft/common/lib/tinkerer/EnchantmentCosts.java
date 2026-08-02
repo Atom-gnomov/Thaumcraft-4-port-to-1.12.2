@@ -132,6 +132,17 @@ public final class EnchantmentCosts {
     }
 
     /**
+     * The hand-tuned level-1 base cost, unmultiplied — what the original's
+     * enchantment buttons print in their tooltip ({@code ttmisc.baseCost}
+     * lines), as distinct from {@link #costFor}, which is what a run charges.
+     * {@code null} when the enchantment is not priced.
+     */
+    public static AspectList baseCostFor(Enchantment enchantment) {
+        init();
+        return BASE_COSTS.get(enchantment);
+    }
+
+    /**
      * Vis cost of applying {@code enchantment} at {@code level}, or {@code null}
      * when the enchantment is not priced.
      */

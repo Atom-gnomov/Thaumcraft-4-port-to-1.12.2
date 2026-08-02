@@ -27,7 +27,7 @@ public class PacketHandlerRegistrationStaticGuardTest {
         assertTrue("PacketHandler should keep lowercase thaumcraft channel id",
                 source.contains("public static final String CHANNEL = \"thaumcraft\";"));
         assertTrue("PacketHandler should keep reference packet count contract",
-                source.contains("public static final int REFERENCE_PACKET_COUNT = 44;"));
+                source.contains("public static final int REFERENCE_PACKET_COUNT = 46;"));
         assertTrue("PacketHandler should keep discriminator mismatch guard",
                 source.contains("if (idx != REFERENCE_PACKET_COUNT) {"));
     }
@@ -112,7 +112,9 @@ public class PacketHandlerRegistrationStaticGuardTest {
                 "PacketWarpGateTeleport:SERVER",
                 "PacketSoulHearts:CLIENT",
                 "PacketToggleArmor:SERVER",
-                "PacketSoaringThrust:SERVER");
+                "PacketSoaringThrust:SERVER",
+                "PacketSoaringMode:SERVER",
+                "PacketSoaringFuel:CLIENT");
 
         assertEquals("PacketHandler registration sequence must stay reference-aligned",
                 expected, actual);

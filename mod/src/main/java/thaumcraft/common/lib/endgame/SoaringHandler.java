@@ -2,7 +2,9 @@ package thaumcraft.common.lib.endgame;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,33 +23,40 @@ import thaumcraft.common.items.wands.WandManager;
 /**
  * Gives Soaring and Ascension their behaviour — the End Legacy module's flight
  * (new content, no 1.7.10 original; design in {@code END_LEGACY_PLAN.md} §2,
- * reshaped 2026-08-02 by the owner: Ascension is <b>the elytra, on armour</b>,
- * not a hand-rolled thruster).
+ * reshaped twice by the owner: Ascension is <b>the elytra, on armour</b>, and
+ * — after the first flight test — nothing engages by itself: the wings have an
+ * explicit <b>mode</b>, cycled with a key.</p>
  *
- * <p><b>Soaring</b> stays a paraglider: fall softened, drift toward the look,
- * soft landing. Runs in {@code Phase.START}, pure functions from
- * {@link SoaringPhysics}.</p>
+ * <h3>Modes ({@code WingMode} NBT on the chestplate)</h3>
+ * <ul>
+ * <li><b>OFF</b> — the enchantment sleeps; no physics, no wings drawn.</li>
+ * <li><b>GLIDE</b> — the paraglider: fall softened, drift toward the look,
+ * soft landing. The default: harmless on the ground.</li>
+ * <li><b>FLIGHT</b> (Ascension only) — the real elytra state. It never starts
+ * on its own: a <em>fresh</em> jump press on the ground launches, a fresh
+ * press in the air spreads the wings mid-fall; landing ends the flight and
+ * walking or holding jump on the ground does nothing until pressed anew —
+ * the owner's fix for "авто-пробел мешает просто ходить".</li>
+ * </ul>
  *
- * <p><b>Ascension</b> puts the player into the <em>real</em> elytra flight
- * state — vanilla's aerodynamics, the tilted pose, dive-to-accelerate — on any
- * chestplate. Forge 14.23.5.2847 has no {@code canElytraFly} hook, and vanilla
- * clears entity flag 7 every server tick for anything that is not the elytra
- * item ({@code EntityLivingBase.updateElytra}, server-side only). The way
- * through is sequencing, not a coremod: {@code updateElytra} runs
- * <em>inside</em> the tick and the metadata sync happens <em>after</em> it, so
- * re-raising the flag in {@code Phase.END} means the value the client ever
- * sees is {@code true} — and the client, whose flag vanilla never touches,
- * runs the genuine elytra physics on it.</p>
+ * <p>Forge 14.23.5.2847 has no {@code canElytraFly} hook; vanilla clears
+ * entity flag 7 every server tick for anything that is not the elytra item —
+ * server-side and <em>inside</em> the tick, while the metadata sync runs
+ * <em>after</em> it. Re-raising the flag in {@code Phase.END} therefore wins
+ * the sync, and the client runs genuine elytra physics.</p>
  *
- * <p><b>Climbing costs vis.</b> A held jump while flying applies the firework
- * rocket's own boost formula and burns one point of Aer per
- * {@link SoaringPhysics#THRUST_TICKS_PER_VIS_POINT} ticks through
- * {@link WandManager#consumeVisFromInventory} — which drains the <b>vis
- * amulet in the baubles first</b>, then any wand, exactly the owner's
- * "за вис в броне/бижутерии". A held jump on the ground is the launch.
- * Sneaking drops out of the flight state — the emergency exit.</p>
+ * <p><b>Climbing costs vis, honestly.</b> The server is the only payer
+ * ({@link WandManager#consumeVisFromInventory} — the vis amulet in the
+ * baubles first, then wands) and tells the client whether the tank is dry
+ * through {@code PacketSoaringFuel}; the first flight test showed the client
+ * happily boosting for free on its own authority otherwise.</p>
  */
 public class SoaringHandler {
+
+    public static final String TAG_WING_MODE = "WingMode";
+    public static final int MODE_OFF = 0;
+    public static final int MODE_GLIDE = 1;
+    public static final int MODE_FLIGHT = 2;
 
     /** {@code Entity.setFlag} — protected; flag 7 is the elytra-flying state. */
     private static final Method SET_FLAG = ObfuscationReflectionHelper.findMethod(
@@ -57,13 +66,24 @@ public class SoaringHandler {
     /** One point of Aer, in the centivis units the consume helpers speak. */
     private static final AspectList BOOST_COST = new AspectList().add(Aspect.AIR, 100);
 
-    /** Jump-held state per player entity id, fed by the packet (server) or read directly (client). */
+    /** Jump-held state per player entity id, fed by the packet (server) or the key (client). */
     private static final Map<Integer, Boolean> THRUSTING = new HashMap<>();
+    /** Fresh, unconsumed jump presses — the only thing that may start a flight. */
+    private static final Set<Integer> PENDING_LAUNCH = new HashSet<>();
     /** Ticks of paid ascent remaining, per player entity id (server only). */
     private static final Map<Integer, Integer> THRUST_TICKS = new HashMap<>();
+    /** Client-side: the server's word on whether there is vis to climb with. */
+    private static final Map<Integer, Boolean> FUEL_OK = new HashMap<>();
 
     public static void setThrusting(int playerId, boolean thrusting) {
-        THRUSTING.put(playerId, thrusting);
+        Boolean previous = THRUSTING.put(playerId, thrusting);
+        boolean wasHeld = previous != null && previous;
+        if (thrusting && !wasHeld) {
+            PENDING_LAUNCH.add(playerId);
+        }
+        if (!thrusting) {
+            PENDING_LAUNCH.remove(playerId);
+        }
     }
 
     public static boolean isThrusting(int playerId) {
@@ -71,11 +91,49 @@ public class SoaringHandler {
         return thrusting != null && thrusting;
     }
 
+    public static void setFuelOk(int playerId, boolean ok) {
+        FUEL_OK.put(playerId, ok);
+    }
+
+    private static boolean isFuelOk(int playerId) {
+        Boolean ok = FUEL_OK.get(playerId);
+        return ok == null || ok;
+    }
+
+    // ---- the mode on the chestplate ----
+
+    public static int getMode(ItemStack chest) {
+        if (chest.isEmpty()) {
+            return MODE_OFF;
+        }
+        if (chest.getTagCompound() == null || !chest.getTagCompound().hasKey(TAG_WING_MODE)) {
+            return MODE_GLIDE;   // default: the harmless one
+        }
+        return chest.getTagCompound().getByte(TAG_WING_MODE);
+    }
+
+    public static void setMode(ItemStack chest, int mode) {
+        if (!chest.hasTagCompound()) {
+            chest.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
+        }
+        chest.getTagCompound().setByte(TAG_WING_MODE, (byte) mode);
+    }
+
+    /** The next mode the key cycles to, given what the chestplate can do. */
+    public static int cycleMode(int current, boolean ascension) {
+        int next = current + 1;
+        int top = ascension ? MODE_FLIGHT : MODE_GLIDE;
+        return next > top ? MODE_OFF : next;
+    }
+
     @SubscribeEvent
     public void onEntityJoin(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof EntityPlayer) {
-            THRUSTING.remove(event.getEntity().getEntityId());
-            THRUST_TICKS.remove(event.getEntity().getEntityId());
+            int id = event.getEntity().getEntityId();
+            THRUSTING.remove(id);
+            THRUST_TICKS.remove(id);
+            PENDING_LAUNCH.remove(id);
+            FUEL_OK.remove(id);
         }
     }
 
@@ -91,16 +149,19 @@ public class SoaringHandler {
         }
         boolean ascension = EnchantmentHelper.getEnchantmentLevel(Config.enchAscension, chest) > 0;
         boolean soaring = EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0;
+        if (!ascension && !soaring) {
+            return;
+        }
+        int mode = getMode(chest);
 
         if (event.phase == TickEvent.Phase.START) {
-            // The paraglider — only when the full flight state is not in play.
-            if (soaring && !ascension) {
+            if (mode == MODE_GLIDE) {
                 glide(player);
             }
             return;
         }
-        if (ascension) {
-            ascend(player);
+        if (mode == MODE_FLIGHT && ascension) {
+            fly(player);
         }
     }
 
@@ -121,25 +182,38 @@ public class SoaringHandler {
     /**
      * The elytra state, maintained per tick from {@code Phase.END} — after
      * vanilla's {@code updateElytra} has had its say, so the metadata sync
-     * carries our answer, not its.
+     * carries our answer, not its. Only a fresh jump press ever <em>starts</em>
+     * it; landing ends it and nothing restarts by itself.
      */
-    private void ascend(EntityPlayer player) {
-        boolean jumpHeld = isThrusting(player.getEntityId());
+    private void fly(EntityPlayer player) {
+        int id = player.getEntityId();
+        boolean jumpHeld = isThrusting(id);
         boolean wet = player.isInWater() || player.isInLava();
+        boolean flying = player.isElytraFlying();
 
         if (player.onGround) {
-            // The launch: a held jump on the ground throws the player up and
-            // straight into the flight state — no firework, no cliff.
-            if (jumpHeld && !wet && payForAscent(player)) {
+            // A fresh press launches; a jump merely held over from the flight
+            // that just ended does not. Walking stays walking.
+            if (PENDING_LAUNCH.remove(id) && !wet && payForAscent(player)) {
                 player.motionY = SoaringPhysics.LAUNCH_IMPULSE;
                 player.fallDistance = 0.0F;
                 setElytraFlying(player, true);
             }
             return;
         }
-        if (wet || player.isSneaking()) {
-            // Sneak is the way down; water ends the argument on its own.
+        if (wet) {
             return;
+        }
+        if (!flying) {
+            // Mid-air: a fresh press spreads the wings; plain falling stays falling.
+            if (PENDING_LAUNCH.remove(id)) {
+                setElytraFlying(player, true);
+                player.fallDistance = 0.0F;
+            }
+            return;
+        }
+        if (player.isSneaking()) {
+            return;   // the way down: stop maintaining, vanilla folds the wings
         }
 
         setElytraFlying(player, true);
@@ -157,26 +231,41 @@ public class SoaringHandler {
     }
 
     /**
-     * A tick of ascent either rides the current vis point or buys the next
-     * one — the amulet in the baubles first, then any wand
-     * ({@link WandManager#consumeVisFromInventory}'s order). Payment is
-     * server-side; the client trusts its reported jump state and lets the
-     * server's motion win when the vis runs out.
+     * A tick of ascent either rides the current vis point or buys the next one
+     * — the amulet in the baubles first, then any wand. The server is the only
+     * honest payer; the client asks the last word the server sent it, because
+     * with client-authoritative movement a client that "trusts itself" simply
+     * flies for free — which is exactly what the first flight test caught.
      */
     private boolean payForAscent(EntityPlayer player) {
         if (player.world.isRemote) {
-            return true;
+            return isFuelOk(player.getEntityId());
         }
-        int ticks = THRUST_TICKS.getOrDefault(player.getEntityId(), 0);
+        int id = player.getEntityId();
+        int ticks = THRUST_TICKS.getOrDefault(id, 0);
         if (ticks > 0) {
-            THRUST_TICKS.put(player.getEntityId(), ticks - 1);
+            THRUST_TICKS.put(id, ticks - 1);
             return true;
         }
-        if (WandManager.consumeVisFromInventory(player, BOOST_COST)) {
-            THRUST_TICKS.put(player.getEntityId(), SoaringPhysics.THRUST_TICKS_PER_VIS_POINT - 1);
-            return true;
+        boolean paid = WandManager.consumeVisFromInventory(player, BOOST_COST);
+        if (paid) {
+            THRUST_TICKS.put(id, SoaringPhysics.THRUST_TICKS_PER_VIS_POINT - 1);
         }
-        return false;
+        reportFuel(player, paid);
+        return paid;
+    }
+
+    /** Tells the client when the tank runs dry or fills again — edges only. */
+    private static void reportFuel(EntityPlayer player, boolean ok) {
+        Boolean known = FUEL_OK.get(player.getEntityId());
+        if (known == null || known != ok) {
+            FUEL_OK.put(player.getEntityId(), ok);
+            if (player instanceof net.minecraft.entity.player.EntityPlayerMP) {
+                thaumcraft.common.lib.network.PacketHandler.INSTANCE.sendTo(
+                        new thaumcraft.common.lib.network.misc.PacketSoaringFuel(ok),
+                        (net.minecraft.entity.player.EntityPlayerMP) player);
+            }
+        }
     }
 
     /** Both sides: the server's write is what the metadata sync broadcasts. */

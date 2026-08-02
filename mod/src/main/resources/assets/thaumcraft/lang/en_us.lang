@@ -2043,3 +2043,7 @@ tc.research_name.END_SPIRES=The Spires from Beyond
 tc.research_text.END_SPIRES=Someone built here first
 tc.research_page.END_SPIRES.1=Out past the dragon's island, where the void howls between the shards of the End, I have found towers that no shulker built. Ancient stone, laid in the same patterns I know from the Outer Lands — as if the two places were pages of one book, read in different lights.<BR><BR>The crowns of these spires are sealed, and things scratch inside the seals. I recommend a good helmet and better judgement.
 tc.research_page.END_SPIRES.2=Whoever raised the spires left urns at their feet, and the urns have kept their contents against a very long dark. Most hold oddments. Some hold things I am glad to have found before someone less careful did.<BR><BR>I will not pretend the arithmetic is complicated: the towers hold treasure, the treasure is guarded, and I own a wand. But standing at the foot of one, in that starless cold, I find myself hoping the builders are entirely, permanently elsewhere.
+endlegacy.key.wings=Wing Mode
+endlegacy.wings.off=Wings: stowed
+endlegacy.wings.glide=Wings: gliding
+endlegacy.wings.flight=Wings: full flight

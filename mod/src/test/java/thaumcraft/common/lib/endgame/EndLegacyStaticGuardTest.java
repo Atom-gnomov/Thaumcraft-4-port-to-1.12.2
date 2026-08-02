@@ -55,11 +55,23 @@ public class EndLegacyStaticGuardTest {
                 handler.contains("\"func_70052_a\"") && handler.contains("FLAG_ELYTRA = 7"));
         assertTrue("maintenance must run in Phase.END — after updateElytra, before the sync",
                 handler.contains("event.phase == TickEvent.Phase.START")
-                        && handler.contains("ascend(player)"));
+                        && handler.contains("fly(player)"));
         assertTrue("the climb pays through the baubles-first consume helper",
                 handler.contains("WandManager.consumeVisFromInventory(player, BOOST_COST)"));
         assertTrue("sneaking is the exit and water ends the flight",
                 handler.contains("player.isSneaking()") && handler.contains("isInWater()"));
+        // The owner's flight-test findings, pinned:
+        assertTrue("flight never starts by itself — only a fresh jump press",
+                handler.contains("PENDING_LAUNCH.remove(id)"));
+        assertTrue("the client asks the server's word on fuel, not its own",
+                handler.contains("return isFuelOk(player.getEntityId());"));
+        assertTrue("the wings have an explicit mode on the chestplate",
+                handler.contains("TAG_WING_MODE = \"WingMode\"")
+                        && handler.contains("MODE_FLIGHT = 2"));
+        String layer = read(MAIN + "client/renderers/entity/LayerSoaringWings.java");
+        assertTrue("Ascension wears the elytra's silhouette; stowed wings draw nothing",
+                layer.contains("textures/entity/elytra.png")
+                        && layer.contains("SoaringHandler.MODE_OFF"));
         String physics = read(MAIN + "common/lib/endgame/SoaringPhysics.java");
         assertTrue("the boost is the firework rocket's formula, verbatim",
                 physics.contains("BOOST_ADD = 0.1D") && physics.contains("BOOST_TARGET = 1.5D")
@@ -70,11 +82,14 @@ public class EndLegacyStaticGuardTest {
     @Test
     public void theThrustPacketRidesTheRegistryTail() throws IOException {
         String handler = read(MAIN + "common/lib/network/PacketHandler.java");
-        int packet = handler.indexOf("PacketSoaringThrust.class");
+        int thrust = handler.indexOf("PacketSoaringThrust.class");
+        int mode = handler.indexOf("PacketSoaringMode.class");
+        int fuel = handler.indexOf("PacketSoaringFuel.class");
         int check = handler.indexOf("if (idx != REFERENCE_PACKET_COUNT)");
-        assertTrue("registered at all", packet >= 0);
-        assertTrue("appended directly before the count check — the tail, not the middle",
-                packet < check && handler.indexOf("register(", packet + 1) > check);
+        assertTrue("all three registered", thrust >= 0 && mode >= 0 && fuel >= 0);
+        assertTrue("appended in order at the registry tail, never inserted",
+                thrust < mode && mode < fuel && fuel < check
+                        && handler.indexOf("register(", fuel + 1) > check);
 
         String client = read(MAIN + "client/lib/ClientTickEventsFML.java");
         assertTrue("the client reports jump edges, or thrust can never engage",

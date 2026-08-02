@@ -34,8 +34,11 @@ public class ContainerEnchanter extends Container {
 
     public ContainerEnchanter(InventoryPlayer playerInv, TileEnchanter enchanter) {
         this.enchanter = enchanter;
-        this.addSlotToContainer(new SlotItemHandler(enchanter.getInventory(), TileEnchanter.SLOT_TOOL, 15, 33));
-        this.addSlotToContainer(new SlotItemHandler(enchanter.getInventory(), TileEnchanter.SLOT_WAND, 15, 57) {
+        // Upstream's SlotTool/SlotWand coordinates — (6, 6) and (6, 31). The
+        // port shipped with invented ones and the items floated mid-panel,
+        // nowhere near the sockets painted on the texture.
+        this.addSlotToContainer(new SlotItemHandler(enchanter.getInventory(), TileEnchanter.SLOT_TOOL, 6, 6));
+        this.addSlotToContainer(new SlotItemHandler(enchanter.getInventory(), TileEnchanter.SLOT_WAND, 6, 31) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return !stack.isEmpty() && stack.getItem() instanceof ItemWandCasting;

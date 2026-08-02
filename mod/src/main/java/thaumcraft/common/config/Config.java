@@ -84,6 +84,15 @@ public class Config {
     public static int shieldCost = 50;
 
     // Misc
+    /**
+     * Scale of Thaumcraft's own workbench screens, relative to the game's GUI
+     * scale. Owner's decision, 2026-08-02: the panels are too large, but the
+     * hard-wired ten-percent reduction of 1.1.39.1 broke the Thaumic Tinkerer
+     * screens in a way not yet reproduced, so the knob is in the player's hands
+     * instead — default 1.0 (off), settable down to 0.5. Read by
+     * {@code thaumcraft.client.gui.GuiScale}.
+     */
+    public static float guiScale = 1.0F;
     public static boolean colorBlind = false;
     public static boolean shaders = true;
     public static boolean crooked = true;
@@ -298,6 +307,12 @@ public class Config {
 
         allowMirrors = config.get("general", "allow_mirrors", true).getBoolean(true);
         CallowMirrors = allowMirrors;
+        guiScale = (float) config.get("general", "gui_scale", 1.0D,
+                "Scale of Thaumcraft's own workbench screens relative to the game's GUI scale."
+                        + " 1.0 = as Minecraft draws them, 0.9 = ten percent smaller. Clamped to 0.5..1.0.")
+                .getDouble(1.0D);
+        if (guiScale < 0.5F) guiScale = 0.5F;
+        if (guiScale > 1.0F) guiScale = 1.0F;
         colorBlind = config.get("general", "color_blind", false).getBoolean(false);
         shaders = config.get("general", "shaders", true).getBoolean(false);
         crooked = config.get("general", "crooked", true).getBoolean(true);

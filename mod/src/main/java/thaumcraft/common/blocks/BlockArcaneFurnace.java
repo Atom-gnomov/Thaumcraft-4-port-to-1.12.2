@@ -39,7 +39,16 @@ public class BlockArcaneFurnace extends BlockContainer {
     public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 10);
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
     public static final IUnlistedProperty<Integer> RENDER_LEVEL = new IntUnlistedProperty("render_level", 0, 18);
-    public static final IUnlistedProperty<Integer> NOZZLE_SIDE = new IntUnlistedProperty("nozzle_side", -1, 5);
+    /**
+     * Six bits, one per face index: whether upstream's
+     * {@code isBlockTouchingOnSide} finds the nozzle (meta 10) for that face.
+     * This used to be a single "which direct neighbour is the nozzle" index,
+     * and that is why the furnace had no face: the maw is drawn by the
+     * <em>eight</em> blocks ringing the nozzle — including the diagonals, which
+     * are not direct neighbours at all — on their outward sides, which never
+     * point at the nozzle. See {@code BlockUtils.isBlockTouchingOnSide}.
+     */
+    public static final IUnlistedProperty<Integer> NOZZLE_MASK = new IntUnlistedProperty("nozzle_mask", 0, 63);
     private static final AxisAlignedBB CORE_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D);
     private static final AxisAlignedBB NOZZLE_WEST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5D, 1.0D, 1.0D);
     private static final AxisAlignedBB NOZZLE_EAST_AABB = new AxisAlignedBB(0.5D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
@@ -94,7 +103,7 @@ public class BlockArcaneFurnace extends BlockContainer {
         IExtendedBlockState extended = (IExtendedBlockState) state;
         return extended
                 .withProperty(RENDER_LEVEL, this.calculateRenderLevel(worldIn, pos))
-                .withProperty(NOZZLE_SIDE, this.getTouchingNozzleSide(worldIn, pos));
+                .withProperty(NOZZLE_MASK, this.calculateNozzleMask(worldIn, pos));
     }
 
     @Override
@@ -255,7 +264,7 @@ public class BlockArcaneFurnace extends BlockContainer {
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this,
                 new IProperty[]{TYPE, FACING},
-                new IUnlistedProperty[]{RENDER_LEVEL, NOZZLE_SIDE});
+                new IUnlistedProperty[]{RENDER_LEVEL, NOZZLE_MASK});
     }
 
     @Override
@@ -346,14 +355,16 @@ public class BlockArcaneFurnace extends BlockContainer {
         return 0;
     }
 
-    private int getTouchingNozzleSide(IBlockAccess world, BlockPos pos) {
-        for (EnumFacing side : EnumFacing.VALUES) {
-            IBlockState neighbor = world.getBlockState(pos.offset(side));
-            if (neighbor.getBlock() == this && this.getMetaFromState(neighbor) == 10) {
-                return side.getIndex();
+    /** One bit per face: is the nozzle "touching" for that face, in upstream's sense. */
+    private int calculateNozzleMask(IBlockAccess world, BlockPos pos) {
+        int mask = 0;
+        for (int side = 0; side < 6; side++) {
+            if (thaumcraft.common.lib.utils.BlockUtils.isBlockTouchingOnSide(
+                    world, pos.getX(), pos.getY(), pos.getZ(), this, 10, side)) {
+                mask |= 1 << side;
             }
         }
-        return -1;
+        return mask;
     }
 
     private void restoreBlocks(World worldIn, BlockPos pos) {

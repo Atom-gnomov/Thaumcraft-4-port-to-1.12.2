@@ -29,8 +29,9 @@ cd mod
 ./gradlew runClient    # launch a dev client
 ```
 
-`mod/gradle.properties` pins `org.gradle.java.home` to a local JDK 8 path. If you clone this on
-another machine, point that property at your own JDK 8 install.
+`mod/gradle.properties` deliberately does **not** pin `org.gradle.java.home` (a committed absolute
+path once broke every other machine). Point Gradle at your JDK 8 per machine: either
+`-Dorg.gradle.java.home=<path>` on the command line or once in `~/.gradle/gradle.properties`.
 
 Toolchain: ForgeGradle 2.3, Gradle 4.10.3, Forge `1.12.2-14.23.5.2847`, mappings `stable_39`.
 

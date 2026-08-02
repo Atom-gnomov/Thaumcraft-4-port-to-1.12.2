@@ -65,9 +65,10 @@ public class ArcaneFurnaceVisualShellContractTest {
         assertTrue("Arcane Furnace world rendering should be replaced with a baked model that mirrors the 1.7.10 per-face texture resolver instead of cube_all-per-meta mosaics",
                 clientModelRegistry.contains("replaceArcaneFurnaceModels(event);")
                         && clientModelRegistry.contains("ARCANE_FURNACE_TEXTURES")
-                        && bakedModel.contains("textureForSide(int meta, int level, int nozzleSide, EnumFacing face)")
+                        && bakedModel.contains("textureForSide(int meta, int level, int nozzleMask, EnumFacing face)")
                         && bakedModel.contains("BlockArcaneFurnace.RENDER_LEVEL")
-                        && bakedModel.contains("BlockArcaneFurnace.NOZZLE_SIDE")
+                        && bakedModel.contains("BlockArcaneFurnace.NOZZLE_MASK")
+                        && bakedModel.contains("(nozzleMask >> side & 1) != 0 ? 3 : 0")
                         && bakedModel.contains("minecraft:blocks/lava_still")
                         && bakedModel.contains("return 2 + level + nozzleOffset;")
                         && bakedModel.contains("return level != 9 ? 7 : 6;")

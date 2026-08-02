@@ -97,6 +97,55 @@ public class BlockUtils {
         return false;
     }
 
+    /**
+     * Whether a block of {@code block}+{@code meta} sits in the neighbourhood
+     * that matters for drawing face {@code side} — upstream's
+     * {@code isBlockTouchingOnSide}, transcribed.
+     *
+     * <p>The name undersells it, and taking it at face value broke the
+     * Infernal Furnace's face. For a <em>horizontal</em> side this checks all
+     * <b>eight</b> neighbours in the plane of that face — sides, above, below
+     * and the diagonals — because that is what "touching" means to a texture
+     * drawn across a wall: the eight blocks ringing the furnace's nozzle each
+     * draw a piece of the maw on their outward face. A rewrite that only asked
+     * "is my direct neighbour on {@code side} the nozzle?" made the maw
+     * impossible: for a visible outward face that neighbour is air, and the
+     * diagonal blocks do not touch the nozzle at all. Only for the vertical
+     * sides (0/1) is it the plain one-block check.</p>
+     */
+    public static boolean isBlockTouchingOnSide(IBlockAccess world, int x, int y, int z, Block block, int meta, int side) {
+        if (side > 3 && matches(world, x, y, z + 1, block, meta) || side > 3 && matches(world, x, y, z - 1, block, meta)
+                || side > 1 && side < 4 && matches(world, x + 1, y, z, block, meta)
+                || side > 1 && side < 4 && matches(world, x - 1, y, z, block, meta)
+                || side > 1 && matches(world, x, y + 1, z, block, meta)
+                || side > 1 && matches(world, x, y - 1, z, block, meta)) {
+            return true;
+        }
+        if (side > 3 && matches(world, x, y + 1, z + 1, block, meta) || side > 3 && matches(world, x, y + 1, z - 1, block, meta)
+                || side > 1 && side < 4 && matches(world, x + 1, y + 1, z, block, meta)
+                || side > 1 && side < 4 && matches(world, x - 1, y + 1, z, block, meta)) {
+            return true;
+        }
+        if (side > 3 && matches(world, x, y - 1, z + 1, block, meta) || side > 3 && matches(world, x, y - 1, z - 1, block, meta)
+                || side > 1 && side < 4 && matches(world, x + 1, y - 1, z, block, meta)
+                || side > 1 && side < 4 && matches(world, x - 1, y - 1, z, block, meta)) {
+            return true;
+        }
+        switch (side) {
+            case 0:
+                return matches(world, x, y - 1, z, block, meta);
+            case 1:
+                return matches(world, x, y + 1, z, block, meta);
+            default:
+                return false;
+        }
+    }
+
+    private static boolean matches(IBlockAccess world, int x, int y, int z, Block block, int meta) {
+        IBlockState state = world.getBlockState(new BlockPos(x, y, z));
+        return state.getBlock() == block && block.getMetaFromState(state) == meta;
+    }
+
     /** Check if a block position is adjacent to any solid (full-cube) block. */
     public static boolean isAdjacentToSolidBlock(World world, BlockPos pos) {
         for (EnumFacing facing : EnumFacing.VALUES) {

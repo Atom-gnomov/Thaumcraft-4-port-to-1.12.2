@@ -44,13 +44,13 @@ public final class ArcaneFurnaceBakedModel implements IBakedModel {
         }
         int type = this.getType(state);
         int level = this.getExtendedInt(state, BlockArcaneFurnace.RENDER_LEVEL, 0);
-        int nozzleSide = this.getExtendedInt(state, BlockArcaneFurnace.NOZZLE_SIDE, -1);
+        int nozzleMask = this.getExtendedInt(state, BlockArcaneFurnace.NOZZLE_MASK, 0);
         EnumFacing facing = this.getFacing(state);
-        String key = type + ":" + level + ":" + nozzleSide + ":" + facing.getIndex();
-        return this.cache.computeIfAbsent(key, ignored -> this.buildQuads(type, level, nozzleSide, facing));
+        String key = type + ":" + level + ":" + nozzleMask + ":" + facing.getIndex();
+        return this.cache.computeIfAbsent(key, ignored -> this.buildQuads(type, level, nozzleMask, facing));
     }
 
-    private List<BakedQuad> buildQuads(int type, int level, int nozzleSide, EnumFacing facing) {
+    private List<BakedQuad> buildQuads(int type, int level, int nozzleMask, EnumFacing facing) {
         List<BakedQuad> quads = new ArrayList<>();
         if (type == 0) {
             TextureAtlasSprite lava = this.sprite("minecraft:blocks/lava_still");
@@ -60,12 +60,12 @@ public final class ArcaneFurnaceBakedModel implements IBakedModel {
             this.addNozzleQuads(quads, facing);
         } else {
             this.addTexturedCube(quads, 0, 0, 0, 16, 16, 16,
-                    this.sprite(this.textureForSide(type, level, nozzleSide, EnumFacing.DOWN)),
-                    this.sprite(this.textureForSide(type, level, nozzleSide, EnumFacing.UP)),
-                    this.sprite(this.textureForSide(type, level, nozzleSide, EnumFacing.NORTH)),
-                    this.sprite(this.textureForSide(type, level, nozzleSide, EnumFacing.SOUTH)),
-                    this.sprite(this.textureForSide(type, level, nozzleSide, EnumFacing.WEST)),
-                    this.sprite(this.textureForSide(type, level, nozzleSide, EnumFacing.EAST)),
+                    this.sprite(this.textureForSide(type, level, nozzleMask, EnumFacing.DOWN)),
+                    this.sprite(this.textureForSide(type, level, nozzleMask, EnumFacing.UP)),
+                    this.sprite(this.textureForSide(type, level, nozzleMask, EnumFacing.NORTH)),
+                    this.sprite(this.textureForSide(type, level, nozzleMask, EnumFacing.SOUTH)),
+                    this.sprite(this.textureForSide(type, level, nozzleMask, EnumFacing.WEST)),
+                    this.sprite(this.textureForSide(type, level, nozzleMask, EnumFacing.EAST)),
                     ModelRotation.X0_Y0, true);
         }
         return ImmutableList.copyOf(quads);
@@ -83,9 +83,15 @@ public final class ArcaneFurnaceBakedModel implements IBakedModel {
         this.addFace(quads, 0, 0, 5, 16, 16, 6, EnumFacing.SOUTH, this.sprite(13), rotation, true);
     }
 
-    private int textureForSide(int meta, int level, int nozzleSide, EnumFacing face) {
+    /**
+     * Upstream's {@code calculateTexture}, with its {@code add} carried per
+     * face in {@code nozzleMask}. The mask is what makes the maw appear: the
+     * eight blocks ringing the nozzle each get the bit for their outward face
+     * and shift three columns into the atlas, where the mouth pieces live.
+     */
+    private int textureForSide(int meta, int level, int nozzleMask, EnumFacing face) {
         int side = face.getIndex();
-        int nozzleOffset = nozzleSide == side ? 3 : 0;
+        int nozzleOffset = (nozzleMask >> side & 1) != 0 ? 3 : 0;
         switch (face) {
             case DOWN:
             case UP:

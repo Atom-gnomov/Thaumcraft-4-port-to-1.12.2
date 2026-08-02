@@ -206,28 +206,16 @@ continues from `1.0.60.0` under the same rules.
 
 ---
 
-## Test baseline — 5 failures as of 1.0.47 (was GREEN at 1.0.35)
+## Test baseline — GREEN
 
-At **1.0.35** `cd mod && ./gradlew.bat test` passed completely: 318 suites,
-0 failures (down from 21 at the start of that effort).
-
-**That is no longer true.** As of **1.0.47** the suite runs 539 tests with
-**5 failures**, all client-render guards:
-
-- `ArcaneFurnaceVisualShellContractTest`
-- `ClientProxyDedicatedBeamBoltStaticGuardTest`
-- `InfusionRendererFidelityStaticGuardTest`
-- `VisEnergyRendererFidelityStaticGuardTest`
-- `ReportedItemModelRoutingContractTest`
-
-They were verified pre-existing (stash the working tree, re-run on a clean
-checkout) and trace back to the FOREVA renderer/tile/block adoption of
-1.0.36–1.0.45 — not to the Thaumic Tinkerer module. Either fix the renderers
-or update those guards to the intended contract (see the rule below), then
-restore this section to GREEN.
+The suite is green and has been since 2026-07-28: as of 1.1.43.0 it runs
+**345 suites / ~690 tests / 0 failures**. (The five client-render guards that
+this section used to list as failing were fixed along the way; the stale
+listing sent at least one session hunting for failures that no longer
+existed.)
 
 The rule still stands: **do not add new failures.** After any change, run the
-full suite and compare against these five; investigate every *new* failure
+full suite; investigate every *new* failure
 before shipping.
 
 When a **static-guard test pins an old reconstruction you deliberately
@@ -296,11 +284,16 @@ FX guards. This was attempted and fully reverted. **Skip the FX cluster.** If a
 specific FX behaviour is worth porting, re-implement it inside our ITCParticle
 model rather than copying FOREVA's class.
 
-## Remaining FOREVA systems to port (after tests are green)
+## Remaining FOREVA systems to port
 
-From the full diverged-file set (was captured as `$TEMP/adopt2.txt`; regenerate
-with `git diff --name-only <foreva-base> HEAD` or by diffing trees). High-value,
-roughly ordered by coherence / lower risk:
+**Checked name-by-name on 2026-08-02: every class in the list below is already
+in the port** — the list is done, except `EldritchCrustBakedModel` (still
+deferred, adoption recipe at the end of this section). What is NOT done is the
+new backlog: **144 FOREVA commits (2026-07-16 … 2026-07-29)**, fetched into
+`tc4-foreva-ref` at `1286a89`; the ones matching open bugs are mapped in
+`KNOWN_ISSUES.md` («Бэклог адопции FOREVA»).
+
+The original list, kept for its notes:
 
 1. **Node renderers** — TileNodeRenderer, TileNodeEnergizedRenderer,
    TileNodeStabilizerRenderer (visual; validate GL state save/restore — this

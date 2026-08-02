@@ -1073,9 +1073,19 @@ public class ClientProxy extends CommonProxy {
                 ConfigBlocks.blockEldritchNothing, ConfigBlocks.blockFluidDeath,
                 ConfigBlocks.blockFluidPure, ConfigBlocks.blockFluxGas,
                 ConfigBlocks.blockFluxGoo, ConfigBlocks.blockHole,
-                ConfigBlocks.blockLootUrn, ConfigBlocks.blockWarded,
-                ConfigBlocks.blockWarpGate}) {
+                ConfigBlocks.blockWarded,
+                ConfigBlocks.blockWarpGate,
+                // The four below shipped checkered for a long while: their
+                // blockstates declare an inventory variant, but nothing ever
+                // registered the item against it — the port's oldest trap.
+                ConfigBlocks.blockMobilizer, ConfigBlocks.blockMobilizerRelay,
+                ConfigBlocks.blockPlatform, ConfigBlocks.blockSummon}) {
             registerBlockItemModelFromItemJson(Item.getItemFromBlock(block));
+        }
+        // The urn has three subtypes; meta 0 alone left the other two vases checkered.
+        Item lootUrnItem = Item.getItemFromBlock(ConfigBlocks.blockLootUrn);
+        for (int meta = 0; meta <= 2; meta++) {
+            registerBlockItemModel(lootUrnItem, meta, "type=" + meta);
         }
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockFunnel), 0, "normal");
         registerBlockItemModel(Item.getItemFromBlock(ConfigBlocks.blockSlabDarkQuartz), 0,

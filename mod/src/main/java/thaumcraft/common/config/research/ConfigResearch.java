@@ -19,15 +19,15 @@ public class ConfigResearch {
         return requireRecipeHandle(key, IRecipe.class);
     }
 
-    static IArcaneRecipe recipeArcane(String key) {
+    public static IArcaneRecipe recipeArcane(String key) {
         return requireRecipeHandle(key, IArcaneRecipe.class);
     }
 
-    static CrucibleRecipe recipeCrucible(String key) {
+    public static CrucibleRecipe recipeCrucible(String key) {
         return requireRecipeHandle(key, CrucibleRecipe.class);
     }
 
-    static InfusionRecipe recipeInfusion(String key) {
+    public static InfusionRecipe recipeInfusion(String key) {
         return requireRecipeHandle(key, InfusionRecipe.class);
     }
 

@@ -310,6 +310,10 @@ public class Thaumcraft {
         event.getRegistry().registerAll(Config.enchSoaring, Config.enchAscension);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
                 new thaumcraft.common.lib.endgame.SoaringHandler());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.endgame.WardHandler());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(
+                new thaumcraft.common.lib.endgame.DragonbreathFog());
         // Thaumic Tinkerer's own fourteen, and the handler that gives them effect.
         event.getRegistry().registerAll(
                 thaumcraft.common.lib.enchantment.tinkerer.ModEnchantmentsTinkerer.create());

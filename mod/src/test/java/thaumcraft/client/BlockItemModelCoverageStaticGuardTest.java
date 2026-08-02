@@ -89,6 +89,50 @@ public class BlockItemModelCoverageStaticGuardTest {
         return nearest;
     }
 
+    /**
+     * The first test's blind spot, closed after four blocks shipped checkered
+     * for months: an {@code inventory} variant in the blockstate is only used
+     * if something registers the item against it — the variant alone resolves
+     * nothing. So, mechanically: every block that gets an ItemBlock must be
+     * mentioned by ClientProxy's model registration, no exceptions, no
+     * variant-based excuses. This is the check that found the mobilizer, its
+     * relay, the platform and the summoning tablet in one sweep.
+     */
+    @Test
+    public void everyItemBlockIsMentionedByTheModelRegistration() throws IOException {
+        String proxy = read(Paths.get("src/main/java/thaumcraft/client/ClientProxy.java"));
+        String config = read(Paths.get("src/main/java/thaumcraft/common/config/ConfigBlocks.java"));
+
+        java.util.Set<String> withItems = new java.util.TreeSet<>();
+        Matcher itemBlocks = Pattern.compile(
+                "new (?:net\\.minecraft\\.item\\.)?ItemBlock[A-Za-z]*\\((block[A-Za-z0-9]+)").matcher(config);
+        while (itemBlocks.find()) {
+            withItems.add(itemBlocks.group(1));
+        }
+        Matcher customItems = Pattern.compile("new [A-Za-z]+Item\\((block[A-Za-z0-9]+)\\)").matcher(config);
+        while (customItems.find()) {
+            withItems.add(customItems.group(1));
+        }
+
+        List<String> unmentioned = new ArrayList<>();
+        for (String field : withItems) {
+            if (!proxy.contains("ConfigBlocks." + field)) {
+                unmentioned.add(field);
+            }
+        }
+        assertTrue("these blocks have items but no model registration ever touches them"
+                        + " — they are checkered in every inventory: " + unmentioned,
+                unmentioned.isEmpty());
+    }
+
+    /** The urn has three vases; registering meta 0 alone left two of them checkered. */
+    @Test
+    public void everyVaseOfTheUrnHasItsModel() throws IOException {
+        String proxy = read(Paths.get("src/main/java/thaumcraft/client/ClientProxy.java"));
+        assertTrue("all three urn subtypes must be registered against their type variants",
+                proxy.contains("registerBlockItemModel(lootUrnItem, meta, \"type=\" + meta)"));
+    }
+
     private static String read(Path path) throws IOException {
         return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     }

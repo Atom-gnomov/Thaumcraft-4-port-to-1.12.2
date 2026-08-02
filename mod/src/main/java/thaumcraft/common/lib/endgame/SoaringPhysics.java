@@ -17,12 +17,12 @@ public final class SoaringPhysics {
     public static final double GLIDE_DRIFT = 0.035D;
     /** Ground launch: the vertical impulse Ascension gives a held jump. */
     public static final double LAUNCH_IMPULSE = 0.9D;
-    /** Thrust acceleration along the look vector, per tick. */
-    public static final double THRUST_ACCEL = 0.06D;
-    /** Speed cap under thrust, blocks per tick. */
-    public static final double THRUST_SPEED_CAP = 1.6D;
-    /** One point of Aer buys this many ticks of thrust. */
+    /** One point of Aer buys this many ticks of powered ascent. */
     public static final int THRUST_TICKS_PER_VIS_POINT = 25;
+    /** The firework rocket's own boost numbers — vanilla's, verbatim. */
+    public static final double BOOST_ADD = 0.1D;
+    public static final double BOOST_TARGET = 1.5D;
+    public static final double BOOST_PULL = 0.5D;
 
     private SoaringPhysics() {
     }
@@ -46,22 +46,17 @@ public final class SoaringPhysics {
     }
 
     /**
-     * One axis of thrust: current motion plus acceleration along the look
-     * vector, clamped so the total never passes the cap. The clamp scales the
-     * <em>new</em> vector rather than refusing the tick — thrust at the cap
-     * still lets the player turn.
+     * One tick of powered ascent while elytra-flying: the vanilla firework
+     * rocket's formula, verbatim — accelerate along the look vector and pull
+     * hard toward 1.5 blocks/tick in that direction. Point the nose up and the
+     * armour climbs; that is the whole "fly upward for vis" mechanic, using
+     * the aerodynamics the player already knows.
      */
-    public static double[] thrust(double[] motion, double[] look) {
-        double mx = motion[0] + look[0] * THRUST_ACCEL;
-        double my = motion[1] + look[1] * THRUST_ACCEL;
-        double mz = motion[2] + look[2] * THRUST_ACCEL;
-        double speed = Math.sqrt(mx * mx + my * my + mz * mz);
-        if (speed > THRUST_SPEED_CAP) {
-            double scale = THRUST_SPEED_CAP / speed;
-            mx *= scale;
-            my *= scale;
-            mz *= scale;
-        }
-        return new double[]{mx, my, mz};
+    public static double[] boost(double[] motion, double[] look) {
+        return new double[]{
+                motion[0] + look[0] * BOOST_ADD + (look[0] * BOOST_TARGET - motion[0]) * BOOST_PULL,
+                motion[1] + look[1] * BOOST_ADD + (look[1] * BOOST_TARGET - motion[1]) * BOOST_PULL,
+                motion[2] + look[2] * BOOST_ADD + (look[2] * BOOST_TARGET - motion[2]) * BOOST_PULL,
+        };
     }
 }

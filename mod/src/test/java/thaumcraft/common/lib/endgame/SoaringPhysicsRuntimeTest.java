@@ -36,36 +36,30 @@ public class SoaringPhysicsRuntimeTest {
                 SoaringPhysics.isGlidingFall(0.1D, false, false, false));
     }
 
-    /** Thrust accelerates along the look vector and hits a hard speed cap. */
+    /**
+     * The boost is the firework rocket's formula verbatim, so it must do what
+     * the rocket does: converge on 1.5 blocks/tick along the look vector.
+     */
     @Test
-    public void thrustAcceleratesToTheCapAndNotPastIt() {
+    public void theBoostConvergesOnTheFireworkTarget() {
         double[] motion = {0.0D, 0.0D, 0.0D};
-        double[] look = {1.0D, 0.0D, 0.0D};
-
-        motion = SoaringPhysics.thrust(motion, look);
-        assertEquals(SoaringPhysics.THRUST_ACCEL, motion[0], 1.0E-9D);
-
-        for (int tick = 0; tick < 200; tick++) {
-            motion = SoaringPhysics.thrust(motion, look);
-            double speed = Math.sqrt(motion[0] * motion[0] + motion[1] * motion[1] + motion[2] * motion[2]);
-            assertTrue("speed " + speed + " exceeded the cap at tick " + tick,
-                    speed <= SoaringPhysics.THRUST_SPEED_CAP + 1.0E-6D);
+        double[] up = {0.0D, 1.0D, 0.0D};
+        for (int tick = 0; tick < 40; tick++) {
+            motion = SoaringPhysics.boost(motion, up);
         }
-        assertEquals("sustained thrust settles at the cap",
-                SoaringPhysics.THRUST_SPEED_CAP, Math.abs(motion[0]), 1.0E-6D);
+        assertEquals("sustained ascent settles at the rocket's own ceiling",
+                SoaringPhysics.BOOST_TARGET + SoaringPhysics.BOOST_ADD * 2.0D,
+                motion[1], 0.01D);
+        assertEquals(0.0D, motion[0], 1.0E-9D);
     }
 
-    /** At the cap the player can still steer: thrust turns the vector, not refuses it. */
+    /** One tick from rest matches vanilla's first firework tick exactly. */
     @Test
-    public void thrustAtTheCapStillTurns() {
-        double[] motion = {SoaringPhysics.THRUST_SPEED_CAP, 0.0D, 0.0D};
-        double[] up = {0.0D, 1.0D, 0.0D};
-
-        double[] turned = SoaringPhysics.thrust(motion, up);
-        assertTrue("the vertical component must grow when thrusting upward",
-                turned[1] > 0.0D);
-        double speed = Math.sqrt(turned[0] * turned[0] + turned[1] * turned[1] + turned[2] * turned[2]);
-        assertTrue(speed <= SoaringPhysics.THRUST_SPEED_CAP + 1.0E-6D);
+    public void theFirstBoostTickIsVanillas() {
+        double[] motion = SoaringPhysics.boost(
+                new double[]{0.0D, 0.0D, 0.0D}, new double[]{1.0D, 0.0D, 0.0D});
+        // 0 + 1*0.1 + (1*1.5 - 0)*0.5 = 0.85 — the rocket's opening kick.
+        assertEquals(0.85D, motion[0], 1.0E-9D);
     }
 
     /** The launch clears real ground obstacles; the fuel maths stays whole. */
@@ -73,7 +67,7 @@ public class SoaringPhysicsRuntimeTest {
     public void theDesignConstantsHoldTheirShape() {
         assertTrue("the launch must out-jump a vanilla jump (0.42)",
                 SoaringPhysics.LAUNCH_IMPULSE > 0.42D);
-        assertTrue("a point of vis buys a usable stretch of thrust",
+        assertTrue("a point of vis buys a usable stretch of ascent",
                 SoaringPhysics.THRUST_TICKS_PER_VIS_POINT >= 20);
         assertTrue("the glide is gentler than an elytra's steepest dive",
                 SoaringPhysics.GLIDE_FALL_CAP > -0.5D);

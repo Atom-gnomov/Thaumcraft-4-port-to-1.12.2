@@ -31,6 +31,9 @@ public class KeyHandler {
     /** Every awakened ichorcloth entry ends "pressing U will toggle this armor's effects". */
     public final KeyBinding keyU = new KeyBinding("ttmisc.toggleArmor",
             KeyConflictContext.IN_GAME, Keyboard.KEY_U, "key.categories.misc");
+    /** End Legacy: cycles the wings off / glide / flight on the worn chestplate. */
+    public final KeyBinding keyK = new KeyBinding("endlegacy.key.wings",
+            KeyConflictContext.IN_GAME, Keyboard.KEY_K, "key.categories.misc");
 
     public static boolean radialActive = false;
     public static boolean radialLock = false;
@@ -42,12 +45,14 @@ public class KeyHandler {
     private boolean keyPressedH = false;
     private boolean keyPressedG = false;
     private boolean keyPressedU = false;
+    private boolean keyPressedK = false;
 
     public KeyHandler() {
         ClientRegistry.registerKeyBinding(this.keyF);
         ClientRegistry.registerKeyBinding(this.keyH);
         ClientRegistry.registerKeyBinding(this.keyG);
         ClientRegistry.registerKeyBinding(this.keyU);
+        ClientRegistry.registerKeyBinding(this.keyK);
     }
 
     @SubscribeEvent
@@ -64,6 +69,7 @@ public class KeyHandler {
         handleHoverKey(player);
         handleMiscKey(player);
         handleArmorToggleKey(player);
+        handleWingModeKey(player);
     }
 
     /**
@@ -90,6 +96,33 @@ public class KeyHandler {
                 new thaumcraft.common.lib.network.tinkerer.PacketToggleArmor(enabled));
         player.sendStatusMessage(new net.minecraft.util.text.TextComponentTranslation(
                 enabled ? "ttmisc.enableAllArmor" : "ttmisc.disableAllArmor"), true);
+    }
+
+    /** One press — one cycle request; the server owns the NBT and answers on the action bar. */
+    private void handleWingModeKey(EntityPlayer player) {
+        if (!this.keyK.isKeyDown()) {
+            this.keyPressedK = false;
+            return;
+        }
+        if (this.keyPressedK) {
+            return;
+        }
+        this.keyPressedK = true;
+        if (player == null) {
+            return;
+        }
+        ItemStack chest = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        if (chest.isEmpty()) {
+            return;
+        }
+        boolean enchanted = net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(
+                thaumcraft.common.config.Config.enchSoaring, chest) > 0
+                || net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(
+                thaumcraft.common.config.Config.enchAscension, chest) > 0;
+        if (enchanted) {
+            PacketHandler.INSTANCE.sendToServer(
+                    new thaumcraft.common.lib.network.misc.PacketSoaringMode());
+        }
     }
 
     private static boolean wearsAwakenedIchorcloth(EntityPlayer player) {

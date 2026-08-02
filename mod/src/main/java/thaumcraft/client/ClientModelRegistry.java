@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import thaumcraft.client.renderers.block.ArcaneFurnaceBakedModel;
 import thaumcraft.client.renderers.block.AlchemyFurnaceBakedModel;
 import thaumcraft.client.renderers.block.CamoBakedModel;
+import thaumcraft.client.renderers.block.ObsidianTotemBakedModel;
 import thaumcraft.client.renderers.block.WardedGlassBakedModel;
 import thaumcraft.client.renderers.item.CrystalPerspectiveModel;
 import thaumcraft.client.renderers.item.ThaumometerPerspectiveModel;
@@ -40,6 +41,16 @@ public final class ClientModelRegistry {
             new ModelResourceLocation("thaumcraft:blockwoodendevice_banner_tesr", "inventory");
     static final ModelResourceLocation WARDED_GLASS_MODEL =
             new ModelResourceLocation("thaumcraft:blockcosmeticopaque", "type=2");
+    /**
+     * The two metadata values the original draws as a totem column — the plain
+     * one and the charged one.
+     */
+    static final ModelResourceLocation[] OBSIDIAN_TOTEM_MODELS = {
+            new ModelResourceLocation("thaumcraft:blockcosmeticsolid",
+                    "type=" + thaumcraft.common.blocks.BlockCosmeticSolid.TYPE_OBSIDIAN_TOTEM),
+            new ModelResourceLocation("thaumcraft:blockcosmeticsolid",
+                    "type=" + thaumcraft.common.blocks.BlockCosmeticSolid.TYPE_CHARGED_OBSIDIAN_TOTEM),
+    };
     static final ResourceLocation FOCUS_PECH_DEPTH_SPRITE =
             new ResourceLocation("thaumcraft", "items/focus_pech_depth");
     /**
@@ -99,6 +110,12 @@ public final class ClientModelRegistry {
         for (int texture = 1; texture <= 47; texture++) {
             event.getMap().registerSprite(new ResourceLocation("thaumcraft", "blocks/warded_glass_" + texture));
         }
+        // The totem's six side textures are named only from ObsidianTotemBakedModel,
+        // so no json pulls them onto the atlas and getAtlasSprite would hand back
+        // the missing-texture placeholder for every one of them.
+        for (String totem : thaumcraft.common.blocks.BlockCosmeticSolid.TOTEM_TEXTURES) {
+            event.getMap().registerSprite(new ResourceLocation("thaumcraft", "blocks/" + totem));
+        }
         event.getMap().registerSprite(new ResourceLocation("thaumcraft", "blocks/al_furnace_top_filled"));
         event.getMap().registerSprite(new ResourceLocation("thaumcraft", "blocks/al_furnace_front_on"));
         event.getMap().registerSprite(new ResourceLocation("thaumcraft", "blocks/lamp_grow_top_off"));
@@ -136,6 +153,7 @@ public final class ClientModelRegistry {
         replaceAlchemyFurnaceModel(event);
         replaceArcaneFurnaceModels(event);
         replaceWardedGlassModel(event);
+        replaceObsidianTotemModels(event);
         replaceCamoModels(event);
     }
 
@@ -160,6 +178,15 @@ public final class ClientModelRegistry {
             IBakedModel delegate = event.getModelRegistry().getObject(key);
             if (delegate != null && !(delegate instanceof CamoBakedModel)) {
                 event.getModelRegistry().putObject(key, new CamoBakedModel(delegate));
+            }
+        }
+    }
+
+    private static void replaceObsidianTotemModels(ModelBakeEvent event) {
+        for (ModelResourceLocation key : OBSIDIAN_TOTEM_MODELS) {
+            IBakedModel delegate = event.getModelRegistry().getObject(key);
+            if (delegate != null && !(delegate instanceof ObsidianTotemBakedModel)) {
+                event.getModelRegistry().putObject(key, new ObsidianTotemBakedModel(delegate));
             }
         }
     }

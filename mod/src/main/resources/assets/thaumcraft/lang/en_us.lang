@@ -2064,3 +2064,5 @@ tc.research_page.FOCUS_FIREBALL.1=The tear of a ghast, seated in a quartz frame,
 tc.research_name.FOCUS_LIFEDRAIN=Focus: Life Drain
 tc.research_text.FOCUS_LIFEDRAIN=The Nether pays its debts
 tc.research_page.FOCUS_LIFEDRAIN.1=The wither skeletons take something with every touch, and it goes somewhere. I have persuaded a skull to route it to me.<BR><BR>The focus withers whatever stands under my aim and pours a share of the loss into my own veins — the drain is the price, the healing is the point. It feels exactly as wholesome as it sounds, and the warp at my temples agrees. I use it anyway. Scholarship, again.
+endlegacy.name.soaring=Soaring %s
+endlegacy.name.ascension=%s of Ascension

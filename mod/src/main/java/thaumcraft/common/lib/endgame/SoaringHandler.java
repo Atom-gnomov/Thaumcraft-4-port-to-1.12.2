@@ -58,6 +58,18 @@ public class SoaringHandler {
     public static final int MODE_GLIDE = 1;
     public static final int MODE_FLIGHT = 2;
 
+    /**
+     * The wings themselves — an NBT byte on the chestplate since the owner's
+     * revision of 2026-08-03 (was an enchantment; the tag survives anvils and
+     * renames the armour: «Парящий …», «… Вознесения»). 1 = soaring, 2 =
+     * ascension. {@link #migrate} converts the enchanted chestplates of
+     * 1.2.0.0–1.2.6.1 in place.
+     */
+    public static final String TAG_WINGS = "Wings";
+    public static final int TIER_NONE = 0;
+    public static final int TIER_SOARING = 1;
+    public static final int TIER_ASCENSION = 2;
+
     /** {@code Entity.setFlag} — protected; flag 7 is the elytra-flying state. */
     private static final Method SET_FLAG = ObfuscationReflectionHelper.findMethod(
             Entity.class, "func_70052_a", void.class, int.class, boolean.class);
@@ -100,7 +112,46 @@ public class SoaringHandler {
         return ok == null || ok;
     }
 
-    // ---- the mode on the chestplate ----
+    // ---- the wings and the mode on the chestplate ----
+
+    public static int getTier(ItemStack chest) {
+        if (chest.isEmpty() || chest.getTagCompound() == null) {
+            return TIER_NONE;
+        }
+        return chest.getTagCompound().getByte(TAG_WINGS);
+    }
+
+    /**
+     * Converts a chestplate enchanted under 1.2.0.0–1.2.6.1 to the tag form:
+     * the tier carries over, our two enchantments leave the list. Runs
+     * server-side per tick until nothing is left to convert — a save full of
+     * winged armour heals itself piece by piece as it is worn.
+     */
+    private static void migrate(EntityPlayer player, ItemStack chest) {
+        if (player.world.isRemote) {
+            return;
+        }
+        int fromEnchants = 0;
+        if (EnchantmentHelper.getEnchantmentLevel(Config.enchAscension, chest) > 0) {
+            fromEnchants = TIER_ASCENSION;
+        } else if (EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0) {
+            fromEnchants = TIER_SOARING;
+        }
+        if (fromEnchants == 0) {
+            return;
+        }
+        java.util.Map<net.minecraft.enchantment.Enchantment, Integer> enchants =
+                EnchantmentHelper.getEnchantments(chest);
+        enchants.remove(Config.enchSoaring);
+        enchants.remove(Config.enchAscension);
+        EnchantmentHelper.setEnchantments(enchants, chest);
+        if (fromEnchants > getTier(chest)) {
+            if (!chest.hasTagCompound()) {
+                chest.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
+            }
+            chest.getTagCompound().setByte(TAG_WINGS, (byte) fromEnchants);
+        }
+    }
 
     public static int getMode(ItemStack chest) {
         if (chest.isEmpty()) {
@@ -126,6 +177,11 @@ public class SoaringHandler {
         return next > top ? MODE_OFF : next;
     }
 
+    /** The display-name decoration: 0 none, 1 prefix «Парящий …», 2 suffix «… Вознесения». */
+    public static int nameTier(ItemStack chest) {
+        return getTier(chest);
+    }
+
     @SubscribeEvent
     public void onEntityJoin(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof EntityPlayer) {
@@ -147,11 +203,14 @@ public class SoaringHandler {
         if (chest.isEmpty()) {
             return;
         }
-        boolean ascension = EnchantmentHelper.getEnchantmentLevel(Config.enchAscension, chest) > 0;
-        boolean soaring = EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0;
-        if (!ascension && !soaring) {
+        if (event.phase == TickEvent.Phase.START) {
+            migrate(player, chest);
+        }
+        int tier = getTier(chest);
+        if (tier == TIER_NONE) {
             return;
         }
+        boolean ascension = tier >= TIER_ASCENSION;
         int mode = getMode(chest);
 
         if (event.phase == TickEvent.Phase.START) {

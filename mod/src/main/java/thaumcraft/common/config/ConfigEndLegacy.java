@@ -40,7 +40,7 @@ public final class ConfigEndLegacy {
                 new ItemStack(Items.ELYTRA))
                 .setPages(
                         new ResearchPage("tc.research_page.SOARING.1"),
-                        new ResearchPage(ConfigResearch.recipeInfusionEnchantment("InfEnchSoaring")),
+                        new ResearchPage(ConfigResearch.recipeInfusion("WingsSoaring")),
                         new ResearchPage("tc.research_page.SOARING.2"))
                 .setParents("INFUSIONENCHANTMENT")
                 .setHidden()
@@ -59,7 +59,7 @@ public final class ConfigEndLegacy {
                 new ItemStack(Items.DRAGON_BREATH))
                 .setPages(
                         new ResearchPage("tc.research_page.ASCENSION.1"),
-                        new ResearchPage(ConfigResearch.recipeInfusionEnchantment("InfEnchAscension")))
+                        new ResearchPage(ConfigResearch.recipeInfusion("WingsAscension")))
                 .setParents("SOARING")
                 .setParentsHidden("DRACONIC_SECRETS")
                 .setConcealed()
@@ -228,24 +228,37 @@ public final class ConfigEndLegacy {
      * way down, no KAMI dependency.
      */
     public static void initRecipes() {
-        ConfigResearch.recipes.put("InfEnchSoaring", ThaumcraftApi.addInfusionEnchantmentRecipe(
-                "SOARING", Config.enchSoaring, 4,
+        // The wings are an NBT mark on the armour (owner's revision of
+        // 2026-08-03), so these are plain infusions riding the altar's native
+        // NBT-merge output: the chestplate keeps everything it already is.
+        // The thaumium chestplate below is only the research page's display;
+        // matches() accepts any chest armour.
+        thaumcraft.common.lib.endgame.InfusionWingsRecipe soaringWings =
+                new thaumcraft.common.lib.endgame.InfusionWingsRecipe(
+                "SOARING", thaumcraft.common.lib.endgame.SoaringHandler.TIER_SOARING, 4,
                 new AspectList().add(Aspect.FLIGHT, 24).add(Aspect.AIR, 16).add(Aspect.MAGIC, 8),
+                new ItemStack(ConfigItems.itemChestThaumium),
                 new ItemStack[]{
                         new ItemStack(Items.ELYTRA),
                         new ItemStack(Items.FEATHER),
                         new ItemStack(Items.FEATHER),
-                        new ItemStack(ConfigItems.itemResource, 1, 14)}));
+                        new ItemStack(ConfigItems.itemResource, 1, 14)});
+        ThaumcraftApi.getCraftingRecipes().add(soaringWings);
+        ConfigResearch.recipes.put("WingsSoaring", soaringWings);
 
-        ConfigResearch.recipes.put("InfEnchAscension", ThaumcraftApi.addInfusionEnchantmentRecipe(
-                "ASCENSION", Config.enchAscension, 6,
+        thaumcraft.common.lib.endgame.InfusionWingsRecipe ascensionWings =
+                new thaumcraft.common.lib.endgame.InfusionWingsRecipe(
+                "ASCENSION", thaumcraft.common.lib.endgame.SoaringHandler.TIER_ASCENSION, 6,
                 new AspectList().add(Aspect.ELDRITCH, 24).add(Aspect.FLIGHT, 24)
                         .add(Aspect.ENERGY, 16).add(Aspect.MAGIC, 8),
+                new ItemStack(ConfigItems.itemChestThaumium),
                 new ItemStack[]{
                         new ItemStack(Items.DRAGON_BREATH),
                         new ItemStack(Items.SHULKER_SHELL),
                         new ItemStack(net.minecraft.init.Blocks.END_ROD),
-                        new ItemStack(ConfigItems.itemResource, 1, 14)}));
+                        new ItemStack(ConfigItems.itemResource, 1, 14)});
+        ThaumcraftApi.getCraftingRecipes().add(ascensionWings);
+        ConfigResearch.recipes.put("WingsAscension", ascensionWings);
 
         // Focus: Dragonbreath — the fire focus's frame, breathed full.
         ConfigResearch.recipes.put("FocusDragonbreath", ThaumcraftApi.addArcaneCraftingRecipe(

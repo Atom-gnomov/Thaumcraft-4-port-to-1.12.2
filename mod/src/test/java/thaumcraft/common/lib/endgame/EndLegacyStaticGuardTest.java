@@ -41,6 +41,38 @@ public class EndLegacyStaticGuardTest {
     }
 
     /**
+     * The owner's revision of 2026-08-03: the wings are an NBT byte on the
+     * chestplate, not an enchantment. The enchantments stay registered only
+     * so 1.2.x saves load; the handler migrates them into the tag in place.
+     */
+    @Test
+    public void theWingsAreATagAndOldEnchantsMigrate() throws IOException {
+        String handler = read(MAIN + "common/lib/endgame/SoaringHandler.java");
+        assertTrue("the tier lives in NBT",
+                handler.contains("TAG_WINGS = \"Wings\"")
+                        && handler.contains("TIER_ASCENSION = 2"));
+        assertTrue("enchanted 1.2.x chestplates convert in place, server-side",
+                handler.contains("private static void migrate(")
+                        && handler.contains("enchants.remove(Config.enchSoaring)"));
+        String recipe = read(MAIN + "common/lib/endgame/InfusionWingsRecipe.java");
+        assertTrue("the infusion rides the altar's native NBT-merge output",
+                recipe.contains("new Object[]{SoaringHandler.TAG_WINGS, new NBTTagByte((byte) tier)}"));
+        assertTrue("any chest armour qualifies; the thaumium chest is only the page display",
+                recipe.contains("armorType != EntityEquipmentSlot.CHEST"));
+        assertTrue("ascension is an upgrade over soaring, not a fresh forging",
+                recipe.contains("SoaringHandler.getTier(central) != this.tier - 1"));
+        String proxy = read(MAIN + "client/ClientProxy.java");
+        assertTrue("the armour wears the wings in its name — prefix or suffix by tier",
+                proxy.contains("endlegacy.name.ascension")
+                        && proxy.contains("endlegacy.name.soaring"));
+        for (String lang : new String[]{"en_us", "ru_ru"}) {
+            String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
+            assertTrue("name patterns in " + lang,
+                    file.contains("endlegacy.name.soaring=") && file.contains("endlegacy.name.ascension="));
+        }
+    }
+
+    /**
      * Ascension is the real elytra state, held open by sequencing: vanilla's
      * updateElytra clears flag 7 server-side inside the tick, the metadata
      * sync runs after the tick, so a Phase.END re-raise is the value the
@@ -103,8 +135,8 @@ public class EndLegacyStaticGuardTest {
         String config = read(MAIN + "common/config/ConfigEndLegacy.java");
         for (String piece : new String[]{
                 "\"SOARING\"", "\"ASCENSION\"", "\"DRACONIC_SECRETS\"",
-                "recipeInfusionEnchantment(\"InfEnchSoaring\")",
-                "recipeInfusionEnchantment(\"InfEnchAscension\")",
+                "recipeInfusion(\"WingsSoaring\")",
+                "recipeInfusion(\"WingsAscension\")",
                 "setParentsHidden(\"DRACONIC_SECRETS\")",
                 "setItemTriggers(new ItemStack(Items.ELYTRA))"}) {
             assertTrue(piece + " must be present", config.contains(piece));

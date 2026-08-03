@@ -59,11 +59,11 @@ public class LayerSoaringWings implements LayerRenderer<AbstractClientPlayer> {
         if (chest.isEmpty() || chest.getItem() instanceof ItemGemChest) {
             return;
         }
-        boolean ascension = EnchantmentHelper.getEnchantmentLevel(Config.enchAscension, chest) > 0;
-        boolean soaring = EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0;
-        if (!ascension && !soaring) {
+        int tier = SoaringHandler.getTier(chest);
+        if (tier == SoaringHandler.TIER_NONE) {
             return;
         }
+        boolean ascension = tier >= SoaringHandler.TIER_ASCENSION;
         // Switched-off wings are stowed wings: nothing on the back at all.
         int mode = SoaringHandler.getMode(chest);
         if (mode == SoaringHandler.MODE_OFF) {

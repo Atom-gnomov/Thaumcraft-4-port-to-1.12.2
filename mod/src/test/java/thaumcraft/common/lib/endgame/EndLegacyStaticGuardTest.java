@@ -41,6 +41,38 @@ public class EndLegacyStaticGuardTest {
     }
 
     /**
+     * The owner's revision of 2026-08-03: the wings are an NBT byte on the
+     * chestplate, not an enchantment. The enchantments stay registered only
+     * so 1.2.x saves load; the handler migrates them into the tag in place.
+     */
+    @Test
+    public void theWingsAreATagAndOldEnchantsMigrate() throws IOException {
+        String handler = read(MAIN + "common/lib/endgame/SoaringHandler.java");
+        assertTrue("the tier lives in NBT",
+                handler.contains("TAG_WINGS = \"Wings\"")
+                        && handler.contains("TIER_ASCENSION = 2"));
+        assertTrue("enchanted 1.2.x chestplates convert in place, server-side",
+                handler.contains("private static void migrate(")
+                        && handler.contains("enchants.remove(Config.enchSoaring)"));
+        String recipe = read(MAIN + "common/lib/endgame/InfusionWingsRecipe.java");
+        assertTrue("the infusion rides the altar's native NBT-merge output",
+                recipe.contains("new Object[]{SoaringHandler.TAG_WINGS, new NBTTagByte((byte) tier)}"));
+        assertTrue("any chest armour qualifies; the thaumium chest is only the page display",
+                recipe.contains("armorType != EntityEquipmentSlot.CHEST"));
+        assertTrue("ascension is an upgrade over soaring, not a fresh forging",
+                recipe.contains("SoaringHandler.getTier(central) != this.tier - 1"));
+        String proxy = read(MAIN + "client/ClientProxy.java");
+        assertTrue("the armour wears the wings in its name — prefix or suffix by tier",
+                proxy.contains("endlegacy.name.ascension")
+                        && proxy.contains("endlegacy.name.soaring"));
+        for (String lang : new String[]{"en_us", "ru_ru"}) {
+            String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
+            assertTrue("name patterns in " + lang,
+                    file.contains("endlegacy.name.soaring=") && file.contains("endlegacy.name.ascension="));
+        }
+    }
+
+    /**
      * Ascension is the real elytra state, held open by sequencing: vanilla's
      * updateElytra clears flag 7 server-side inside the tick, the metadata
      * sync runs after the tick, so a Phase.END re-raise is the value the
@@ -103,8 +135,8 @@ public class EndLegacyStaticGuardTest {
         String config = read(MAIN + "common/config/ConfigEndLegacy.java");
         for (String piece : new String[]{
                 "\"SOARING\"", "\"ASCENSION\"", "\"DRACONIC_SECRETS\"",
-                "recipeInfusionEnchantment(\"InfEnchSoaring\")",
-                "recipeInfusionEnchantment(\"InfEnchAscension\")",
+                "recipeInfusion(\"WingsSoaring\")",
+                "recipeInfusion(\"WingsAscension\")",
                 "setParentsHidden(\"DRACONIC_SECRETS\")",
                 "setItemTriggers(new ItemStack(Items.ELYTRA))"}) {
             assertTrue(piece + " must be present", config.contains(piece));
@@ -249,6 +281,39 @@ public class EndLegacyStaticGuardTest {
             String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
             for (String key : new String[]{"item.thaumcraft.focus_dragonbreath.name=",
                     "tc.research_page.FOCUS_DRAGONBREATH.1="}) {
+                assertTrue(key + " missing from " + lang, file.contains(key));
+            }
+        }
+    }
+
+    /**
+     * The infernal branch: two foci beside the others in Thaumaturgy, behind
+     * hidden secrets scanned off a ghast's tear or a wither skeleton's skull.
+     */
+    @Test
+    public void theInfernalBranchIsWired() throws IOException {
+        String items = read(MAIN + "common/config/ConfigItems.java");
+        assertTrue("both foci constructed and added",
+                items.contains("allItems.add(focusFireball)")
+                        && items.contains("allItems.add(focusLifedrain)"));
+        String fireball = read(MAIN + "common/items/wands/foci/FocusFireball.java");
+        assertTrue("the fireball is the ghast's own projectile",
+                fireball.contains("EntityLargeFireball") && fireball.contains("POWER = 1"));
+        String drain = read(MAIN + "common/items/wands/foci/FocusLifedrain.java");
+        assertTrue("the drain withers and heals — the owner's иссушение → лечение",
+                drain.contains("MobEffects.WITHER") && drain.contains("player.heal(HEAL)"));
+        assertTrue("the heal is a share of the bite, not free health",
+                drain.contains("HEAL = 3.0F") && drain.contains("DAMAGE = 4.0F"));
+        String config = read(MAIN + "common/config/ConfigEndLegacy.java");
+        for (String key : new String[]{"INFERNAL_SECRETS", "FOCUS_FIREBALL", "FOCUS_LIFEDRAIN",
+                "Items.GHAST_TEAR", "new ItemStack(Items.SKULL, 1, 1)"}) {
+            assertTrue(key + " must be present", config.contains(key));
+        }
+        for (String lang : new String[]{"en_us", "ru_ru"}) {
+            String file = read("src/main/resources/assets/thaumcraft/lang/" + lang + ".lang");
+            for (String key : new String[]{"item.thaumcraft.focus_fireball.name=",
+                    "item.thaumcraft.focus_lifedrain.name=",
+                    "tc.research_page.INFERNAL_SECRETS.1="}) {
                 assertTrue(key + " missing from " + lang, file.contains(key));
             }
         }

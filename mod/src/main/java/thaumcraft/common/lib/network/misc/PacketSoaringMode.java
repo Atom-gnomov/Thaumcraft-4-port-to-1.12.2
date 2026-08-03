@@ -39,12 +39,12 @@ public class PacketSoaringMode extends PacketBase {
             if (chest.isEmpty()) {
                 return;
             }
-            boolean ascension = EnchantmentHelper.getEnchantmentLevel(Config.enchAscension, chest) > 0;
-            boolean soaring = EnchantmentHelper.getEnchantmentLevel(Config.enchSoaring, chest) > 0;
-            if (!ascension && !soaring) {
+            int tier = SoaringHandler.getTier(chest);
+            if (tier == SoaringHandler.TIER_NONE) {
                 return;
             }
-            int mode = SoaringHandler.cycleMode(SoaringHandler.getMode(chest), ascension);
+            int mode = SoaringHandler.cycleMode(SoaringHandler.getMode(chest),
+                    tier >= SoaringHandler.TIER_ASCENSION);
             SoaringHandler.setMode(chest, mode);
             String key = mode == SoaringHandler.MODE_OFF ? "endlegacy.wings.off"
                     : mode == SoaringHandler.MODE_GLIDE ? "endlegacy.wings.glide"

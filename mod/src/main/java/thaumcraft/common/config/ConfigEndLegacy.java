@@ -40,7 +40,7 @@ public final class ConfigEndLegacy {
                 new ItemStack(Items.ELYTRA))
                 .setPages(
                         new ResearchPage("tc.research_page.SOARING.1"),
-                        new ResearchPage(ConfigResearch.recipeInfusionEnchantment("InfEnchSoaring")),
+                        new ResearchPage(ConfigResearch.recipeInfusion("WingsSoaring")),
                         new ResearchPage("tc.research_page.SOARING.2"))
                 .setParents("INFUSIONENCHANTMENT")
                 .setHidden()
@@ -59,7 +59,7 @@ public final class ConfigEndLegacy {
                 new ItemStack(Items.DRAGON_BREATH))
                 .setPages(
                         new ResearchPage("tc.research_page.ASCENSION.1"),
-                        new ResearchPage(ConfigResearch.recipeInfusionEnchantment("InfEnchAscension")))
+                        new ResearchPage(ConfigResearch.recipeInfusion("WingsAscension")))
                 .setParents("SOARING")
                 .setParentsHidden("DRACONIC_SECRETS")
                 .setConcealed()
@@ -104,6 +104,60 @@ public final class ConfigEndLegacy {
                         new ResearchPage(ConfigResearch.recipeArcane("FocusDragonbreath")),
                         new ResearchPage("tc.research_page.FOCUS_DRAGONBREATH.2"))
                 .setParents("DRACONIC_SECRETS")
+                .setConcealed()
+                .registerResearchItem();
+
+        // ---- The infernal branch: THAUMATURGY, beside the other foci ----
+
+        new ResearchItem(
+                "INFERNAL_SECRETS",
+                "THAUMATURGY",
+                new AspectList()
+                        .add(Aspect.FIRE, 8)
+                        .add(Aspect.ENTROPY, 6)
+                        .add(Aspect.MAGIC, 4)
+                        .add(Aspect.LIFE, 4),
+                5, -6, 2,
+                new ItemStack(Items.GHAST_TEAR))
+                .setPages(
+                        new ResearchPage("tc.research_page.INFERNAL_SECRETS.1"),
+                        new ResearchPage("tc.research_page.INFERNAL_SECRETS.2"))
+                .setParentsHidden("FOCUSFIRE")
+                .setHidden()
+                .setItemTriggers(
+                        new ItemStack(Items.GHAST_TEAR),
+                        new ItemStack(Items.SKULL, 1, 1))
+                .registerResearchItem();
+
+        new ResearchItem(
+                "FOCUS_FIREBALL",
+                "THAUMATURGY",
+                new AspectList()
+                        .add(Aspect.FIRE, 6)
+                        .add(Aspect.MAGIC, 4)
+                        .add(Aspect.ENTROPY, 3),
+                5, -4, 2,
+                new ItemStack(ConfigItems.focusFireball))
+                .setPages(
+                        new ResearchPage("tc.research_page.FOCUS_FIREBALL.1"),
+                        new ResearchPage(ConfigResearch.recipeArcane("FocusFireball")))
+                .setParents("INFERNAL_SECRETS")
+                .setConcealed()
+                .registerResearchItem();
+
+        new ResearchItem(
+                "FOCUS_LIFEDRAIN",
+                "THAUMATURGY",
+                new AspectList()
+                        .add(Aspect.ENTROPY, 6)
+                        .add(Aspect.LIFE, 5)
+                        .add(Aspect.MAGIC, 4),
+                6, -7, 2,
+                new ItemStack(ConfigItems.focusLifedrain))
+                .setPages(
+                        new ResearchPage("tc.research_page.FOCUS_LIFEDRAIN.1"),
+                        new ResearchPage(ConfigResearch.recipeArcane("FocusLifedrain")))
+                .setParents("INFERNAL_SECRETS")
                 .setConcealed()
                 .registerResearchItem();
 
@@ -174,24 +228,37 @@ public final class ConfigEndLegacy {
      * way down, no KAMI dependency.
      */
     public static void initRecipes() {
-        ConfigResearch.recipes.put("InfEnchSoaring", ThaumcraftApi.addInfusionEnchantmentRecipe(
-                "SOARING", Config.enchSoaring, 4,
+        // The wings are an NBT mark on the armour (owner's revision of
+        // 2026-08-03), so these are plain infusions riding the altar's native
+        // NBT-merge output: the chestplate keeps everything it already is.
+        // The thaumium chestplate below is only the research page's display;
+        // matches() accepts any chest armour.
+        thaumcraft.common.lib.endgame.InfusionWingsRecipe soaringWings =
+                new thaumcraft.common.lib.endgame.InfusionWingsRecipe(
+                "SOARING", thaumcraft.common.lib.endgame.SoaringHandler.TIER_SOARING, 4,
                 new AspectList().add(Aspect.FLIGHT, 24).add(Aspect.AIR, 16).add(Aspect.MAGIC, 8),
+                new ItemStack(ConfigItems.itemChestThaumium),
                 new ItemStack[]{
                         new ItemStack(Items.ELYTRA),
                         new ItemStack(Items.FEATHER),
                         new ItemStack(Items.FEATHER),
-                        new ItemStack(ConfigItems.itemResource, 1, 14)}));
+                        new ItemStack(ConfigItems.itemResource, 1, 14)});
+        ThaumcraftApi.getCraftingRecipes().add(soaringWings);
+        ConfigResearch.recipes.put("WingsSoaring", soaringWings);
 
-        ConfigResearch.recipes.put("InfEnchAscension", ThaumcraftApi.addInfusionEnchantmentRecipe(
-                "ASCENSION", Config.enchAscension, 6,
+        thaumcraft.common.lib.endgame.InfusionWingsRecipe ascensionWings =
+                new thaumcraft.common.lib.endgame.InfusionWingsRecipe(
+                "ASCENSION", thaumcraft.common.lib.endgame.SoaringHandler.TIER_ASCENSION, 6,
                 new AspectList().add(Aspect.ELDRITCH, 24).add(Aspect.FLIGHT, 24)
                         .add(Aspect.ENERGY, 16).add(Aspect.MAGIC, 8),
+                new ItemStack(ConfigItems.itemChestThaumium),
                 new ItemStack[]{
                         new ItemStack(Items.DRAGON_BREATH),
                         new ItemStack(Items.SHULKER_SHELL),
                         new ItemStack(net.minecraft.init.Blocks.END_ROD),
-                        new ItemStack(ConfigItems.itemResource, 1, 14)}));
+                        new ItemStack(ConfigItems.itemResource, 1, 14)});
+        ThaumcraftApi.getCraftingRecipes().add(ascensionWings);
+        ConfigResearch.recipes.put("WingsAscension", ascensionWings);
 
         // Focus: Dragonbreath — the fire focus's frame, breathed full.
         ConfigResearch.recipes.put("FocusDragonbreath", ThaumcraftApi.addArcaneCraftingRecipe(
@@ -203,6 +270,26 @@ public final class ConfigEndLegacy {
                 'D', new ItemStack(Items.DRAGON_BREATH),
                 'Q', new ItemStack(Items.QUARTZ),
                 'P', new ItemStack(Items.ENDER_PEARL)));
+
+        // The infernal foci: the ghast's tear and the wither skeleton's skull,
+        // in the fire focus's frame.
+        ConfigResearch.recipes.put("FocusFireball", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_FIREBALL",
+                new ItemStack(ConfigItems.focusFireball),
+                new AspectList().add(Aspect.FIRE, 25).add(Aspect.ENTROPY, 15),
+                "CQC", "Q#Q", "CQC",
+                '#', new ItemStack(Items.GHAST_TEAR),
+                'Q', new ItemStack(Items.QUARTZ),
+                'C', new ItemStack(ConfigItems.itemShard, 1, 1)));
+
+        ConfigResearch.recipes.put("FocusLifedrain", ThaumcraftApi.addArcaneCraftingRecipe(
+                "FOCUS_LIFEDRAIN",
+                new ItemStack(ConfigItems.focusLifedrain),
+                new AspectList().add(Aspect.ENTROPY, 25).add(Aspect.WATER, 15),
+                "CQC", "Q#Q", "CQC",
+                '#', new ItemStack(Items.SKULL, 1, 1),
+                'Q', new ItemStack(Items.QUARTZ),
+                'C', new ItemStack(ConfigItems.itemShard, 1, 5)));
 
         // ---- Phase 2: the wards ----
 

@@ -115,11 +115,8 @@ public class KeyHandler {
         if (chest.isEmpty()) {
             return;
         }
-        boolean enchanted = net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(
-                thaumcraft.common.config.Config.enchSoaring, chest) > 0
-                || net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(
-                thaumcraft.common.config.Config.enchAscension, chest) > 0;
-        if (enchanted) {
+        if (thaumcraft.common.lib.endgame.SoaringHandler.getTier(chest)
+                > thaumcraft.common.lib.endgame.SoaringHandler.TIER_NONE) {
             PacketHandler.INSTANCE.sendToServer(
                     new thaumcraft.common.lib.network.misc.PacketSoaringMode());
         }

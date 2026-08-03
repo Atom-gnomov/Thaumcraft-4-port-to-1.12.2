@@ -1470,6 +1470,15 @@ public class ClientProxy extends CommonProxy {
     private static final class ClientEventHandler {
         @SubscribeEvent
         public void onItemTooltip(ItemTooltipEvent event) {
+            // End Legacy: winged chestplates wear it in the name — a prefix
+            // for soaring, a suffix for ascension (the owner's format).
+            int wingTier = thaumcraft.common.lib.endgame.SoaringHandler.getTier(event.getItemStack());
+            if (wingTier > 0 && !event.getToolTip().isEmpty()) {
+                String pattern = I18n.translateToLocal(
+                        wingTier >= thaumcraft.common.lib.endgame.SoaringHandler.TIER_ASCENSION
+                                ? "endlegacy.name.ascension" : "endlegacy.name.soaring");
+                event.getToolTip().set(0, String.format(pattern, event.getToolTip().get(0)));
+            }
             int charge = EventHandlerRunic.getFinalCharge(event.getItemStack());
             int warp = EventHandlerRunic.getFinalWarp(event.getItemStack(), event.getEntityPlayer());
 

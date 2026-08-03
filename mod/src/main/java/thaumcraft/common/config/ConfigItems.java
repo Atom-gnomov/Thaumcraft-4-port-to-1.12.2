@@ -67,6 +67,9 @@ public class ConfigItems {
     public static FocusFire focusFire;
     /** End Legacy: the dragon's fog on a wand (END_LEGACY_PLAN.md). */
     public static thaumcraft.common.items.wands.foci.FocusDragonbreath focusDragonbreath;
+    // End Legacy, infernal branch: the ghast's fireball and the wither's drain.
+    public static thaumcraft.common.items.wands.foci.FocusFireball focusFireball;
+    public static thaumcraft.common.items.wands.foci.FocusLifedrain focusLifedrain;
     public static FocusFrost focusFrost;
     public static FocusExcavation focusExcavation;
     public static FocusPrimal focusPrimal;
@@ -336,6 +339,18 @@ public class ConfigItems {
                 .setTranslationKey("thaumcraft.focus_dragonbreath")
                 .setCreativeTab(tab);
         allItems.add(focusDragonbreath);
+        focusFireball = (thaumcraft.common.items.wands.foci.FocusFireball)
+                new thaumcraft.common.items.wands.foci.FocusFireball()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusFireball"))
+                .setTranslationKey("thaumcraft.focus_fireball")
+                .setCreativeTab(tab);
+        allItems.add(focusFireball);
+        focusLifedrain = (thaumcraft.common.items.wands.foci.FocusLifedrain)
+                new thaumcraft.common.items.wands.foci.FocusLifedrain()
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("FocusLifedrain"))
+                .setTranslationKey("thaumcraft.focus_lifedrain")
+                .setCreativeTab(tab);
+        allItems.add(focusLifedrain);
         allItems.add(focusFire);
 
         focusFrost = (FocusFrost) new FocusFrost()

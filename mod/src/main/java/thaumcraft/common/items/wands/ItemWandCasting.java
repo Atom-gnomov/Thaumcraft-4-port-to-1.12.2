@@ -100,7 +100,14 @@ public class ItemWandCasting extends Item implements IArchitect {
                 tag.removeTag("AttributeModifiers");
             }
             if (tag.hasKey(TAG_ROD)) {
-                return WandRod.rods.get(tag.getString(TAG_ROD));
+                WandRod rod = WandRod.rods.get(tag.getString(TAG_ROD));
+                // An unknown tag is a wand from a build whose rod no longer
+                // exists (a removed experiment, another mod's leftovers). A
+                // null here crashes the renderer mid-frame; a wooden rod is a
+                // wand the player can still hold, see and re-craft.
+                if (rod != null) {
+                    return rod;
+                }
             }
         }
         return WandRod.rods.get("wood");
@@ -112,7 +119,14 @@ public class ItemWandCasting extends Item implements IArchitect {
 
     public static WandCap getCap(ItemStack stack) {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey(TAG_CAP)) {
-            return WandCap.caps.get(stack.getTagCompound().getString(TAG_CAP));
+            WandCap cap = WandCap.caps.get(stack.getTagCompound().getString(TAG_CAP));
+            // Same story as the rod: the dragonbreath cap of 1.2.4.0 was
+            // removed in 1.2.5.0 and every wand crafted with it crashed the
+            // held-item renderer on world join. Unknown caps fall back to
+            // iron instead of null.
+            if (cap != null) {
+                return cap;
+            }
         }
         return WandCap.caps.get("iron");
     }

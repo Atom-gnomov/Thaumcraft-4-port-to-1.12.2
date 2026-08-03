@@ -253,6 +253,8 @@ public class ConfigItems {
     public static thaumcraft.common.items.endgame.ItemWardDeflection itemWardDeflection;
     public static thaumcraft.common.items.endgame.ItemWardLastBreath itemWardLastBreath;
     public static thaumcraft.common.items.endgame.ItemWardLastBreathCracked itemWardLastBreathCracked;
+    /** Creative-only mock: a chestplate born with the Ascension tier, for flight testing. */
+    public static thaumcraft.common.items.endgame.ItemTestWings itemTestWings;
     public static ItemBaubleBlanks itemBaubleBlanks;
 
     // Relics
@@ -1208,6 +1210,12 @@ public class ConfigItems {
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemWardLastBreathCracked"))
                 .setTranslationKey("thaumcraft.ward_lastbreath_cracked");
         allItems.add(itemWardLastBreathCracked);
+        itemTestWings = (thaumcraft.common.items.endgame.ItemTestWings)
+                new thaumcraft.common.items.endgame.ItemTestWings(
+                        ARMOR_THAUMIUM, 3, EntityEquipmentSlot.CHEST)
+                .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemTestWings"))
+                .setTranslationKey("thaumcraft.test_wings");
+        allItems.add(itemTestWings);
 
         itemBaubleBlanks = (ItemBaubleBlanks) new ItemBaubleBlanks()
                 .setRegistryName("thaumcraft", ConfigBlocks.legacyPath("ItemBaubleBlanks"))

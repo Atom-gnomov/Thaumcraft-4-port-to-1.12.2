@@ -500,6 +500,13 @@ public class ThaumcraftWorldGenerator implements IWorldGenerator {
                 placeOreBlockIfStone(world, pos, ConfigBlocks.blockCustomOre.getStateFromMeta(7), 2);
             }
         }
+        if (Config.genSilver && !Config.foundForeignSilverOre && (newGen || Config.regenSilver)) {
+            for (int i = 0; i < 4; ++i) {
+                BlockPos pos = new BlockPos(x + 8 + rand.nextInt(16), 6 + rand.nextInt(26), z + 8 + rand.nextInt(16));
+                new WorldGenMinable(ConfigBlocks.blockCustomOre.getStateFromMeta(8), 4 + rand.nextInt(5), BlockMatcher.forBlock(Blocks.STONE))
+                        .generate(world, rand, pos);
+            }
+        }
         if (Config.genInfusedStone && (newGen || Config.regenInfusedStone)) {
             for (int i = 0; i < 8; ++i) {
                 int bx = x + rand.nextInt(16);

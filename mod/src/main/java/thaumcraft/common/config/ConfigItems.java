@@ -1345,6 +1345,7 @@ public class ConfigItems {
         OreDictionary.registerOre("oreInfusedOrder", new ItemStack(ConfigBlocks.blockCustomOre, 1, 5));
         OreDictionary.registerOre("oreInfusedEntropy", new ItemStack(ConfigBlocks.blockCustomOre, 1, 6));
         OreDictionary.registerOre("oreAmber", new ItemStack(ConfigBlocks.blockCustomOre, 1, 7));
+        OreDictionary.registerOre("oreSilver", new ItemStack(ConfigBlocks.blockCustomOre, 1, 8));
 
         OreDictionary.registerOre("shardAir", new ItemStack(itemShard, 1, 0));
         OreDictionary.registerOre("shardFire", new ItemStack(itemShard, 1, 1));
@@ -1359,6 +1360,7 @@ public class ConfigItems {
         OreDictionary.registerOre("nuggetGold", new ItemStack(itemResource, 1, 18));
         OreDictionary.registerOre("ingotThaumium", new ItemStack(itemResource, 1, 2));
         OreDictionary.registerOre("ingotVoid", new ItemStack(itemResource, 1, 16));
+        OreDictionary.registerOre("ingotSilver", new ItemStack(itemResource, 1, ItemResource.META_SILVER_INGOT));
 
         OreDictionary.registerOre("nuggetIron", new ItemStack(itemNugget, 1, 0));
         OreDictionary.registerOre("nuggetCopper", new ItemStack(itemNugget, 1, 1));

@@ -67,12 +67,13 @@ public class ItemResource extends Item implements IEssentiaContainerItem {
     public static final int META_VOID_INGOT = 16;
     public static final int META_VOID_SEED = 17;
     public static final int META_COIN = 18;
+    public static final int META_SILVER_INGOT = 19;
 
     public static final String[] NAMES = {
             "alumentum", "nitor", "thaumiumingot", "quicksilver", "tallow",
             "brain", "amber", "cloth", "filter", "knowledgefragment",
             "mirrorglass", "taint_slime", "taint_tendril", "label",
-            "dust", "charm", "voidingot", "voidseed", "coin"
+            "dust", "charm", "voidingot", "voidseed", "coin", "silveringot"
     };
 
     public ItemResource() {

@@ -577,7 +577,8 @@ public class ClientProxy extends CommonProxy {
                     "itemresource_amber", "itemresource_cloth", "itemresource_filter",
                     "itemresource_knowledgefragment", "itemresource_mirrorglass", "itemresource_taint_slime",
                     "itemresource_taint_tendril", "itemresource_label", "itemresource_dust",
-                    "itemresource_charm", "itemresource_voidingot", "itemresource_voidseed", "itemresource_coin"
+                    "itemresource_charm", "itemresource_voidingot", "itemresource_voidseed", "itemresource_coin",
+                    "itemresource_silveringot"
                 };
                 for (int meta = 0; meta < resourceModels.length; meta++) {
                     ModelResourceLocation model = new ModelResourceLocation(
@@ -1040,7 +1041,7 @@ public class ClientProxy extends CommonProxy {
             registerBlockItemModel(candleItem, meta, "type=" + meta);
         }
         Item oreItem = Item.getItemFromBlock(ConfigBlocks.blockCustomOre);
-        for (int meta = 0; meta <= 7; meta++) {
+        for (int meta = 0; meta <= 8; meta++) {
             registerBlockItemModel(oreItem, meta, "type=" + meta);
         }
         Item cosmeticSolidItem = Item.getItemFromBlock(ConfigBlocks.blockCosmeticSolid);

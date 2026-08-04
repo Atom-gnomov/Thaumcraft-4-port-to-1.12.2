@@ -46,6 +46,10 @@ public final class ConfigRecipesSmeltingSlice {
                 new ItemStack(ConfigBlocks.blockCustomOre, 1, 7),
                 new ItemStack(ConfigItems.itemResource, 1, 6),
                 1.0F);
+        FurnaceRecipes.instance().addSmeltingRecipe(
+                new ItemStack(ConfigBlocks.blockCustomOre, 1, 8),
+                new ItemStack(ConfigItems.itemResource, 1, 19),
+                0.7F);
         FurnaceRecipes.instance().addSmeltingRecipeForBlock(
                 ConfigBlocks.blockMagicalLog,
                 new ItemStack(Items.COAL, 1, 1),

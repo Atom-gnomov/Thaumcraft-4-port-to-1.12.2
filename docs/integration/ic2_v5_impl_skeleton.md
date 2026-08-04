@@ -32,7 +32,6 @@ API големов (новый тип + аксессуары), регистра�
 
 | Registry name | Блок | Модуль | Тир |
 |---|---|---|---|
-| `silver_ore` | Серебряная руда (oreSilver; см. phase1 §6.1) | core | 1 |
 | `thaum_generator` | Таум-Генератор (аура→EU) | core | 3 |
 | `aetheric_engine` | Эфирный Двигатель (EU→аура) | core | 3 |
 | `thaumic_overclocker` | Таум-Оверклокер | core | 3 |

@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.2.8.0"
+version = "1.2.8.1"
 ext.advertisedModVersion = "6.1.BETA26"
 group = "thaumcraft"
 archivesBaseName = "Thaumcraft"
@@ -48,7 +48,18 @@ repositories {
 
 dependencies {
     compile 'curse.maven:baubles-227083:2518667'
+
+    // IC2 Experimental — ТОЛЬКО для компиляции (@Optional-интеграция:
+    // TileNitor implements IHeatSource). В jar не попадает, в рантайме
+    // интерфейс снимается Forge-ом, если IC2 не загружен. Тот же пин
+    // файла, что у сабмода Unbound Technology (3838713 = 2.8.222-ex112).
+    deobfProvided 'curse.maven:industrial-craft-242638:3838713'
+
     testCompile 'junit:junit:4.12'
+    // Тестам IC2 нужен на classpath: JUnit-классло́адеру @Optional не помогает,
+    // а TileNitor (→ ConfigBlocks → половина runtime-тестов) без интерфейса
+    // IHeatSource не загружается. В universal-jar по-прежнему не попадает.
+    testCompile 'curse.maven:industrial-craft-242638:3838713'
 }
 
 processResources {

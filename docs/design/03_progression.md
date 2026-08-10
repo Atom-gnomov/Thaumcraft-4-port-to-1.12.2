@@ -61,14 +61,22 @@
                         │             │      ├─> EU_TO_VIS_ENGINE  T3
                         │             │      └─◇ LORE_RESONANCE_LIMITS
                         │             ├─> ELECTRIC_SCRIBING       T2
-                        │             └─> POWERED_CRUCIBLE        T3
-                        │                    └─> FLUX_SCRUBBER    T3
+                        │             ├─> PHIAL_STATION           T2
+                        │             │      └─> ESSENTIA_BURNER  T2
+                        │             └─> POWERED_CRUCIBLE  T3  🔎 переименование
+                        │                    └─> FLUX_SCRUBBER  T3  🔎 дубликат
                         ├─> ALUMENTUM_FUEL   T1
+                        │      └─> ORE_WASHING  T2  [рецепты промывателя IC2, П-4в]
                         └─> NITOR_HEAT       T2
 
 [аддон ASP обнаружен] ──> SOLAR_SUNNARIUM  (аспекты + саннариум в тигле)
 [аддон METS обнаружен] ─> TECHNO_MATERIALS (аспекты новых металлов)
 ```
+
+🔎 Два узла T3 помечены как спорные: аудит T3 показал, что `FLUX_SCRUBBER`
+дублирует родной блок ТК, а `POWERED_CRUCIBLE` — Тауматорий. Предложенная
+замена ветки — `04_systems/T3_audit.md` Т-9; правится после решения
+владельца, не раньше.
 
 Ветки T4–T5 (броня, дальнобой, данж, Синтез) добавятся в это дерево при
 переносе соответствующих систем; сейчас они описаны только в архиве.

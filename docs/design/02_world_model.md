@@ -163,7 +163,8 @@ registry-имя, если объект уже существует.
 | EU | EU | `ic2.api.energy.*` | Электричество IC2 |
 | Таум-Генератор | Thaumic Alternator | `unboundtech:thaum_generator` | Узел → EU |
 | Эфирный Двигатель | Aetheric Engine | `unboundtech:aetheric_engine` | EU → узел |
-| Таум-Сталь | Thaum-Steel | `ingotThaumSteel` (планируется) | Корпусной металл моста |
+| Таумий («Таум-слиток») | Thaumium | `ingotThaumium` (ТК) | Родной магический металл ТК — **не наш** |
+| Закалённый таумий | Tempered Thaumium | `ingotTemperedThaumium` | Наш корпусной металл: таумий после домны |
 | Таум-Оверклокер | Thaumic Overclocker | 🔜 | Ускоритель машин IC2 за эссенцию |
 | Интерференция | Interference | — | Глушение двух генераторов ближе 16 блоков |
 

@@ -153,11 +153,16 @@ TMT     K — Нагревательная спираль IC2 (crafting:coil) ×
 
 ## 7. Аспекты объекта (сканирование/плавка)
 
-`Ignis 10`, `Machina 8`, `Aqua 6`, `Metallum 5`, `Praecantatio 4`.
+Ожидаемый профиль: `Ignis ~10, Machina ~8, Aqua ~6, Metallum ~5,
+Praecantatio ~4`.
 
 По формуле `04_systems/aspect_economy.md`: 0.6 от суммы (тигель — Aqua,
 Metallum, Praecantatio; спирали — Ignis, Machina, Metallum; корпус —
-Metallum, Machina) + подпись арканного верстака, порог, обрезка до пяти.
+Metallum, Machina) + подпись арканного верстака с потолком по материалу
+(§2.4а), порог, обрезка до пяти.
+
+⚠️ **Профиль, а не расчёт** (аудит T1–T4, А-12): точные числа — из строки
+`Aspect formula induction_crucible:` в логе при первом запуске.
 
 ## 8. Визуал
 

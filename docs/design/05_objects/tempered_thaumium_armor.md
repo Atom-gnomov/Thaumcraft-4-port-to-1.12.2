@@ -106,13 +106,21 @@ Toughness снижает урон от **сильных** ударов; поло
 
 ## 7. Аспекты объекта
 
-По формуле (`aspect_economy.md`), нагрудник из 8 слитков
-(`Metallum 5, Praecantatio 5, Ignis 3` каждый):
-- сумма ≈ `Metallum 40, Praecantatio 40, Ignis 24` → ×0.6 →
-  `Metallum 24, Praecantatio 24, Ignis 14`;
-- подпись верстака: `Fabrico +2`, `Praecantatio +2`;
-- нормализация до 40 (§2.5): пропорционально ужимаем.
-- **Итог (нагрудник):** ≈ `Metallum 15, Praecantatio 15, Ignis 8, Tutamen 2`.
+По формуле (`aspect_economy.md`), из слитка `Metallum 2, Ignis 2,
+Praecantatio 1` (см. карточку материала). Броня кузнечная, **на обычном
+верстаке подписи процесса нет** (§2.4).
+
+| Часть | Слитков | Итог |
+|---|---|---|
+| Нагрудник | 8 | `Metallum 10, Ignis 10, Praecantatio 5` |
+| Поножи | 7 | `Metallum 8, Ignis 8, Praecantatio 4` |
+| Шлем | 5 | `Metallum 6, Ignis 6, Praecantatio 3` |
+| Ботинки | 4 | `Metallum 5, Ignis 5, Praecantatio 2` |
+
+**`Tutamen` руками не пишем:** его добавляет сам ТК по
+`damageReduceAmount` (`getBonusTags`, §2.6 канона) — вручную получилось бы
+вдвое. Прежняя редакция карточки указывала `Tutamen 2` и подпись арканного
+верстака, хотя броня кузнечная (аудит T1–T4, А-12).
 
 ## 8. Визуал
 

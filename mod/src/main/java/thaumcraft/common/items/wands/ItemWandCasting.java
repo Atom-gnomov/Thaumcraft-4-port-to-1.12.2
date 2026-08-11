@@ -221,10 +221,10 @@ public class ItemWandCasting extends Item implements IArchitect {
             discount = cap.getSpecialCostModifier();
         }
         if (player != null) {
-            // Снаряжение отдаёт скидку в ПРОЦЕНТАХ (гогглы возвращают 5),
-            // а discount здесь — множитель. Без деления на 100 одни гогглы
-            // роняли множитель до потолка 0.1F, то есть давали сразу −90%.
-            discount -= WandManager.getTotalVisDiscount(player, aspect) / 100.0F;
+            // ВНИМАНИЕ: getTotalVisDiscount уже делит сумму процентов на 100
+            // и возвращает долю (гогглы: 5 → 0.05f). Второе деление здесь
+            // обнуляло бы скидку целиком — в 1.2.8.2 такая ошибка была.
+            discount -= WandManager.getTotalVisDiscount(player, aspect);
             if (!crafting) {
                 discount -= (float) getFocusFrugal(stack) / 10.0F;
             }

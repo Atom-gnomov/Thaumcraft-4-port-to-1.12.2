@@ -60,7 +60,9 @@
                         │             ├─> TEMPERED_TOOLS       T2  [алмаз +20% прочности]
                         │             ├─> VIS_TO_EU_GENERATOR  T3
                         │             │      ├─> EU_TO_VIS_ENGINE  T3
-                        │             │      └─◇ LORE_RESONANCE_LIMITS
+                        │             │      ├─◇ LORE_RESONANCE_LIMITS
+                        │             │      └─◇ TECHNO_SPIRITS  T3  [по событию: увидел духа]
+                        │             │             └─◇ SPARK_HARVEST  T3  [Искры → арена T5]
                         │             ├─> ELECTRIC_SCRIBING       T2
                         │             ├─> PHIAL_STATION           T2
                         │             │      └─> ESSENTIA_BURNER  T2
@@ -73,6 +75,8 @@
                         ├─> ALUMENTUM_FUEL   T1
                         │      └─> SYNTHETIC_SHARDS  T1  [пыль + кварц → кристалл]
                         └─> NITOR_HEAT       T2
+
+[первая сделка с техномагом] ──◇ TECHNOMANCER  T3
 
 [аддон ASP обнаружен] ──> SOLAR_SUNNARIUM  (аспекты + саннариум в тигле)
 [аддон METS обнаружен] ─> TECHNO_MATERIALS (аспекты новых металлов)

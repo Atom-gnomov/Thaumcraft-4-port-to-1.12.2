@@ -72,7 +72,7 @@
                         │             │             └─◇ SPARK_HARVEST  T3  [Искры → арена T5]
                         │             ├─> ELECTRIC_SCRIBING       T2
                         │             ├─> PHIAL_STATION           T2
-                        │             │      └─> ESSENTIA_BURNER  T2
+                        │             ├─> ESSENTIA_BURNER         T2  [родитель — TEMPERED_THAUMIUM, см. карточку]
                         │             ├─> INDUCTION_CRUCIBLE     T3
                         │             │      └─> RESONANT_SPLITTER T3
                         │             ├─> ESSENTIA_BUS            T3
@@ -83,7 +83,7 @@
                         │      └─> SYNTHETIC_SHARDS  T1  [пыль + кварц → кристалл]
                         └─> NITOR_HEAT       T2
 
-[первая сделка с техномагом] ──◇ TECHNOMANCER  T3
+[первая сделка с техномагом] ──◇ TECHNOMANCER  T3  [родитель — TECHNO_SPIRITS T3]
 
 EU_TO_VIS_ENGINE T3 ──> SCHEMA_RINGS  T3  [кольца на атрибутах]
 VIS_TO_EU_GENERATOR T3 ─> FOCUS_CHARGE  T3  [жезл заряжает машины]
@@ -126,6 +126,7 @@ FLUX_CONDENSER  T3
 TEMPERED_ARMOR  T2  ─┐
 EU_TO_VIS_ENGINE T3 ─┴─> NANO_THAUM_ARMOR  T4  [инфузия: нано + боевой таум]
                             └─> QUANT_VOID_ARMOR / QUANT_ICHOR_ARMOR  T5
+                                 (единственное место, где заведён этот узел)
 
 ELECTRIC_SCRIBING T2 ─┐
 SOLAR_SUNNARIUM (ASP) ┴─> TRANSMUTATION_TEMPLATES  T4  [гейт рецептов преобразователя]
@@ -137,7 +138,12 @@ SOLAR_SUNNARIUM (ASP) ┴─> TRANSMUTATION_TEMPLATES  T4  [гейт рецеп�
 VOID_IRIDIUM  T4
    └─> IRIDIUM_WAND_PARTS  T4  [наконечник; стержень — за Сердце Колосса]
          └─> SINGULATOR    T4
-               └─> NANO_THAUM_ARMOR  T4  [броня последней: она самая необязательная]
+
+Порядок внутри T4 — «броня последней, она самая необязательная», но
+NANO_THAUM_ARMOR в этой схеме **не повторяется**: его родители заданы
+выше (`TEMPERED_ARMOR` + `EU_TO_VIS_ENGINE`), и дом этого факта —
+карточка `05_objects/nano_thaum_armor.md` §6.
+⚠️ Прежняя редакция рисовала узел дважды, с несовместимыми родителями.
 ```
 
 Вкладка «Синтез» (T5) и всё, что в ней:

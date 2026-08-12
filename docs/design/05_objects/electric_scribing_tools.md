@@ -94,7 +94,7 @@
 
 Ожидаемый профиль: `Potentia ~5, Metallum ~4, Cognitio ~3`. `Instrumentum`
 руками не пишем — ТК добавит его сам, если предмет наследует `ItemTool`
-(§2.6 канона).
+(`aspect_economy.md` §2.6).
 
 ## 8. Визуал
 

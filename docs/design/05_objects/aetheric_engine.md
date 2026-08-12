@@ -95,7 +95,7 @@
 |---|---|
 | Σ компонентов | `Metallum 19, Praecantatio 9, Machina 6, Cognitio 4, Ordo 2, Permutatio 2, Lux 2, Vitreus 1, Venenum 1` |
 | ×0.6 | `Metallum 11, Praecantatio 5, Machina 4, Cognitio 2, остальные 1` |
-| Порог `max(2; 15% от 11)` = 2 | остались четыре |
+| Порог `max(1; 15% от 11)` = 2 | остались четыре |
 | Топ-5 | без изменений (их четыре) |
 | Подпись «сборка механизма» `Machina +3` | `Machina 7` |
 | Нормализация (сумма 25 ≤ 40) | не требуется |

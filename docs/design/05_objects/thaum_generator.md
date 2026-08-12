@@ -108,7 +108,7 @@
 |---|---|
 | Σ компонентов | `Metallum 16, Praecantatio 10, Ignis 7, Machina 5, Potentia 3, Vitreus 2` |
 | ×0.6 | `Metallum 10, Praecantatio 6, Ignis 4, Machina 3, Potentia 2, Vitreus 1` |
-| Порог `max(2; 15% от 10)` = 2 | `Vitreus` отсеян |
+| Порог `max(1; 15% от 10)` = 2 | `Vitreus` отсеян |
 | Топ-5 | без изменений (ровно пять) |
 | Подпись «сборка механизма» `Machina +3` | `Machina 6` |
 | Нормализация (сумма 28 ≤ 40) | не требуется |

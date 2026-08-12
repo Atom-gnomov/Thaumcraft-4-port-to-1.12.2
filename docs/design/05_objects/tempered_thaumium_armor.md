@@ -7,6 +7,7 @@
 | **Тир** | T2 |
 | **Акт** | III. Изоляция |
 | **Статус** | 🔜 спроектировано |
+| **Класс** | `unboundtech.common.items.armor.ItemTemperedArmor` (планируется) — `IVisDiscountGear` |
 
 ## 1. Зачем это существует
 

@@ -62,9 +62,12 @@
 - **Центр алтаря:** иридиевая руда IC2 (`misc_resource:iridium_ore`).
 - **Пьедесталы:** 2× пустотный металл ТК, 2× закалённый таумий,
   1× вис-кристалл `Vacuos`, 1× кристалл `Metallum`.
-- **Аспекты инфузии:** `Vacuos 24`, `Metallum 24`, `Praecantatio 16`,
-  `Permutatio 12`.
+- **Аспекты инфузии:** `Vacuos 28`, `Metallum 28`, `Praecantatio 18`,
+  `Permutatio 12` — **86**.
 - **Нестабильность:** 8.
+  ⚠️ Пересчитано по `recipe_calibration.md` §4: было 76 эссенции при вилке
+  T4 80–130. Поднято до нижней границы; нестабильность 8 в вилку (5–9)
+  попадала.
 - **Исследование-владелец:** `VOID_IRIDIUM` (T4), родители —
   `EU_TO_VIS_ENGINE` и `TEMPERED_THAUMIUM`. Стоимость: `Vacuos 14`,
   `Metallum 12`, `Praecantatio 10`, `Permutatio 8` — 4 аспекта,

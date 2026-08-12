@@ -85,7 +85,9 @@
   T G T      S — осколок Ignis
   . S .      G — Генератор IC2
   ```
-- **Аспекты крафта:** `Ordo 25`, `Ignis 25`, `Aqua 25`.
+- **Аспекты крафта:** `Ordo 8`, `Ignis 8`, `Aqua 8`.
+  ⚠️ Пересчитано по `recipe_calibration.md` §4: было `Ordo 25`, `Ignis 25`, `Aqua 25` (75 вис) —
+  в 3.1 раза выше эталона ТК. Пропорции и главный примал сохранены.
 - **Исследование-владелец:** `VIS_TO_EU_GENERATOR`
   (стоимость изучения: `Potentia 10`, `Machina 8`, `Praecantatio 6`,
   `Ignis 4` — 4 аспекта, 28 единиц, тир T3 по `research_design.md` §2.2:

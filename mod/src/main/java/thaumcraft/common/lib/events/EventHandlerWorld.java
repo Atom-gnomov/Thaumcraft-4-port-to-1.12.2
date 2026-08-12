@@ -282,20 +282,15 @@ public class EventHandlerWorld {
 
     // ---- Fuel burning ----
 
-    /**
-     * Override getItemBurnTime on Thaumcraft items for fuel.
-     * In 1.12.2, IFuelHandler is deprecated. Items override getItemBurnTime() directly.
-     * This central handler catches FurnaceFuelBurnTimeEvent as a fallback.
-     */
-    // @SubscribeEvent
-    // public void onFuelBurnTime(net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent event) {
-    //     ItemStack stack = event.getItemStack();
-    //     if (stack.getItem() == ConfigItems.itemResource && stack.getItemDamage() == 0) {
-    //         event.setBurnTime(6400); // Thaumium nugget = 6400 ticks (~320 items)
-    //     } else if (stack.getItem() == Item.getItemFromBlock(ConfigBlocks.blockMagicalLog)) {
-    //         event.setBurnTime(400); // Magical log = 400 ticks (20 items)
-    //     }
-    // }
+    @SubscribeEvent
+    public void onFuelBurnTime(net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent event) {
+        ItemStack stack = event.getItemStack();
+        if (stack.getItem() == ConfigItems.itemResource && stack.getItemDamage() == 0) {
+            event.setBurnTime(6400); // Alumentum: 6400 ticks (32 smelts), as in original TC4
+        } else if (stack.getItem() == Item.getItemFromBlock(ConfigBlocks.blockMagicalLog)) {
+            event.setBurnTime(400);
+        }
+    }
 
     // ---- Helpers ----
 

@@ -246,12 +246,23 @@ public final class ConfigEndLegacy {
         ThaumcraftApi.getCraftingRecipes().add(soaringWings);
         ConfigResearch.recipes.put("WingsSoaring", soaringWings);
 
+        // Вознесение — АПГРЕЙД: matches() требует нагрудник, уже несущий
+        // «Парение». Витрина рецепта обязана показывать именно такой
+        // нагрудник (с тегом Wings=1, отчего он и подписан «Парящий…»):
+        // с голым таумиевым игрок ставил его в центр, алтарь молча
+        // отказывался, и понять причину из книги было невозможно.
+        ItemStack ascensionDisplayInput = new ItemStack(ConfigItems.itemChestThaumium);
+        ascensionDisplayInput.setTagInfo(
+                thaumcraft.common.lib.endgame.SoaringHandler.TAG_WINGS,
+                new net.minecraft.nbt.NBTTagByte(
+                        (byte) thaumcraft.common.lib.endgame.SoaringHandler.TIER_SOARING));
+
         thaumcraft.common.lib.endgame.InfusionWingsRecipe ascensionWings =
                 new thaumcraft.common.lib.endgame.InfusionWingsRecipe(
                 "ASCENSION", thaumcraft.common.lib.endgame.SoaringHandler.TIER_ASCENSION, 6,
                 new AspectList().add(Aspect.ELDRITCH, 24).add(Aspect.FLIGHT, 24)
                         .add(Aspect.ENERGY, 16).add(Aspect.MAGIC, 8),
-                new ItemStack(ConfigItems.itemChestThaumium),
+                ascensionDisplayInput,
                 new ItemStack[]{
                         new ItemStack(Items.DRAGON_BREATH),
                         new ItemStack(Items.SHULKER_SHELL),

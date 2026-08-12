@@ -107,6 +107,7 @@ public class Config {
     public static boolean genStructure = true;
     public static boolean genCinnibar = true;
     public static boolean genAmber = true;
+    public static boolean genSilver = true;
     public static boolean genInfusedStone = true;
     public static boolean genTrees = true;
     public static boolean genTaint = true;
@@ -116,6 +117,7 @@ public class Config {
     public static boolean regenStructure = false;
     public static boolean regenCinnibar = false;
     public static boolean regenAmber = false;
+    public static boolean regenSilver = false;
     public static boolean regenInfusedStone = false;
     public static boolean regenTrees = false;
     public static boolean regenTaint = false;
@@ -196,6 +198,8 @@ public class Config {
     public static boolean foundCopperOre = false;
     public static boolean foundTinOre = false;
     public static boolean foundSilverOre = false;
+    /** True when a mod other than Thaumcraft registered an oreSilver block — our worldgen then defers. */
+    public static boolean foundForeignSilverOre = false;
     public static boolean foundLeadOre = false;
 
     // Materials
@@ -267,6 +271,8 @@ public class Config {
         genStructure = config.get(CATEGORY_GEN, "generate_structures", true).getBoolean(true);
         genCinnibar = config.get(CATEGORY_GEN, "generate_cinnibar_ore", true).getBoolean(true);
         genAmber = config.get(CATEGORY_GEN, "generate_amber_ore", true).getBoolean(true);
+        genSilver = config.get(CATEGORY_GEN, "generate_silver_ore", true,
+                "Generate silver ore. Auto-skipped if another mod already provides oreSilver ore blocks.").getBoolean(true);
         genInfusedStone = config.get(CATEGORY_GEN, "generate_infused_stone", true).getBoolean(true);
         genTrees = config.get(CATEGORY_GEN, "generate_trees", true).getBoolean(true);
         genTaint = config.get(CATEGORY_GEN, "generate_taint", true).getBoolean(true);
@@ -276,6 +282,7 @@ public class Config {
         regenStructure = config.get(CATEGORY_REGEN, "structures", false).getBoolean(false);
         regenCinnibar = config.get(CATEGORY_REGEN, "cinnibar_ore", false).getBoolean(false);
         regenAmber = config.get(CATEGORY_REGEN, "amber_ore", false).getBoolean(false);
+        regenSilver = config.get(CATEGORY_REGEN, "silver_ore", false).getBoolean(false);
         regenInfusedStone = config.get(CATEGORY_REGEN, "infused_stone", false).getBoolean(false);
         regenTrees = config.get(CATEGORY_REGEN, "trees", false).getBoolean(false);
         regenTaint = config.get(CATEGORY_REGEN, "taint", false).getBoolean(false);
@@ -396,6 +403,7 @@ public class Config {
         foundCopperOre = false;
         foundTinOre = false;
         foundSilverOre = false;
+        foundForeignSilverOre = false;
         foundLeadOre = false;
         ItemElementalAxe.oreDictLogs.clear();
 
@@ -425,6 +433,10 @@ public class Config {
                 foundSilverOre = true;
                 for (ItemStack is : entries) {
                     Utils.addSpecialMiningResult(is, new ItemStack(ConfigItems.itemNugget, 1, 19), 1.0F);
+                    if (is.getItem().getRegistryName() != null
+                            && !"thaumcraft".equals(is.getItem().getRegistryName().getNamespace())) {
+                        foundForeignSilverOre = true;
+                    }
                 }
                 continue;
             }

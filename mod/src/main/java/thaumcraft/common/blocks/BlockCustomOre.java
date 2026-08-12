@@ -31,8 +31,8 @@ import java.util.Random;
 
 public class BlockCustomOre extends Block {
 
-    public static final String[] oreTypes = {"cinnabar", "infusedAir", "infusedFire", "infusedWater", "infusedEarth", "infusedOrder", "infusedEntropy", "amber"};
-    public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 7);
+    public static final String[] oreTypes = {"cinnabar", "infusedAir", "infusedFire", "infusedWater", "infusedEarth", "infusedOrder", "infusedEntropy", "amber", "silver"};
+    public static final PropertyInteger TYPE = PropertyInteger.create("type", 0, 8);
 
     public BlockCustomOre() {
         super(Material.ROCK);
@@ -46,7 +46,7 @@ public class BlockCustomOre extends Block {
 
     @Override
     public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-        for (int i = 0; i <= 7; i++) {
+        for (int i = 0; i <= 8; i++) {
             list.add(new ItemStack(this, 1, i));
         }
     }
@@ -123,7 +123,7 @@ public class BlockCustomOre extends Block {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 7));
+        return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 8));
     }
 
     @Override
@@ -133,6 +133,6 @@ public class BlockCustomOre extends Block {
 
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 7));
+        return this.getDefaultState().withProperty(TYPE, MathHelper.clamp(meta, 0, 8));
     }
 }

@@ -5,7 +5,7 @@
 | **Registry** | `unboundtech:template_bench` (блок), `unboundtech:transmutation_template` (предмет) |
 | **Тип** | блок + его расходник |
 | **Тир** | T4 |
-| **Акт** | V. Синтез |
+| **Акт** | **IV. Резонанс** (акт = тир, без исключений — `T16_decisions.md` §1) |
 | **Статус** | 🔜 спроектировано |
 | **Класс** | `unboundtech.common.tiles.TileTemplateBench` (планируется) |
 

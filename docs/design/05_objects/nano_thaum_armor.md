@@ -5,7 +5,7 @@
 | **Registry** | `unboundtech:nano_thaum_{helmet,chestplate,leggings,boots}` |
 | **Тип** | предметы (комплект из четырёх) |
 | **Тир** | T4 |
-| **Акт** | V. Синтез |
+| **Акт** | **IV. Резонанс** (акт = тир, без исключений — `T16_decisions.md` §1) |
 | **Статус** | 🔜 спроектировано |
 | **Класс** | `unboundtech.common.items.armor.ItemNanoThaumArmor` (планируется) |
 

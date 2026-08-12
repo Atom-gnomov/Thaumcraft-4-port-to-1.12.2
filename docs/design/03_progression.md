@@ -116,7 +116,7 @@ FLUX_CONDENSER  T3
                ├─> CARTRIDGE_PRESS   T4  [EU + вис из сети → патроны]
                ├─> VIS_EDGE          T4  [надстройка к чужим клинкам]
                └─> FLUX_MACHINEGUN   T5  [ленты]
-                     ├─> MORTAR       T5  [стационарная]
+                     ├─> MECHANIST_MORTAR T5 [стационарная]
                      └─> DISINTEGRATOR T5 [капстоун, Сердце Колосса]
 ```
 
@@ -125,7 +125,7 @@ FLUX_CONDENSER  T3
 ```
 TEMPERED_ARMOR  T2  ─┐
 EU_TO_VIS_ENGINE T3 ─┴─> NANO_THAUM_ARMOR  T4  [инфузия: нано + боевой таум]
-                            └─> QUANT_VOID / QUANT_ICHOR  T5
+                            └─> QUANT_VOID_ARMOR / QUANT_ICHOR_ARMOR  T5
 
 ELECTRIC_SCRIBING T2 ─┐
 SOLAR_SUNNARIUM (ASP) ┴─> TRANSMUTATION_TEMPLATES  T4  [гейт рецептов преобразователя]
@@ -146,13 +146,15 @@ VOID_IRIDIUM  T4
 [Пустотный Иридий скрафчен] + [оба конвертера работают]
    └─> вкладка «СИНТЕЗ» открыта        (гейт — dungeon_and_boss.md §7)
          ├─> ASPECT_SYNTHESIZER   T5  [капстоун: EU → эссенция; Сердце Колосса]
-         ├─> QUANT_VOID / QUANT_ICHOR  T5
+         ├─> QUANT_VOID_ARMOR / QUANT_ICHOR_ARMOR  T5
          ├─> DISINTEGRATOR        T5  [Сердце Колосса]
          └─> ICHOR_IRIDIUM_BLADE  T5  [фансервис; требует пробуждённый ихориевый меч]
 
 [найден Разлом Механистов]  — структура находится свободно, без гейта
-   └─> [3 Заряженные Искры в пьедестал] ─> арена, Флюкс-Колосс  T5
-                                              └─> Сердце Колосса
+   └─◇ DUNGEON_MECHANIST_RIFT  T5  [лорная, открывается по входу в данж]
+         └─> [3 Заряженные Искры в пьедестал] ─> арена, Флюкс-Колосс  T5
+                   ├─◇ BOSS_FLUX_COLOSSUS  T5  [лорная, после первого убийства]
+                   └─> Сердце Колосса
 ```
 
 Данж намеренно **не заперт исследованием**: это место, а не награда.

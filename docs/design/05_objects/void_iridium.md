@@ -5,7 +5,7 @@
 | **Registry** | `unboundtech:void_iridium` |
 | **Тип** | предмет (материал) |
 | **Тир** | T4 |
-| **Акт** | V. Синтез |
+| **Акт** | **IV. Резонанс** (акт = тир, без исключений — `T16_decisions.md` §1) |
 | **Статус** | 🔜 спроектировано |
 | **Класс** | `unboundtech.common.items.ItemUTResource` (мета) |
 

@@ -111,7 +111,9 @@
   `Machina 16`.
 - **Нестабильность:** **6**.
 - **Исследование-владелец:** `SINGULATOR` (T4), родитель —
-  `IRIDIUM_WAND_PARTS`. complexity 3. Стоимость: `Praecantatio 14`,
+  **`IRIDIUM_WAND_CAP`** (⚠️ было `IRIDIUM_WAND_PARTS` — запись
+  разделена на две, `iridium_wand_components.md` §6; Сингулятору нужен
+  наконечник, а не стержень). complexity 3. Стоимость: `Praecantatio 14`,
   `Potentia 12`, `Machina 10`, `Ordo 10` — 4 аспекта, 46 единиц.
 - **Альт-рецепты при аддонах:** нет.
 

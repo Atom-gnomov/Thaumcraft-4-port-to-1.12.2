@@ -153,7 +153,7 @@ SOLAR_SUNNARIUM (ASP) ┴─> TRANSMUTATION_TEMPLATES  T4  [гейт рецеп�
 ```
 EU_TO_VIS_ENGINE T3 ─┐
 TEMPERED_THAUMIUM T2 ┴─> VOID_IRIDIUM  T4      [родители — из карточки §6]
-   └─> IRIDIUM_WAND_PARTS  T4  [наконечник; стержень — за Сердце Колосса]
+   └─> IRIDIUM_WAND_CAP   T4  [наконечник]
          └─> SINGULATOR    T4
 
 Порядок внутри T4 — «броня последней, она самая необязательная», но
@@ -172,7 +172,8 @@ NANO_THAUM_ARMOR в этой схеме **не повторяется**: его 
          │      родители: VOID_IRIDIUM + оба конвертера (карточка §6)
          ├─> QUANT_VOID_ARMOR / QUANT_ICHOR_ARMOR  T5
          ├─> DISINTEGRATOR        T5  [Сердце Колосса]
-         └─> ICHOR_IRIDIUM_BLADE  T5  [фансервис; требует пробуждённый ихориевый меч]
+         ├─> ICHOR_IRIDIUM_BLADE  T5  [фансервис; требует пробуждённый ихориевый меч]
+         └─> IRIDIUM_WAND_ROD     T5  [стержень жезла; родитель — IRIDIUM_WAND_CAP (T4), Сердце Колосса]
 
 [найден Разлом Механистов]  — структура находится свободно, без гейта
    └─◇ DUNGEON_MECHANIST_RIFT  T5  [лорная, открывается по входу в данж]
